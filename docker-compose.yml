@@ -1,5 +1,51 @@
+# ============================================================================
+# Transitly — Full Stack Docker Compose
+# App + Redis + PostGIS + MongoDB (ARM64/Apple Silicon Native)
+# ============================================================================
+
 services:
-  # Fast Path In-Memory Datastore & Stream Buffer (ARM64 Native)
+  # ---- Transitly Express Application ----
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: transitly-app
+    restart: unless-stopped
+    ports:
+      - '3000:3000'
+    env_file:
+      - .env.docker
+    depends_on:
+      redis:
+        condition: service_started
+      postgis:
+        condition: service_healthy
+      mongodb:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 5s
+      start_period: 15s
+      retries: 3
+
+  # ---- Database Initializer (Run-Once Seed Job) ----
+  db-init:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: transitly-db-init
+    env_file:
+      - .env.docker
+    depends_on:
+      postgis:
+        condition: service_healthy
+      mongodb:
+        condition: service_started
+    command: ["node", "src/db/initDb.js"]
+    restart: "no"
+
+  # ---- Fast Path In-Memory Datastore & Stream Buffer ----
   redis:
     image: redis:7-alpine
     container_name: transitly-redis
@@ -8,9 +54,14 @@ services:
       - '6379:6379'
     volumes:
       - redis_data:/data
-    command: redis-server --appendonly yes
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
 
-  # Slow Path Spatial Telemetry Datastore (ARM64 Native for Apple Silicon M2)
+  # ---- Slow Path Spatial Telemetry Datastore (PostGIS) ----
   postgis:
     image: postgis/postgis:16-3.4-alpine
     container_name: transitly-postgis
@@ -24,8 +75,14 @@ services:
     volumes:
       - postgis_data:/var/lib/postgresql/data
       - ./src/db/migrations:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d transitly_telemetry"]
+      interval: 10s
+      timeout: 5s
+      start_period: 30s
+      retries: 5
 
-  # Document Datastore for Aggregate Transactions (ARM64 Native)
+  # ---- Document Datastore for Aggregate Transactions ----
   mongodb:
     image: mongo:7.0
     container_name: transitly-mongo
@@ -34,6 +91,12 @@ services:
       - '27017:27017'
     volumes:
       - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      start_period: 15s
+      retries: 5
 
 volumes:
   redis_data:
