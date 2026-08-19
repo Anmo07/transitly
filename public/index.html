@@ -647,7 +647,7 @@
         <span class="material-symbols-outlined text-outline-variant group-hover:text-primary transition-colors">chevron_right</span>
       </button>
 
-      <button id="btnProfileWhatsAppHelp" class="w-full bg-surface rounded-xl p-4 flex items-center justify-between shadow-[0px_4px_20px_rgba(0,0,0,0.02)] active:scale-[0.98] transition-transform group hover:bg-surface-container-lowest border border-outline-variant/20">
+      <button id="btnOpenHelpSupport" class="w-full bg-surface rounded-xl p-4 flex items-center justify-between shadow-[0px_4px_20px_rgba(0,0,0,0.02)] active:scale-[0.98] transition-transform group hover:bg-surface-container-lowest border border-outline-variant/20">
         <div class="flex items-center gap-3">
           <div class="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 group-hover:bg-emerald-500 group-hover:text-white transition-colors">
             <span class="material-symbols-outlined">support_agent</span>
@@ -884,12 +884,11 @@
       <p class="text-sm text-on-surface-variant">Manage your preferences and account settings.</p>
     </div>
 
-    <!-- Settings Section: Notifications -->
+    <!-- Settings Sections -->
     <div class="flex flex-col gap-6">
       <section class="flex flex-col gap-3">
         <h2 class="text-xs font-bold text-primary uppercase tracking-wider pl-1">Notifications</h2>
         <div class="bg-surface-container-lowest rounded-xl shadow-level-1 flex flex-col overflow-hidden border border-outline-variant/20">
-          <!-- Push Notifications -->
           <div class="flex items-center justify-between p-4 border-b border-surface-variant">
             <div class="flex items-center gap-3">
               <div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-primary">
@@ -906,7 +905,6 @@
             </div>
           </div>
 
-          <!-- Email Updates -->
           <div class="flex items-center justify-between p-4">
             <div class="flex items-center gap-3">
               <div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-primary">
@@ -925,11 +923,9 @@
         </div>
       </section>
 
-      <!-- Settings Section: Privacy & Location -->
       <section class="flex flex-col gap-3">
         <h2 class="text-xs font-bold text-primary uppercase tracking-wider pl-1">Privacy & Location</h2>
         <div class="bg-surface-container-lowest rounded-xl shadow-level-1 flex flex-col overflow-hidden border border-outline-variant/20">
-          <!-- Location Services -->
           <div class="flex items-center justify-between p-4 border-b border-surface-variant">
             <div class="flex items-center gap-3">
               <div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-primary">
@@ -946,7 +942,6 @@
             </div>
           </div>
 
-          <!-- Language -->
           <div class="flex items-center justify-between p-4 border-b border-surface-variant hover:bg-surface-container-low transition-colors group cursor-pointer" onclick="alert('Current Language: English (US)')">
             <div class="flex items-center gap-3">
               <div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-primary group-hover:bg-white transition-colors">
@@ -960,7 +955,6 @@
             </div>
           </div>
 
-          <!-- Privacy Policy -->
           <div class="flex items-center justify-between p-4 border-b border-surface-variant hover:bg-surface-container-low transition-colors group cursor-pointer" onclick="alert('Privacy Policy: End-to-end telemetry encryption and automatic PII redaction.')">
             <div class="flex items-center gap-3">
               <div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-primary group-hover:bg-white transition-colors">
@@ -971,7 +965,6 @@
             <span class="material-symbols-outlined text-outline text-lg">chevron_right</span>
           </div>
 
-          <!-- Terms of Service -->
           <div class="flex items-center justify-between p-4 hover:bg-surface-container-low transition-colors group cursor-pointer" onclick="alert('Terms of Service: Public Transport Cargo Monetization Agreement.')">
             <div class="flex items-center gap-3">
               <div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-primary group-hover:bg-white transition-colors">
@@ -984,7 +977,6 @@
         </div>
       </section>
 
-      <!-- Account Actions -->
       <section class="flex flex-col gap-3 pt-2">
         <button class="w-full bg-surface-container-low text-error hover:bg-error-container hover:text-on-error-container rounded-xl py-3.5 text-sm font-bold transition-colors flex items-center justify-center gap-2" onclick="alert('Signed out successfully.')">
           <span class="material-symbols-outlined">logout</span>
@@ -998,7 +990,122 @@
   </div>
 
   <!-- ========================================================================= -->
-  <!-- SCREEN 8: BOOKING MODAL & DUAL FEASIBILITY SAGA                           -->
+  <!-- SCREEN 8: HELP & SUPPORT SUB-SCREEN (GOOGLE STITCH DESIGN)                -->
+  <!-- ========================================================================= -->
+  <div id="tab-help-support" class="tab-view hidden pt-16 pb-28 max-w-4xl mx-auto w-full px-5 animate-fade-in-up">
+    <!-- Top Sub-Screen Header -->
+    <div class="flex items-center justify-between mb-6">
+      <button id="btnBackFromHelpSupport" class="w-10 h-10 flex items-center justify-center rounded-full bg-surface-container-lowest shadow-sm text-on-surface hover:bg-surface-container-low active:scale-95 transition-colors">
+        <span class="material-symbols-outlined">arrow_back</span>
+      </button>
+      <h2 class="text-lg font-bold text-on-surface">
+        Help & Support
+      </h2>
+      <div class="w-10 h-10"></div>
+    </div>
+
+    <!-- Header Section -->
+    <div class="text-center mb-8">
+      <h1 class="text-2xl md:text-3xl font-bold text-on-surface mb-2">How can we help you?</h1>
+      <p class="text-sm text-on-surface-variant max-w-lg mx-auto">Search our knowledge base or browse common topics below to find answers quickly.</p>
+      
+      <!-- Search Bar -->
+      <div class="mt-5 relative max-w-xl mx-auto group">
+        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+          <span class="material-symbols-outlined text-outline-variant group-focus-within:text-primary transition-colors">search</span>
+        </div>
+        <input id="helpSearchInput" class="w-full pl-12 pr-4 py-3.5 rounded-xl border border-outline-variant bg-surface-container-lowest focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-all text-sm placeholder:text-on-surface-variant/50 shadow-sm hover:shadow-md" placeholder="Search for 'missing parcel' or 'refund'" type="text"/>
+      </div>
+    </div>
+
+    <!-- Bento Grid Topics -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+      <!-- Topic Card 1 -->
+      <div class="bg-surface-container-lowest rounded-xl p-5 shadow-level-1 hover:shadow-level-2 transition-all cursor-pointer border border-transparent hover:border-primary/20 group flex flex-col h-full" onclick="alert('Tracking Articles: Real-time telemetry is synced via Redis at 3ms intervals. PostGIS ensures permanent GPS logs.')">
+        <div class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center mb-3 group-hover:bg-primary/10 transition-colors">
+          <span class="material-symbols-outlined text-primary fill">local_shipping</span>
+        </div>
+        <h3 class="text-base font-bold text-on-surface mb-1">Tracking Issues</h3>
+        <p class="text-xs text-on-surface-variant flex-1">Where is my parcel? Delivery delays and live GPS telematics updates.</p>
+        <div class="mt-4 flex items-center text-primary text-xs font-bold group-hover:underline">
+          View articles <span class="material-symbols-outlined text-[16px] ml-1">arrow_forward</span>
+        </div>
+      </div>
+
+      <!-- Topic Card 2 -->
+      <div class="bg-surface-container-lowest rounded-xl p-5 shadow-level-1 hover:shadow-level-2 transition-all cursor-pointer border border-transparent hover:border-primary/20 group flex flex-col h-full" onclick="alert('Payment Queries: Multi-modal pricing is dynamically computed based on fuel surcharge and weight.')">
+        <div class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center mb-3 group-hover:bg-primary/10 transition-colors">
+          <span class="material-symbols-outlined text-primary fill">payments</span>
+        </div>
+        <h3 class="text-base font-bold text-on-surface mb-1">Payment Queries</h3>
+        <p class="text-xs text-on-surface-variant flex-1">Invoices, automated refunds, promo codes, and multi-carrier split billing.</p>
+        <div class="mt-4 flex items-center text-primary text-xs font-bold group-hover:underline">
+          View articles <span class="material-symbols-outlined text-[16px] ml-1">arrow_forward</span>
+        </div>
+      </div>
+
+      <!-- Topic Card 3 -->
+      <div class="bg-surface-container-lowest rounded-xl p-5 shadow-level-1 hover:shadow-level-2 transition-all cursor-pointer border border-transparent hover:border-primary/20 group flex flex-col h-full bg-gradient-to-br from-surface-container-lowest to-surface-container-low">
+        <div class="w-12 h-12 rounded-full bg-error-container/50 flex items-center justify-center mb-3 group-hover:bg-error-container transition-colors">
+          <span class="material-symbols-outlined text-error fill">broken_image</span>
+        </div>
+        <h3 class="text-base font-bold text-on-surface mb-1">Damaged or Lost</h3>
+        <p class="text-xs text-on-surface-variant flex-1">Report a damaged package, missing items, or initiate an automated insurance claim.</p>
+        <div class="mt-4 flex flex-col gap-2">
+          <button class="w-full bg-surface text-on-surface border border-outline-variant py-2 rounded-lg text-xs font-bold hover:bg-surface-container-highest transition-colors flex items-center justify-center gap-1.5" onclick="event.stopPropagation(); alert('Claim ticket #CLM-8921 initiated! Support agent assigned.')">
+            File a Claim <span class="material-symbols-outlined text-[16px]">assignment</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Topic Card 4 -->
+      <div class="bg-surface-container-lowest rounded-xl p-5 shadow-level-1 hover:shadow-level-2 transition-all cursor-pointer border border-transparent hover:border-primary/20 group flex flex-col h-full" onclick="alert('Account Settings: Manage two-factor auth and WhatsApp opt-ins.')">
+        <div class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center mb-3 group-hover:bg-primary/10 transition-colors">
+          <span class="material-symbols-outlined text-primary fill">person</span>
+        </div>
+        <h3 class="text-base font-bold text-on-surface mb-1">Account Settings</h3>
+        <p class="text-xs text-on-surface-variant flex-1">Update profile, change phone verification, and manage WhatsApp alerts.</p>
+        <div class="mt-4 flex items-center text-primary text-xs font-bold group-hover:underline">
+          View articles <span class="material-symbols-outlined text-[16px] ml-1">arrow_forward</span>
+        </div>
+      </div>
+
+      <!-- Topic Card 5 -->
+      <div class="bg-surface-container-lowest rounded-xl p-5 shadow-level-1 hover:shadow-level-2 transition-all cursor-pointer border border-transparent hover:border-primary/20 group flex flex-col h-full" onclick="alert('Freight & Delivery Experience: Public transport partner network feedback.')">
+        <div class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center mb-3 group-hover:bg-primary/10 transition-colors">
+          <span class="material-symbols-outlined text-primary fill">directions_bus</span>
+        </div>
+        <h3 class="text-base font-bold text-on-surface mb-1">Delivery Experience</h3>
+        <p class="text-xs text-on-surface-variant flex-1">Carrier feedback, terminal custody handoffs, and safety checks.</p>
+        <div class="mt-4 flex items-center text-primary text-xs font-bold group-hover:underline">
+          View articles <span class="material-symbols-outlined text-[16px] ml-1">arrow_forward</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact Support Prominent Card -->
+    <div class="bg-primary-container rounded-2xl p-6 md:p-8 relative overflow-hidden shadow-[0px_8px_30px_rgba(0,102,255,0.15)] flex flex-col md:flex-row items-center justify-between gap-6">
+      <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 24px 24px;"></div>
+      <div class="relative z-10 text-center md:text-left flex-1">
+        <h2 class="text-xl md:text-2xl font-bold text-on-primary mb-1">Still need help?</h2>
+        <p class="text-sm text-primary-fixed">Our WhatsApp AI & support engineers are available 24/7 to assist you.</p>
+      </div>
+      <div class="relative z-10 w-full md:w-auto">
+        <button id="btnHelpChatSupport" class="w-full md:w-auto bg-surface-container-lowest text-primary px-6 py-3.5 rounded-xl font-bold text-xs hover:bg-surface-container-low transition-colors shadow-sm flex items-center justify-center gap-2 h-[52px]">
+          <span class="material-symbols-outlined text-lg">chat</span>
+          Chat with Support (WhatsApp)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Action Button for Instant WhatsApp Chat -->
+  <button id="btnFloatingWhatsAppHelp" aria-label="WhatsApp Support" class="fixed bottom-20 right-4 w-14 h-14 bg-primary-container text-on-primary rounded-full shadow-[0px_8px_30px_rgba(0,102,255,0.35)] flex items-center justify-center z-40 hover:scale-105 active:scale-95 transition-transform">
+    <span class="material-symbols-outlined text-[28px] fill">chat</span>
+  </button>
+
+  <!-- ========================================================================= -->
+  <!-- SCREEN 9: BOOKING MODAL & DUAL FEASIBILITY SAGA                           -->
   <!-- ========================================================================= -->
   <div id="bookingModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4">
     <div class="bg-white rounded-[24px] max-w-[500px] w-full p-6 shadow-2xl max-h-[90vh] overflow-y-auto">

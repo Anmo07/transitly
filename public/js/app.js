@@ -15,7 +15,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     profile: document.getElementById('tab-profile'),
     savedAddresses: document.getElementById('tab-saved-addresses'),
     paymentMethods: document.getElementById('tab-payment-methods'),
-    settings: document.getElementById('tab-settings')
+    settings: document.getElementById('tab-settings'),
+    helpSupport: document.getElementById('tab-help-support')
   };
 
   const navBtns = {
@@ -40,7 +41,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     // Handle bottom nav visibility on sub-screens (Semantic Shell Rule)
-    if (tabKey === 'savedAddresses' || tabKey === 'paymentMethods' || tabKey === 'settings') {
+    if (tabKey === 'savedAddresses' || tabKey === 'paymentMethods' || tabKey === 'settings' || tabKey === 'helpSupport') {
       if (mainBottomNav) mainBottomNav.classList.add('hidden');
       if (mainAppHeader) mainAppHeader.classList.add('hidden');
     } else {
@@ -162,6 +163,33 @@ document.addEventListener('DOMContentLoaded', async () => {
   const btnBackFromSettings = document.getElementById('btnBackFromSettings');
   if (btnBackFromSettings) {
     btnBackFromSettings.addEventListener('click', () => switchTab('profile'));
+  }
+
+  // Help & Support Sub-screen Navigation
+  const btnOpenHelpSupport = document.getElementById('btnOpenHelpSupport');
+  if (btnOpenHelpSupport) {
+    btnOpenHelpSupport.addEventListener('click', () => switchTab('helpSupport'));
+  }
+
+  const btnBackFromHelpSupport = document.getElementById('btnBackFromHelpSupport');
+  if (btnBackFromHelpSupport) {
+    btnBackFromHelpSupport.addEventListener('click', () => switchTab('profile'));
+  }
+
+  const btnHelpChatSupport = document.getElementById('btnHelpChatSupport');
+  if (btnHelpChatSupport) {
+    btnHelpChatSupport.addEventListener('click', () => {
+      const query = encodeURIComponent('Hi Transitly Support, I need assistance with a delivery.');
+      window.open(`https://wa.me/919876543210?text=${query}`, '_blank');
+    });
+  }
+
+  const btnFloatingWhatsAppHelp = document.getElementById('btnFloatingWhatsAppHelp');
+  if (btnFloatingWhatsAppHelp) {
+    btnFloatingWhatsAppHelp.addEventListener('click', () => {
+      const query = encodeURIComponent('Hi Transitly AI Assistant, I would like to track a parcel.');
+      window.open(`https://wa.me/919876543210?text=${query}`, '_blank');
+    });
   }
 
   // -------------------------------------------------------------
@@ -610,15 +638,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         navigator.clipboard.writeText(window.location.href);
         alert('Tracking link copied to clipboard!');
       }
-    });
-  }
-
-  // Profile WhatsApp Help button handler
-  const btnProfileWhatsAppHelp = document.getElementById('btnProfileWhatsAppHelp');
-  if (btnProfileWhatsAppHelp) {
-    btnProfileWhatsAppHelp.addEventListener('click', () => {
-      const query = encodeURIComponent('Hi Transitly Support, I have a question about my parcels and routes');
-      window.open(`https://wa.me/919876543210?text=${query}`, '_blank');
     });
   }
 
