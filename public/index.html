@@ -74,7 +74,7 @@
             "on-secondary-fixed-variant": "#444749"
           },
           fontFamily: {
-            "sans": ["Plus Jakarta Sans", "sans-serif"],
+            "sans": ["Plus Jakarta Sans", "-apple-system", "BlinkMacSystemFont", "sans-serif"],
             "mono": ["JetBrains Mono", "monospace"]
           },
           boxShadow: {
@@ -87,33 +87,51 @@
   </script>
 
   <style>
-    body {
+    /* Safari & WebKit Compatibility Normalization */
+    html, body {
+      min-height: 100vh;
+      min-height: -webkit-fill-available;
+      min-height: 100dvh;
+      margin: 0;
+      padding: 0;
       -webkit-tap-highlight-color: transparent;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      background-color: #faf8ff;
+      color: #191b24;
     }
-    .material-symbols-outlined {
-      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-    }
-    .material-symbols-outlined.fill,
-    .material-symbols-outlined[data-weight="fill"],
-    .icon-fill {
-      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-    }
-    ::-webkit-scrollbar { display: none; }
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-    .pb-safe { padding-bottom: env(safe-area-inset-bottom, 16px); }
 
+    .pb-safe {
+      padding-bottom: max(env(safe-area-inset-bottom, 16px), 16px);
+    }
+    .pt-safe {
+      padding-top: max(env(safe-area-inset-top, 0px), 0px);
+    }
+
+    /* Force strict tab visibility logic to prevent Safari flex-override glitches */
+    .tab-view {
+      display: none !important;
+    }
+    .tab-view.active {
+      display: block !important;
+    }
+    .tab-view.active.flex-tab {
+      display: flex !important;
+    }
+
+    /* Glassmorphism with full Safari -webkit- prefix */
     .glass-card {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(10px);
-      box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.05);
+      background: rgba(255, 255, 255, 0.88);
+      -webkit-backdrop-filter: blur(16px);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.7);
     }
     .active-card {
-      box-shadow: 0px 8px 30px rgba(0, 102, 255, 0.08);
-      border: 2px solid #0050cb;
+      box-shadow: 0px 8px 30px rgba(0, 102, 255, 0.12);
+      border: 2px solid #0050cb !important;
     }
 
-    /* Custom Toggle Switch styling from Stitch */
+    /* Toggle switches */
     .toggle-checkbox:checked {
       right: 0;
       border-color: #0066ff;
@@ -152,44 +170,57 @@
       transform: translateX(1.5rem);
     }
 
-    /* Animations */
-    @keyframes slideUp {
-      from { transform: translateY(100%); }
-      to { transform: translateY(0); }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      line-height: 1;
+      display: inline-block;
     }
-    .animate-slide-up {
-      animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    .material-symbols-outlined.fill,
+    .material-symbols-outlined[data-weight="fill"],
+    .icon-fill {
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
     }
-    .animate-fade-in-up {
-      animation: fadeInUp 0.4s ease-out forwards;
-    }
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+
+    /* Smooth Leaflet integration */
     .leaflet-container {
-      font-family: 'Plus Jakarta Sans', sans-serif !important;
+      font-family: inherit !important;
+      z-index: 1;
     }
+
+    /* Custom radar pulse animation */
+    @keyframes radar-pulse-anim {
+      0% { transform: scale(0.8); opacity: 0.8; }
+      50% { transform: scale(1.6); opacity: 0; }
+      100% { transform: scale(0.8); opacity: 0.8; }
+    }
+
+    /* Modal Display */
+    #bookingModal.hidden { display: none !important; }
+    #bookingModal.flex { display: flex !important; }
+
+    ::-webkit-scrollbar { display: none; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
-<body class="bg-background text-on-surface font-sans min-h-screen overflow-x-hidden flex flex-col relative selection:bg-primary-fixed selection:text-on-primary-fixed antialiased">
+<body class="bg-[#faf8ff] text-on-surface font-sans min-h-[100dvh] overflow-x-hidden flex flex-col antialiased">
 
   <!-- ========================================================================= -->
-  <!-- TOP APP BAR (STITCH DESIGN)                                               -->
+  <!-- TOP APP BAR                                                               -->
   <!-- ========================================================================= -->
-  <header id="mainAppHeader" class="bg-surface shadow-sm fixed top-0 w-full z-50 border-b border-outline-variant/20">
-    <div class="flex justify-between items-center px-4 h-14 max-w-4xl mx-auto w-full">
-      <button id="btnHeaderMenu" aria-label="Menu" class="text-primary hover:opacity-80 transition-opacity active:scale-95 flex items-center justify-center w-10 h-10 rounded-full">
+  <header id="mainAppHeader" class="bg-surface/95 backdrop-blur-md shadow-sm fixed top-0 left-0 right-0 w-full z-50 border-b border-outline-variant/20 transition-all duration-200">
+    <div class="flex justify-between items-center px-4 h-14 max-w-2xl mx-auto w-full">
+      <button id="btnHeaderMenu" aria-label="Home" class="text-primary hover:opacity-80 transition-opacity active:scale-95 flex items-center justify-center w-10 h-10 rounded-full">
         <span class="material-symbols-outlined text-2xl">local_shipping</span>
       </button>
-      <h1 class="text-xl font-bold text-primary tracking-tight">
+      <h1 class="text-lg md:text-xl font-bold text-primary tracking-tight">
         Transitly
       </h1>
       <div class="flex items-center gap-1">
         <a href="/api/docs" target="_blank" title="API Docs" class="text-primary hover:opacity-80 transition-opacity active:scale-95 flex items-center justify-center w-9 h-9 rounded-full">
           <span class="material-symbols-outlined text-[20px]">menu_book</span>
         </a>
-        <button id="btnNotifications" aria-label="Notifications" class="text-primary hover:opacity-80 transition-opacity active:scale-95 flex items-center justify-center w-9 h-9 rounded-full">
+        <button id="btnNotifications" aria-label="Notifications" class="text-primary hover:opacity-80 transition-opacity active:scale-95 flex items-center justify-center w-9 h-9 rounded-full" onclick="alert('No new alerts. All public express fleet corridors operating normally.')">
           <span class="material-symbols-outlined text-[22px]">notifications</span>
         </button>
       </div>
@@ -197,111 +228,102 @@
   </header>
 
   <!-- ========================================================================= -->
-  <!-- SCREEN 1: DELIVER (HOMEPAGE - GOOGLE STITCH)                              -->
+  <!-- SCREEN 1: DELIVER (HOMEPAGE)                                              -->
   <!-- ========================================================================= -->
-  <div id="tab-deliver" class="tab-view active pt-14 pb-20">
-    <!-- Ambient Map Background -->
-    <div class="fixed top-14 left-0 w-full h-[400px] z-0" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCKaaONLs8ZFEYkl9-pcv93l2AxSdoBCMty1uXuqPBGAcm-vhFHbLaFajnnDxD5Jwq-fw3xVcwtX3JtKzl7fbsMuUKlgXJYllNObokIOdN4dZhCMnuGgVBguCmB3npTgrQ45N86eWYhaIPMfFYnytiI9tJdN1BHXHSVkDC9vBDRNAFkQ3ZwsMrl6C1DhMGT32MwPxLoiBCzsasgJiuZYqUY2vKm3rOI9faoHPEVhiWrWbG0iS3yOFZM'); background-size: cover; background-position: center;">
+  <div id="tab-deliver" class="tab-view active w-full max-w-2xl mx-auto pt-14 pb-24">
+    <!-- Ambient Map Header Banner -->
+    <div class="relative w-full h-[220px] md:h-[260px] overflow-hidden bg-cover bg-center rounded-b-[24px] shadow-sm" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCKaaONLs8ZFEYkl9-pcv93l2AxSdoBCMty1uXuqPBGAcm-vhFHbLaFajnnDxD5Jwq-fw3xVcwtX3JtKzl7fbsMuUKlgXJYllNObokIOdN4dZhCMnuGgVBguCmB3npTgrQ45N86eWYhaIPMfFYnytiI9tJdN1BHXHSVkDC9vBDRNAFkQ3ZwsMrl6C1DhMGT32MwPxLoiBCzsasgJiuZYqUY2vKm3rOI9faoHPEVhiWrWbG0iS3yOFZM');">
+      <!-- Gradient Scrim for Contrast -->
+      <div class="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/30 pointer-events-none"></div>
+
       <!-- Pickup Point Pin -->
-      <div class="absolute top-[35%] left-1/2 transform -translate-x-1/2 flex flex-col items-center drop-shadow-md">
-        <div class="bg-[#128C55] text-white px-4 py-1.5 rounded-full text-xs font-semibold mb-2 shadow-level-1 flex items-center gap-1.5">
+      <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center drop-shadow-md">
+        <div class="bg-[#128C55] text-white px-3.5 py-1.5 rounded-full text-xs font-bold mb-1.5 shadow-level-1 flex items-center gap-1.5">
           <span class="w-2 h-2 rounded-full bg-white animate-pulse"></span>
-          Nearby Hub: ISBT Intercity Terminal
+          Nearby Hub: ISBT Terminal
         </div>
-        <div class="w-9 h-9 bg-primary-container rounded-full flex items-center justify-center shadow-lg border-2 border-white">
+        <div class="w-8 h-8 bg-primary-container rounded-full flex items-center justify-center shadow-lg border-2 border-white">
           <span class="material-symbols-outlined text-white text-sm fill">person_pin_circle</span>
         </div>
       </div>
     </div>
 
-    <!-- Main Content Bottom Sheet -->
-    <div class="relative z-10 mt-[310px] bg-surface-container-lowest rounded-t-[24px] pb-[100px] shadow-level-2 min-h-[580px] max-w-2xl mx-auto border-t border-outline-variant/20">
-      <!-- Drag Handle Indicator -->
-      <div class="w-full flex justify-center pt-3 pb-2">
-        <div class="w-12 h-1.5 bg-outline-variant rounded-full opacity-50"></div>
-      </div>
-
+    <!-- Main Content Container -->
+    <div class="px-4 -mt-6 relative z-10 space-y-4">
       <!-- Floating Search Bar -->
-      <div class="px-5 mt-2">
-        <div class="flex items-center bg-surface-container-lowest border border-outline-variant/40 rounded-full py-3 px-5 shadow-level-1 hover:border-primary-container hover:shadow-level-2 transition-all duration-300">
-          <span class="material-symbols-outlined text-on-surface-variant mr-3">search</span>
-          <input id="homeSearchInput" class="w-full bg-transparent outline-none text-base text-on-surface placeholder:text-on-surface-variant/70 border-none p-0 focus:ring-0" placeholder="Where to send your parcel?" type="text"/>
-          <button id="btnQuickSearch" class="bg-primary text-white text-xs font-bold px-4 py-1.5 rounded-full ml-2 hover:bg-primary-container">Find</button>
-        </div>
+      <div class="flex items-center bg-surface-container-lowest border border-outline-variant/40 rounded-full py-2.5 px-4 shadow-level-1 hover:border-primary-container hover:shadow-level-2 transition-all duration-200">
+        <span class="material-symbols-outlined text-on-surface-variant mr-2.5 text-xl">search</span>
+        <input id="homeSearchInput" class="w-full bg-transparent outline-none text-sm text-on-surface placeholder:text-on-surface-variant/70 border-none p-0 focus:ring-0" placeholder="Where to send your parcel?" type="text"/>
+        <button id="btnQuickSearch" class="bg-primary text-white text-xs font-bold px-4 py-1.5 rounded-full ml-2 hover:bg-primary-container shrink-0">Find</button>
       </div>
 
       <!-- Section Title -->
-      <h2 class="text-xl font-bold px-5 mt-6 mb-3 text-on-surface">
-        Fast Intercity Delivery
-      </h2>
+      <div class="pt-1">
+        <h2 class="text-lg font-bold text-on-surface">Fast Intercity Delivery</h2>
+        <p class="text-xs text-on-surface-variant">Scheduled express bus cargo network</p>
+      </div>
 
-      <!-- Bento Grid Layout for Services -->
-      <div class="px-5 space-y-4">
-        <!-- Parcel Card (Hero) -->
-        <div class="bg-surface-container-low rounded-[16px] p-6 flex flex-col md:flex-row justify-between relative overflow-hidden shadow-level-1 hover:border hover:border-primary-container/30 transition-all">
-          <div class="relative z-10 w-full md:w-1/2 flex flex-col justify-center">
-            <p class="text-xs font-semibold text-primary uppercase tracking-wider mb-1">Bus-to-Door Logistics</p>
-            <h3 class="text-2xl font-bold text-on-surface leading-tight">Send Parcel <br/>Anywhere</h3>
-            <p class="text-xs text-on-surface-variant mt-1 mb-4">Utilizing scheduled express buses for same-day delivery at 50% lower cost.</p>
-            <button id="btnHeroBookNow" class="bg-primary text-on-primary px-6 py-2.5 rounded-full text-sm font-bold w-max shadow-md hover:bg-primary-container transition-all flex items-center gap-1.5">
-              <span>Book Now</span>
-              <span class="material-symbols-outlined text-base">arrow_forward</span>
-            </button>
-          </div>
-          <img class="absolute bottom-[-15%] right-[-5%] w-[65%] md:w-[45%] max-w-[260px] object-contain pointer-events-none drop-shadow-xl" alt="Parcel box illustration" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBllnUBLVKZ98CzNmZspoH0Mt_Pp_NEIXDbDxk1AvdzSgjZc_BBdOornwzGX9DgEwS9hA0K8pdfphcf7L2RHk1i-eijrkKYD1gxp7OTaUr5CztdkJjxLsHAniOGnQFl4NwxJwKrt1fJYBz9W9FgYxf-Yk-xhct1ypeebZCYqTdiXkIxvHJFMsQm5MslhTbwHFDXLbTeSXmzw_Q6o-OHXOxwsgJCNczNR3Rs6ToO86AVqoaqQ7N0G12f"/>
+      <!-- Parcel Hero Card -->
+      <div class="bg-surface-container-low rounded-[20px] p-5 relative overflow-hidden shadow-level-1 border border-outline-variant/20">
+        <div class="relative z-10 w-full sm:w-3/5">
+          <p class="text-[11px] font-bold text-primary uppercase tracking-wider mb-1">Bus-to-Door Logistics</p>
+          <h3 class="text-xl sm:text-2xl font-bold text-on-surface leading-snug">Send Parcel <br/>Anywhere</h3>
+          <p class="text-xs text-on-surface-variant mt-1.5 mb-4">Utilizing scheduled express public buses for same-day delivery at 50% lower cost.</p>
+          <button id="btnHeroBookNow" class="bg-primary text-on-primary px-5 py-2.5 rounded-full text-xs font-bold w-max shadow-md hover:bg-primary-container transition-all flex items-center gap-1.5">
+            <span>Book Now</span>
+            <span class="material-symbols-outlined text-sm">arrow_forward</span>
+          </button>
         </div>
+        <img class="absolute bottom-[-10%] right-[-5%] w-[45%] max-w-[190px] object-contain pointer-events-none drop-shadow-lg hidden sm:block" alt="Parcel box" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBllnUBLVKZ98CzNmZspoH0Mt_Pp_NEIXDbDxk1AvdzSgjZc_BBdOornwzGX9DgEwS9hA0K8pdfphcf7L2RHk1i-eijrkKYD1gxp7OTaUr5CztdkJjxLsHAniOGnQFl4NwxJwKrt1fJYBz9W9FgYxf-Yk-xhct1ypeebZCYqTdiXkIxvHJFMsQm5MslhTbwHFDXLbTeSXmzw_Q6o-OHXOxwsgJCNczNR3Rs6ToO86AVqoaqQ7N0G12f"/>
+      </div>
 
-        <!-- Logistics Flow Section -->
-        <h3 class="text-xs font-bold text-on-surface-variant uppercase tracking-wider px-1">How it works</h3>
-        <div class="bg-surface-container rounded-[16px] p-5 shadow-sm border border-outline-variant/20">
-          <div class="flex items-center justify-between">
-            <!-- Step 1: Bus -->
-            <div class="flex flex-col items-center w-1/3 text-center">
-              <div class="w-12 h-12 bg-primary-fixed rounded-full flex items-center justify-center mb-2 shadow-sm text-on-primary-fixed">
-                <span class="material-symbols-outlined text-[24px]">directions_bus</span>
-              </div>
-              <p class="text-xs font-semibold text-on-surface leading-tight">Public Bus<br/>Transport</p>
+      <!-- How it Works Flow -->
+      <div class="bg-surface-container rounded-[16px] p-4 shadow-sm border border-outline-variant/20">
+        <h4 class="text-[11px] font-bold text-on-surface-variant uppercase tracking-wider mb-3">How it works</h4>
+        <div class="flex items-center justify-between">
+          <div class="flex flex-col items-center w-1/3 text-center">
+            <div class="w-10 h-10 bg-primary-fixed rounded-full flex items-center justify-center mb-1.5 text-on-primary-fixed">
+              <span class="material-symbols-outlined text-[20px]">directions_bus</span>
             </div>
-            <!-- Arrow -->
-            <div class="flex-1 flex justify-center px-2">
-              <div class="w-full h-[2px] bg-outline-variant/50 relative">
-                <div class="absolute right-[-2px] top-1/2 transform -translate-y-1/2 w-0 h-0 border-y-[4px] border-y-transparent border-l-[6px] border-l-outline-variant/50"></div>
-              </div>
-            </div>
-            <!-- Step 2: Last Mile Partners -->
-            <div class="flex flex-col items-center w-1/3 text-center">
-              <div class="w-12 h-12 bg-secondary-fixed rounded-full flex items-center justify-center mb-2 shadow-sm text-on-secondary-fixed">
-                <span class="material-symbols-outlined text-[24px]">two_wheeler</span>
-              </div>
-              <p class="text-xs font-semibold text-on-surface leading-tight">Door-to-Door<br/>Partners</p>
+            <p class="text-xs font-bold text-on-surface leading-tight">Public Bus<br/>Transport</p>
+          </div>
+          <div class="flex-1 flex justify-center px-2">
+            <div class="w-full h-[2px] bg-outline-variant/50 relative">
+              <div class="absolute right-[-2px] top-1/2 transform -translate-y-1/2 w-0 h-0 border-y-[4px] border-y-transparent border-l-[6px] border-l-outline-variant/50"></div>
             </div>
           </div>
-          <div class="mt-4 pt-3 border-t border-outline-variant/20 text-center">
-            <p class="text-[11px] font-medium text-on-surface-variant">Powered by trusted partners: inDrive, Rapido, Uber Direct</p>
+          <div class="flex flex-col items-center w-1/3 text-center">
+            <div class="w-10 h-10 bg-secondary-fixed rounded-full flex items-center justify-center mb-1.5 text-on-secondary-fixed">
+              <span class="material-symbols-outlined text-[20px]">two_wheeler</span>
+            </div>
+            <p class="text-xs font-bold text-on-surface leading-tight">Door-to-Door<br/>Partners</p>
           </div>
         </div>
+        <p class="text-[10px] text-center text-on-surface-variant mt-3 pt-2 border-t border-outline-variant/20">
+          Integrated with Rapido, inDrive & Uber Direct
+        </p>
+      </div>
 
-        <!-- Major Express Corridors Card -->
-        <div class="bg-white rounded-[16px] p-5 border border-outline-variant/30 shadow-level-1">
-          <div class="flex justify-between items-center mb-3">
-            <h4 class="text-sm font-bold text-on-surface">Official Express Corridors</h4>
-            <span class="text-xs text-primary font-semibold">Active Schedules</span>
+      <!-- Official Corridors Quick Pick -->
+      <div class="bg-white rounded-[16px] p-4 border border-outline-variant/30 shadow-level-1">
+        <div class="flex justify-between items-center mb-3">
+          <h4 class="text-xs font-bold text-on-surface uppercase tracking-wider">Official Express Corridors</h4>
+          <span class="text-xs text-primary font-bold">Active</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+          <div class="p-3 rounded-xl bg-surface-container-low flex justify-between items-center cursor-pointer hover:bg-primary-fixed/30 transition-colors corridor-quick-pick" data-route="HR-DEL-CHD">
+            <div>
+              <strong>Delhi ➔ Chandigarh</strong>
+              <p class="text-on-surface-variant text-[10px]">GT Road Express • 8 Stops</p>
+            </div>
+            <span class="text-primary font-bold text-sm">₹280</span>
           </div>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
-            <div class="p-3 rounded-xl bg-surface-container-low flex justify-between items-center cursor-pointer hover:bg-primary-fixed/30 transition-colors corridor-quick-pick" data-route="HR-DEL-CHD">
-              <div>
-                <strong>Delhi ➔ Chandigarh</strong>
-                <p class="text-on-surface-variant text-[11px]">GT Road Express • 8 Stops</p>
-              </div>
-              <span class="text-primary font-bold text-sm">₹280</span>
+          <div class="p-3 rounded-xl bg-surface-container-low flex justify-between items-center cursor-pointer hover:bg-primary-fixed/30 transition-colors corridor-quick-pick" data-route="TR-DEL-JAI">
+            <div>
+              <strong>Delhi ➔ Jaipur</strong>
+              <p class="text-on-surface-variant text-[10px]">Highway Corridor • 6 Stops</p>
             </div>
-            <div class="p-3 rounded-xl bg-surface-container-low flex justify-between items-center cursor-pointer hover:bg-primary-fixed/30 transition-colors corridor-quick-pick" data-route="TR-DEL-JAI">
-              <div>
-                <strong>Delhi ➔ Jaipur</strong>
-                <p class="text-on-surface-variant text-[11px]">Highway Corridor • 6 Stops</p>
-              </div>
-              <span class="text-primary font-bold text-sm">₹300</span>
-            </div>
+            <span class="text-primary font-bold text-sm">₹300</span>
           </div>
         </div>
       </div>
@@ -309,289 +331,191 @@
   </div>
 
   <!-- ========================================================================= -->
-  <!-- SCREEN 2: TRACKING (LIVE TRACKING - GOOGLE STITCH DESIGN)                 -->
+  <!-- SCREEN 2: TRACKING (LIVE MAP & TELEMATICS)                                -->
   <!-- ========================================================================= -->
-  <div id="tab-tracking" class="tab-view hidden pt-14 h-screen flex flex-col relative overflow-hidden">
-    <!-- Main Interactive Map Canvas -->
-    <main class="flex-grow relative pt-0 pb-16 z-0 h-full w-full">
-      <!-- Fullscreen Leaflet Interactive Map -->
-      <div id="liveTrackingMap" class="absolute inset-0 w-full h-full z-0 bg-slate-900"></div>
+  <div id="tab-tracking" class="tab-view flex-tab w-full max-w-2xl mx-auto flex-col relative h-[calc(100dvh-56px)] pt-0 overflow-hidden">
+    <!-- Top Route Selector Floating Pill -->
+    <div class="absolute top-3 left-4 right-4 z-20 flex justify-between items-center">
+      <div class="bg-white/95 backdrop-blur-md border border-outline-variant/30 rounded-full px-3.5 py-1.5 shadow-level-2 flex items-center gap-2 max-w-[75%]">
+        <select id="trackingCorridorDropdown" class="text-xs font-bold bg-transparent border-none outline-none focus:ring-0 text-on-surface cursor-pointer truncate">
+          <option value="HR-DEL-CHD">🚍 HR-402: Delhi ➔ Chandigarh (GT Road)</option>
+          <option value="HR-DEL-NRN">🚍 HR-205: Delhi ➔ Rewari ➔ Narnaul</option>
+          <option value="HR-DEL-SRS">🚍 HR-318: Delhi ➔ Rohtak ➔ Sirsa</option>
+          <option value="HR-GGN-HDL">🚍 HR-112: Gurgaon ➔ Faridabad ➔ Hodal</option>
+          <option value="HR-CHD-YMN">🚍 HR-504: Chandigarh ➔ Yamunanagar</option>
+          <option value="TR-DEL-JAI">🚍 TR-108: Delhi ➔ Jaipur Express</option>
+        </select>
+      </div>
 
-      <!-- Top Route Selector Floating Pill -->
-      <div class="absolute top-4 left-4 right-4 z-20 flex justify-between items-center max-w-2xl mx-auto">
-        <div class="bg-white/95 backdrop-blur-md border border-outline-variant/30 rounded-full px-4 py-2 shadow-level-2 flex items-center gap-2">
-          <select id="trackingCorridorDropdown" class="text-xs font-bold bg-transparent border-none outline-none focus:ring-0 text-on-surface cursor-pointer">
-            <option value="HR-DEL-CHD">🚍 HR-402: Delhi ➔ Chandigarh (GT Road)</option>
-            <option value="HR-DEL-NRN">🚍 HR-205: Delhi ➔ Rewari ➔ Narnaul</option>
-            <option value="HR-DEL-SRS">🚍 HR-318: Delhi ➔ Rohtak ➔ Sirsa</option>
-            <option value="HR-GGN-HDL">🚍 HR-112: Gurgaon ➔ Faridabad ➔ Hodal</option>
-            <option value="HR-CHD-YMN">🚍 HR-504: Chandigarh ➔ Yamunanagar</option>
-            <option value="TR-DEL-JAI">🚍 TR-108: Delhi ➔ Jaipur Express</option>
-          </select>
+      <button id="btnAdvanceRouteLive" class="bg-primary text-white text-xs font-bold px-3.5 py-1.5 rounded-full shadow-level-2 hover:bg-primary-container flex items-center gap-1 transition-all shrink-0">
+        <span class="material-symbols-outlined text-[16px]">fast_forward</span> Advance
+      </button>
+    </div>
+
+    <!-- Leaflet Map Canvas -->
+    <div id="liveTrackingMap" class="w-full flex-1 z-0 bg-slate-900 min-h-[280px]"></div>
+
+    <!-- Slide-up Bottom Sheet Details -->
+    <div class="bg-surface rounded-t-[24px] shadow-[0px_-4px_20px_rgba(0,0,0,0.08)] px-5 pt-3.5 pb-20 z-10 border-t border-outline-variant/20 max-h-[48vh] overflow-y-auto">
+      <div class="w-10 h-1 bg-outline-variant/40 rounded-full mx-auto mb-3"></div>
+
+      <!-- Status Header -->
+      <div class="flex justify-between items-start mb-3">
+        <div>
+          <h2 id="trackStatusTitle" class="text-base font-bold text-on-surface mb-0.5">In Transit via Bus #402</h2>
+          <p class="text-xs text-on-surface-variant flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+            Live Fast Path Updates (3ms)
+          </p>
+        </div>
+        <div class="text-right">
+          <p class="text-[9px] font-bold text-on-surface-variant uppercase tracking-wider">Est. Arrival</p>
+          <p id="trackEta" class="text-base text-primary font-extrabold">14:30</p>
+        </div>
+      </div>
+
+      <!-- Next Handoff Card -->
+      <div class="bg-surface-container-low rounded-xl p-3 mb-3 border border-outline-variant/30 flex items-center gap-2.5">
+        <div class="bg-secondary-container w-8 h-8 rounded-full flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined text-on-secondary-container text-lg">swap_horiz</span>
+        </div>
+        <div class="flex-grow min-w-0">
+          <p class="text-[9px] font-bold text-on-surface-variant uppercase">Next Handoff</p>
+          <p id="trackHandoffText" class="text-xs text-on-surface font-bold truncate">Central Station to Rapido Rider</p>
+        </div>
+        <div class="shrink-0 text-right">
+          <p class="text-[9px] font-bold text-on-surface-variant uppercase">Distance</p>
+          <p id="trackDistance" class="text-xs text-on-surface font-bold">2.4 km</p>
+        </div>
+      </div>
+
+      <!-- Timeline -->
+      <div class="relative pl-5 space-y-3 mb-3 text-xs">
+        <div class="absolute left-[9px] top-1.5 bottom-1.5 w-0.5 bg-outline-variant/40"></div>
+
+        <div class="relative">
+          <div class="absolute -left-5 w-3.5 h-3.5 rounded-full bg-primary border-2 border-surface z-10 top-0.5"></div>
+          <div class="flex justify-between items-start">
+            <div>
+              <p class="font-bold text-on-surface">Package Picked Up</p>
+              <p class="text-[10px] text-on-surface-variant">Verified OTP</p>
+            </div>
+            <p class="text-on-surface-variant font-mono text-[10px]">09:15 AM</p>
+          </div>
         </div>
 
-        <button id="btnAdvanceRouteLive" class="bg-primary text-white text-xs font-bold px-4 py-2 rounded-full shadow-level-2 hover:bg-primary-container flex items-center gap-1.5 transition-all">
-          <span class="material-symbols-outlined text-[16px]">fast_forward</span> Advance
+        <div class="relative">
+          <div class="absolute -left-5 w-3.5 h-3.5 rounded-full bg-primary border-2 border-surface z-10 top-0.5"></div>
+          <div class="flex justify-between items-start">
+            <div>
+              <p class="font-bold text-on-surface">Arrived at Terminal</p>
+              <p class="text-[10px] text-on-surface-variant">North Hub Interchange</p>
+            </div>
+            <p class="text-on-surface-variant font-mono text-[10px]">11:00 AM</p>
+          </div>
+        </div>
+
+        <div class="relative">
+          <div class="absolute -left-[22px] w-4 h-4 rounded-full bg-surface border-2 border-primary flex items-center justify-center z-10 top-0">
+            <div class="w-1.5 h-1.5 rounded-full bg-primary animate-ping"></div>
+          </div>
+          <div class="flex justify-between items-start">
+            <div>
+              <p class="font-bold text-primary" id="timelineActiveStopTitle">In Transit – Bus #402</p>
+              <p class="text-[10px] text-on-surface-variant" id="timelineActiveStopSub">Currently on GT Highway</p>
+            </div>
+            <p class="text-primary font-bold text-[10px]">Now</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Area -->
+      <div class="pt-2 border-t border-outline-variant/20 flex gap-2">
+        <button id="btnTrackingSupport" class="flex-1 bg-surface-variant text-on-surface-variant text-xs font-bold h-10 rounded-xl flex items-center justify-center gap-1.5 hover:bg-outline-variant/30 transition-colors">
+          <span class="material-symbols-outlined text-base">help</span>
+          Support
+        </button>
+        <button id="btnTrackingShare" class="flex-1 bg-primary text-on-primary text-xs font-bold h-10 rounded-xl flex items-center justify-center gap-1.5 hover:bg-primary-container transition-all">
+          <span class="material-symbols-outlined text-base">share</span>
+          Share Link
         </button>
       </div>
-    </main>
-
-    <!-- Slide-up Bottom Sheet (Live Tracking Details from Stitch) -->
-    <div class="absolute bottom-16 left-0 w-full z-40 animate-slide-up flex flex-col pointer-events-none">
-      <div class="bg-surface rounded-t-[24px] shadow-[0px_-4px_20px_rgba(0,0,0,0.08)] px-5 pt-4 pb-6 pointer-events-auto max-w-2xl mx-auto w-full border-t border-outline-variant/20 max-h-[55vh] overflow-y-auto">
-        <!-- Handle -->
-        <div class="w-12 h-1.5 bg-outline-variant/40 rounded-full mx-auto mb-4"></div>
-
-        <!-- Status Header -->
-        <div class="flex justify-between items-start mb-4">
-          <div>
-            <h2 id="trackStatusTitle" class="text-lg font-bold text-on-surface mb-0.5">In Transit via Bus #402</h2>
-            <p class="text-xs text-on-surface-variant flex items-center gap-1.5">
-              <span class="w-2.5 h-2.5 rounded-full bg-primary animate-pulse"></span>
-              Live Fast Path Updates (3ms)
-            </p>
-          </div>
-          <div class="text-right">
-            <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-0.5">Est. Arrival</p>
-            <p id="trackEta" class="text-lg text-primary font-extrabold">14:30</p>
-          </div>
-        </div>
-
-        <!-- Next Handoff Card -->
-        <div class="bg-surface-container-low rounded-xl p-3.5 mb-4 border border-outline-variant/30 flex items-center gap-3">
-          <div class="bg-secondary-container w-10 h-10 rounded-full flex items-center justify-center shrink-0">
-            <span class="material-symbols-outlined text-on-secondary-container text-xl">swap_horiz</span>
-          </div>
-          <div class="flex-grow">
-            <p class="text-[10px] font-semibold text-on-surface-variant uppercase">Next Handoff</p>
-            <p id="trackHandoffText" class="text-xs text-on-surface font-bold">Central Station to Rapido Rider</p>
-          </div>
-          <div class="shrink-0 text-right">
-            <p class="text-[10px] font-semibold text-on-surface-variant uppercase">Distance</p>
-            <p id="trackDistance" class="text-xs text-on-surface font-bold">2.4 km</p>
-          </div>
-        </div>
-
-        <!-- Timeline (Stitch Design with Active Halos) -->
-        <div class="relative pl-6 space-y-4 mb-4">
-          <!-- Vertical Line -->
-          <div class="absolute left-[11px] top-2 bottom-2 w-1 bg-outline-variant/30 rounded-full">
-            <!-- Progress Fill -->
-            <div id="timelineProgressFill" class="absolute top-0 w-full bg-primary rounded-full transition-all duration-500" style="height: 65%;"></div>
-          </div>
-
-          <!-- Event 1: Picked Up -->
-          <div class="relative">
-            <div class="absolute -left-6 w-4 h-4 rounded-full bg-primary border-2 border-surface shadow-sm z-10 top-0.5"></div>
-            <div class="flex justify-between items-start text-xs">
-              <div>
-                <p class="font-bold text-on-surface">Package Picked Up</p>
-                <p class="text-[11px] text-on-surface-variant">Origin Facility • Verified OTP</p>
-              </div>
-              <p class="text-on-surface-variant font-mono text-[11px]">09:15 AM</p>
-            </div>
-          </div>
-
-          <!-- Event 2: At Bus Terminal -->
-          <div class="relative">
-            <div class="absolute -left-6 w-4 h-4 rounded-full bg-primary border-2 border-surface shadow-sm z-10 top-0.5"></div>
-            <div class="flex justify-between items-start text-xs">
-              <div>
-                <p class="font-bold text-on-surface">Arrived at Terminal</p>
-                <p class="text-[11px] text-on-surface-variant">North Hub Interchange</p>
-              </div>
-              <p class="text-on-surface-variant font-mono text-[11px]">11:00 AM</p>
-            </div>
-          </div>
-
-          <!-- Event 3: In Transit -->
-          <div class="relative">
-            <div class="absolute -left-[26px] w-5 h-5 rounded-full bg-surface border-2 border-primary flex items-center justify-center z-10 top-0 shadow-[0px_4px_10px_rgba(0,102,255,0.2)]">
-              <div class="w-2 h-2 rounded-full bg-primary animate-ping"></div>
-            </div>
-            <div class="flex justify-between items-start text-xs">
-              <div>
-                <p class="font-bold text-primary" id="timelineActiveStopTitle">In Transit – Bus #402</p>
-                <p class="text-[11px] text-on-surface-variant" id="timelineActiveStopSub">Currently on GT Highway</p>
-              </div>
-              <p class="text-primary font-bold text-[11px]">Now</p>
-            </div>
-          </div>
-
-          <!-- Event 4: Pending Last Mile Handoff -->
-          <div class="relative opacity-60">
-            <div class="absolute -left-6 w-4 h-4 rounded-full bg-outline-variant border-2 border-surface shadow-sm z-10 top-0.5"></div>
-            <div class="flex justify-between items-start text-xs">
-              <div>
-                <p class="font-bold text-on-surface">Handoff to Rapido / inDrive</p>
-                <p class="text-[11px] text-on-surface-variant">Destination Terminal</p>
-              </div>
-              <p class="text-on-surface-variant font-mono text-[11px]">Est. 13:45</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Action Area (Support & Share Link) -->
-        <div class="pt-3 border-t border-outline-variant/20 flex gap-3">
-          <button id="btnTrackingSupport" class="flex-1 bg-surface-variant text-on-surface-variant text-xs font-bold h-12 rounded-xl flex items-center justify-center gap-1.5 hover:bg-outline-variant/30 transition-colors">
-            <span class="material-symbols-outlined text-lg">help</span>
-            Support
-          </button>
-          <button id="btnTrackingShare" class="flex-1 bg-primary text-on-primary text-xs font-bold h-12 rounded-xl shadow-[0px_4px_20px_rgba(0,102,255,0.2)] flex items-center justify-center gap-1.5 hover:bg-primary-container transition-all">
-            <span class="material-symbols-outlined text-lg">share</span>
-            Share Link
-          </button>
-        </div>
-      </div>
     </div>
   </div>
 
   <!-- ========================================================================= -->
-  <!-- SCREEN 3: DELIVERY HISTORY (GOOGLE STITCH DESIGN)                         -->
+  <!-- SCREEN 3: DELIVERY HISTORY                                                -->
   <!-- ========================================================================= -->
-  <div id="tab-history" class="tab-view hidden pt-16 pb-24 max-w-4xl mx-auto w-full px-4 animate-fade-in-up">
-    <!-- Page Title & Search -->
+  <div id="tab-history" class="tab-view w-full max-w-2xl mx-auto pt-16 pb-24 px-4">
     <div class="mb-4">
-      <h2 class="text-xl font-bold text-on-surface mb-3">Delivery History</h2>
+      <h2 class="text-lg font-bold text-on-surface mb-2">Delivery History</h2>
       <div class="relative w-full">
-        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-          <span class="material-symbols-outlined text-outline">search</span>
+        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+          <span class="material-symbols-outlined text-outline text-lg">search</span>
         </div>
-        <input id="historySearchInput" class="w-full pl-12 pr-12 py-3.5 bg-surface border border-outline-variant/40 rounded-xl focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-sm placeholder-outline shadow-sm transition-all" placeholder="Search by tracking number, destination..." type="text"/>
-        <button id="btnHistoryFilter" class="absolute inset-y-0 right-0 pr-4 flex items-center text-primary hover:opacity-80">
-          <span class="material-symbols-outlined">filter_list</span>
-        </button>
+        <input id="historySearchInput" class="w-full pl-10 pr-10 py-2.5 bg-surface border border-outline-variant/40 rounded-xl focus:outline-none focus:border-primary text-xs placeholder-outline shadow-sm transition-all" placeholder="Search by tracking number, destination..." type="text"/>
       </div>
     </div>
 
-    <!-- Filter Chips (Stitch Design) -->
-    <div class="flex overflow-x-auto no-scrollbar space-x-2 mb-6 pb-1" id="historyFilterChips">
-      <button class="history-chip flex-shrink-0 bg-primary text-on-primary text-xs font-semibold px-4 py-2 rounded-full shadow-sm transition-all active:scale-95" data-filter="ALL">
-        All
-      </button>
-      <button class="history-chip flex-shrink-0 bg-surface text-on-surface-variant border border-outline-variant/50 text-xs font-semibold px-4 py-2 rounded-full hover:bg-surface-variant transition-colors" data-filter="DELIVERED">
-        Delivered
-      </button>
-      <button class="history-chip flex-shrink-0 bg-surface text-on-surface-variant border border-outline-variant/50 text-xs font-semibold px-4 py-2 rounded-full hover:bg-surface-variant transition-colors" data-filter="IN_TRANSIT">
-        In Transit
-      </button>
-      <button class="history-chip flex-shrink-0 bg-surface text-on-surface-variant border border-outline-variant/50 text-xs font-semibold px-4 py-2 rounded-full hover:bg-surface-variant transition-colors" data-filter="CANCELLED">
-        Cancelled
-      </button>
+    <!-- Filter Chips -->
+    <div class="flex overflow-x-auto no-scrollbar space-x-2 mb-4 pb-1" id="historyFilterChips">
+      <button class="history-chip shrink-0 bg-primary text-on-primary text-xs font-semibold px-3.5 py-1.5 rounded-full shadow-sm" data-filter="ALL">All</button>
+      <button class="history-chip shrink-0 bg-surface text-on-surface-variant border border-outline-variant/50 text-xs font-semibold px-3.5 py-1.5 rounded-full hover:bg-surface-variant" data-filter="DELIVERED">Delivered</button>
+      <button class="history-chip shrink-0 bg-surface text-on-surface-variant border border-outline-variant/50 text-xs font-semibold px-3.5 py-1.5 rounded-full hover:bg-surface-variant" data-filter="IN_TRANSIT">In Transit</button>
+      <button class="history-chip shrink-0 bg-surface text-on-surface-variant border border-outline-variant/50 text-xs font-semibold px-3.5 py-1.5 rounded-full hover:bg-surface-variant" data-filter="CANCELLED">Cancelled</button>
     </div>
 
     <!-- History Card Container -->
-    <div id="historyListContainer" class="space-y-6">
-      <!-- October 2023 -->
+    <div id="historyListContainer" class="space-y-4">
       <div class="history-month-section" data-month="October 2023">
-        <h3 class="text-xs font-bold text-outline mb-3 uppercase tracking-wider pl-1">October 2023</h3>
-        <div class="space-y-3">
-          <!-- Card 1 -->
-          <div class="history-item-card bg-surface rounded-xl p-3.5 shadow-level-1 hover:shadow-level-2 transition-all border border-outline-variant/30 cursor-pointer group" data-status="DELIVERED" data-search="124 Maple Street, Apt 4B Uber Direct">
+        <h3 class="text-[10px] font-bold text-outline mb-2 uppercase tracking-wider pl-1">October 2023</h3>
+        <div class="space-y-2.5">
+          <div class="history-item-card bg-surface rounded-xl p-3 shadow-level-1 hover:shadow-level-2 transition-all border border-outline-variant/30 cursor-pointer" data-status="DELIVERED" data-search="124 Maple Street, Apt 4B Uber Direct">
             <div class="flex items-center justify-between w-full">
               <div class="flex items-center space-x-3">
-                <div class="w-11 h-11 rounded-full bg-surface-container-low flex items-center justify-center flex-shrink-0">
-                  <img class="w-7 h-7 object-contain" alt="Uber logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYAQ9aSqwa-XMGtXzOUqUAsQqCSs_obgXAe7mLh9mhAXassnu6VGp2vt_NOQSqt4TP7kNwFW_CVo9s9AKlZKtZWi8M2B1uH1lzX4IBMtN0M5C8DgsAy9AwvZJWeI5slO7FbXzfkfASWEU5KiP1GT4CvdxzRCd5JrvSNwutgbpvZ8_thcv0PpAHRF_aA7etonssvasIJxnAIh002Uz-gZQcG7Z6YqyYg6PNHA4E4yRmklN9KG2wCRMg"/>
+                <div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center shrink-0">
+                  <span class="material-symbols-outlined text-primary">local_shipping</span>
                 </div>
                 <div>
-                  <h4 class="text-sm font-bold text-on-surface group-hover:text-primary transition-colors">124 Maple Street, Apt 4B</h4>
-                  <div class="flex items-center space-x-2 mt-0.5">
-                    <span class="text-[11px] text-on-surface-variant">Oct 24, 2:30 PM</span>
+                  <h4 class="text-xs font-bold text-on-surface">124 Maple Street, Apt 4B</h4>
+                  <div class="flex items-center space-x-1.5 mt-0.5">
+                    <span class="text-[10px] text-on-surface-variant">Oct 24, 2:30 PM</span>
                     <span class="w-1 h-1 rounded-full bg-outline-variant"></span>
-                    <span class="text-[11px] text-on-surface-variant font-medium">Uber Direct</span>
+                    <span class="text-[10px] text-on-surface-variant font-medium">Uber Direct</span>
                   </div>
                 </div>
               </div>
               <div class="flex flex-col items-end">
-                <div class="bg-[#e6f4ea] text-[#137333] text-[11px] font-bold px-2.5 py-0.5 rounded-full flex items-center space-x-1 mb-0.5">
-                  <span class="material-symbols-outlined text-[13px] fill">check_circle</span>
+                <div class="bg-[#e6f4ea] text-[#137333] text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center space-x-1 mb-0.5">
+                  <span class="material-symbols-outlined text-[12px] fill">check_circle</span>
                   <span>Delivered</span>
                 </div>
-                <span class="text-sm font-bold text-on-surface">$12.50</span>
+                <span class="text-xs font-bold text-on-surface">₹320.00</span>
               </div>
             </div>
           </div>
 
-          <!-- Card 2 -->
-          <div class="history-item-card bg-surface rounded-xl p-3.5 shadow-level-1 hover:shadow-level-2 transition-all border border-outline-variant/30 cursor-pointer group" data-status="DELIVERED" data-search="890 Tech Blvd, Suite 200 CitySprint">
+          <div class="history-item-card bg-surface rounded-xl p-3 shadow-level-1 hover:shadow-level-2 transition-all border border-outline-variant/30 cursor-pointer" data-status="DELIVERED" data-search="890 Tech Blvd, Suite 200 CitySprint">
             <div class="flex items-center justify-between w-full">
               <div class="flex items-center space-x-3">
-                <div class="w-11 h-11 rounded-full bg-surface-container-low flex items-center justify-center flex-shrink-0">
-                  <img class="w-7 h-7 object-contain" alt="Courier logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBHXHZfLMWyw3Re_BA2t9bbGCLvR7XTq8gY-b4LJ-fTye15E4BOJtBNro4_FVzl8bPKGKTSTsp0hBlqyJJgqzDG2MVBQcyfBptrdsVdnxRw7INFcOUnhuRJeOGXjRAQADDoGLJgCLbuoH8cW6q2k7NIuNHkhkylz0F8B0gwrRYlDlFCnW9pTkhvqjIb7jviRWO0Wo7_SKTcTOIhvqz-EqOxTtdaI27pW6SZAeqXpOaZzoR91wMZU6Bj"/>
+                <div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center shrink-0">
+                  <span class="material-symbols-outlined text-primary">two_wheeler</span>
                 </div>
                 <div>
-                  <h4 class="text-sm font-bold text-on-surface group-hover:text-primary transition-colors">890 Tech Blvd, Suite 200</h4>
-                  <div class="flex items-center space-x-2 mt-0.5">
-                    <span class="text-[11px] text-on-surface-variant">Oct 21, 10:15 AM</span>
+                  <h4 class="text-xs font-bold text-on-surface">890 Tech Blvd, Suite 200</h4>
+                  <div class="flex items-center space-x-1.5 mt-0.5">
+                    <span class="text-[10px] text-on-surface-variant">Oct 21, 10:15 AM</span>
                     <span class="w-1 h-1 rounded-full bg-outline-variant"></span>
-                    <span class="text-[11px] text-on-surface-variant font-medium">CitySprint</span>
+                    <span class="text-[10px] text-on-surface-variant font-medium">Rapido Express</span>
                   </div>
                 </div>
               </div>
               <div class="flex flex-col items-end">
-                <div class="bg-[#e6f4ea] text-[#137333] text-[11px] font-bold px-2.5 py-0.5 rounded-full flex items-center space-x-1 mb-0.5">
-                  <span class="material-symbols-outlined text-[13px] fill">check_circle</span>
+                <div class="bg-[#e6f4ea] text-[#137333] text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center space-x-1 mb-0.5">
+                  <span class="material-symbols-outlined text-[12px] fill">check_circle</span>
                   <span>Delivered</span>
                 </div>
-                <span class="text-sm font-bold text-on-surface">$8.00</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- September 2023 -->
-      <div class="history-month-section" data-month="September 2023">
-        <h3 class="text-xs font-bold text-outline mb-3 uppercase tracking-wider pl-1">September 2023</h3>
-        <div class="space-y-3">
-          <!-- Card 3 -->
-          <div class="history-item-card bg-surface rounded-xl p-3.5 shadow-level-1 hover:shadow-level-2 transition-all border border-outline-variant/30 cursor-pointer group" data-status="DELIVERED" data-search="45 West End Ave inDrive">
-            <div class="flex items-center justify-between w-full">
-              <div class="flex items-center space-x-3">
-                <div class="w-11 h-11 rounded-full bg-surface-container-low flex items-center justify-center flex-shrink-0">
-                  <img class="w-7 h-7 object-contain" alt="inDrive logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDrpKcQmpLjn_y-PaiKIsV-IM2nsejfBd4rKKjae-dWpXLA6QSup1NQmeAmlh2KiHiy6tONhRlelzktm30BKuWaNSJDLZdfDZodWG1OXoOJO85Jc-i143lE0QZARhgsU1q6jM4YEph1n-22sdr7XI-9iVgukoZzJ8K4tdDmyDZbQH-LaZF0maSNU-yvg3erXbIO87cGew0AVtR2zaVMmy37r9QJ7DK4qXiM2HvbOYXe3CTssarU8OcC"/>
-                </div>
-                <div>
-                  <h4 class="text-sm font-bold text-on-surface group-hover:text-primary transition-colors">45 West End Ave</h4>
-                  <div class="flex items-center space-x-2 mt-0.5">
-                    <span class="text-[11px] text-on-surface-variant">Sep 15, 6:45 PM</span>
-                    <span class="w-1 h-1 rounded-full bg-outline-variant"></span>
-                    <span class="text-[11px] text-on-surface-variant font-medium">inDrive</span>
-                  </div>
-                </div>
-              </div>
-              <div class="flex flex-col items-end">
-                <div class="bg-[#e6f4ea] text-[#137333] text-[11px] font-bold px-2.5 py-0.5 rounded-full flex items-center space-x-1 mb-0.5">
-                  <span class="material-symbols-outlined text-[13px] fill">check_circle</span>
-                  <span>Delivered</span>
-                </div>
-                <span class="text-sm font-bold text-on-surface">$15.75</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Card 4 (Cancelled) -->
-          <div class="history-item-card bg-surface rounded-xl p-3.5 shadow-level-1 hover:shadow-level-2 transition-all border border-outline-variant/30 cursor-pointer group opacity-80" data-status="CANCELLED" data-search="770 Pine Street FastTrack">
-            <div class="flex items-center justify-between w-full">
-              <div class="flex items-center space-x-3">
-                <div class="w-11 h-11 rounded-full bg-surface-container-low flex items-center justify-center flex-shrink-0 grayscale">
-                  <img class="w-7 h-7 object-contain" alt="Delivery van" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAtQwsSpM7sNDLyLziK6itj0ogVNcged_gHCVOkaVBd7Di_BpkYkpH-1NbPem08TwB2Hp8BJY3NWbV7Z6k55ptAtrAOFqtL-G6vP1laj_jkSj5VMy3wYtw4aKJWpMCHc5imFFHTU7DxcqvRdn8hT0FNTh0s0Ub4snOGP6rCcxH7uEfLb8fNEBITsj22axC7A_S7upDBQNGBPQZ5JN0MZp2C8MznM8o4hZ80TqG82CFTqCn7K4zWEn-0"/>
-                </div>
-                <div>
-                  <h4 class="text-sm font-bold text-on-surface group-hover:text-primary transition-colors">770 Pine Street</h4>
-                  <div class="flex items-center space-x-2 mt-0.5">
-                    <span class="text-[11px] text-on-surface-variant">Sep 02, 1:00 PM</span>
-                    <span class="w-1 h-1 rounded-full bg-outline-variant"></span>
-                    <span class="text-[11px] text-on-surface-variant font-medium">FastTrack</span>
-                  </div>
-                </div>
-              </div>
-              <div class="flex flex-col items-end">
-                <div class="bg-surface-variant text-on-surface-variant text-[11px] font-bold px-2.5 py-0.5 rounded-full flex items-center space-x-1 mb-0.5">
-                  <span class="material-symbols-outlined text-[13px]">cancel</span>
-                  <span>Cancelled</span>
-                </div>
-                <span class="text-sm font-bold text-outline line-through">$9.00</span>
+                <span class="text-xs font-bold text-on-surface">₹240.00</span>
               </div>
             </div>
           </div>
@@ -601,251 +525,171 @@
   </div>
 
   <!-- ========================================================================= -->
-  <!-- SCREEN 4: PROFILE (GOOGLE STITCH DESIGN)                                  -->
+  <!-- SCREEN 4: PROFILE (ACCOUNT HUB)                                           -->
   <!-- ========================================================================= -->
-  <div id="tab-profile" class="tab-view hidden pt-16 pb-24 max-w-md mx-auto w-full px-4 animate-fade-in-up flex flex-col gap-6">
-    <!-- Profile Header (Glassmorphism Bento Box) -->
-    <section class="glass-card rounded-[24px] p-6 flex flex-col items-center justify-center text-center shadow-[0px_8px_30px_rgba(0,102,255,0.04)] relative overflow-hidden">
-      <!-- Decorative Background Blobs -->
-      <div class="absolute -top-12 -right-12 w-32 h-32 bg-primary-fixed rounded-full mix-blend-multiply filter blur-2xl opacity-50"></div>
-      <div class="absolute -bottom-12 -left-12 w-32 h-32 bg-surface-tint rounded-full mix-blend-multiply filter blur-2xl opacity-20"></div>
-      
-      <!-- Avatar -->
-      <div class="relative w-24 h-24 mb-3 rounded-full shadow-[0px_4px_20px_rgba(0,0,0,0.05)] border-4 border-surface overflow-hidden bg-surface-container-high z-10">
+  <div id="tab-profile" class="tab-view w-full max-w-md mx-auto pt-16 pb-24 px-4 space-y-5">
+    <!-- Profile Glassmorphic Header -->
+    <section class="glass-card rounded-[20px] p-5 flex flex-col items-center justify-center text-center shadow-level-1 relative overflow-hidden">
+      <div class="relative w-20 h-20 mb-2.5 rounded-full shadow-sm border-2 border-surface overflow-hidden bg-surface-container-high z-10">
         <img class="w-full h-full object-cover" alt="User avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBzAACyzyleKmM4JQVt8Aa-jr70QVcpj9loY9wKp5o9O4E4p6Pw4_DrVmOHt4kkJfjfzprBQFcotrP67UIXwwodZ_N8y_NQMBXmYt1FUgmWEZU3RkLHv9mtX5_jewodrd3AC22FofPIl1pDv6bTKcqN63TR8-Ce6clfaRjIaxwp6CeKnOIoGAZdfBFJX_YfrWG4DCAk26zr7uiOS6j2JNkj4E16URTfm8orQCRZ5X_7hBMsGpV5UeKJ"/>
       </div>
-      
-      <h2 class="text-xl font-bold text-on-surface z-10">Alex Mitchell</h2>
-      <p class="text-sm text-on-surface-variant mb-3 z-10">alex.mitchell@example.com</p>
-      
-      <div class="flex items-center gap-1 bg-surface-container px-3 py-1.5 rounded-full z-10 shadow-sm">
-        <span class="material-symbols-outlined fill text-[#F59E0B] text-[16px]">star</span>
+      <h2 class="text-lg font-bold text-on-surface z-10">Alex Mitchell</h2>
+      <p class="text-xs text-on-surface-variant mb-2 z-10">alex.mitchell@example.com</p>
+      <div class="flex items-center gap-1 bg-surface-container px-2.5 py-1 rounded-full z-10 shadow-sm">
+        <span class="material-symbols-outlined fill text-[#F59E0B] text-[14px]">star</span>
         <span class="text-xs font-bold text-on-surface">4.9</span>
-        <span class="text-xs text-outline ml-1">(124 trips)</span>
+        <span class="text-xs text-outline ml-0.5">(124 trips)</span>
       </div>
     </section>
 
-    <!-- Menu Options (Bento List) -->
+    <!-- Bento Options List -->
     <section class="flex flex-col gap-2">
-      <button id="btnOpenSavedAddresses" class="w-full bg-surface rounded-xl p-4 flex items-center justify-between shadow-[0px_4px_20px_rgba(0,0,0,0.02)] active:scale-[0.98] transition-transform group hover:bg-surface-container-lowest border border-outline-variant/20">
+      <button id="btnOpenSavedAddresses" class="w-full bg-surface rounded-xl p-3.5 flex items-center justify-between shadow-sm active:scale-[0.98] transition-transform hover:bg-surface-container-lowest border border-outline-variant/20">
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center text-primary-container group-hover:bg-primary-container group-hover:text-on-primary transition-colors">
-            <span class="material-symbols-outlined">location_on</span>
+          <div class="w-9 h-9 rounded-full bg-primary-fixed flex items-center justify-center text-primary-container">
+            <span class="material-symbols-outlined text-lg">location_on</span>
           </div>
-          <span class="text-sm font-semibold text-on-surface">Saved Addresses</span>
+          <span class="text-xs font-bold text-on-surface">Saved Addresses</span>
         </div>
-        <span class="material-symbols-outlined text-outline-variant group-hover:text-primary transition-colors">chevron_right</span>
+        <span class="material-symbols-outlined text-outline-variant text-lg">chevron_right</span>
       </button>
 
-      <button id="btnOpenPaymentMethods" class="w-full bg-surface rounded-xl p-4 flex items-center justify-between shadow-[0px_4px_20px_rgba(0,0,0,0.02)] active:scale-[0.98] transition-transform group hover:bg-surface-container-lowest border border-outline-variant/20">
+      <button id="btnOpenPaymentMethods" class="w-full bg-surface rounded-xl p-3.5 flex items-center justify-between shadow-sm active:scale-[0.98] transition-transform hover:bg-surface-container-lowest border border-outline-variant/20">
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center text-primary-container group-hover:bg-primary-container group-hover:text-on-primary transition-colors">
-            <span class="material-symbols-outlined">payment</span>
+          <div class="w-9 h-9 rounded-full bg-primary-fixed flex items-center justify-center text-primary-container">
+            <span class="material-symbols-outlined text-lg">payment</span>
           </div>
-          <span class="text-sm font-semibold text-on-surface">Payment Methods</span>
+          <span class="text-xs font-bold text-on-surface">Payment Methods</span>
         </div>
-        <span class="material-symbols-outlined text-outline-variant group-hover:text-primary transition-colors">chevron_right</span>
+        <span class="material-symbols-outlined text-outline-variant text-lg">chevron_right</span>
       </button>
 
-      <button id="btnOpenHelpSupport" class="w-full bg-surface rounded-xl p-4 flex items-center justify-between shadow-[0px_4px_20px_rgba(0,0,0,0.02)] active:scale-[0.98] transition-transform group hover:bg-surface-container-lowest border border-outline-variant/20">
+      <button id="btnOpenHelpSupport" class="w-full bg-surface rounded-xl p-3.5 flex items-center justify-between shadow-sm active:scale-[0.98] transition-transform hover:bg-surface-container-lowest border border-outline-variant/20">
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 group-hover:bg-emerald-500 group-hover:text-white transition-colors">
-            <span class="material-symbols-outlined">support_agent</span>
+          <div class="w-9 h-9 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600">
+            <span class="material-symbols-outlined text-lg">support_agent</span>
           </div>
-          <span class="text-sm font-semibold text-on-surface">Help & Support (WhatsApp AI)</span>
+          <span class="text-xs font-bold text-on-surface">Help & Support (WhatsApp AI)</span>
         </div>
-        <span class="material-symbols-outlined text-outline-variant group-hover:text-primary transition-colors">chevron_right</span>
+        <span class="material-symbols-outlined text-outline-variant text-lg">chevron_right</span>
       </button>
 
-      <button id="btnOpenSettings" class="w-full bg-surface rounded-xl p-4 flex items-center justify-between shadow-[0px_4px_20px_rgba(0,0,0,0.02)] active:scale-[0.98] transition-transform group hover:bg-surface-container-lowest border border-outline-variant/20">
+      <button id="btnOpenSettings" class="w-full bg-surface rounded-xl p-3.5 flex items-center justify-between shadow-sm active:scale-[0.98] transition-transform hover:bg-surface-container-lowest border border-outline-variant/20">
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center text-primary-container group-hover:bg-primary-container group-hover:text-on-primary transition-colors">
-            <span class="material-symbols-outlined">settings</span>
+          <div class="w-9 h-9 rounded-full bg-primary-fixed flex items-center justify-center text-primary-container">
+            <span class="material-symbols-outlined text-lg">settings</span>
           </div>
-          <span class="text-sm font-semibold text-on-surface">Settings</span>
+          <span class="text-xs font-bold text-on-surface">Settings</span>
         </div>
-        <span class="material-symbols-outlined text-outline-variant group-hover:text-primary transition-colors">chevron_right</span>
+        <span class="material-symbols-outlined text-outline-variant text-lg">chevron_right</span>
       </button>
     </section>
 
     <!-- Logout Action -->
-    <div class="mt-4 w-full">
-      <button class="w-full h-[56px] rounded-[16px] bg-[#F1F5F9] text-primary font-semibold text-sm flex items-center justify-center gap-2 active:scale-95 transition-all shadow-sm hover:bg-surface-container-high" onclick="alert('Logged out from current session.')">
-        <span class="material-symbols-outlined text-[20px]">logout</span>
+    <div>
+      <button class="w-full h-12 rounded-[14px] bg-[#F1F5F9] text-primary font-bold text-xs flex items-center justify-center gap-2 active:scale-95 transition-all shadow-sm hover:bg-surface-container-high" onclick="alert('Session ended.')">
+        <span class="material-symbols-outlined text-lg">logout</span>
         Log Out
       </button>
     </div>
   </div>
 
   <!-- ========================================================================= -->
-  <!-- SCREEN 5: SAVED ADDRESSES SUB-SCREEN (GOOGLE STITCH DESIGN)               -->
+  <!-- SCREEN 5: SAVED ADDRESSES SUB-SCREEN                                      -->
   <!-- ========================================================================= -->
-  <div id="tab-saved-addresses" class="tab-view hidden pt-16 pb-28 max-w-2xl mx-auto w-full px-5 animate-fade-in-up">
-    <!-- Top Sub-Screen Header -->
-    <div class="flex items-center justify-between mb-6">
-      <button id="btnBackFromSavedAddresses" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-low active:scale-95 transition-transform text-on-surface-variant">
+  <div id="tab-saved-addresses" class="tab-view w-full max-w-2xl mx-auto pt-16 pb-28 px-4 space-y-4">
+    <div class="flex items-center justify-between mb-4">
+      <button id="btnBackFromSavedAddresses" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-surface-container-low active:scale-95 transition-transform text-on-surface-variant">
         <span class="material-symbols-outlined">arrow_back</span>
       </button>
-      <h2 class="text-lg font-bold text-primary">
-        Saved Addresses
-      </h2>
-      <div class="w-10 h-10"></div>
+      <h2 class="text-base font-bold text-primary">Saved Addresses</h2>
+      <div class="w-9 h-9"></div>
     </div>
 
-    <!-- Addresses List -->
-    <div class="flex flex-col gap-3">
-      <!-- Address Card: Home -->
-      <div class="saved-address-card bg-surface-container-lowest rounded-[16px] shadow-level-1 p-4 flex items-center justify-between group cursor-pointer hover:bg-surface-container-low transition-colors duration-200 border border-outline-variant/20" data-address="123 Elm Street, Springfield, IL 62701">
-        <div class="flex items-center gap-4 flex-1">
-          <div class="w-12 h-12 rounded-full bg-primary-fixed flex items-center justify-center text-primary flex-shrink-0">
+    <div class="flex flex-col gap-2.5">
+      <div class="saved-address-card bg-surface-container-lowest rounded-[16px] shadow-level-1 p-3.5 flex items-center justify-between group cursor-pointer hover:bg-surface-container-low border border-outline-variant/20" data-address="123 Elm Street, Springfield, IL 62701">
+        <div class="flex items-center gap-3 flex-1">
+          <div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center text-primary shrink-0">
             <span class="material-symbols-outlined icon-fill">home</span>
           </div>
           <div class="flex flex-col">
-            <span class="text-sm font-bold text-on-surface">Home</span>
-            <span class="text-xs text-on-surface-variant mt-0.5 line-clamp-1">123 Elm Street, Springfield, IL 62701</span>
+            <span class="text-xs font-bold text-on-surface">Home</span>
+            <span class="text-[11px] text-on-surface-variant mt-0.5 line-clamp-1">123 Elm Street, Springfield, IL 62701</span>
           </div>
         </div>
-        <button class="w-10 h-10 flex items-center justify-center rounded-full text-outline hover:text-primary hover:bg-surface-container transition-colors ml-2" onclick="event.stopPropagation(); alert('Edit Home Address')">
-          <span class="material-symbols-outlined text-[20px]">edit</span>
+        <button class="w-8 h-8 flex items-center justify-center rounded-full text-outline hover:text-primary" onclick="event.stopPropagation(); alert('Edit Home Address')">
+          <span class="material-symbols-outlined text-[18px]">edit</span>
         </button>
       </div>
 
-      <!-- Address Card: Work -->
-      <div class="saved-address-card bg-surface-container-lowest rounded-[16px] shadow-level-1 p-4 flex items-center justify-between group cursor-pointer hover:bg-surface-container-low transition-colors duration-200 border border-outline-variant/20" data-address="456 Corporate Blvd, Suite 200, Metropolis, NY 10001">
-        <div class="flex items-center gap-4 flex-1">
-          <div class="w-12 h-12 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant flex-shrink-0">
+      <div class="saved-address-card bg-surface-container-lowest rounded-[16px] shadow-level-1 p-3.5 flex items-center justify-between group cursor-pointer hover:bg-surface-container-low border border-outline-variant/20" data-address="456 Corporate Blvd, Suite 200, Metropolis, NY 10001">
+        <div class="flex items-center gap-3 flex-1">
+          <div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant shrink-0">
             <span class="material-symbols-outlined icon-fill">work</span>
           </div>
           <div class="flex flex-col">
-            <span class="text-sm font-bold text-on-surface">Work</span>
-            <span class="text-xs text-on-surface-variant mt-0.5 line-clamp-1">456 Corporate Blvd, Suite 200, Metropolis, NY 10001</span>
+            <span class="text-xs font-bold text-on-surface">Work</span>
+            <span class="text-[11px] text-on-surface-variant mt-0.5 line-clamp-1">456 Corporate Blvd, Suite 200, Metropolis, NY 10001</span>
           </div>
         </div>
-        <button class="w-10 h-10 flex items-center justify-center rounded-full text-outline hover:text-primary hover:bg-surface-container transition-colors ml-2" onclick="event.stopPropagation(); alert('Edit Work Address')">
-          <span class="material-symbols-outlined text-[20px]">edit</span>
-        </button>
-      </div>
-
-      <!-- Address Card: Gym -->
-      <div class="saved-address-card bg-surface-container-lowest rounded-[16px] shadow-level-1 p-4 flex items-center justify-between group cursor-pointer hover:bg-surface-container-low transition-colors duration-200 border border-outline-variant/20" data-address="789 Muscle Ave, Iron City, CA 90210">
-        <div class="flex items-center gap-4 flex-1">
-          <div class="w-12 h-12 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant flex-shrink-0">
-            <span class="material-symbols-outlined">fitness_center</span>
-          </div>
-          <div class="flex flex-col">
-            <span class="text-sm font-bold text-on-surface">Gym</span>
-            <span class="text-xs text-on-surface-variant mt-0.5 line-clamp-1">789 Muscle Ave, Iron City, CA 90210</span>
-          </div>
-        </div>
-        <button class="w-10 h-10 flex items-center justify-center rounded-full text-outline hover:text-primary hover:bg-surface-container transition-colors ml-2" onclick="event.stopPropagation(); alert('Edit Gym Address')">
-          <span class="material-symbols-outlined text-[20px]">edit</span>
-        </button>
-      </div>
-
-      <!-- Address Card: Favorite Cafe -->
-      <div class="saved-address-card bg-surface-container-lowest rounded-[16px] shadow-level-1 p-4 flex items-center justify-between group cursor-pointer hover:bg-surface-container-low transition-colors duration-200 border border-outline-variant/20" data-address="321 Bean Roasters Lane, Seattle, WA 98101">
-        <div class="flex items-center gap-4 flex-1">
-          <div class="w-12 h-12 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant flex-shrink-0">
-            <span class="material-symbols-outlined">local_cafe</span>
-          </div>
-          <div class="flex flex-col">
-            <span class="text-sm font-bold text-on-surface">Favorite Cafe</span>
-            <span class="text-xs text-on-surface-variant mt-0.5 line-clamp-1">321 Bean Roasters Lane, Seattle, WA 98101</span>
-          </div>
-        </div>
-        <button class="w-10 h-10 flex items-center justify-center rounded-full text-outline hover:text-primary hover:bg-surface-container transition-colors ml-2" onclick="event.stopPropagation(); alert('Edit Cafe Address')">
-          <span class="material-symbols-outlined text-[20px]">edit</span>
+        <button class="w-8 h-8 flex items-center justify-center rounded-full text-outline hover:text-primary" onclick="event.stopPropagation(); alert('Edit Work Address')">
+          <span class="material-symbols-outlined text-[18px]">edit</span>
         </button>
       </div>
     </div>
 
-    <!-- Floating Add New Address Button (Stitch Layout) -->
-    <div class="fixed bottom-0 left-0 w-full p-5 bg-gradient-to-t from-background via-background to-transparent z-40 pb-safe">
-      <div class="max-w-2xl mx-auto">
-        <button id="btnAddNewAddress" class="w-full h-[56px] bg-primary-container text-on-primary rounded-[16px] text-sm font-bold shadow-level-2 hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-2">
-          <span class="material-symbols-outlined text-[20px]">add</span>
-          Add New Address
-        </button>
-      </div>
+    <div class="pt-4">
+      <button id="btnAddNewAddress" class="w-full h-12 bg-primary-container text-on-primary rounded-[14px] text-xs font-bold shadow-level-2 hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+        <span class="material-symbols-outlined text-lg">add</span>
+        Add New Address
+      </button>
     </div>
   </div>
 
   <!-- ========================================================================= -->
-  <!-- SCREEN 6: PAYMENT METHODS SUB-SCREEN (GOOGLE STITCH DESIGN)               -->
+  <!-- SCREEN 6: PAYMENT METHODS SUB-SCREEN                                      -->
   <!-- ========================================================================= -->
-  <div id="tab-payment-methods" class="tab-view hidden pt-16 pb-28 max-w-2xl mx-auto w-full px-5 animate-fade-in-up">
-    <!-- Top Sub-Screen Header -->
-    <div class="flex items-center justify-between mb-6">
-      <button id="btnBackFromPaymentMethods" class="w-10 h-10 flex items-center justify-center rounded-full bg-surface-container-lowest shadow-sm text-on-surface hover:bg-surface-container-low active:scale-95 transition-colors">
+  <div id="tab-payment-methods" class="tab-view w-full max-w-2xl mx-auto pt-16 pb-28 px-4 space-y-4">
+    <div class="flex items-center justify-between mb-4">
+      <button id="btnBackFromPaymentMethods" class="w-9 h-9 flex items-center justify-center rounded-full bg-surface-container-lowest shadow-sm text-on-surface hover:bg-surface-container-low active:scale-95">
         <span class="material-symbols-outlined">arrow_back</span>
       </button>
-      <h2 class="text-lg font-bold text-on-surface">
-        Payment Methods
-      </h2>
-      <div class="w-10 h-10"></div>
+      <h2 class="text-base font-bold text-on-surface">Payment Methods</h2>
+      <div class="w-9 h-9"></div>
     </div>
 
-    <!-- Main Content -->
-    <div class="flex flex-col gap-6">
-      <!-- Saved Cards Section -->
-      <section class="flex flex-col gap-3">
-        <h3 class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Saved Cards</h3>
-        <div class="flex flex-col gap-3">
-          <!-- Primary Card (Active / Default) -->
-          <div class="glass-card active-card rounded-xl p-4 flex items-center justify-between cursor-pointer relative overflow-hidden transition-all duration-200 payment-card-item" data-method="VISA •••• 4242">
-            <div class="flex items-center gap-4 relative z-10">
-              <div class="w-12 h-8 bg-[#1A1F36] rounded flex items-center justify-center shrink-0">
-                <span class="text-white font-bold text-xs italic tracking-tighter">VISA</span>
-              </div>
-              <div class="flex flex-col">
-                <span class="text-sm font-bold text-on-surface">•••• 4242</span>
-                <span class="text-xs text-outline">Expires 12/25</span>
-              </div>
+    <div class="flex flex-col gap-4">
+      <section class="space-y-2.5">
+        <h3 class="text-[11px] font-bold text-on-surface-variant uppercase tracking-wider">Saved Cards</h3>
+        <div class="glass-card active-card rounded-xl p-3.5 flex items-center justify-between cursor-pointer payment-card-item" data-method="VISA •••• 4242">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-7 bg-[#1A1F36] rounded flex items-center justify-center text-white font-bold text-[10px] italic">VISA</div>
+            <div>
+              <p class="text-xs font-bold text-on-surface">•••• 4242</p>
+              <p class="text-[10px] text-outline">Expires 12/25</p>
             </div>
-            <div class="flex items-center gap-2 relative z-10">
-              <span class="px-2.5 py-0.5 bg-primary-fixed text-primary text-xs font-bold rounded-full">Default</span>
-              <span class="material-symbols-outlined text-primary fill text-[20px]">check_circle</span>
-            </div>
-            <div class="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent pointer-events-none"></div>
           </div>
-
-          <!-- Secondary Card (Mastercard) -->
-          <div class="glass-card rounded-xl p-4 flex items-center justify-between cursor-pointer border border-transparent hover:border-outline-variant transition-all duration-200 payment-card-item" data-method="Mastercard •••• 8831">
-            <div class="flex items-center gap-4">
-              <div class="w-12 h-8 bg-[#EB001B] relative rounded overflow-hidden shrink-0">
-                <div class="absolute w-5 h-5 rounded-full bg-[#F79E1B] mix-blend-screen right-1 top-1.5"></div>
-                <div class="absolute w-5 h-5 rounded-full bg-[#EB001B] left-1 top-1.5 z-10"></div>
-              </div>
-              <div class="flex flex-col">
-                <span class="text-sm font-bold text-on-surface">•••• 8831</span>
-                <span class="text-xs text-outline">Expires 08/24</span>
-              </div>
-            </div>
-            <button aria-label="More options" class="w-8 h-8 flex items-center justify-center rounded-full text-outline hover:bg-surface-variant transition-colors" onclick="event.stopPropagation(); alert('Card Options: Set Default, Remove')">
-              <span class="material-symbols-outlined">more_vert</span>
-            </button>
+          <div class="flex items-center gap-1.5">
+            <span class="px-2 py-0.5 bg-primary-fixed text-primary text-[10px] font-bold rounded-full">Default</span>
+            <span class="material-symbols-outlined text-primary fill text-[18px]">check_circle</span>
           </div>
         </div>
       </section>
 
-      <!-- Digital Wallets Section -->
-      <section class="flex flex-col gap-3">
-        <h3 class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Digital Wallets</h3>
-        <div class="grid grid-cols-2 gap-3">
-          <!-- Apple Pay -->
-          <div class="glass-card rounded-xl p-4 flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-surface-container-lowest transition-colors border border-transparent hover:border-outline-variant" onclick="alert('Apple Pay Connected')">
-            <div class="w-10 h-10 bg-black rounded-full flex items-center justify-center text-white mb-0.5">
-              <span class="material-symbols-outlined fill text-[20px]">file_download</span>
+      <section class="space-y-2.5">
+        <h3 class="text-[11px] font-bold text-on-surface-variant uppercase tracking-wider">Digital Wallets</h3>
+        <div class="grid grid-cols-2 gap-2.5">
+          <div class="glass-card rounded-xl p-3.5 flex flex-col items-center justify-center gap-1.5 cursor-pointer hover:bg-surface-container-lowest" onclick="alert('Apple Pay Connected')">
+            <div class="w-8 h-8 bg-black rounded-full flex items-center justify-center text-white">
+              <span class="material-symbols-outlined fill text-base">file_download</span>
             </div>
             <span class="text-xs font-bold text-on-surface">Apple Pay</span>
           </div>
-
-          <!-- UPI -->
-          <div class="glass-card rounded-xl p-4 flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-surface-container-lowest transition-colors border border-transparent hover:border-outline-variant" onclick="alert('UPI: alex@okaxis Connected')">
-            <div class="w-10 h-10 bg-white border border-outline-variant rounded-full flex items-center justify-center mb-0.5 shadow-sm">
-              <div class="flex items-center justify-center gap-1">
-                <div class="w-2.5 h-2.5 rounded-full bg-orange-500"></div>
-                <div class="w-2.5 h-2.5 rounded-full bg-green-500"></div>
+          <div class="glass-card rounded-xl p-3.5 flex flex-col items-center justify-center gap-1.5 cursor-pointer hover:bg-surface-container-lowest" onclick="alert('UPI Connected')">
+            <div class="w-8 h-8 bg-white border border-outline-variant rounded-full flex items-center justify-center">
+              <div class="flex gap-0.5">
+                <div class="w-2 h-2 rounded-full bg-orange-500"></div>
+                <div class="w-2 h-2 rounded-full bg-green-500"></div>
               </div>
             </div>
             <span class="text-xs font-bold text-on-surface">UPI</span>
@@ -853,264 +697,130 @@
         </div>
       </section>
 
-      <!-- Add New Payment Method CTA -->
-      <div class="mt-2">
-        <button id="btnAddNewPaymentMethod" class="w-full h-14 bg-surface-container-lowest border-2 border-dashed border-outline-variant/60 rounded-xl flex items-center justify-center gap-2 text-primary text-xs font-bold hover:bg-surface-container-low hover:border-primary transition-all duration-200">
-          <span class="material-symbols-outlined text-[20px]">add</span>
-          Add Payment Method
-        </button>
-      </div>
+      <button id="btnAddNewPaymentMethod" class="w-full h-12 bg-surface-container-lowest border-2 border-dashed border-outline-variant/60 rounded-xl flex items-center justify-center gap-2 text-primary text-xs font-bold hover:bg-surface-container-low">
+        <span class="material-symbols-outlined text-lg">add</span>
+        Add Payment Method
+      </button>
     </div>
   </div>
 
   <!-- ========================================================================= -->
-  <!-- SCREEN 7: SETTINGS SUB-SCREEN (GOOGLE STITCH DESIGN)                      -->
+  <!-- SCREEN 7: SETTINGS SUB-SCREEN                                             -->
   <!-- ========================================================================= -->
-  <div id="tab-settings" class="tab-view hidden pt-16 pb-28 max-w-2xl mx-auto w-full px-5 animate-fade-in-up">
-    <!-- Top Sub-Screen Header -->
-    <div class="flex items-center justify-between mb-6">
-      <button id="btnBackFromSettings" class="w-10 h-10 flex items-center justify-center rounded-full bg-surface-container-lowest shadow-sm text-on-surface hover:bg-surface-container-low active:scale-95 transition-colors">
+  <div id="tab-settings" class="tab-view w-full max-w-2xl mx-auto pt-16 pb-28 px-4 space-y-4">
+    <div class="flex items-center justify-between mb-4">
+      <button id="btnBackFromSettings" class="w-9 h-9 flex items-center justify-center rounded-full bg-surface-container-lowest shadow-sm text-on-surface hover:bg-surface-container-low active:scale-95">
         <span class="material-symbols-outlined">arrow_back</span>
       </button>
-      <h2 class="text-lg font-bold text-on-surface">
-        Settings
-      </h2>
-      <div class="w-10 h-10"></div>
+      <h2 class="text-base font-bold text-on-surface">Settings</h2>
+      <div class="w-9 h-9"></div>
     </div>
 
-    <!-- Page Header Title -->
-    <div class="flex flex-col gap-1 mb-6">
-      <h1 class="text-2xl font-bold text-on-surface">Settings</h1>
-      <p class="text-sm text-on-surface-variant">Manage your preferences and account settings.</p>
-    </div>
-
-    <!-- Settings Sections -->
-    <div class="flex flex-col gap-6">
-      <section class="flex flex-col gap-3">
-        <h2 class="text-xs font-bold text-primary uppercase tracking-wider pl-1">Notifications</h2>
-        <div class="bg-surface-container-lowest rounded-xl shadow-level-1 flex flex-col overflow-hidden border border-outline-variant/20">
-          <div class="flex items-center justify-between p-4 border-b border-surface-variant">
+    <div class="space-y-4">
+      <section class="space-y-2">
+        <h3 class="text-[11px] font-bold text-primary uppercase tracking-wider pl-1">Notifications</h3>
+        <div class="bg-surface-container-lowest rounded-xl shadow-level-1 flex flex-col border border-outline-variant/20">
+          <div class="flex items-center justify-between p-3.5 border-b border-surface-variant">
             <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-primary">
-                <span class="material-symbols-outlined">notifications</span>
-              </div>
-              <div class="flex flex-col">
-                <span class="text-sm font-semibold text-on-surface">Push Notifications</span>
-                <span class="text-xs text-on-surface-variant">Parcel updates and live alerts</span>
+              <span class="material-symbols-outlined text-primary text-xl">notifications</span>
+              <div>
+                <p class="text-xs font-bold text-on-surface">Push Notifications</p>
+                <p class="text-[10px] text-on-surface-variant">Parcel updates & alerts</p>
               </div>
             </div>
-            <div class="relative inline-block w-12 align-middle select-none transition duration-200 ease-in">
-              <input checked="" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" id="push_toggle" name="toggle" type="checkbox"/>
-              <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer" for="push_toggle"></label>
-            </div>
+            <input checked="" class="toggle-checkbox" type="checkbox"/>
           </div>
-
-          <div class="flex items-center justify-between p-4">
+          <div class="flex items-center justify-between p-3.5">
             <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-primary">
-                <span class="material-symbols-outlined">mail</span>
-              </div>
-              <div class="flex flex-col">
-                <span class="text-sm font-semibold text-on-surface">Email Updates</span>
-                <span class="text-xs text-on-surface-variant">Invoices and freight reports</span>
+              <span class="material-symbols-outlined text-primary text-xl">mail</span>
+              <div>
+                <p class="text-xs font-bold text-on-surface">Email Updates</p>
+                <p class="text-[10px] text-on-surface-variant">Invoices and reports</p>
               </div>
             </div>
-            <div class="relative inline-block w-12 align-middle select-none transition duration-200 ease-in">
-              <input class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" id="email_toggle" name="toggle" type="checkbox"/>
-              <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer" for="email_toggle"></label>
-            </div>
+            <input class="toggle-checkbox" type="checkbox"/>
           </div>
         </div>
       </section>
 
-      <section class="flex flex-col gap-3">
-        <h2 class="text-xs font-bold text-primary uppercase tracking-wider pl-1">Privacy & Location</h2>
-        <div class="bg-surface-container-lowest rounded-xl shadow-level-1 flex flex-col overflow-hidden border border-outline-variant/20">
-          <div class="flex items-center justify-between p-4 border-b border-surface-variant">
+      <section class="space-y-2">
+        <h3 class="text-[11px] font-bold text-primary uppercase tracking-wider pl-1">Privacy & Location</h3>
+        <div class="bg-surface-container-lowest rounded-xl shadow-level-1 flex flex-col border border-outline-variant/20">
+          <div class="flex items-center justify-between p-3.5 border-b border-surface-variant">
             <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-primary">
-                <span class="material-symbols-outlined">location_on</span>
-              </div>
-              <div class="flex flex-col">
-                <span class="text-sm font-semibold text-on-surface">Location Services</span>
-                <span class="text-xs text-on-surface-variant">Required for nearby depot matching</span>
+              <span class="material-symbols-outlined text-primary text-xl">location_on</span>
+              <div>
+                <p class="text-xs font-bold text-on-surface">Location Services</p>
+                <p class="text-[10px] text-on-surface-variant">Nearest hub detection</p>
               </div>
             </div>
-            <div class="relative inline-block w-12 align-middle select-none transition duration-200 ease-in">
-              <input checked="" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" id="location_toggle" name="toggle" type="checkbox"/>
-              <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer" for="location_toggle"></label>
-            </div>
+            <input checked="" class="toggle-checkbox" type="checkbox"/>
           </div>
-
-          <div class="flex items-center justify-between p-4 border-b border-surface-variant hover:bg-surface-container-low transition-colors group cursor-pointer" onclick="alert('Current Language: English (US)')">
+          <div class="flex items-center justify-between p-3.5 cursor-pointer hover:bg-surface-container-low" onclick="alert('Language: English (US)')">
             <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-primary group-hover:bg-white transition-colors">
-                <span class="material-symbols-outlined">language</span>
-              </div>
-              <span class="text-sm font-semibold text-on-surface">Language</span>
+              <span class="material-symbols-outlined text-primary text-xl">language</span>
+              <p class="text-xs font-bold text-on-surface">Language</p>
             </div>
-            <div class="flex items-center gap-1.5">
-              <span class="text-xs text-on-surface-variant font-medium">English (US)</span>
-              <span class="material-symbols-outlined text-outline text-lg">chevron_right</span>
-            </div>
+            <span class="text-[11px] text-on-surface-variant">English (US) ›</span>
           </div>
-
-          <div class="flex items-center justify-between p-4 border-b border-surface-variant hover:bg-surface-container-low transition-colors group cursor-pointer" onclick="alert('Privacy Policy: End-to-end telemetry encryption and automatic PII redaction.')">
-            <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-primary group-hover:bg-white transition-colors">
-                <span class="material-symbols-outlined">policy</span>
-              </div>
-              <span class="text-sm font-semibold text-on-surface">Privacy Policy</span>
-            </div>
-            <span class="material-symbols-outlined text-outline text-lg">chevron_right</span>
-          </div>
-
-          <div class="flex items-center justify-between p-4 hover:bg-surface-container-low transition-colors group cursor-pointer" onclick="alert('Terms of Service: Public Transport Cargo Monetization Agreement.')">
-            <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-primary group-hover:bg-white transition-colors">
-                <span class="material-symbols-outlined">description</span>
-              </div>
-              <span class="text-sm font-semibold text-on-surface">Terms of Service</span>
-            </div>
-            <span class="material-symbols-outlined text-outline text-lg">chevron_right</span>
-          </div>
-        </div>
-      </section>
-
-      <section class="flex flex-col gap-3 pt-2">
-        <button class="w-full bg-surface-container-low text-error hover:bg-error-container hover:text-on-error-container rounded-xl py-3.5 text-sm font-bold transition-colors flex items-center justify-center gap-2" onclick="alert('Signed out successfully.')">
-          <span class="material-symbols-outlined">logout</span>
-          Sign Out
-        </button>
-        <div class="text-center mt-2">
-          <span class="text-xs text-outline font-medium">Transitly v2.4.1</span>
         </div>
       </section>
     </div>
   </div>
 
   <!-- ========================================================================= -->
-  <!-- SCREEN 8: HELP & SUPPORT SUB-SCREEN (GOOGLE STITCH DESIGN)                -->
+  <!-- SCREEN 8: HELP & SUPPORT SUB-SCREEN                                       -->
   <!-- ========================================================================= -->
-  <div id="tab-help-support" class="tab-view hidden pt-16 pb-28 max-w-4xl mx-auto w-full px-5 animate-fade-in-up">
-    <!-- Top Sub-Screen Header -->
-    <div class="flex items-center justify-between mb-6">
-      <button id="btnBackFromHelpSupport" class="w-10 h-10 flex items-center justify-center rounded-full bg-surface-container-lowest shadow-sm text-on-surface hover:bg-surface-container-low active:scale-95 transition-colors">
+  <div id="tab-help-support" class="tab-view w-full max-w-2xl mx-auto pt-16 pb-28 px-4 space-y-4">
+    <div class="flex items-center justify-between mb-4">
+      <button id="btnBackFromHelpSupport" class="w-9 h-9 flex items-center justify-center rounded-full bg-surface-container-lowest shadow-sm text-on-surface hover:bg-surface-container-low active:scale-95">
         <span class="material-symbols-outlined">arrow_back</span>
       </button>
-      <h2 class="text-lg font-bold text-on-surface">
-        Help & Support
-      </h2>
-      <div class="w-10 h-10"></div>
+      <h2 class="text-base font-bold text-on-surface">Help & Support</h2>
+      <div class="w-9 h-9"></div>
     </div>
 
-    <!-- Header Section -->
-    <div class="text-center mb-8">
-      <h1 class="text-2xl md:text-3xl font-bold text-on-surface mb-2">How can we help you?</h1>
-      <p class="text-sm text-on-surface-variant max-w-lg mx-auto">Search our knowledge base or browse common topics below to find answers quickly.</p>
-      
-      <!-- Search Bar -->
-      <div class="mt-5 relative max-w-xl mx-auto group">
-        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-          <span class="material-symbols-outlined text-outline-variant group-focus-within:text-primary transition-colors">search</span>
-        </div>
-        <input id="helpSearchInput" class="w-full pl-12 pr-4 py-3.5 rounded-xl border border-outline-variant bg-surface-container-lowest focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-all text-sm placeholder:text-on-surface-variant/50 shadow-sm hover:shadow-md" placeholder="Search for 'missing parcel' or 'refund'" type="text"/>
-      </div>
+    <div class="text-center mb-4">
+      <h1 class="text-xl font-bold text-on-surface mb-1">How can we help?</h1>
+      <p class="text-xs text-on-surface-variant">24/7 AI-powered assistance & live tracking help.</p>
     </div>
 
-    <!-- Bento Grid Topics -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-      <!-- Topic Card 1 -->
-      <div class="bg-surface-container-lowest rounded-xl p-5 shadow-level-1 hover:shadow-level-2 transition-all cursor-pointer border border-transparent hover:border-primary/20 group flex flex-col h-full" onclick="alert('Tracking Articles: Real-time telemetry is synced via Redis at 3ms intervals. PostGIS ensures permanent GPS logs.')">
-        <div class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center mb-3 group-hover:bg-primary/10 transition-colors">
-          <span class="material-symbols-outlined text-primary fill">local_shipping</span>
-        </div>
-        <h3 class="text-base font-bold text-on-surface mb-1">Tracking Issues</h3>
-        <p class="text-xs text-on-surface-variant flex-1">Where is my parcel? Delivery delays and live GPS telematics updates.</p>
-        <div class="mt-4 flex items-center text-primary text-xs font-bold group-hover:underline">
-          View articles <span class="material-symbols-outlined text-[16px] ml-1">arrow_forward</span>
-        </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div class="bg-surface-container-lowest rounded-xl p-3.5 shadow-level-1 cursor-pointer border border-outline-variant/20 hover:border-primary" onclick="alert('Tracking Issues: Real-time telemetry is synced via Redis at 3ms intervals.')">
+        <span class="material-symbols-outlined text-primary fill text-2xl mb-1">local_shipping</span>
+        <h3 class="text-xs font-bold text-on-surface">Tracking Issues</h3>
+        <p class="text-[10px] text-on-surface-variant mt-0.5">Where is my parcel? Delivery status & delays.</p>
       </div>
 
-      <!-- Topic Card 2 -->
-      <div class="bg-surface-container-lowest rounded-xl p-5 shadow-level-1 hover:shadow-level-2 transition-all cursor-pointer border border-transparent hover:border-primary/20 group flex flex-col h-full" onclick="alert('Payment Queries: Multi-modal pricing is dynamically computed based on fuel surcharge and weight.')">
-        <div class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center mb-3 group-hover:bg-primary/10 transition-colors">
-          <span class="material-symbols-outlined text-primary fill">payments</span>
-        </div>
-        <h3 class="text-base font-bold text-on-surface mb-1">Payment Queries</h3>
-        <p class="text-xs text-on-surface-variant flex-1">Invoices, automated refunds, promo codes, and multi-carrier split billing.</p>
-        <div class="mt-4 flex items-center text-primary text-xs font-bold group-hover:underline">
-          View articles <span class="material-symbols-outlined text-[16px] ml-1">arrow_forward</span>
-        </div>
-      </div>
-
-      <!-- Topic Card 3 -->
-      <div class="bg-surface-container-lowest rounded-xl p-5 shadow-level-1 hover:shadow-level-2 transition-all cursor-pointer border border-transparent hover:border-primary/20 group flex flex-col h-full bg-gradient-to-br from-surface-container-lowest to-surface-container-low">
-        <div class="w-12 h-12 rounded-full bg-error-container/50 flex items-center justify-center mb-3 group-hover:bg-error-container transition-colors">
-          <span class="material-symbols-outlined text-error fill">broken_image</span>
-        </div>
-        <h3 class="text-base font-bold text-on-surface mb-1">Damaged or Lost</h3>
-        <p class="text-xs text-on-surface-variant flex-1">Report a damaged package, missing items, or initiate an automated insurance claim.</p>
-        <div class="mt-4 flex flex-col gap-2">
-          <button class="w-full bg-surface text-on-surface border border-outline-variant py-2 rounded-lg text-xs font-bold hover:bg-surface-container-highest transition-colors flex items-center justify-center gap-1.5" onclick="event.stopPropagation(); alert('Claim ticket #CLM-8921 initiated! Support agent assigned.')">
-            File a Claim <span class="material-symbols-outlined text-[16px]">assignment</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- Topic Card 4 -->
-      <div class="bg-surface-container-lowest rounded-xl p-5 shadow-level-1 hover:shadow-level-2 transition-all cursor-pointer border border-transparent hover:border-primary/20 group flex flex-col h-full" onclick="alert('Account Settings: Manage two-factor auth and WhatsApp opt-ins.')">
-        <div class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center mb-3 group-hover:bg-primary/10 transition-colors">
-          <span class="material-symbols-outlined text-primary fill">person</span>
-        </div>
-        <h3 class="text-base font-bold text-on-surface mb-1">Account Settings</h3>
-        <p class="text-xs text-on-surface-variant flex-1">Update profile, change phone verification, and manage WhatsApp alerts.</p>
-        <div class="mt-4 flex items-center text-primary text-xs font-bold group-hover:underline">
-          View articles <span class="material-symbols-outlined text-[16px] ml-1">arrow_forward</span>
-        </div>
-      </div>
-
-      <!-- Topic Card 5 -->
-      <div class="bg-surface-container-lowest rounded-xl p-5 shadow-level-1 hover:shadow-level-2 transition-all cursor-pointer border border-transparent hover:border-primary/20 group flex flex-col h-full" onclick="alert('Freight & Delivery Experience: Public transport partner network feedback.')">
-        <div class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center mb-3 group-hover:bg-primary/10 transition-colors">
-          <span class="material-symbols-outlined text-primary fill">directions_bus</span>
-        </div>
-        <h3 class="text-base font-bold text-on-surface mb-1">Delivery Experience</h3>
-        <p class="text-xs text-on-surface-variant flex-1">Carrier feedback, terminal custody handoffs, and safety checks.</p>
-        <div class="mt-4 flex items-center text-primary text-xs font-bold group-hover:underline">
-          View articles <span class="material-symbols-outlined text-[16px] ml-1">arrow_forward</span>
-        </div>
+      <div class="bg-surface-container-lowest rounded-xl p-3.5 shadow-level-1 cursor-pointer border border-outline-variant/20 hover:border-primary" onclick="alert('Payment Queries: Multi-modal pricing is dynamically computed.')">
+        <span class="material-symbols-outlined text-primary fill text-2xl mb-1">payments</span>
+        <h3 class="text-xs font-bold text-on-surface">Payment Queries</h3>
+        <p class="text-[10px] text-on-surface-variant mt-0.5">Invoices, refunds, and promo codes.</p>
       </div>
     </div>
 
-    <!-- Contact Support Prominent Card -->
-    <div class="bg-primary-container rounded-2xl p-6 md:p-8 relative overflow-hidden shadow-[0px_8px_30px_rgba(0,102,255,0.15)] flex flex-col md:flex-row items-center justify-between gap-6">
-      <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 24px 24px;"></div>
-      <div class="relative z-10 text-center md:text-left flex-1">
-        <h2 class="text-xl md:text-2xl font-bold text-on-primary mb-1">Still need help?</h2>
-        <p class="text-sm text-primary-fixed">Our WhatsApp AI & support engineers are available 24/7 to assist you.</p>
-      </div>
-      <div class="relative z-10 w-full md:w-auto">
-        <button id="btnHelpChatSupport" class="w-full md:w-auto bg-surface-container-lowest text-primary px-6 py-3.5 rounded-xl font-bold text-xs hover:bg-surface-container-low transition-colors shadow-sm flex items-center justify-center gap-2 h-[52px]">
-          <span class="material-symbols-outlined text-lg">chat</span>
-          Chat with Support (WhatsApp)
-        </button>
-      </div>
+    <div class="bg-primary-container rounded-2xl p-5 text-white shadow-level-2 mt-4">
+      <h3 class="text-base font-bold mb-1">Still need help?</h3>
+      <p class="text-xs text-primary-fixed mb-3">Our WhatsApp AI assistant is active 24/7 for instant replies.</p>
+      <button id="btnHelpChatSupport" class="bg-white text-primary font-bold text-xs px-4 py-2.5 rounded-xl shadow-sm hover:bg-surface-container-low flex items-center gap-1.5">
+        <span class="material-symbols-outlined text-base">chat</span>
+        Chat on WhatsApp
+      </button>
     </div>
   </div>
 
-  <!-- Floating Action Button for Instant WhatsApp Chat -->
-  <button id="btnFloatingWhatsAppHelp" aria-label="WhatsApp Support" class="fixed bottom-20 right-4 w-14 h-14 bg-primary-container text-on-primary rounded-full shadow-[0px_8px_30px_rgba(0,102,255,0.35)] flex items-center justify-center z-40 hover:scale-105 active:scale-95 transition-transform">
-    <span class="material-symbols-outlined text-[28px] fill">chat</span>
+  <!-- Floating WhatsApp Action Button -->
+  <button id="btnFloatingWhatsAppHelp" aria-label="WhatsApp Support" class="fixed bottom-20 right-4 w-12 h-12 bg-[#25d366] text-white rounded-full shadow-[0px_6px_20px_rgba(37,211,102,0.4)] flex items-center justify-center z-40 hover:scale-105 active:scale-95 transition-transform">
+    <span class="material-symbols-outlined text-2xl fill">chat</span>
   </button>
 
   <!-- ========================================================================= -->
-  <!-- SCREEN 9: BOOKING MODAL & DUAL FEASIBILITY SAGA                           -->
+  <!-- BOOKING MODAL                                                             -->
   <!-- ========================================================================= -->
   <div id="bookingModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4">
-    <div class="bg-white rounded-[24px] max-w-[500px] w-full p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
-      <div class="flex justify-between items-center mb-4">
-        <h3 class="text-lg font-bold text-on-surface flex items-center gap-2">
+    <div class="bg-white rounded-[20px] max-w-[480px] w-full p-5 shadow-2xl max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center mb-3">
+        <h3 class="text-base font-bold text-on-surface flex items-center gap-1.5">
           <span class="material-symbols-outlined text-primary">local_shipping</span>
           Book Intercity Parcel
         </h3>
@@ -1119,61 +829,61 @@
         </button>
       </div>
 
-      <form id="modalBookingForm" class="space-y-3 text-xs">
+      <form id="modalBookingForm" class="space-y-2.5 text-xs">
         <div>
-          <label class="font-bold block mb-1">1. Pickup Address (Sender)</label>
-          <input type="text" id="modalSenderAddress" value="Connaught Place, New Delhi" class="w-full rounded-xl border-outline-variant/50 p-2.5 text-xs focus:ring-primary focus:border-primary" required>
+          <label class="font-bold block mb-0.5">1. Pickup Address (Sender)</label>
+          <input type="text" id="modalSenderAddress" value="Connaught Place, New Delhi" class="w-full rounded-xl border-outline-variant/50 p-2 text-xs focus:ring-primary focus:border-primary" required>
         </div>
 
         <div class="grid grid-cols-2 gap-2">
           <div>
-            <label class="font-bold block mb-1">Sender Name</label>
-            <input type="text" id="modalSenderName" value="Aarav Sharma" class="w-full rounded-xl border-outline-variant/50 p-2.5 text-xs focus:ring-primary" required>
+            <label class="font-bold block mb-0.5">Sender Name</label>
+            <input type="text" id="modalSenderName" value="Aarav Sharma" class="w-full rounded-xl border-outline-variant/50 p-2 text-xs focus:ring-primary" required>
           </div>
           <div>
-            <label class="font-bold block mb-1">Sender Phone</label>
-            <input type="text" id="modalSenderPhone" value="+919876543210" class="w-full rounded-xl border-outline-variant/50 p-2.5 text-xs focus:ring-primary" required>
+            <label class="font-bold block mb-0.5">Sender Phone</label>
+            <input type="text" id="modalSenderPhone" value="+919876543210" class="w-full rounded-xl border-outline-variant/50 p-2 text-xs focus:ring-primary" required>
           </div>
         </div>
 
         <div class="grid grid-cols-2 gap-2">
           <div>
-            <label class="font-bold block mb-1">Intercity Route</label>
-            <select id="modalRouteSelect" class="w-full rounded-xl border-outline-variant/50 p-2.5 text-xs focus:ring-primary">
+            <label class="font-bold block mb-0.5">Intercity Route</label>
+            <select id="modalRouteSelect" class="w-full rounded-xl border-outline-variant/50 p-2 text-xs focus:ring-primary">
               <option value="HR-DEL-CHD">Delhi ➔ Chandigarh (GT Road)</option>
               <option value="TR-DEL-JAI">Delhi ➔ Jaipur Highway</option>
               <option value="HR-DEL-SRS">Delhi ➔ Hisar ➔ Sirsa</option>
             </select>
           </div>
           <div>
-            <label class="font-bold block mb-1">Weight (kg)</label>
-            <input type="number" id="modalWeight" value="5.0" step="0.1" class="w-full rounded-xl border-outline-variant/50 p-2.5 text-xs focus:ring-primary" required>
+            <label class="font-bold block mb-0.5">Weight (kg)</label>
+            <input type="number" id="modalWeight" value="5.0" step="0.1" class="w-full rounded-xl border-outline-variant/50 p-2 text-xs focus:ring-primary" required>
           </div>
         </div>
 
         <div>
-          <label class="font-bold block mb-1">2. Delivery Address (Recipient)</label>
-          <input type="text" id="modalReceiverAddress" value="Sector 17, Chandigarh" class="w-full rounded-xl border-outline-variant/50 p-2.5 text-xs focus:ring-primary focus:border-primary" required>
+          <label class="font-bold block mb-0.5">2. Delivery Address (Recipient)</label>
+          <input type="text" id="modalReceiverAddress" value="Sector 17, Chandigarh" class="w-full rounded-xl border-outline-variant/50 p-2 text-xs focus:ring-primary focus:border-primary" required>
         </div>
 
         <div class="grid grid-cols-2 gap-2">
           <div>
-            <label class="font-bold block mb-1">Recipient Name</label>
-            <input type="text" id="modalReceiverName" value="Rohan Verma" class="w-full rounded-xl border-outline-variant/50 p-2.5 text-xs focus:ring-primary" required>
+            <label class="font-bold block mb-0.5">Recipient Name</label>
+            <input type="text" id="modalReceiverName" value="Rohan Verma" class="w-full rounded-xl border-outline-variant/50 p-2 text-xs focus:ring-primary" required>
           </div>
           <div>
-            <label class="font-bold block mb-1">Recipient Phone</label>
-            <input type="text" id="modalReceiverPhone" value="+919876543211" class="w-full rounded-xl border-outline-variant/50 p-2.5 text-xs focus:ring-primary" required>
+            <label class="font-bold block mb-0.5">Recipient Phone</label>
+            <input type="text" id="modalReceiverPhone" value="+919876543211" class="w-full rounded-xl border-outline-variant/50 p-2 text-xs focus:ring-primary" required>
           </div>
         </div>
 
-        <div id="modalFeasibilityBox" class="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs mt-2">
+        <div id="modalFeasibilityBox" class="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-[11px] mt-1">
           <div class="flex justify-between font-bold">
             <span>Customer Experience:</span>
             <span class="text-emerald-700 font-extrabold">FULL DOOR-TO-DOOR</span>
           </div>
-          <p class="text-[11px] mt-1 text-emerald-800">Uber Direct Pickup ➔ Express Public Bus ➔ Rapido Delivery</p>
-          <div class="mt-2 pt-2 border-t border-emerald-200 flex justify-between font-extrabold text-sm">
+          <p class="mt-0.5 text-emerald-800">Uber Direct Pickup ➔ Express Public Bus ➔ Rapido Delivery</p>
+          <div class="mt-1.5 pt-1.5 border-t border-emerald-200 flex justify-between font-extrabold text-xs">
             <span>Total Multi-Modal Fare:</span>
             <span>₹450.00</span>
           </div>
@@ -1188,34 +898,30 @@
           </button>
         </div>
       </form>
-      <div id="modalBookingSuccess" class="hidden mt-3 p-3 bg-emerald-100 text-emerald-800 rounded-xl text-xs font-semibold"></div>
+      <div id="modalBookingSuccess" class="hidden mt-3 p-2.5 bg-emerald-100 text-emerald-800 rounded-xl text-xs font-semibold"></div>
     </div>
   </div>
 
   <!-- ========================================================================= -->
-  <!-- BOTTOM NAVIGATION BAR (GOOGLE STITCH COMPONENT)                           -->
+  <!-- BOTTOM NAVIGATION BAR                                                     -->
   <!-- ========================================================================= -->
-  <nav id="mainBottomNav" class="bg-surface shadow-[0px_-4px_20px_rgba(0,0,0,0.05)] fixed bottom-0 left-0 w-full z-50 rounded-t-xl border-t border-outline-variant/30">
-    <div class="flex justify-around items-center px-2 pb-safe h-16 max-w-4xl mx-auto w-full">
-      <!-- Tab 1: Deliver -->
-      <button id="navBtnDeliver" class="nav-tab-btn flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-xl px-4 py-1.5 transition-all active:scale-90 w-1/4">
-        <span class="material-symbols-outlined mb-0.5 text-[22px]" data-weight="fill">local_shipping</span>
-        <span class="text-xs font-bold">Deliver</span>
+  <nav id="mainBottomNav" class="bg-surface/95 backdrop-blur-md shadow-[0px_-4px_20px_rgba(0,0,0,0.05)] fixed bottom-0 left-0 right-0 w-full z-50 rounded-t-xl border-t border-outline-variant/30 transition-all duration-200">
+    <div class="flex justify-around items-center px-2 pb-safe h-16 max-w-2xl mx-auto w-full">
+      <button id="navBtnDeliver" class="nav-tab-btn flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-xl px-3 py-1 transition-all active:scale-90 w-1/4">
+        <span class="material-symbols-outlined text-[20px]" data-weight="fill">local_shipping</span>
+        <span class="text-[11px] font-bold">Deliver</span>
       </button>
-      <!-- Tab 2: Tracking -->
-      <button id="navBtnTracking" class="nav-tab-btn flex flex-col items-center justify-center text-on-surface-variant px-4 py-1.5 hover:bg-surface-variant rounded-xl transition-all active:scale-90 w-1/4">
-        <span class="material-symbols-outlined mb-0.5 text-[22px]">distance</span>
-        <span class="text-xs font-medium">Tracking</span>
+      <button id="navBtnTracking" class="nav-tab-btn flex flex-col items-center justify-center text-on-surface-variant px-3 py-1 hover:bg-surface-variant rounded-xl transition-all active:scale-90 w-1/4">
+        <span class="material-symbols-outlined text-[20px]">distance</span>
+        <span class="text-[11px] font-medium">Tracking</span>
       </button>
-      <!-- Tab 3: History -->
-      <button id="navBtnHistory" class="nav-tab-btn flex flex-col items-center justify-center text-on-surface-variant px-4 py-1.5 hover:bg-surface-variant rounded-xl transition-all active:scale-90 w-1/4">
-        <span class="material-symbols-outlined mb-0.5 text-[22px]">history</span>
-        <span class="text-xs font-medium">History</span>
+      <button id="navBtnHistory" class="nav-tab-btn flex flex-col items-center justify-center text-on-surface-variant px-3 py-1 hover:bg-surface-variant rounded-xl transition-all active:scale-90 w-1/4">
+        <span class="material-symbols-outlined text-[20px]">history</span>
+        <span class="text-[11px] font-medium">History</span>
       </button>
-      <!-- Tab 4: Profile -->
-      <button id="navBtnProfile" class="nav-tab-btn flex flex-col items-center justify-center text-on-surface-variant px-4 py-1.5 hover:bg-surface-variant rounded-xl transition-all active:scale-90 w-1/4">
-        <span class="material-symbols-outlined mb-0.5 text-[22px]">person</span>
-        <span class="text-xs font-medium">Profile</span>
+      <button id="navBtnProfile" class="nav-tab-btn flex flex-col items-center justify-center text-on-surface-variant px-3 py-1 hover:bg-surface-variant rounded-xl transition-all active:scale-90 w-1/4">
+        <span class="material-symbols-outlined text-[20px]">person</span>
+        <span class="text-[11px] font-medium">Profile</span>
       </button>
     </div>
   </nav>
