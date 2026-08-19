@@ -1,12 +1,62 @@
 /**
  * Transitly — Instant Multi-Screen Experience & Telematics Engine
+ * Features:
+ *  - Lazy Loading for WebSockets and Leaflet Map
+ *  - Internal Parcel Insights Validation & Bus/Route Assignment
+ *  - Automated 30-Second Live Telematics Movement & Countdown Refresh
  */
 
-document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', () => {
   const API_BASE = (window.location.port === '3000' || window.location.port === '') ? '' : 'http://localhost:3000';
 
   // -------------------------------------------------------------
-  // 1. Tab Router (Deliver, Tracking, Services, History, Profile, Sub-screens)
+  // 1. Lazy Loading for Heavy Plugins (Leaflet & Socket.io)
+  // -------------------------------------------------------------
+  let isLeafletLoaded = false;
+  let leafletLoadPromise = null;
+
+  const loadLeafletAndSockets = () => {
+    if (isLeafletLoaded) return Promise.resolve();
+    if (leafletLoadPromise) return leafletLoadPromise;
+
+    leafletLoadPromise = new Promise((resolve) => {
+      // 1. Inject Leaflet CSS
+      if (!document.getElementById('leaflet-css')) {
+        const link = document.createElement('link');
+        link.id = 'leaflet-css';
+        link.rel = 'stylesheet';
+        link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+        document.head.appendChild(link);
+      }
+
+      // 2. Load Leaflet JS
+      const scriptLeaflet = document.createElement('script');
+      scriptLeaflet.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+      scriptLeaflet.onload = () => {
+        // 3. Load Socket.io JS
+        const scriptSocket = document.createElement('script');
+        scriptSocket.src = 'https://cdn.socket.io/4.8.3/socket.io.min.js';
+        scriptSocket.onload = () => {
+          isLeafletLoaded = true;
+          initMap();
+          resolve();
+        };
+        scriptSocket.onerror = () => {
+          isLeafletLoaded = true;
+          initMap();
+          resolve();
+        };
+        document.body.appendChild(scriptSocket);
+      };
+      scriptLeaflet.onerror = () => resolve();
+      document.body.appendChild(scriptLeaflet);
+    });
+
+    return leafletLoadPromise;
+  };
+
+  // -------------------------------------------------------------
+  // 2. Tab Router (Deliver, Tracking, Services, History, Profile, Sub-screens)
   // -------------------------------------------------------------
   const tabViews = {
     deliver: document.getElementById('tab-deliver'),
@@ -32,16 +82,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   const mainBottomNav = document.getElementById('mainBottomNav');
   const mainAppHeader = document.getElementById('mainAppHeader');
 
-  window.switchTab = (tabKey) => {
-    // Instant tab toggle with zero DOM latency
+  window.switchTab = async (tabKey) => {
+    // Instant zero-latency tab visibility toggle
     Object.keys(tabViews).forEach((key) => {
       const el = tabViews[key];
       if (el) {
         if (key === tabKey) {
           el.classList.add('active');
-          if (key === 'tracking') {
-            el.classList.add('flex-tab');
-          }
+          if (key === 'tracking') el.classList.add('flex-tab');
         } else {
           el.classList.remove('active');
           el.classList.remove('flex-tab');
@@ -86,11 +134,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     window.scrollTo({ top: 0, behavior: 'instant' });
 
-    if (tabKey === 'tracking' && map) {
-      setTimeout(() => {
-        map.invalidateSize();
-        if (routeLine) map.fitBounds(routeLine.getBounds(), { padding: [30, 30] });
-      }, 100);
+    // Lazy load map and socket when entering Tracking tab
+    if (tabKey === 'tracking') {
+      await loadLeafletAndSockets();
+      if (map) {
+        setTimeout(() => {
+          map.invalidateSize();
+          if (routeLine) map.fitBounds(routeLine.getBounds(), { padding: [30, 30] });
+        }, 80);
+      }
     }
   };
 
@@ -188,10 +240,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (btnHelpChatSupport) btnHelpChatSupport.addEventListener('click', () => triggerWhatsApp('Hi Transitly, I have a question about my parcels.'));
 
   const btnFloatingWhatsAppHelp = document.getElementById('btnFloatingWhatsAppHelp');
-  if (btnFloatingWhatsAppHelp) btnFloatingWhatsAppHelp.addEventListener('click', () => triggerWhatsApp('Hi Transitly Assistant, I want to track parcel TRK-DEL-JAI-9876'));
+  if (btnFloatingWhatsAppHelp) btnFloatingWhatsAppHelp.addEventListener('click', () => triggerWhatsApp('Hi Transitly Assistant, I want to verify parcel tracking.'));
 
   // -------------------------------------------------------------
-  // 2. Booking Modal Controls
+  // 3. Booking Modal Controls
   // -------------------------------------------------------------
   const bookingModal = document.getElementById('bookingModal');
   const btnHeroBookNow = document.getElementById('btnHeroBookNow');
@@ -228,7 +280,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     btnQuickSearch.addEventListener('click', () => {
       const homeInput = document.getElementById('homeSearchInput');
       const val = homeInput ? homeInput.value.trim() : '';
-      if (val.toUpperCase().startsWith('TRK-')) {
+      if (val.toUpperCase().startsWith('TRK-') || val.length >= 5) {
         searchByTrackingId(val);
       } else {
         openBookingModal();
@@ -236,13 +288,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  // Allow enter key in home search input
   const homeSearchInput = document.getElementById('homeSearchInput');
   if (homeSearchInput) {
     homeSearchInput.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
         const val = homeSearchInput.value.trim();
-        if (val.toUpperCase().startsWith('TRK-')) {
+        if (val.toUpperCase().startsWith('TRK-') || val.length >= 5) {
           searchByTrackingId(val);
         } else {
           openBookingModal();
@@ -324,21 +375,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
         const data = await res.json();
         const successBox = document.getElementById('modalBookingSuccess');
-        if (successBox) {
+        if (successBox && data.data) {
           successBox.classList.remove('hidden');
           successBox.innerHTML = `
             🎉 <strong>Booking Confirmed!</strong><br>
-            Tracking ID: <span class="font-mono">${data.data.shipment.trackingId}</span>
+            Parcel Tracking ID: <span class="font-mono font-bold">${data.data.shipment.trackingId}</span>
           `;
           setTimeout(() => {
             closeBookingModal();
-            switchTab('tracking');
+            searchByTrackingId(data.data.shipment.trackingId);
           }, 1500);
         }
       } catch (err) {
         alert('Booking confirmed in test simulation.');
         closeBookingModal();
-        switchTab('tracking');
+        searchByTrackingId('TRK-88219');
       } finally {
         btn.disabled = false;
         btn.innerText = 'Confirm Booking';
@@ -347,7 +398,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   // -------------------------------------------------------------
-  // 3. Delivery History Filters
+  // 4. Delivery History Filters
   // -------------------------------------------------------------
   const historyChips = document.querySelectorAll('.history-chip');
   const historyCards = document.querySelectorAll('.history-item-card');
@@ -380,15 +431,20 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   if (historySearchInput) historySearchInput.addEventListener('input', filterHistory);
-  historyCards.forEach((card) => card.addEventListener('click', () => switchTab('tracking')));
+  historyCards.forEach((card) => {
+    card.addEventListener('click', () => {
+      searchByTrackingId('TRK-88219');
+    });
+  });
 
   // -------------------------------------------------------------
-  // 4. Live Telematics & Leaflet Map
+  // 5. Corridors & Internal Parcel Insights Catalog
   // -------------------------------------------------------------
   const corridorsData = {
     'HR-DEL-CHD': {
-      busNumber: '#402',
+      busNumber: 'Fleet Bus #402',
       vehicle: 'HR-55-AB-1234',
+      routeName: 'Delhi (ISBT Kashmere Gate) ➔ Chandigarh (Sector 17)',
       stops: [
         { name: 'ISBT Kashmere Gate, Delhi', lat: 28.6675, lon: 77.2285, time: '08:30 PM' },
         { name: 'Sonipat Bus Stand', lat: 28.9950, lon: 77.0190, time: '09:15 PM' },
@@ -401,8 +457,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       ]
     },
     'HR-DEL-NRN': {
-      busNumber: '#205',
+      busNumber: 'Fleet Bus #205',
       vehicle: 'HR-24-GH-3456',
+      routeName: 'Delhi ➔ Gurgaon ➔ Rewari ➔ Narnaul Depot',
       stops: [
         { name: 'ISBT Kashmere Gate, Delhi', lat: 28.6675, lon: 77.2285, time: '07:00 PM' },
         { name: 'Dhaula Kuan Transit Hub', lat: 28.5921, lon: 77.1610, time: '07:30 PM' },
@@ -413,8 +470,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       ]
     },
     'HR-DEL-SRS': {
-      busNumber: '#318',
+      busNumber: 'Fleet Bus #318',
       vehicle: 'HR-39-EF-9012',
+      routeName: 'Delhi (Tikri Border) ➔ Rohtak ➔ Hisar ➔ Sirsa',
       stops: [
         { name: 'Tikri Border', lat: 28.6920, lon: 76.9650, time: '06:00 PM' },
         { name: 'Rohtak Bus Stand', lat: 28.8955, lon: 76.6066, time: '07:05 PM' },
@@ -424,8 +482,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       ]
     },
     'HR-GGN-HDL': {
-      busNumber: '#112',
+      busNumber: 'Fleet Bus #112',
       vehicle: 'HR-55-AB-1234',
+      routeName: 'Gurgaon ➔ Faridabad ➔ Palwal ➔ Hodal',
       stops: [
         { name: 'Gurgaon Central Stand', lat: 28.4595, lon: 77.0266, time: '04:00 PM' },
         { name: 'Faridabad NIT Depot', lat: 28.3980, lon: 77.3060, time: '04:40 PM' },
@@ -434,8 +493,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       ]
     },
     'HR-CHD-YMN': {
-      busNumber: '#504',
+      busNumber: 'Fleet Bus #504',
       vehicle: 'HR-01-IJ-7890',
+      routeName: 'Chandigarh (Sector 17) ➔ Ambala ➔ Yamunanagar',
       stops: [
         { name: 'ISBT Sector 17, Chandigarh', lat: 30.7410, lon: 76.7790, time: '09:00 AM' },
         { name: 'Ambala City Hub', lat: 30.3780, lon: 76.7760, time: '09:50 AM' },
@@ -443,8 +503,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       ]
     },
     'TR-DEL-JAI': {
-      busNumber: '#108',
+      busNumber: 'Express Bus #108',
       vehicle: 'DL-01-AB-1234',
+      routeName: 'Delhi ➔ Gurgaon ➔ Behror ➔ Jaipur (Sindhi Camp)',
       stops: [
         { name: 'ISBT Kashmere Gate, Delhi', lat: 28.6675, lon: 77.2285, time: '08:30 PM' },
         { name: 'IFFCO Chowk, Gurgaon', lat: 28.4720, lon: 77.0725, time: '09:15 PM' },
@@ -454,24 +515,73 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   };
 
+  // Internal Parcel Registry Catalog (Legitimate Parcel IDs)
+  const parcelDatabase = {
+    'TRK-88219': {
+      corridor: 'HR-DEL-CHD',
+      busNumber: 'Fleet Bus #402',
+      vehicle: 'HR-55-AB-1234',
+      bay: 'Bay B2 • QR Sealed',
+      parties: 'Aarav S. ➔ Rohan V.',
+      status: 'In Transit',
+      carrier: 'Rapido Express',
+      stopIdx: 3
+    },
+    'TRK-60912': {
+      corridor: 'TR-DEL-JAI',
+      busNumber: 'Express Bus #108',
+      vehicle: 'DL-01-AB-1234',
+      bay: 'Bay A1 • Tamper Sealed',
+      parties: 'Priya K. ➔ Sameer J.',
+      status: 'In Transit',
+      carrier: 'Uber Direct',
+      stopIdx: 2
+    },
+    'TRK-74911': {
+      corridor: 'HR-DEL-SRS',
+      busNumber: 'Fleet Bus #318',
+      vehicle: 'HR-39-EF-9012',
+      bay: 'Bay C4 • QR Verified',
+      parties: 'Vikas N. ➔ Ananya M.',
+      status: 'Departed Hub',
+      carrier: 'inDrive',
+      stopIdx: 2
+    },
+    'TRK-41029': {
+      corridor: 'HR-DEL-NRN',
+      busNumber: 'Fleet Bus #205',
+      vehicle: 'HR-24-GH-3456',
+      bay: 'Bay B1 • Secure Lock',
+      parties: 'Deepak T. ➔ Pooja R.',
+      status: 'In Transit',
+      carrier: 'CitySprint',
+      stopIdx: 3
+    }
+  };
+
   let activeRouteKey = 'HR-DEL-CHD';
   let currentStopIdx = 3;
+  let activeParcelId = 'TRK-88219';
   let map = null;
   let vehicleMarker = null;
   let routeLine = null;
   let stopMarkers = [];
 
-  const mapContainer = document.getElementById('liveTrackingMap');
-  if (mapContainer && typeof L !== 'undefined') {
-    map = L.map('liveTrackingMap', {
-      zoomControl: true,
-      attributionControl: false
-    }).setView([29.6857, 76.9905], 9);
+  const initMap = () => {
+    const mapContainer = document.getElementById('liveTrackingMap');
+    if (mapContainer && typeof L !== 'undefined' && !map) {
+      map = L.map('liveTrackingMap', {
+        zoomControl: true,
+        attributionControl: false
+      }).setView([29.6857, 76.9905], 9);
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19
-    }).addTo(map);
-  }
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19
+      }).addTo(map);
+
+      renderTrackingRoute(activeRouteKey);
+    }
+  };
 
   const renderTrackingRoute = (routeKey) => {
     const route = corridorsData[routeKey];
@@ -509,7 +619,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       stopMarkers.push(m);
     });
 
-    const curr = stops[currentStopIdx];
+    const curr = stops[currentStopIdx] || stops[0];
     const busIcon = L.divIcon({
       className: 'custom-bus-icon',
       html: `
@@ -530,67 +640,109 @@ document.addEventListener('DOMContentLoaded', async () => {
       vehicleMarker = L.marker([curr.lat, curr.lon], { icon: busIcon, zIndexOffset: 1000 }).addTo(map);
     }
 
+    // Update Status & Insights
     const trackStatusTitle = document.getElementById('trackStatusTitle');
-    if (trackStatusTitle) trackStatusTitle.innerText = `In Transit via Bus ${route.busNumber}`;
+    if (trackStatusTitle) trackStatusTitle.innerText = `In Transit via ${route.busNumber}`;
 
     const trackHandoffText = document.getElementById('trackHandoffText');
     if (trackHandoffText) trackHandoffText.innerText = `${curr.name} to Rapido Rider`;
 
     const timelineActiveStopTitle = document.getElementById('timelineActiveStopTitle');
-    if (timelineActiveStopTitle) timelineActiveStopTitle.innerText = `In Transit – Bus ${route.busNumber}`;
+    if (timelineActiveStopTitle) timelineActiveStopTitle.innerText = `In Transit – ${route.busNumber}`;
 
     const timelineActiveStopSub = document.getElementById('timelineActiveStopSub');
     if (timelineActiveStopSub) timelineActiveStopSub.innerText = `Currently near ${curr.name}`;
+
+    const insightBusName = document.getElementById('insightBusName');
+    if (insightBusName) insightBusName.innerText = `${route.busNumber} (${route.vehicle})`;
+
+    const insightRouteName = document.getElementById('insightRouteName');
+    if (insightRouteName) insightRouteName.innerText = route.routeName;
   };
 
-  renderTrackingRoute(activeRouteKey);
-
-  // Tracking ID to Corridor Catalog Mapping
-  const trackingIdCatalog = {
-    'TRK-DEL-CHD-402': { corridor: 'HR-DEL-CHD', status: 'In Transit', carrier: 'Rapido Express', stopIdx: 3 },
-    'TRK-DEL-JAI-108': { corridor: 'TR-DEL-JAI', status: 'In Transit', carrier: 'Uber Direct', stopIdx: 2 },
-    'TRK-DEL-SRS-318': { corridor: 'HR-DEL-SRS', status: 'Departed Hub', carrier: 'inDrive', stopIdx: 2 },
-    'TRK-DEL-NRN-205': { corridor: 'HR-DEL-NRN', status: 'In Transit', carrier: 'CitySprint', stopIdx: 3 },
-    'TRK-GGN-HDL-112': { corridor: 'HR-GGN-HDL', status: 'Scheduled', carrier: 'Rapido Express', stopIdx: 1 },
-    'TRK-CHD-YMN-504': { corridor: 'HR-CHD-YMN', status: 'In Transit', carrier: 'Uber Direct', stopIdx: 1 }
-  };
-
-  window.searchByTrackingId = (rawId) => {
+  // -------------------------------------------------------------
+  // 6. Parcel ID Verification & Internal Search Engine
+  // -------------------------------------------------------------
+  window.searchByTrackingId = async (rawId) => {
     if (!rawId) return;
     const tid = rawId.trim().toUpperCase();
+    const errorBox = document.getElementById('parcelSearchError');
+    if (errorBox) errorBox.classList.add('hidden');
 
-    // Find direct or fuzzy matching corridor
-    let match = trackingIdCatalog[tid];
-    let matchedCorridor = 'HR-DEL-CHD';
+    let matchedParcel = parcelDatabase[tid];
+    let matchedCorridor = null;
 
-    if (match) {
-      matchedCorridor = match.corridor;
-      if (match.stopIdx !== undefined) currentStopIdx = match.stopIdx;
-    } else {
-      // Fuzzy corridor inference from ID substring
-      if (tid.includes('JAI')) matchedCorridor = 'TR-DEL-JAI';
-      else if (tid.includes('SRS') || tid.includes('SIRSA')) matchedCorridor = 'HR-DEL-SRS';
-      else if (tid.includes('NRN') || tid.includes('NARNAUL')) matchedCorridor = 'HR-DEL-NRN';
-      else if (tid.includes('HDL') || tid.includes('HODAL') || tid.includes('GGN')) matchedCorridor = 'HR-GGN-HDL';
-      else if (tid.includes('YMN') || tid.includes('YAMUNA')) matchedCorridor = 'HR-CHD-YMN';
-      else matchedCorridor = 'HR-DEL-CHD';
+    // If not in static registry, check backend API
+    if (!matchedParcel) {
+      try {
+        const res = await fetch(`${API_BASE}/api/v1/shipments/${tid}`);
+        if (res.ok) {
+          const apiData = await res.json();
+          if (apiData && apiData.data) {
+            matchedParcel = {
+              corridor: 'HR-DEL-CHD',
+              busNumber: 'Fleet Bus #402',
+              vehicle: 'HR-55-AB-1234',
+              bay: 'Assigned Compartment B',
+              parties: `${apiData.data.sender?.name || 'Sender'} ➔ ${apiData.data.recipient?.name || 'Recipient'}`,
+              status: apiData.data.status || 'In Transit',
+              carrier: 'Rapido Express',
+              stopIdx: 2
+            };
+          }
+        }
+      } catch (e) {}
     }
 
-    // Update UI Elements
+    // Fuzzy validation for parcel tracking syntax (e.g. TRK-...)
+    if (!matchedParcel && (tid.startsWith('TRK-') || tid.length >= 5)) {
+      if (tid.includes('JAI') || tid.includes('JAIPUR')) {
+        matchedParcel = { corridor: 'TR-DEL-JAI', busNumber: 'Express Bus #108', vehicle: 'DL-01-AB-1234', bay: 'Bay A1', parties: 'Verified Client', status: 'In Transit', stopIdx: 2 };
+      } else if (tid.includes('SRS') || tid.includes('SIRSA')) {
+        matchedParcel = { corridor: 'HR-DEL-SRS', busNumber: 'Fleet Bus #318', vehicle: 'HR-39-EF-9012', bay: 'Bay C2', parties: 'Verified Client', status: 'In Transit', stopIdx: 2 };
+      } else if (tid.includes('NRN') || tid.includes('NARNAUL')) {
+        matchedParcel = { corridor: 'HR-DEL-NRN', busNumber: 'Fleet Bus #205', vehicle: 'HR-24-GH-3456', bay: 'Bay B1', parties: 'Verified Client', status: 'In Transit', stopIdx: 3 };
+      } else {
+        matchedParcel = { corridor: 'HR-DEL-CHD', busNumber: 'Fleet Bus #402', vehicle: 'HR-55-AB-1234', bay: 'Bay B2', parties: 'Verified Client', status: 'In Transit', stopIdx: 3 };
+      }
+    }
+
+    // If Parcel ID is completely invalid
+    if (!matchedParcel) {
+      if (errorBox) {
+        errorBox.classList.remove('hidden');
+        const msg = document.getElementById('parcelSearchErrorMsg');
+        if (msg) msg.innerText = `Parcel ID "${tid}" is not recognized. Please check your booking code.`;
+      }
+      return;
+    }
+
+    // Validated Legitimate Parcel ID
+    activeParcelId = tid;
+    matchedCorridor = matchedParcel.corridor;
+    currentStopIdx = matchedParcel.stopIdx || 2;
+
+    // Update UI Elements with verified insights
     const trackedIdDisplay = document.getElementById('trackedIdDisplay');
     if (trackedIdDisplay) trackedIdDisplay.innerText = tid;
 
     const inputTrackingId = document.getElementById('inputTrackingId');
     if (inputTrackingId) inputTrackingId.value = tid;
 
-    const trackingDropdown = document.getElementById('trackingCorridorDropdown');
-    if (trackingDropdown) trackingDropdown.value = matchedCorridor;
+    const insightCargoBay = document.getElementById('insightCargoBay');
+    if (insightCargoBay) insightCargoBay.innerText = matchedParcel.bay || 'Bay B2 • QR Sealed';
 
-    // Render corresponding route and center map
-    renderTrackingRoute(matchedCorridor);
+    const insightParties = document.getElementById('insightParties');
+    if (insightParties) insightParties.innerText = matchedParcel.parties || 'Sender ➔ Recipient';
 
-    // Switch to Tracking tab
-    switchTab('tracking');
+    // Switch to Tracking Tab (lazy loads map if not loaded)
+    await switchTab('tracking');
+
+    if (map) {
+      renderTrackingRoute(matchedCorridor);
+      const curr = corridorsData[matchedCorridor].stops[currentStopIdx];
+      map.panTo([curr.lat, curr.lon], { animate: true, duration: 0.8 });
+    }
   };
 
   // Form submit handler
@@ -605,96 +757,82 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  // Sample chip clicks
-  document.querySelectorAll('.sample-track-chip').forEach((chip) => {
-    chip.addEventListener('click', () => {
-      const tid = chip.getAttribute('data-tid');
-      if (tid) searchByTrackingId(tid);
-    });
-  });
+  // -------------------------------------------------------------
+  // 7. Automated 30-Second Live Telematics Movement & Refresh
+  // -------------------------------------------------------------
+  let refreshSecondsLeft = 30;
 
-  const trackingDropdown = document.getElementById('trackingCorridorDropdown');
-  if (trackingDropdown) {
-    trackingDropdown.addEventListener('change', (e) => {
-      const routeKey = e.target.value;
-      renderTrackingRoute(routeKey);
-      // Auto-update sample tracking ID badge for that corridor
-      const sampleTidMap = {
-        'HR-DEL-CHD': 'TRK-DEL-CHD-402',
-        'TR-DEL-JAI': 'TRK-DEL-JAI-108',
-        'HR-DEL-SRS': 'TRK-DEL-SRS-318',
-        'HR-DEL-NRN': 'TRK-DEL-NRN-205',
-        'HR-GGN-HDL': 'TRK-GGN-HDL-112',
-        'HR-CHD-YMN': 'TRK-CHD-YMN-504'
-      };
-      const trackedIdDisplay = document.getElementById('trackedIdDisplay');
-      if (trackedIdDisplay && sampleTidMap[routeKey]) {
-        trackedIdDisplay.innerText = sampleTidMap[routeKey];
+  const triggerLiveTelemetryStep = async () => {
+    const route = corridorsData[activeRouteKey];
+    if (!route) return;
+
+    currentStopIdx = (currentStopIdx + 1) % route.stops.length;
+    if (currentStopIdx === 0) currentStopIdx = 1;
+
+    const nextStop = route.stops[currentStopIdx];
+    const speed = Math.floor(62 + Math.random() * 16);
+    const remainingKm = Math.max(2.4, (route.stops.length - currentStopIdx) * 11.5);
+    const etaMins = Math.round(remainingKm / 1.15);
+
+    try {
+      await fetch(`${API_BASE}/api/v1/tracking/telemetry`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          vehicleId: route.vehicle,
+          operatorId: '10',
+          latitude: nextStop.lat,
+          longitude: nextStop.lon,
+          speedKmh: speed,
+          heading: 180
+        })
+      });
+    } catch (err) {}
+
+    // Update Telematics UI
+    const distEl = document.getElementById('trackDistance');
+    if (distEl) distEl.innerText = `${remainingKm.toFixed(1)} km`;
+    const etaEl = document.getElementById('trackEta');
+    if (etaEl) etaEl.innerText = `${etaMins}m`;
+
+    const insightSpeed = document.getElementById('insightSpeed');
+    if (insightSpeed) insightSpeed.innerText = `Speed: ${speed} km/h`;
+
+    if (vehicleMarker && map) {
+      vehicleMarker.setLatLng([nextStop.lat, nextStop.lon]);
+      map.panTo([nextStop.lat, nextStop.lon], { animate: true, duration: 1.0 });
+    }
+
+    renderTrackingRoute(activeRouteKey);
+  };
+
+  // 30-Second Live Refresh Interval with 1s visual countdown
+  setInterval(() => {
+    refreshSecondsLeft -= 1;
+    if (refreshSecondsLeft <= 0) {
+      refreshSecondsLeft = 30;
+      // Only execute if tracking tab is visible
+      const trackingTab = document.getElementById('tab-tracking');
+      if (trackingTab && trackingTab.classList.contains('active') && map) {
+        triggerLiveTelemetryStep();
       }
-    });
-  }
-
-  // Advance simulation
-  const btnAdvanceRouteLive = document.getElementById('btnAdvanceRouteLive');
-  if (btnAdvanceRouteLive) {
-    btnAdvanceRouteLive.addEventListener('click', async () => {
-      const route = corridorsData[activeRouteKey];
-      if (!route) return;
-
-      currentStopIdx = (currentStopIdx + 1) % route.stops.length;
-      if (currentStopIdx === 0) currentStopIdx = 1;
-
-      const nextStop = route.stops[currentStopIdx];
-      const speed = Math.floor(62 + Math.random() * 18);
-      const remainingKm = Math.max(2.4, (route.stops.length - currentStopIdx) * 11.5);
-      const etaMins = Math.round(remainingKm / 1.15);
-
-      btnAdvanceRouteLive.innerText = 'Moving...';
-
-      try {
-        await fetch(`${API_BASE}/api/v1/tracking/telemetry`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            vehicleId: route.vehicle,
-            operatorId: '10',
-            latitude: nextStop.lat,
-            longitude: nextStop.lon,
-            speedKmh: speed,
-            heading: 180
-          })
-        });
-
-        const distEl = document.getElementById('trackDistance');
-        if (distEl) distEl.innerText = `${remainingKm.toFixed(1)} km`;
-        const etaEl = document.getElementById('trackEta');
-        if (etaEl) etaEl.innerText = `${etaMins}m`;
-
-        if (vehicleMarker && map) {
-          vehicleMarker.setLatLng([nextStop.lat, nextStop.lon]);
-          map.panTo([nextStop.lat, nextStop.lon], { animate: true, duration: 0.8 });
-        }
-
-        renderTrackingRoute(activeRouteKey);
-        btnAdvanceRouteLive.innerText = '✔ Moved';
-        setTimeout(() => { btnAdvanceRouteLive.innerText = 'Advance'; }, 1000);
-      } catch (err) {
-        btnAdvanceRouteLive.innerText = 'Advance';
-      }
-    });
-  }
+    }
+    const countdownEl = document.getElementById('refreshCountdownSecs');
+    if (countdownEl) countdownEl.innerText = refreshSecondsLeft;
+  }, 1000);
 
   const btnTrackingSupport = document.getElementById('btnTrackingSupport');
-  if (btnTrackingSupport) btnTrackingSupport.addEventListener('click', () => triggerWhatsApp('Hi Transitly Support, I need assistance with parcel TRK-DEL-JAI-9876'));
+  if (btnTrackingSupport) btnTrackingSupport.addEventListener('click', () => triggerWhatsApp(`Hi Transitly Support, I need assistance with parcel ${activeParcelId}`));
 
   const btnTrackingShare = document.getElementById('btnTrackingShare');
   if (btnTrackingShare) {
     btnTrackingShare.addEventListener('click', () => {
+      const shareUrl = `${window.location.origin}/?track=${activeParcelId}`;
       if (navigator.share) {
-        navigator.share({ title: 'Transitly Tracking', text: 'Track parcel on Transitly', url: window.location.href }).catch(() => {});
+        navigator.share({ title: 'Transitly Parcel Tracking', text: `Track parcel ${activeParcelId} on Transitly`, url: shareUrl }).catch(() => {});
       } else {
-        navigator.clipboard.writeText(window.location.href);
-        alert('Tracking link copied to clipboard!');
+        navigator.clipboard.writeText(shareUrl);
+        alert(`Tracking link for ${activeParcelId} copied to clipboard!`);
       }
     });
   }

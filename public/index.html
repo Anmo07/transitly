@@ -28,9 +28,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" media="print" onload="this.media='all'"/>
   <noscript><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/></noscript>
 
-  <!-- Leaflet Map CSS (deferred — only used on Tracking tab, not homepage) -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" media="print" onload="this.media='all'"/>
-
   <!-- Tailwind CSS with Stitch Custom Config -->
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   <script id="tailwind-config">
@@ -378,78 +375,88 @@
   <!-- ========================================================================= -->
   <!-- SCREEN 2: TRACKING (LIVE MAP & TELEMATICS - STITCH DESIGN)                -->
   <!-- ========================================================================= -->
+  <!-- ========================================================================= -->
+  <!-- SCREEN 2: TRACKING (LIVE MAP & TELEMATICS - STITCH DESIGN)                -->
+  <!-- ========================================================================= -->
   <div id="tab-tracking" class="tab-view flex-tab w-full max-w-2xl mx-auto flex-col relative h-[calc(100dvh-56px)] pt-0 overflow-hidden">
-    <!-- Top Floating Controls: Tracking ID Search & Corridor Selector -->
-    <div class="absolute top-2.5 left-3 right-3 z-20 space-y-2">
-      <!-- Search via Tracking ID Bar -->
-      <div class="bg-white/95 backdrop-blur-md border border-outline-variant/40 rounded-2xl p-2 shadow-level-2 space-y-1.5">
+    <!-- Top Floating Controls: Parcel ID Verification Bar -->
+    <div class="absolute top-2.5 left-3 right-3 z-20 space-y-1.5">
+      <!-- Verified Parcel ID Search Bar -->
+      <div class="bg-white/95 backdrop-blur-md border border-outline-variant/40 rounded-2xl p-2 shadow-level-2">
         <form id="trackingIdSearchForm" class="flex items-center gap-1.5 w-full">
           <div class="relative flex-1">
-            <span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant text-base">search</span>
-            <input id="inputTrackingId" type="text" placeholder="Search Tracking ID (e.g. TRK-DEL-CHD-402)" class="w-full pl-8 pr-2 py-1.5 bg-surface-container-low rounded-xl text-xs font-semibold border-none focus:ring-1 focus:ring-primary text-on-surface uppercase placeholder:normal-case placeholder:font-normal" />
+            <span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-primary text-base">verified</span>
+            <input id="inputTrackingId" type="text" placeholder="Enter Parcel Tracking ID (e.g. TRK-88219)" class="w-full pl-8 pr-2.5 py-2 bg-surface-container-low rounded-xl text-xs font-bold border-none focus:ring-2 focus:ring-primary text-on-surface uppercase placeholder:normal-case placeholder:font-normal shadow-inner" required />
           </div>
-          <button type="submit" id="btnSearchTrackingId" class="bg-primary text-white text-xs font-bold px-3 py-1.5 rounded-xl hover:bg-primary-container shrink-0 flex items-center gap-1 transition-all shadow-sm">
-            <span class="material-symbols-outlined text-[15px]">radar</span>
-            <span>Track</span>
+          <button type="submit" id="btnSearchTrackingId" class="bg-primary text-white text-xs font-bold px-3.5 py-2 rounded-xl hover:bg-primary-container shrink-0 flex items-center gap-1 transition-all shadow-md active:scale-95">
+            <span class="material-symbols-outlined text-[16px]">search</span>
+            <span>Verify & Track</span>
           </button>
         </form>
-        <!-- Quick Sample Tracking IDs -->
-        <div class="flex items-center gap-1 overflow-x-auto no-scrollbar text-[10px] pt-0.5">
-          <span class="text-outline font-bold shrink-0 text-[9px] uppercase tracking-wider pl-1">Samples:</span>
-          <button type="button" class="sample-track-chip px-2 py-0.5 rounded-full bg-surface-container hover:bg-primary-fixed/60 text-primary font-mono font-bold shrink-0 transition-colors" data-tid="TRK-DEL-CHD-402">TRK-DEL-CHD-402</button>
-          <button type="button" class="sample-track-chip px-2 py-0.5 rounded-full bg-surface-container hover:bg-primary-fixed/60 text-primary font-mono font-bold shrink-0 transition-colors" data-tid="TRK-DEL-JAI-108">TRK-DEL-JAI-108</button>
-          <button type="button" class="sample-track-chip px-2 py-0.5 rounded-full bg-surface-container hover:bg-primary-fixed/60 text-primary font-mono font-bold shrink-0 transition-colors" data-tid="TRK-DEL-SRS-318">TRK-DEL-SRS-318</button>
-          <button type="button" class="sample-track-chip px-2 py-0.5 rounded-full bg-surface-container hover:bg-primary-fixed/60 text-primary font-mono font-bold shrink-0 transition-colors" data-tid="TRK-DEL-NRN-205">TRK-DEL-NRN-205</button>
-        </div>
       </div>
 
-      <!-- Corridor Quick Switcher & Advance Simulation -->
-      <div class="flex justify-between items-center gap-2">
-        <div class="bg-white/95 backdrop-blur-md border border-outline-variant/30 rounded-full px-3 py-1 shadow-level-2 flex items-center gap-1.5 flex-1 min-w-0">
-          <span class="material-symbols-outlined text-primary text-sm shrink-0">alt_route</span>
-          <select id="trackingCorridorDropdown" class="text-[11px] font-bold bg-transparent border-none outline-none focus:ring-0 text-on-surface cursor-pointer truncate w-full p-0">
-            <option value="HR-DEL-CHD">🚍 HR-402: Delhi ➔ Chandigarh (GT Road)</option>
-            <option value="HR-DEL-NRN">🚍 HR-205: Delhi ➔ Rewari ➔ Narnaul</option>
-            <option value="HR-DEL-SRS">🚍 HR-318: Delhi ➔ Rohtak ➔ Sirsa</option>
-            <option value="HR-GGN-HDL">🚍 HR-112: Gurgaon ➔ Faridabad ➔ Hodal</option>
-            <option value="HR-CHD-YMN">🚍 HR-504: Chandigarh ➔ Yamunanagar</option>
-            <option value="TR-DEL-JAI">🚍 TR-108: Delhi ➔ Jaipur Express</option>
-          </select>
+      <!-- Validation Error Toast (Hidden by default) -->
+      <div id="parcelSearchError" class="hidden bg-rose-50 border border-rose-200 text-rose-800 text-xs px-3 py-2 rounded-xl flex items-center justify-between shadow-md animate-fade-in">
+        <div class="flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-rose-600 text-base">error</span>
+          <span id="parcelSearchErrorMsg">Parcel ID not recognized. Please verify your receipt or contact WhatsApp support.</span>
         </div>
-
-        <button id="btnAdvanceRouteLive" class="bg-primary text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-level-2 hover:bg-primary-container flex items-center gap-1 transition-all shrink-0">
-          <span class="material-symbols-outlined text-[16px]">fast_forward</span> Advance
-        </button>
+        <button type="button" class="text-rose-600 font-bold ml-2" onclick="document.getElementById('parcelSearchError').classList.add('hidden')">✕</button>
       </div>
     </div>
 
     <!-- Leaflet Map Canvas -->
     <div id="liveTrackingMap" class="w-full flex-1 z-0 bg-slate-900 min-h-[280px]"></div>
 
-    <!-- Slide-up Bottom Sheet (Live Tracking Details from Stitch) -->
-    <div class="bg-surface rounded-t-[24px] shadow-[0px_-4px_20px_rgba(0,0,0,0.08)] px-5 pt-3.5 pb-20 z-10 border-t border-outline-variant/20 max-h-[48vh] overflow-y-auto">
+    <!-- Slide-up Bottom Sheet (Live Tracking & Internal Parcel Insights) -->
+    <div class="bg-surface rounded-t-[24px] shadow-[0px_-4px_20px_rgba(0,0,0,0.08)] px-5 pt-3.5 pb-20 z-10 border-t border-outline-variant/20 max-h-[50vh] overflow-y-auto">
       <div class="w-10 h-1 bg-outline-variant/40 rounded-full mx-auto mb-3"></div>
 
-      <!-- Active Tracking ID Pill Badge -->
-      <div class="flex items-center justify-between bg-primary-fixed/40 border border-primary-fixed rounded-xl px-3 py-1.5 mb-3 text-xs">
+      <!-- Active Parcel Status & 30-Second Refresh Indicator -->
+      <div class="flex items-center justify-between bg-primary-fixed/40 border border-primary-fixed rounded-xl px-3 py-1.5 mb-2.5 text-xs">
         <div class="flex items-center gap-1.5">
           <span class="material-symbols-outlined text-primary text-sm">inventory_2</span>
-          <span class="text-[10px] text-on-surface-variant">Tracking:</span>
-          <span id="trackedIdDisplay" class="font-mono font-bold text-primary">TRK-DEL-CHD-402</span>
+          <span class="text-[10px] text-on-surface-variant font-medium">Parcel ID:</span>
+          <span id="trackedIdDisplay" class="font-mono font-extrabold text-primary">TRK-88219</span>
         </div>
-        <div class="flex items-center gap-1">
-          <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse"></span>
-          <span class="text-[10px] font-bold text-emerald-700">ACTIVE</span>
+        <div class="flex items-center gap-1.5">
+          <span id="liveRefreshTimerBadge" class="px-2 py-0.5 rounded-full bg-white text-primary text-[9px] font-mono font-extrabold shadow-sm flex items-center gap-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-ping"></span>
+            Auto-refresh: <span id="refreshCountdownSecs">30</span>s
+          </span>
+          <span class="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">VERIFIED</span>
+        </div>
+      </div>
+
+      <!-- Internal Parcel Insights Card -->
+      <div class="bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-3 mb-3 shadow-sm space-y-1.5 text-xs">
+        <div class="flex justify-between items-center pb-1 border-b border-outline-variant/20">
+          <span class="text-[10px] font-bold text-outline uppercase tracking-wider">Internal Parcel Insights</span>
+          <span id="insightCargoBay" class="text-[10px] font-bold text-primary bg-primary-fixed/40 px-2 py-0.5 rounded-full">Bay B2 • QR Sealed</span>
+        </div>
+        <div class="grid grid-cols-2 gap-2 text-[11px]">
+          <div>
+            <span class="text-on-surface-variant text-[10px] block">Assigned Transit Bus:</span>
+            <strong id="insightBusName" class="text-on-surface font-bold">Fleet Bus #402 (HR-55-AB-1234)</strong>
+          </div>
+          <div>
+            <span class="text-on-surface-variant text-[10px] block">Assigned Corridor:</span>
+            <strong id="insightRouteName" class="text-on-surface font-bold">Delhi ➔ Chandigarh</strong>
+          </div>
+          <div class="col-span-2 pt-1 border-t border-outline-variant/10 flex justify-between items-center text-[10px]">
+            <span class="text-on-surface-variant">Sender / Recipient: <strong id="insightParties" class="text-on-surface">Aarav S. ➔ Rohan V.</strong></span>
+            <span id="insightSpeed" class="font-mono text-primary font-bold">Speed: 64 km/h</span>
+          </div>
         </div>
       </div>
 
       <!-- Status Header -->
       <div class="flex justify-between items-start mb-3">
         <div>
-          <h2 id="trackStatusTitle" class="text-base font-bold text-on-surface mb-0.5">In Transit via Bus #402</h2>
+          <h2 id="trackStatusTitle" class="text-base font-bold text-on-surface mb-0.5">In Transit via Assigned Bus</h2>
           <p class="text-xs text-on-surface-variant flex items-center gap-1.5">
             <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-            Live Fast Path Updates (3ms)
+            Live GPS telemetry syncing every 30s
           </p>
         </div>
         <div class="text-right">
@@ -470,7 +477,6 @@
         <div class="shrink-0 text-right">
           <p class="text-[9px] font-bold text-on-surface-variant uppercase">Distance</p>
           <p id="trackDistance" class="text-xs text-on-surface font-bold">2.4 km</p>
-        </div>
       </div>
 
       <!-- Timeline (Stitch Spec with Active Status Halos) -->
@@ -1278,9 +1284,7 @@
     </div>
   </nav>
 
-  <!-- Deferred Scripts (non-blocking — parsed after HTML) -->
-  <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script defer src="https://cdn.socket.io/4.8.3/socket.io.min.js"></script>
+  <!-- Main Application Script (Lazy loads heavy Leaflet & Socket modules on demand) -->
   <script defer src="./js/app.js"></script>
 </body>
 </html>
