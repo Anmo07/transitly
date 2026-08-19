@@ -6,6 +6,8 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
+    "build:css": "tailwindcss -i ./src/css/input.css -o ./public/css/style.css --minify",
+    "watch:css": "tailwindcss -i ./src/css/input.css -o ./public/css/style.css --watch",
     "db:init": "node src/db/initDb.js",
     "test": "node tests/security.test.js && node tests/architecture.test.js && node tests/lastMile.test.js && node tests/whatsapp.test.js && node tests/telemetry.test.js && node tests/schema.test.js && node tests/haryanaRoadways.test.js"
   },
@@ -31,6 +33,9 @@
     "yamljs": "^0.3.0"
   },
   "devDependencies": {
-    "nodemon": "^3.1.14"
+    "autoprefixer": "^10.5.4",
+    "nodemon": "^3.1.14",
+    "postcss": "^8.5.26",
+    "tailwindcss": "^3.4.19"
   }
 }
