@@ -379,22 +379,48 @@
   <!-- SCREEN 2: TRACKING (LIVE MAP & TELEMATICS - STITCH DESIGN)                -->
   <!-- ========================================================================= -->
   <div id="tab-tracking" class="tab-view flex-tab w-full max-w-2xl mx-auto flex-col relative h-[calc(100dvh-56px)] pt-0 overflow-hidden">
-    <!-- Top Route Selector Floating Pill -->
-    <div class="absolute top-3 left-4 right-4 z-20 flex justify-between items-center">
-      <div class="bg-white/95 backdrop-blur-md border border-outline-variant/30 rounded-full px-3.5 py-1.5 shadow-level-2 flex items-center gap-2 max-w-[75%]">
-        <select id="trackingCorridorDropdown" class="text-xs font-bold bg-transparent border-none outline-none focus:ring-0 text-on-surface cursor-pointer truncate">
-          <option value="HR-DEL-CHD">🚍 HR-402: Delhi ➔ Chandigarh (GT Road)</option>
-          <option value="HR-DEL-NRN">🚍 HR-205: Delhi ➔ Rewari ➔ Narnaul</option>
-          <option value="HR-DEL-SRS">🚍 HR-318: Delhi ➔ Rohtak ➔ Sirsa</option>
-          <option value="HR-GGN-HDL">🚍 HR-112: Gurgaon ➔ Faridabad ➔ Hodal</option>
-          <option value="HR-CHD-YMN">🚍 HR-504: Chandigarh ➔ Yamunanagar</option>
-          <option value="TR-DEL-JAI">🚍 TR-108: Delhi ➔ Jaipur Express</option>
-        </select>
+    <!-- Top Floating Controls: Tracking ID Search & Corridor Selector -->
+    <div class="absolute top-2.5 left-3 right-3 z-20 space-y-2">
+      <!-- Search via Tracking ID Bar -->
+      <div class="bg-white/95 backdrop-blur-md border border-outline-variant/40 rounded-2xl p-2 shadow-level-2 space-y-1.5">
+        <form id="trackingIdSearchForm" class="flex items-center gap-1.5 w-full">
+          <div class="relative flex-1">
+            <span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant text-base">search</span>
+            <input id="inputTrackingId" type="text" placeholder="Search Tracking ID (e.g. TRK-DEL-CHD-402)" class="w-full pl-8 pr-2 py-1.5 bg-surface-container-low rounded-xl text-xs font-semibold border-none focus:ring-1 focus:ring-primary text-on-surface uppercase placeholder:normal-case placeholder:font-normal" />
+          </div>
+          <button type="submit" id="btnSearchTrackingId" class="bg-primary text-white text-xs font-bold px-3 py-1.5 rounded-xl hover:bg-primary-container shrink-0 flex items-center gap-1 transition-all shadow-sm">
+            <span class="material-symbols-outlined text-[15px]">radar</span>
+            <span>Track</span>
+          </button>
+        </form>
+        <!-- Quick Sample Tracking IDs -->
+        <div class="flex items-center gap-1 overflow-x-auto no-scrollbar text-[10px] pt-0.5">
+          <span class="text-outline font-bold shrink-0 text-[9px] uppercase tracking-wider pl-1">Samples:</span>
+          <button type="button" class="sample-track-chip px-2 py-0.5 rounded-full bg-surface-container hover:bg-primary-fixed/60 text-primary font-mono font-bold shrink-0 transition-colors" data-tid="TRK-DEL-CHD-402">TRK-DEL-CHD-402</button>
+          <button type="button" class="sample-track-chip px-2 py-0.5 rounded-full bg-surface-container hover:bg-primary-fixed/60 text-primary font-mono font-bold shrink-0 transition-colors" data-tid="TRK-DEL-JAI-108">TRK-DEL-JAI-108</button>
+          <button type="button" class="sample-track-chip px-2 py-0.5 rounded-full bg-surface-container hover:bg-primary-fixed/60 text-primary font-mono font-bold shrink-0 transition-colors" data-tid="TRK-DEL-SRS-318">TRK-DEL-SRS-318</button>
+          <button type="button" class="sample-track-chip px-2 py-0.5 rounded-full bg-surface-container hover:bg-primary-fixed/60 text-primary font-mono font-bold shrink-0 transition-colors" data-tid="TRK-DEL-NRN-205">TRK-DEL-NRN-205</button>
+        </div>
       </div>
 
-      <button id="btnAdvanceRouteLive" class="bg-primary text-white text-xs font-bold px-3.5 py-1.5 rounded-full shadow-level-2 hover:bg-primary-container flex items-center gap-1 transition-all shrink-0">
-        <span class="material-symbols-outlined text-[16px]">fast_forward</span> Advance
-      </button>
+      <!-- Corridor Quick Switcher & Advance Simulation -->
+      <div class="flex justify-between items-center gap-2">
+        <div class="bg-white/95 backdrop-blur-md border border-outline-variant/30 rounded-full px-3 py-1 shadow-level-2 flex items-center gap-1.5 flex-1 min-w-0">
+          <span class="material-symbols-outlined text-primary text-sm shrink-0">alt_route</span>
+          <select id="trackingCorridorDropdown" class="text-[11px] font-bold bg-transparent border-none outline-none focus:ring-0 text-on-surface cursor-pointer truncate w-full p-0">
+            <option value="HR-DEL-CHD">🚍 HR-402: Delhi ➔ Chandigarh (GT Road)</option>
+            <option value="HR-DEL-NRN">🚍 HR-205: Delhi ➔ Rewari ➔ Narnaul</option>
+            <option value="HR-DEL-SRS">🚍 HR-318: Delhi ➔ Rohtak ➔ Sirsa</option>
+            <option value="HR-GGN-HDL">🚍 HR-112: Gurgaon ➔ Faridabad ➔ Hodal</option>
+            <option value="HR-CHD-YMN">🚍 HR-504: Chandigarh ➔ Yamunanagar</option>
+            <option value="TR-DEL-JAI">🚍 TR-108: Delhi ➔ Jaipur Express</option>
+          </select>
+        </div>
+
+        <button id="btnAdvanceRouteLive" class="bg-primary text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-level-2 hover:bg-primary-container flex items-center gap-1 transition-all shrink-0">
+          <span class="material-symbols-outlined text-[16px]">fast_forward</span> Advance
+        </button>
+      </div>
     </div>
 
     <!-- Leaflet Map Canvas -->
@@ -403,6 +429,19 @@
     <!-- Slide-up Bottom Sheet (Live Tracking Details from Stitch) -->
     <div class="bg-surface rounded-t-[24px] shadow-[0px_-4px_20px_rgba(0,0,0,0.08)] px-5 pt-3.5 pb-20 z-10 border-t border-outline-variant/20 max-h-[48vh] overflow-y-auto">
       <div class="w-10 h-1 bg-outline-variant/40 rounded-full mx-auto mb-3"></div>
+
+      <!-- Active Tracking ID Pill Badge -->
+      <div class="flex items-center justify-between bg-primary-fixed/40 border border-primary-fixed rounded-xl px-3 py-1.5 mb-3 text-xs">
+        <div class="flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-primary text-sm">inventory_2</span>
+          <span class="text-[10px] text-on-surface-variant">Tracking:</span>
+          <span id="trackedIdDisplay" class="font-mono font-bold text-primary">TRK-DEL-CHD-402</span>
+        </div>
+        <div class="flex items-center gap-1">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse"></span>
+          <span class="text-[10px] font-bold text-emerald-700">ACTIVE</span>
+        </div>
+      </div>
 
       <!-- Status Header -->
       <div class="flex justify-between items-start mb-3">

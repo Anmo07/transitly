@@ -224,7 +224,32 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   const btnQuickSearch = document.getElementById('btnQuickSearch');
-  if (btnQuickSearch) btnQuickSearch.addEventListener('click', () => openBookingModal());
+  if (btnQuickSearch) {
+    btnQuickSearch.addEventListener('click', () => {
+      const homeInput = document.getElementById('homeSearchInput');
+      const val = homeInput ? homeInput.value.trim() : '';
+      if (val.toUpperCase().startsWith('TRK-')) {
+        searchByTrackingId(val);
+      } else {
+        openBookingModal();
+      }
+    });
+  }
+
+  // Allow enter key in home search input
+  const homeSearchInput = document.getElementById('homeSearchInput');
+  if (homeSearchInput) {
+    homeSearchInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        const val = homeSearchInput.value.trim();
+        if (val.toUpperCase().startsWith('TRK-')) {
+          searchByTrackingId(val);
+        } else {
+          openBookingModal();
+        }
+      }
+    });
+  }
 
   // Feasibility Check
   const btnModalCheckFeasibility = document.getElementById('btnModalCheckFeasibility');
@@ -520,9 +545,93 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   renderTrackingRoute(activeRouteKey);
 
+  // Tracking ID to Corridor Catalog Mapping
+  const trackingIdCatalog = {
+    'TRK-DEL-CHD-402': { corridor: 'HR-DEL-CHD', status: 'In Transit', carrier: 'Rapido Express', stopIdx: 3 },
+    'TRK-DEL-JAI-108': { corridor: 'TR-DEL-JAI', status: 'In Transit', carrier: 'Uber Direct', stopIdx: 2 },
+    'TRK-DEL-SRS-318': { corridor: 'HR-DEL-SRS', status: 'Departed Hub', carrier: 'inDrive', stopIdx: 2 },
+    'TRK-DEL-NRN-205': { corridor: 'HR-DEL-NRN', status: 'In Transit', carrier: 'CitySprint', stopIdx: 3 },
+    'TRK-GGN-HDL-112': { corridor: 'HR-GGN-HDL', status: 'Scheduled', carrier: 'Rapido Express', stopIdx: 1 },
+    'TRK-CHD-YMN-504': { corridor: 'HR-CHD-YMN', status: 'In Transit', carrier: 'Uber Direct', stopIdx: 1 }
+  };
+
+  window.searchByTrackingId = (rawId) => {
+    if (!rawId) return;
+    const tid = rawId.trim().toUpperCase();
+
+    // Find direct or fuzzy matching corridor
+    let match = trackingIdCatalog[tid];
+    let matchedCorridor = 'HR-DEL-CHD';
+
+    if (match) {
+      matchedCorridor = match.corridor;
+      if (match.stopIdx !== undefined) currentStopIdx = match.stopIdx;
+    } else {
+      // Fuzzy corridor inference from ID substring
+      if (tid.includes('JAI')) matchedCorridor = 'TR-DEL-JAI';
+      else if (tid.includes('SRS') || tid.includes('SIRSA')) matchedCorridor = 'HR-DEL-SRS';
+      else if (tid.includes('NRN') || tid.includes('NARNAUL')) matchedCorridor = 'HR-DEL-NRN';
+      else if (tid.includes('HDL') || tid.includes('HODAL') || tid.includes('GGN')) matchedCorridor = 'HR-GGN-HDL';
+      else if (tid.includes('YMN') || tid.includes('YAMUNA')) matchedCorridor = 'HR-CHD-YMN';
+      else matchedCorridor = 'HR-DEL-CHD';
+    }
+
+    // Update UI Elements
+    const trackedIdDisplay = document.getElementById('trackedIdDisplay');
+    if (trackedIdDisplay) trackedIdDisplay.innerText = tid;
+
+    const inputTrackingId = document.getElementById('inputTrackingId');
+    if (inputTrackingId) inputTrackingId.value = tid;
+
+    const trackingDropdown = document.getElementById('trackingCorridorDropdown');
+    if (trackingDropdown) trackingDropdown.value = matchedCorridor;
+
+    // Render corresponding route and center map
+    renderTrackingRoute(matchedCorridor);
+
+    // Switch to Tracking tab
+    switchTab('tracking');
+  };
+
+  // Form submit handler
+  const trackingIdSearchForm = document.getElementById('trackingIdSearchForm');
+  if (trackingIdSearchForm) {
+    trackingIdSearchForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const input = document.getElementById('inputTrackingId');
+      if (input && input.value) {
+        searchByTrackingId(input.value);
+      }
+    });
+  }
+
+  // Sample chip clicks
+  document.querySelectorAll('.sample-track-chip').forEach((chip) => {
+    chip.addEventListener('click', () => {
+      const tid = chip.getAttribute('data-tid');
+      if (tid) searchByTrackingId(tid);
+    });
+  });
+
   const trackingDropdown = document.getElementById('trackingCorridorDropdown');
   if (trackingDropdown) {
-    trackingDropdown.addEventListener('change', (e) => renderTrackingRoute(e.target.value));
+    trackingDropdown.addEventListener('change', (e) => {
+      const routeKey = e.target.value;
+      renderTrackingRoute(routeKey);
+      // Auto-update sample tracking ID badge for that corridor
+      const sampleTidMap = {
+        'HR-DEL-CHD': 'TRK-DEL-CHD-402',
+        'TR-DEL-JAI': 'TRK-DEL-JAI-108',
+        'HR-DEL-SRS': 'TRK-DEL-SRS-318',
+        'HR-DEL-NRN': 'TRK-DEL-NRN-205',
+        'HR-GGN-HDL': 'TRK-GGN-HDL-112',
+        'HR-CHD-YMN': 'TRK-CHD-YMN-504'
+      };
+      const trackedIdDisplay = document.getElementById('trackedIdDisplay');
+      if (trackedIdDisplay && sampleTidMap[routeKey]) {
+        trackedIdDisplay.innerText = sampleTidMap[routeKey];
+      }
+    });
   }
 
   // Advance simulation
