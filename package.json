@@ -1,0 +1,35 @@
+{
+  "name": "project---alphaa-it",
+  "version": "1.0.0",
+  "description": "Transitly is a JavaScript parcel-management platform concept that helps public transport operators sell unused cargo capacity for parcel delivery.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "db:init": "node src/db/initDb.js",
+    "test": "node tests/security.test.js && node tests/architecture.test.js && node tests/lastMile.test.js && node tests/whatsapp.test.js && node tests/telemetry.test.js && node tests/schema.test.js && node tests/haryanaRoadways.test.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "bullmq": "^6.1.2",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "helmet": "^8.3.0",
+    "ioredis": "^6.0.0",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.9.3",
+    "morgan": "^1.11.0",
+    "pg": "^8.23.0",
+    "socket.io": "^4.8.3",
+    "swagger-ui-express": "^5.0.1",
+    "yamljs": "^0.3.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}
