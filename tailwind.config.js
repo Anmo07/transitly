@@ -57,8 +57,29 @@ module.exports = {
         "on-secondary-fixed-variant": "#444749"
       },
       fontFamily: {
-        "sans": ["Plus Jakarta Sans", "-apple-system", "BlinkMacSystemFont", "sans-serif"],
-        "mono": ["JetBrains Mono", "monospace"]
+        "sans": [
+          "-apple-system",
+          "BlinkMacSystemFont",
+          "\"SF Pro Display\"",
+          "\"SF Pro Text\"",
+          "\"Segoe UI\"",
+          "Roboto",
+          "Helvetica",
+          "Arial",
+          "sans-serif",
+          "\"Apple Color Emoji\"",
+          "\"Segoe UI Emoji\""
+        ],
+        "mono": [
+          "ui-monospace",
+          "\"SF Mono\"",
+          "Menlo",
+          "Monaco",
+          "Consolas",
+          "\"Liberation Mono\"",
+          "\"Courier New\"",
+          "monospace"
+        ]
       },
       boxShadow: {
         'level-1': '0px 4px 20px rgba(0, 0, 0, 0.05)',
