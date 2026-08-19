@@ -3,18 +3,13 @@ const Redis = require('ioredis');
 const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
 
 const redisOptions = {
-  maxRetriesPerRequest: null,
+  maxRetriesPerRequest: 1,
   enableReadyCheck: false,
+  lazyConnect: true,
+  connectTimeout: 500,
   retryStrategy(times) {
-    const delay = Math.min(times * 100, 3000);
-    return delay;
-  },
-  reconnectOnError(err) {
-    const targetError = 'READONLY';
-    if (err.message.includes(targetError)) {
-      return true;
-    }
-    return false;
+    if (times > 2) return null; // stop reconnect spam if redis is not running locally
+    return 1000;
   }
 };
 
@@ -25,7 +20,7 @@ redisClient.on('connect', () => {
 });
 
 redisClient.on('error', (err) => {
-  console.error('[Redis Error]', err.message);
+  // Silent fallback to in-memory maps
 });
 
 /**

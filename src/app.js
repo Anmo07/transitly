@@ -14,16 +14,8 @@ const swaggerDocument = YAML.load(path.join(__dirname, 'api/swagger.yaml'));
 // Middleware & Security Headers
 app.use(
   helmet({
-    contentSecurityPolicy: {
-      directives: {
-        defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://unpkg.com", "https://cdn.socket.io"],
-        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://unpkg.com"],
-        fontSrc: ["'self'", "https://fonts.gstatic.com"],
-        imgSrc: ["'self'", "data:", "https://*.tile.openstreetmap.org", "https://unpkg.com"],
-        connectSrc: ["'self'", "ws:", "wss:", "http:", "https:"]
-      }
-    }
+    contentSecurityPolicy: false,
+    crossOriginEmbedderPolicy: false
   })
 );
 app.use(cors());

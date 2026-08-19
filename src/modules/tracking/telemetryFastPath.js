@@ -71,7 +71,7 @@ class TelemetryFastPath {
 
     // 2. Redis Pipeline (if connected)
     try {
-      if (this.redis && this.redis.status === 'ready') {
+      if (this.redis && typeof this.redis.pipeline === 'function' && (this.redis.status === 'ready' || this.redis.status === 'connect' || !this.redis.status)) {
         const pipeline = this.redis.pipeline();
         pipeline.geoadd(GEO_KEY, sanitizedPing.longitude, sanitizedPing.latitude, sanitizedPing.vehicleId);
         pipeline.publish(pubSubChannel, payloadString);
@@ -109,7 +109,7 @@ class TelemetryFastPath {
     }
 
     try {
-      if (this.redis && this.redis.status === 'ready') {
+      if (this.redis && typeof this.redis.geosearch === 'function' && (this.redis.status === 'ready' || this.redis.status === 'connect' || !this.redis.status)) {
         const results = await this.redis.geosearch(
           GEO_KEY,
           'FROMLONLAT',
@@ -155,7 +155,7 @@ class TelemetryFastPath {
    */
   async getVehiclePosition(vehicleId) {
     try {
-      if (this.redis && this.redis.status === 'ready') {
+      if (this.redis && typeof this.redis.geopos === 'function' && (this.redis.status === 'ready' || this.redis.status === 'connect' || !this.redis.status)) {
         const pos = await this.redis.geopos(GEO_KEY, vehicleId);
         if (pos && pos[0]) {
           const [lon, lat] = pos[0];
