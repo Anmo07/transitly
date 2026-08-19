@@ -1,4 +1,4 @@
-const { BookingSaga } = require('../../sagas/bookingSaga');
+const bookingSaga = require('../../sagas/bookingSaga');
 const { bookingService } = require('../../modules/bookings/bookingService');
 const Shipment = require('../../models/Shipment');
 const ShipmentLeg = require('../../models/ShipmentLeg');
@@ -12,7 +12,7 @@ class BookingController {
    */
   async createBooking(req, res) {
     try {
-      const result = await BookingSaga.execute(req.body);
+      const result = await bookingSaga.execute(req.body);
       return res.status(201).json({
         status: 'success',
         message: 'Shipment booking completed successfully via distributed saga.',
