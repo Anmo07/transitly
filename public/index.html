@@ -108,7 +108,7 @@
       padding-top: max(env(safe-area-inset-top, 0px), 0px);
     }
 
-    /* Force strict tab visibility logic to prevent Safari flex-override glitches */
+    /* Force strict tab visibility logic for instant zero-latency view switching */
     .tab-view {
       display: none !important;
     }
@@ -215,26 +215,30 @@
         <button id="btnHeaderMenu" aria-label="Home" class="text-primary hover:opacity-80 transition-opacity active:scale-95 flex items-center justify-center w-10 h-10 rounded-full">
           <span class="material-symbols-outlined text-2xl">local_shipping</span>
         </button>
-        <h1 class="text-lg md:text-xl font-bold text-primary tracking-tight">
+        <h1 class="text-lg md:text-xl font-bold text-primary tracking-tight cursor-pointer" onclick="switchTab('deliver')">
           Transitly
         </h1>
       </div>
 
       <!-- Desktop Navigation Bar (Stitch Design) -->
       <nav class="hidden md:flex items-center space-x-1" id="desktopNavTabs">
-        <button class="desktop-nav-btn px-4 py-1.5 rounded-full text-xs font-bold text-primary bg-primary-fixed/50 transition-all flex items-center gap-1.5" data-tab="deliver">
+        <button class="desktop-nav-btn px-3.5 py-1.5 rounded-full text-xs font-bold text-primary bg-primary-fixed/50 transition-all flex items-center gap-1.5 shadow-sm" data-tab="deliver">
           <span class="material-symbols-outlined text-[18px]">local_shipping</span>
           Deliver
         </button>
-        <button class="desktop-nav-btn px-4 py-1.5 rounded-full text-xs font-medium text-on-surface-variant hover:bg-surface-variant transition-all flex items-center gap-1.5" data-tab="tracking">
+        <button class="desktop-nav-btn px-3.5 py-1.5 rounded-full text-xs font-medium text-on-surface-variant hover:bg-surface-variant transition-all flex items-center gap-1.5" data-tab="tracking">
           <span class="material-symbols-outlined text-[18px]">distance</span>
           Tracking
         </button>
-        <button class="desktop-nav-btn px-4 py-1.5 rounded-full text-xs font-medium text-on-surface-variant hover:bg-surface-variant transition-all flex items-center gap-1.5" data-tab="history">
+        <button class="desktop-nav-btn px-3.5 py-1.5 rounded-full text-xs font-medium text-on-surface-variant hover:bg-surface-variant transition-all flex items-center gap-1.5" data-tab="services">
+          <span class="material-symbols-outlined text-[18px]">apps</span>
+          All Services
+        </button>
+        <button class="desktop-nav-btn px-3.5 py-1.5 rounded-full text-xs font-medium text-on-surface-variant hover:bg-surface-variant transition-all flex items-center gap-1.5" data-tab="history">
           <span class="material-symbols-outlined text-[18px]">history</span>
           History
         </button>
-        <button class="desktop-nav-btn px-4 py-1.5 rounded-full text-xs font-medium text-on-surface-variant hover:bg-surface-variant transition-all flex items-center gap-1.5" data-tab="profile">
+        <button class="desktop-nav-btn px-3.5 py-1.5 rounded-full text-xs font-medium text-on-surface-variant hover:bg-surface-variant transition-all flex items-center gap-1.5" data-tab="profile">
           <span class="material-symbols-outlined text-[18px]">person</span>
           Profile
         </button>
@@ -245,7 +249,7 @@
         <a href="/api/docs" target="_blank" title="API Docs (Swagger)" class="text-primary hover:opacity-80 transition-opacity active:scale-95 flex items-center justify-center w-9 h-9 rounded-full">
           <span class="material-symbols-outlined text-[20px]">menu_book</span>
         </a>
-        <button id="btnNotifications" aria-label="Notifications" class="text-primary hover:opacity-80 transition-opacity active:scale-95 flex items-center justify-center w-9 h-9 rounded-full" onclick="alert('No new alerts. All public express fleet corridors operating normally.')">
+        <button id="btnNotifications" aria-label="Notifications" class="text-primary hover:opacity-80 transition-opacity active:scale-95 flex items-center justify-center w-9 h-9 rounded-full" onclick="alert('No new alerts. All 6 official intercity bus corridors operating on schedule.')">
           <span class="material-symbols-outlined text-[22px]">notifications</span>
         </button>
       </div>
@@ -282,9 +286,12 @@
       </div>
 
       <!-- Section Title -->
-      <div class="pt-1">
-        <h2 class="text-lg font-bold text-on-surface">Fast Intercity Delivery</h2>
-        <p class="text-xs text-on-surface-variant">Scheduled express bus cargo network</p>
+      <div class="pt-1 flex justify-between items-end">
+        <div>
+          <h2 class="text-lg font-bold text-on-surface">Fast Intercity Delivery</h2>
+          <p class="text-xs text-on-surface-variant">Scheduled express bus cargo network</p>
+        </div>
+        <button class="text-xs font-bold text-primary hover:underline" onclick="switchTab('services')">View All Services ›</button>
       </div>
 
       <!-- Parcel Hero Card (Stitch Spec with 3D Illustration) -->
@@ -483,7 +490,78 @@
   </div>
 
   <!-- ========================================================================= -->
-  <!-- SCREEN 3: DELIVERY HISTORY (STITCH DESIGN)                                -->
+  <!-- SCREEN 3: ALL SERVICES (GOOGLE STITCH BENTO HUB)                           -->
+  <!-- ========================================================================= -->
+  <div id="tab-services" class="tab-view w-full max-w-2xl mx-auto pt-16 pb-24 px-4 space-y-4 animate-fade-in-up">
+    <div class="mb-2">
+      <h2 class="text-lg font-bold text-on-surface mb-0.5">All Cargo & Transit Services</h2>
+      <p class="text-xs text-on-surface-variant">Multi-modal intercity bus logistics ecosystem</p>
+    </div>
+
+    <!-- Bento Grid of Services -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <!-- Service 1: Intercity Express Cargo -->
+      <div class="bg-surface-container-lowest rounded-2xl p-4 shadow-level-1 border border-outline-variant/20 hover:border-primary/40 transition-all cursor-pointer service-card" onclick="openBookingModal('HR-DEL-CHD')">
+        <div class="w-10 h-10 rounded-xl bg-primary-fixed flex items-center justify-center text-primary mb-2.5">
+          <span class="material-symbols-outlined fill text-2xl">local_shipping</span>
+        </div>
+        <div class="flex justify-between items-start">
+          <h3 class="text-sm font-bold text-on-surface">Intercity Express Cargo</h3>
+          <span class="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full">Save 50%</span>
+        </div>
+        <p class="text-[11px] text-on-surface-variant mt-1 mb-3">Same-day scheduled bus cargo between ISBT hubs with real-time telematics.</p>
+        <div class="flex justify-between items-center pt-2 border-t border-outline-variant/20 text-xs">
+          <span class="font-extrabold text-primary">From ₹120</span>
+          <span class="font-bold text-primary flex items-center gap-0.5">Book Now ›</span>
+        </div>
+      </div>
+
+      <!-- Service 2: Hyperlocal First/Last Mile -->
+      <div class="bg-surface-container-lowest rounded-2xl p-4 shadow-level-1 border border-outline-variant/20 hover:border-primary/40 transition-all cursor-pointer service-card" onclick="openBookingModal('HR-DEL-CHD')">
+        <div class="w-10 h-10 rounded-xl bg-secondary-fixed flex items-center justify-center text-on-secondary-fixed mb-2.5">
+          <span class="material-symbols-outlined fill text-2xl">two_wheeler</span>
+        </div>
+        <div class="flex justify-between items-start">
+          <h3 class="text-sm font-bold text-on-surface">Door-to-Door Partners</h3>
+          <span class="text-[10px] bg-primary-fixed text-primary font-bold px-2 py-0.5 rounded-full">Uber / Rapido</span>
+        </div>
+        <p class="text-[11px] text-on-surface-variant mt-1 mb-3">Rider pickup from your doorstep straight to the intercity departure terminal.</p>
+        <div class="flex justify-between items-center pt-2 border-t border-outline-variant/20 text-xs">
+          <span class="font-extrabold text-primary">From ₹80</span>
+          <span class="font-bold text-primary flex items-center gap-0.5">Dispatch Rider ›</span>
+        </div>
+      </div>
+
+      <!-- Service 3: Terminal-to-Terminal Drop -->
+      <div class="bg-surface-container-lowest rounded-2xl p-4 shadow-level-1 border border-outline-variant/20 hover:border-primary/40 transition-all cursor-pointer service-card" onclick="openBookingModal('TR-DEL-JAI')">
+        <div class="w-10 h-10 rounded-xl bg-surface-container-high flex items-center justify-center text-on-surface mb-2.5">
+          <span class="material-symbols-outlined fill text-2xl">warehouse</span>
+        </div>
+        <h3 class="text-sm font-bold text-on-surface">Terminal Hub Drop</h3>
+        <p class="text-[11px] text-on-surface-variant mt-1 mb-3">Self drop-off at any major ISBT counter with instant barcode seal generation.</p>
+        <div class="flex justify-between items-center pt-2 border-t border-outline-variant/20 text-xs">
+          <span class="font-extrabold text-primary">From ₹60</span>
+          <span class="font-bold text-primary flex items-center gap-0.5">Find Depot ›</span>
+        </div>
+      </div>
+
+      <!-- Service 4: Secure QR Tamper-Proof Cargo -->
+      <div class="bg-surface-container-lowest rounded-2xl p-4 shadow-level-1 border border-outline-variant/20 hover:border-primary/40 transition-all cursor-pointer service-card" onclick="openBookingModal('HR-DEL-SRS')">
+        <div class="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center text-emerald-700 mb-2.5">
+          <span class="material-symbols-outlined fill text-2xl">qr_code_scanner</span>
+        </div>
+        <h3 class="text-sm font-bold text-on-surface">Cryptographic QR Seals</h3>
+        <p class="text-[11px] text-on-surface-variant mt-1 mb-3">HMAC-SHA256 authenticated tamper-proof digital seals with dual-OTP chain of custody.</p>
+        <div class="flex justify-between items-center pt-2 border-t border-outline-variant/20 text-xs">
+          <span class="font-extrabold text-primary">Zero Extra Fee</span>
+          <span class="font-bold text-primary flex items-center gap-0.5">Learn More ›</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- SCREEN 4: DELIVERY HISTORY (STITCH DESIGN)                                -->
   <!-- ========================================================================= -->
   <div id="tab-history" class="tab-view w-full max-w-2xl mx-auto pt-16 pb-24 px-4">
     <div class="mb-4">
@@ -548,7 +626,7 @@
                   <div class="flex items-center space-x-1.5 mt-0.5">
                     <span class="text-[10px] text-on-surface-variant">Oct 21, 10:15 AM</span>
                     <span class="w-1 h-1 rounded-full bg-outline-variant"></span>
-                    <span class="text-[10px] text-on-surface-variant font-medium">CitySprint</span>
+                    <span class="text-[10px] text-on-surface-variant font-medium">Rapido Express</span>
                   </div>
                 </div>
               </div>
@@ -599,7 +677,7 @@
   </div>
 
   <!-- ========================================================================= -->
-  <!-- SCREEN 4: PROFILE (ACCOUNT HUB - STITCH DESIGN)                           -->
+  <!-- SCREEN 5: PROFILE (ACCOUNT HUB - STITCH DESIGN)                           -->
   <!-- ========================================================================= -->
   <div id="tab-profile" class="tab-view w-full max-w-md mx-auto pt-16 pb-24 px-4 space-y-5">
     <!-- Profile Glassmorphic Header (Stitch Spec) -->
@@ -641,6 +719,16 @@
         <span class="material-symbols-outlined text-outline-variant text-lg">chevron_right</span>
       </button>
 
+      <button id="btnOpenAllServices" class="w-full bg-surface rounded-xl p-3.5 flex items-center justify-between shadow-sm active:scale-[0.98] transition-transform hover:bg-surface-container-lowest border border-outline-variant/20" onclick="switchTab('services')">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-full bg-primary-fixed flex items-center justify-center text-primary-container">
+            <span class="material-symbols-outlined text-lg">apps</span>
+          </div>
+          <span class="text-xs font-bold text-on-surface">All Services & Rates</span>
+        </div>
+        <span class="material-symbols-outlined text-outline-variant text-lg">chevron_right</span>
+      </button>
+
       <button id="btnOpenHelpSupport" class="w-full bg-surface rounded-xl p-3.5 flex items-center justify-between shadow-sm active:scale-[0.98] transition-transform hover:bg-surface-container-lowest border border-outline-variant/20">
         <div class="flex items-center gap-3">
           <div class="w-9 h-9 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600">
@@ -672,7 +760,7 @@
   </div>
 
   <!-- ========================================================================= -->
-  <!-- SCREEN 5: SAVED ADDRESSES SUB-SCREEN (STITCH DESIGN)                      -->
+  <!-- SCREEN 6: SAVED ADDRESSES SUB-SCREEN (STITCH DESIGN)                      -->
   <!-- ========================================================================= -->
   <div id="tab-saved-addresses" class="tab-view w-full max-w-2xl mx-auto pt-16 pb-28 px-4 space-y-4">
     <div class="flex items-center justify-between mb-4">
@@ -758,7 +846,7 @@
   </div>
 
   <!-- ========================================================================= -->
-  <!-- SCREEN 6: PAYMENT METHODS SUB-SCREEN (STITCH DESIGN)                      -->
+  <!-- SCREEN 7: PAYMENT METHODS SUB-SCREEN (STITCH DESIGN)                      -->
   <!-- ========================================================================= -->
   <div id="tab-payment-methods" class="tab-view w-full max-w-2xl mx-auto pt-16 pb-28 px-4 space-y-4">
     <div class="flex items-center justify-between mb-4">
@@ -834,7 +922,7 @@
   </div>
 
   <!-- ========================================================================= -->
-  <!-- SCREEN 7: SETTINGS SUB-SCREEN (STITCH DESIGN)                             -->
+  <!-- SCREEN 8: SETTINGS SUB-SCREEN (STITCH DESIGN)                             -->
   <!-- ========================================================================= -->
   <div id="tab-settings" class="tab-view w-full max-w-2xl mx-auto pt-16 pb-28 px-4 space-y-4">
     <div class="flex items-center justify-between mb-4">
@@ -900,7 +988,7 @@
   </div>
 
   <!-- ========================================================================= -->
-  <!-- SCREEN 8: HELP & SUPPORT SUB-SCREEN (STITCH DESIGN)                       -->
+  <!-- SCREEN 9: HELP & SUPPORT SUB-SCREEN (STITCH DESIGN)                       -->
   <!-- ========================================================================= -->
   <div id="tab-help-support" class="tab-view w-full max-w-4xl mx-auto pt-16 pb-28 px-4 space-y-5">
     <div class="flex items-center justify-between mb-2">
@@ -1057,6 +1145,9 @@
               <option value="HR-DEL-CHD">Delhi ➔ Chandigarh (GT Road)</option>
               <option value="TR-DEL-JAI">Delhi ➔ Jaipur Highway</option>
               <option value="HR-DEL-SRS">Delhi ➔ Hisar ➔ Sirsa</option>
+              <option value="HR-DEL-NRN">Delhi ➔ Rewari ➔ Narnaul</option>
+              <option value="HR-GGN-HDL">Gurgaon ➔ Faridabad ➔ Hodal</option>
+              <option value="HR-CHD-YMN">Chandigarh ➔ Yamunanagar</option>
             </select>
           </div>
           <div>
@@ -1110,22 +1201,26 @@
   <!-- MOBILE BOTTOM NAVIGATION BAR (STITCH DESIGN)                              -->
   <!-- ========================================================================= -->
   <nav id="mainBottomNav" class="bg-surface/95 backdrop-blur-md shadow-[0px_-4px_20px_rgba(0,0,0,0.05)] fixed bottom-0 left-0 right-0 w-full z-50 rounded-t-xl border-t border-outline-variant/30 transition-all duration-200 md:hidden">
-    <div class="flex justify-around items-center px-2 pb-safe h-16 max-w-2xl mx-auto w-full">
-      <button id="navBtnDeliver" class="nav-tab-btn flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-xl px-3 py-1 transition-all active:scale-90 w-1/4">
+    <div class="flex justify-around items-center px-1 pb-safe h-16 max-w-2xl mx-auto w-full">
+      <button id="navBtnDeliver" class="nav-tab-btn flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-xl px-2 py-1 transition-all active:scale-90 w-1/5">
         <span class="material-symbols-outlined text-[20px]" data-weight="fill">local_shipping</span>
-        <span class="text-[11px] font-bold">Deliver</span>
+        <span class="text-[10px] font-bold">Deliver</span>
       </button>
-      <button id="navBtnTracking" class="nav-tab-btn flex flex-col items-center justify-center text-on-surface-variant px-3 py-1 hover:bg-surface-variant rounded-xl transition-all active:scale-90 w-1/4">
+      <button id="navBtnTracking" class="nav-tab-btn flex flex-col items-center justify-center text-on-surface-variant px-2 py-1 hover:bg-surface-variant rounded-xl transition-all active:scale-90 w-1/5">
         <span class="material-symbols-outlined text-[20px]">distance</span>
-        <span class="text-[11px] font-medium">Tracking</span>
+        <span class="text-[10px] font-medium">Tracking</span>
       </button>
-      <button id="navBtnHistory" class="nav-tab-btn flex flex-col items-center justify-center text-on-surface-variant px-3 py-1 hover:bg-surface-variant rounded-xl transition-all active:scale-90 w-1/4">
+      <button id="navBtnServices" class="nav-tab-btn flex flex-col items-center justify-center text-on-surface-variant px-2 py-1 hover:bg-surface-variant rounded-xl transition-all active:scale-90 w-1/5">
+        <span class="material-symbols-outlined text-[20px]">apps</span>
+        <span class="text-[10px] font-medium">Services</span>
+      </button>
+      <button id="navBtnHistory" class="nav-tab-btn flex flex-col items-center justify-center text-on-surface-variant px-2 py-1 hover:bg-surface-variant rounded-xl transition-all active:scale-90 w-1/5">
         <span class="material-symbols-outlined text-[20px]">history</span>
-        <span class="text-[11px] font-medium">History</span>
+        <span class="text-[10px] font-medium">History</span>
       </button>
-      <button id="navBtnProfile" class="nav-tab-btn flex flex-col items-center justify-center text-on-surface-variant px-3 py-1 hover:bg-surface-variant rounded-xl transition-all active:scale-90 w-1/4">
+      <button id="navBtnProfile" class="nav-tab-btn flex flex-col items-center justify-center text-on-surface-variant px-2 py-1 hover:bg-surface-variant rounded-xl transition-all active:scale-90 w-1/5">
         <span class="material-symbols-outlined text-[20px]">person</span>
-        <span class="text-[11px] font-medium">Profile</span>
+        <span class="text-[10px] font-medium">Profile</span>
       </button>
     </div>
   </nav>

@@ -1,16 +1,17 @@
 /**
- * Transitly — Google Stitch Full Responsive Multi-Screen Suite
+ * Transitly — Instant Multi-Screen Experience & Telematics Engine
  */
 
 document.addEventListener('DOMContentLoaded', async () => {
   const API_BASE = (window.location.port === '3000' || window.location.port === '') ? '' : 'http://localhost:3000';
 
   // -------------------------------------------------------------
-  // 1. Tab Router (Deliver, Tracking, History, Profile, Sub-screens)
+  // 1. Tab Router (Deliver, Tracking, Services, History, Profile, Sub-screens)
   // -------------------------------------------------------------
   const tabViews = {
     deliver: document.getElementById('tab-deliver'),
     tracking: document.getElementById('tab-tracking'),
+    services: document.getElementById('tab-services'),
     history: document.getElementById('tab-history'),
     profile: document.getElementById('tab-profile'),
     savedAddresses: document.getElementById('tab-saved-addresses'),
@@ -22,16 +23,17 @@ document.addEventListener('DOMContentLoaded', async () => {
   const navBtns = {
     deliver: document.getElementById('navBtnDeliver'),
     tracking: document.getElementById('navBtnTracking'),
+    services: document.getElementById('navBtnServices'),
     history: document.getElementById('navBtnHistory'),
     profile: document.getElementById('navBtnProfile')
   };
 
   const desktopNavBtns = document.querySelectorAll('.desktop-nav-btn');
-
   const mainBottomNav = document.getElementById('mainBottomNav');
   const mainAppHeader = document.getElementById('mainAppHeader');
 
-  const switchTab = (tabKey) => {
+  window.switchTab = (tabKey) => {
+    // Instant tab toggle with zero DOM latency
     Object.keys(tabViews).forEach((key) => {
       const el = tabViews[key];
       if (el) {
@@ -63,10 +65,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (btn) {
         const icon = btn.querySelector('.material-symbols-outlined');
         if (key === tabKey) {
-          btn.className = 'nav-tab-btn flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-xl px-3 py-1 transition-all active:scale-90 w-1/4';
+          btn.className = 'nav-tab-btn flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-xl px-2 py-1 transition-all active:scale-90 w-1/5 shadow-sm';
           if (icon) icon.setAttribute('data-weight', 'fill');
         } else {
-          btn.className = 'nav-tab-btn flex flex-col items-center justify-center text-on-surface-variant px-3 py-1 hover:bg-surface-variant rounded-xl transition-all active:scale-90 w-1/4';
+          btn.className = 'nav-tab-btn flex flex-col items-center justify-center text-on-surface-variant px-2 py-1 hover:bg-surface-variant rounded-xl transition-all active:scale-90 w-1/5';
           if (icon) icon.removeAttribute('data-weight');
         }
       }
@@ -76,9 +78,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     desktopNavBtns.forEach((btn) => {
       const target = btn.getAttribute('data-tab');
       if (target === tabKey) {
-        btn.className = 'desktop-nav-btn px-4 py-1.5 rounded-full text-xs font-bold text-primary bg-primary-fixed/50 transition-all flex items-center gap-1.5 shadow-sm';
+        btn.className = 'desktop-nav-btn px-3.5 py-1.5 rounded-full text-xs font-bold text-primary bg-primary-fixed/50 transition-all flex items-center gap-1.5 shadow-sm';
       } else {
-        btn.className = 'desktop-nav-btn px-4 py-1.5 rounded-full text-xs font-medium text-on-surface-variant hover:bg-surface-variant transition-all flex items-center gap-1.5';
+        btn.className = 'desktop-nav-btn px-3.5 py-1.5 rounded-full text-xs font-medium text-on-surface-variant hover:bg-surface-variant transition-all flex items-center gap-1.5';
       }
     });
 
@@ -88,13 +90,14 @@ document.addEventListener('DOMContentLoaded', async () => {
       setTimeout(() => {
         map.invalidateSize();
         if (routeLine) map.fitBounds(routeLine.getBounds(), { padding: [30, 30] });
-      }, 150);
+      }, 100);
     }
   };
 
   // Bind Mobile Navs
   if (navBtns.deliver) navBtns.deliver.addEventListener('click', () => switchTab('deliver'));
   if (navBtns.tracking) navBtns.tracking.addEventListener('click', () => switchTab('tracking'));
+  if (navBtns.services) navBtns.services.addEventListener('click', () => switchTab('services'));
   if (navBtns.history) navBtns.history.addEventListener('click', () => switchTab('history'));
   if (navBtns.profile) navBtns.profile.addEventListener('click', () => switchTab('profile'));
 
@@ -194,7 +197,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const btnHeroBookNow = document.getElementById('btnHeroBookNow');
   const btnCloseBookingModal = document.getElementById('btnCloseBookingModal');
 
-  const openBookingModal = (defaultRoute = 'HR-DEL-CHD') => {
+  window.openBookingModal = (defaultRoute = 'HR-DEL-CHD') => {
     if (bookingModal) {
       const select = document.getElementById('modalRouteSelect');
       if (select) select.value = defaultRoute;
@@ -203,7 +206,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   };
 
-  const closeBookingModal = () => {
+  window.closeBookingModal = () => {
     if (bookingModal) {
       bookingModal.classList.remove('flex');
       bookingModal.classList.add('hidden');
