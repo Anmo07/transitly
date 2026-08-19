@@ -6,10 +6,18 @@ const morgan = require('morgan');
 const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs');
 
+const compression = require('compression');
+
 const app = express();
 
 // Load OpenAPI Specification
 const swaggerDocument = YAML.load(path.join(__dirname, 'api/swagger.yaml'));
+
+// Gzip / Brotli Compression for instant TTFB & payload reduction
+app.use(compression({
+  threshold: 1024,
+  level: 6
+}));
 
 // Middleware & Security Headers
 app.use(
@@ -22,8 +30,12 @@ app.use(cors());
 app.use(express.json());
 app.use(morgan('dev'));
 
-// Static Frontend Assets
-app.use(express.static(path.join(__dirname, '../public')));
+// Static Frontend Assets with aggressive caching for production performance
+app.use(express.static(path.join(__dirname, '../public'), {
+  maxAge: '1d',
+  etag: true,
+  lastModified: true
+}));
 
 // OpenAPI / Swagger Documentation
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, {

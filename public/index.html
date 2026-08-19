@@ -5,17 +5,31 @@
   <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
   <title>Transitly — Intercity Parcel Delivery & Tracking</title>
   <meta name="description" content="Bus-to-Door Logistics: Monetizing unused public transport cargo capacity with real-time tracking.">
+  <meta name="theme-color" content="#0050cb">
 
-  <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+  <!-- Critical Resource Hints (DNS prefetch + preconnect for all external origins) -->
+  <link rel="dns-prefetch" href="https://fonts.googleapis.com"/>
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com"/>
+  <link rel="dns-prefetch" href="https://cdn.tailwindcss.com"/>
+  <link rel="dns-prefetch" href="https://unpkg.com"/>
+  <link rel="dns-prefetch" href="https://lh3.googleusercontent.com"/>
   <link href="https://fonts.googleapis.com" rel="preconnect"/>
   <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet"/>
+  <link crossorigin="" href="https://lh3.googleusercontent.com" rel="preconnect"/>
 
-  <!-- Material Symbols -->
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <!-- Preload LCP Hero Background Image (Deliver Tab visible on first paint) -->
+  <link rel="preload" as="image" href="https://lh3.googleusercontent.com/aida-public/AB6AXuCKaaONLs8ZFEYkl9-pcv93l2AxSdoBCMty1uXuqPBGAcm-vhFHbLaFajnnDxD5Jwq-fw3xVcwtX3JtKzl7fbsMuUKlgXJYllNObokIOdN4dZhCMnuGgVBguCmB3npTgrQ45N86eWYhaIPMfFYnytiI9tJdN1BHXHSVkDC9vBDRNAFkQ3ZwsMrl6C1DhMGT32MwPxLoiBCzsasgJiuZYqUY2vKm3rOI9faoHPEVhiWrWbG0iS3yOFZM" fetchpriority="high"/>
 
-  <!-- Leaflet Map CSS for Real-time Interactive Tracking -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <!-- Google Fonts: Plus Jakarta Sans (critical) & JetBrains Mono (non-critical) -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'"/>
+
+  <!-- Material Symbols (deferred — icons render after first paint) -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" media="print" onload="this.media='all'"/>
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/></noscript>
+
+  <!-- Leaflet Map CSS (deferred — only used on Tracking tab, not homepage) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" media="print" onload="this.media='all'"/>
 
   <!-- Tailwind CSS with Stitch Custom Config -->
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
@@ -305,7 +319,7 @@
             <span class="material-symbols-outlined text-sm">arrow_forward</span>
           </button>
         </div>
-        <img class="absolute bottom-[-10%] right-[-5%] w-[45%] max-w-[190px] object-contain pointer-events-none drop-shadow-lg hidden sm:block" alt="Parcel box" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBllnUBLVKZ98CzNmZspoH0Mt_Pp_NEIXDbDxk1AvdzSgjZc_BBdOornwzGX9DgEwS9hA0K8pdfphcf7L2RHk1i-eijrkKYD1gxp7OTaUr5CztdkJjxLsHAniOGnQFl4NwxJwKrt1fJYBz9W9FgYxf-Yk-xhct1ypeebZCYqTdiXkIxvHJFMsQm5MslhTbwHFDXLbTeSXmzw_Q6o-OHXOxwsgJCNczNR3Rs6ToO86AVqoaqQ7N0G12f"/>
+        <img class="absolute bottom-[-10%] right-[-5%] w-[45%] max-w-[190px] object-contain pointer-events-none drop-shadow-lg hidden sm:block" alt="Parcel box" width="190" height="190" loading="lazy" decoding="async" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBllnUBLVKZ98CzNmZspoH0Mt_Pp_NEIXDbDxk1AvdzSgjZc_BBdOornwzGX9DgEwS9hA0K8pdfphcf7L2RHk1i-eijrkKYD1gxp7OTaUr5CztdkJjxLsHAniOGnQFl4NwxJwKrt1fJYBz9W9FgYxf-Yk-xhct1ypeebZCYqTdiXkIxvHJFMsQm5MslhTbwHFDXLbTeSXmzw_Q6o-OHXOxwsgJCNczNR3Rs6ToO86AVqoaqQ7N0G12f"/>
       </div>
 
       <!-- How it Works Flow (Stitch Spec) -->
@@ -593,7 +607,7 @@
             <div class="flex items-center justify-between w-full">
               <div class="flex items-center space-x-3">
                 <div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center shrink-0 p-1.5">
-                  <img class="w-full h-full object-contain" alt="Uber Direct logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYAQ9aSqwa-XMGtXzOUqUAsQqCSs_obgXAe7mLh9mhAXassnu6VGp2vt_NOQSqt4TP7kNwFW_CVo9s9AKlZKtZWi8M2B1uH1lzX4IBMtN0M5C8DgsAy9AwvZJWeI5slO7FbXzfkfASWEU5KiP1GT4CvdxzRCd5JrvSNwutgbpvZ8_thcv0PpAHRF_aA7etonssvasIJxnAIh002Uz-gZQcG7Z6YqyYg6PNHA4E4yRmklN9KG2wCRMg"/>
+                  <img class="w-full h-full object-contain" alt="Uber Direct logo" width="40" height="40" loading="lazy" decoding="async" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYAQ9aSqwa-XMGtXzOUqUAsQqCSs_obgXAe7mLh9mhAXassnu6VGp2vt_NOQSqt4TP7kNwFW_CVo9s9AKlZKtZWi8M2B1uH1lzX4IBMtN0M5C8DgsAy9AwvZJWeI5slO7FbXzfkfASWEU5KiP1GT4CvdxzRCd5JrvSNwutgbpvZ8_thcv0PpAHRF_aA7etonssvasIJxnAIh002Uz-gZQcG7Z6YqyYg6PNHA4E4yRmklN9KG2wCRMg"/>
                 </div>
                 <div>
                   <h4 class="text-xs font-bold text-on-surface">124 Maple Street, Apt 4B</h4>
@@ -619,7 +633,7 @@
             <div class="flex items-center justify-between w-full">
               <div class="flex items-center space-x-3">
                 <div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center shrink-0 p-1.5">
-                  <img class="w-full h-full object-contain" alt="CitySprint logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBHXHZfLMWyw3Re_BA2t9bbGCLvR7XTq8gY-b4LJ-fTye15E4BOJtBNro4_FVzl8bPKGKTSTsp0hBlqyJJgqzDG2MVBQcyfBptrdsVdnxRw7INFcOUnhuRJeOGXjRAQADDoGLJgCLbuoH8cW6q2k7NIuNHkhkylz0F8B0gwrRYlDlFCnW9pTkhvqjIb7jviRWO0Wo7_SKTcTOIhvqz-EqOxTtdaI27pW6SZAeqXpOaZzoR91wMZU6Bj"/>
+                  <img class="w-full h-full object-contain" alt="CitySprint logo" width="40" height="40" loading="lazy" decoding="async" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBHXHZfLMWyw3Re_BA2t9bbGCLvR7XTq8gY-b4LJ-fTye15E4BOJtBNro4_FVzl8bPKGKTSTsp0hBlqyJJgqzDG2MVBQcyfBptrdsVdnxRw7INFcOUnhuRJeOGXjRAQADDoGLJgCLbuoH8cW6q2k7NIuNHkhkylz0F8B0gwrRYlDlFCnW9pTkhvqjIb7jviRWO0Wo7_SKTcTOIhvqz-EqOxTtdaI27pW6SZAeqXpOaZzoR91wMZU6Bj"/>
                 </div>
                 <div>
                   <h4 class="text-xs font-bold text-on-surface">890 Tech Blvd, Suite 200</h4>
@@ -651,7 +665,7 @@
             <div class="flex items-center justify-between w-full">
               <div class="flex items-center space-x-3">
                 <div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center shrink-0 p-1.5">
-                  <img class="w-full h-full object-contain" alt="inDrive logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDrpKcQmpLjn_y-PaiKIsV-IM2nsejfBd4rKKjae-dWpXLA6QSup1NQmeAmlh2KiHiy6tONhRlelzktm30BKuWaNSJDLZdfDZodWG1OXoOJO85Jc-i143lE0QZARhgsU1q6jM4YEph1n-22sdr7XI-9iVgukoZzJ8K4tdDmyDZbQH-LaZF0maSNU-yvg3erXbIO87cGew0AVtR2zaVMmy37r9QJ7DK4qXiM2HvbOYXe3CTssarU8OcC"/>
+                  <img class="w-full h-full object-contain" alt="inDrive logo" width="40" height="40" loading="lazy" decoding="async" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDrpKcQmpLjn_y-PaiKIsV-IM2nsejfBd4rKKjae-dWpXLA6QSup1NQmeAmlh2KiHiy6tONhRlelzktm30BKuWaNSJDLZdfDZodWG1OXoOJO85Jc-i143lE0QZARhgsU1q6jM4YEph1n-22sdr7XI-9iVgukoZzJ8K4tdDmyDZbQH-LaZF0maSNU-yvg3erXbIO87cGew0AVtR2zaVMmy37r9QJ7DK4qXiM2HvbOYXe3CTssarU8OcC"/>
                 </div>
                 <div>
                   <h4 class="text-xs font-bold text-on-surface">45 West End Ave</h4>
@@ -686,7 +700,7 @@
       <div class="absolute -bottom-12 -left-12 w-32 h-32 bg-surface-tint rounded-full mix-blend-multiply filter blur-2xl opacity-20"></div>
 
       <div class="relative w-20 h-20 mb-2.5 rounded-full shadow-sm border-2 border-surface overflow-hidden bg-surface-container-high z-10">
-        <img class="w-full h-full object-cover" alt="Alex Mitchell avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBzAACyzyleKmM4JQVt8Aa-jr70QVcpj9loY9wKp5o9O4E4p6Pw4_DrVmOHt4kkJfjfzprBQFcotrP67UIXwwodZ_N8y_NQMBXmYt1FUgmWEZU3RkLHv9mtX5_jewodrd3AC22FofPIl1pDv6bTKcqN63TR8-Ce6clfaRjIaxwp6CeKnOIoGAZdfBFJX_YfrWG4DCAk26zr7uiOS6j2JNkj4E16URTfm8orQCRZ5X_7hBMsGpV5UeKJ"/>
+        <img class="w-full h-full object-cover" alt="Alex Mitchell avatar" width="80" height="80" loading="lazy" decoding="async" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBzAACyzyleKmM4JQVt8Aa-jr70QVcpj9loY9wKp5o9O4E4p6Pw4_DrVmOHt4kkJfjfzprBQFcotrP67UIXwwodZ_N8y_NQMBXmYt1FUgmWEZU3RkLHv9mtX5_jewodrd3AC22FofPIl1pDv6bTKcqN63TR8-Ce6clfaRjIaxwp6CeKnOIoGAZdfBFJX_YfrWG4DCAk26zr7uiOS6j2JNkj4E16URTfm8orQCRZ5X_7hBMsGpV5UeKJ"/>
       </div>
       <h2 class="text-lg font-bold text-on-surface z-10">Alex Mitchell</h2>
       <p class="text-xs text-on-surface-variant mb-2 z-10">alex.mitchell@example.com</p>
@@ -1225,9 +1239,9 @@
     </div>
   </nav>
 
-  <!-- Leaflet & Socket.io Scripts -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="https://cdn.socket.io/4.8.3/socket.io.min.js"></script>
-  <script src="./js/app.js"></script>
+  <!-- Deferred Scripts (non-blocking — parsed after HTML) -->
+  <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script defer src="https://cdn.socket.io/4.8.3/socket.io.min.js"></script>
+  <script defer src="./js/app.js"></script>
 </body>
 </html>
