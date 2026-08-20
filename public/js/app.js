@@ -57,92 +57,96 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // -------------------------------------------------------------
   // 2. Tab Router (Deliver, Tracking, Services, History, Profile, Sub-screens)
-  // -------------------------------------------------------------
-  const tabViews = {
-    deliver: document.getElementById('tab-deliver'),
-    tracking: document.getElementById('tab-tracking'),
-    services: document.getElementById('tab-services'),
-    history: document.getElementById('tab-history'),
-    profile: document.getElementById('tab-profile'),
-    savedAddresses: document.getElementById('tab-saved-addresses'),
-    paymentMethods: document.getElementById('tab-payment-methods'),
-    settings: document.getElementById('tab-settings'),
-    helpSupport: document.getElementById('tab-help-support')
+  const tabIdMap = {
+    deliver: 'tab-deliver',
+    tracking: 'tab-tracking',
+    services: 'tab-services',
+    history: 'tab-history',
+    profile: 'tab-profile',
+    savedAddresses: 'tab-saved-addresses',
+    paymentMethods: 'tab-payment-methods',
+    settings: 'tab-settings',
+    helpSupport: 'tab-help-support'
   };
 
-  const navBtns = {
-    deliver: document.getElementById('navBtnDeliver'),
-    tracking: document.getElementById('navBtnTracking'),
-    services: document.getElementById('navBtnServices'),
-    history: document.getElementById('navBtnHistory'),
-    profile: document.getElementById('navBtnProfile')
+  const navBtnIdMap = {
+    deliver: 'navBtnDeliver',
+    tracking: 'navBtnTracking',
+    services: 'navBtnServices',
+    history: 'navBtnHistory',
+    profile: 'navBtnProfile'
   };
-
-  const desktopNavBtns = document.querySelectorAll('.desktop-nav-btn');
-  const mainBottomNav = document.getElementById('mainBottomNav');
-  const mainAppHeader = document.getElementById('mainAppHeader');
 
   window.switchTab = async (tabKey) => {
-    // Instant zero-latency tab visibility toggle
-    Object.keys(tabViews).forEach((key) => {
-      const el = tabViews[key];
-      if (el) {
-        if (key === tabKey) {
-          el.classList.add('active');
-          if (key === 'tracking') el.classList.add('flex-tab');
-        } else {
-          el.classList.remove('active');
-          el.classList.remove('flex-tab');
+    try {
+      // Instant zero-latency tab visibility toggle
+      Object.keys(tabIdMap).forEach((key) => {
+        const id = tabIdMap[key];
+        const el = document.getElementById(id);
+        if (el) {
+          if (key === tabKey) {
+            el.classList.add('active');
+            if (key === 'tracking') el.classList.add('flex-tab');
+          } else {
+            el.classList.remove('active');
+            el.classList.remove('flex-tab');
+          }
         }
-      }
-    });
+      });
 
-    // Sub-screen Navigation Shell Visibility
-    const isSubScreen = ['savedAddresses', 'paymentMethods', 'settings', 'helpSupport'].includes(tabKey);
-    if (isSubScreen) {
-      if (mainBottomNav) mainBottomNav.style.display = 'none';
-      if (mainAppHeader) mainAppHeader.style.display = 'none';
-    } else {
-      if (mainBottomNav) mainBottomNav.style.display = '';
-      if (mainAppHeader) mainAppHeader.style.display = '';
-    }
-
-    // Mobile Bottom Navigation Buttons Active State
-    Object.keys(navBtns).forEach((key) => {
-      const btn = navBtns[key];
-      if (btn) {
-        const icon = btn.querySelector('.material-symbols-outlined');
-        if (key === tabKey) {
-          btn.className = 'nav-tab-btn flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-xl px-2 py-1 transition-all active:scale-90 w-1/5 shadow-sm';
-          if (icon) icon.setAttribute('data-weight', 'fill');
-        } else {
-          btn.className = 'nav-tab-btn flex flex-col items-center justify-center text-on-surface-variant px-2 py-1 hover:bg-surface-variant rounded-xl transition-all active:scale-90 w-1/5';
-          if (icon) icon.removeAttribute('data-weight');
-        }
-      }
-    });
-
-    // Desktop Header Navigation Buttons Active State
-    desktopNavBtns.forEach((btn) => {
-      const target = btn.getAttribute('data-tab');
-      if (target === tabKey) {
-        btn.className = 'desktop-nav-btn px-3.5 py-1.5 rounded-full text-xs font-bold text-primary bg-primary-fixed/50 transition-all flex items-center gap-1.5 shadow-sm';
+      // Sub-screen Navigation Shell Visibility
+      const mainBottomNav = document.getElementById('mainBottomNav');
+      const mainAppHeader = document.getElementById('mainAppHeader');
+      const isSubScreen = ['savedAddresses', 'paymentMethods', 'settings', 'helpSupport'].includes(tabKey);
+      if (isSubScreen) {
+        if (mainBottomNav) mainBottomNav.style.display = 'none';
+        if (mainAppHeader) mainAppHeader.style.display = 'none';
       } else {
-        btn.className = 'desktop-nav-btn px-3.5 py-1.5 rounded-full text-xs font-medium text-on-surface-variant hover:bg-surface-variant transition-all flex items-center gap-1.5';
+        if (mainBottomNav) mainBottomNav.style.display = '';
+        if (mainAppHeader) mainAppHeader.style.display = '';
       }
-    });
 
-    window.scrollTo({ top: 0, behavior: 'instant' });
+      // Mobile Bottom Navigation Buttons Active State
+      Object.keys(navBtnIdMap).forEach((key) => {
+        const btnId = navBtnIdMap[key];
+        const btn = document.getElementById(btnId);
+        if (btn) {
+          const icon = btn.querySelector('.material-symbols-outlined');
+          if (key === tabKey) {
+            btn.className = 'nav-tab-btn flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-xl px-2 py-1 transition-all active:scale-90 w-1/5 shadow-sm';
+            if (icon) icon.setAttribute('data-weight', 'fill');
+          } else {
+            btn.className = 'nav-tab-btn flex flex-col items-center justify-center text-on-surface-variant px-2 py-1 hover:bg-surface-variant rounded-xl transition-all active:scale-90 w-1/5';
+            if (icon) icon.removeAttribute('data-weight');
+          }
+        }
+      });
 
-    // Lazy load map and socket when entering Tracking tab
-    if (tabKey === 'tracking') {
-      await loadLeafletAndSockets();
-      if (map) {
-        setTimeout(() => {
-          map.invalidateSize();
-          if (routeLine) map.fitBounds(routeLine.getBounds(), { padding: [30, 30] });
-        }, 80);
+      // Desktop Header Navigation Buttons Active State
+      const desktopBtns = document.querySelectorAll('.desktop-nav-btn');
+      desktopBtns.forEach((btn) => {
+        const target = btn.getAttribute('data-tab');
+        if (target === tabKey) {
+          btn.className = 'desktop-nav-btn px-3.5 py-1.5 rounded-full text-xs font-bold text-primary bg-primary-fixed/50 transition-all flex items-center gap-1.5 shadow-sm';
+        } else {
+          btn.className = 'desktop-nav-btn px-3.5 py-1.5 rounded-full text-xs font-medium text-on-surface-variant hover:bg-surface-variant transition-all flex items-center gap-1.5';
+        }
+      });
+
+      window.scrollTo({ top: 0, behavior: 'instant' });
+
+      // Lazy load map and socket when entering Tracking tab
+      if (tabKey === 'tracking') {
+        await loadLeafletAndSockets();
+        if (map) {
+          setTimeout(() => {
+            map.invalidateSize();
+            if (routeLine) map.fitBounds(routeLine.getBounds(), { padding: [30, 30] });
+          }, 80);
+        }
       }
+    } catch (err) {
+      console.error('[SwitchTab Error]:', err);
     }
   };
 
