@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"/>
   <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
-  <title>Transitly - Live Tracking</title>
+  <title>Transitly - Tracking</title>
 
   <!-- Material Symbols -->
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" media="print" onload="this.media='all'"/>
@@ -14,256 +14,159 @@
   <link rel="stylesheet" href="/css/common.css" />
   <link rel="stylesheet" href="/css/tracking.css" />
 </head>
-<body class="bg-background text-on-background font-body-md h-screen overflow-hidden flex flex-col relative antialiased">
+<body class="bg-[#FAF8FF] text-[#191B24] font-sans h-screen overflow-hidden flex flex-col relative antialiased">
 
-  <!-- Top App Bar (Stitch Spec) -->
-  <header class="bg-surface shadow-sm fixed top-0 w-full z-50 border-b border-outline-variant/20">
-    <div class="flex justify-between items-center px-container-margin h-14 max-w-4xl mx-auto w-full">
-      <a href="/" aria-label="Home" class="text-primary hover:opacity-80 transition-opacity active:scale-95 flex items-center justify-center w-10 h-10 rounded-full">
-        <span class="material-symbols-outlined text-2xl">local_shipping</span>
-      </a>
-      <h1 class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary">Transitly</h1>
-      
-      <!-- Desktop Nav -->
-      <nav class="hidden md:flex items-center space-x-1">
-        <a class="desktop-nav-btn px-4 py-1.5 rounded-full text-xs font-medium text-on-surface-variant hover:bg-surface-variant flex items-center gap-1.5" href="/">
-          <span class="material-symbols-outlined text-[18px]">local_shipping</span>Deliver
-        </a>
-        <a class="desktop-nav-btn px-4 py-1.5 rounded-full text-xs font-bold text-primary bg-primary-fixed/50 flex items-center gap-1.5" href="/tracking">
-          <span class="material-symbols-outlined text-[18px]">distance</span>Tracking
-        </a>
-        <a class="desktop-nav-btn px-4 py-1.5 rounded-full text-xs font-medium text-on-surface-variant hover:bg-surface-variant flex items-center gap-1.5" href="/services">
-          <span class="material-symbols-outlined text-[18px]">apps</span>All Services
-        </a>
-        <a class="desktop-nav-btn px-4 py-1.5 rounded-full text-xs font-medium text-on-surface-variant hover:bg-surface-variant flex items-center gap-1.5" href="/history">
-          <span class="material-symbols-outlined text-[18px]">history</span>History
-        </a>
-        <a class="desktop-nav-btn px-4 py-1.5 rounded-full text-xs font-medium text-on-surface-variant hover:bg-surface-variant flex items-center gap-1.5" href="/profile">
-          <span class="material-symbols-outlined text-[18px]">person</span>Profile
-        </a>
-      </nav>
-
-      <button aria-label="Notifications" class="text-on-surface-variant hover:opacity-80 transition-opacity active:scale-95 flex items-center justify-center w-10 h-10 rounded-full" onclick="alert('Live telematics streaming active.')">
-        <span class="material-symbols-outlined text-2xl">notifications</span>
-      </button>
-    </div>
+  <!-- TopAppBar (Exact Match to Image) -->
+  <header class="fixed top-0 left-0 right-0 w-full z-50 bg-[#FAF8FF] shadow-sm flex justify-between items-center px-5 h-14 transition-all border-b border-outline-variant/10">
+    <a href="/" aria-label="Deliver" class="hover:opacity-80 transition-opacity active:scale-95 flex items-center justify-center p-2 text-[#0050CB]">
+      <span class="material-symbols-outlined text-[24px]">local_shipping</span>
+    </a>
+    <h1 class="text-xl font-bold text-[#0050CB] tracking-tight">Transitly</h1>
+    <button aria-label="Notifications" class="hover:opacity-80 transition-opacity active:scale-95 flex items-center justify-center p-2 text-[#0050CB]" onclick="alert('Live tracking telematics online.')">
+      <span class="material-symbols-outlined text-[24px]">notifications</span>
+    </button>
   </header>
 
-  <!-- Top Floating Controls: Verified Parcel ID Search Bar -->
-  <div class="absolute top-16 left-3 right-3 z-30 max-w-lg mx-auto space-y-1.5">
-    <div class="bg-surface-container-lowest/95 backdrop-blur-md border border-outline-variant/40 rounded-2xl p-2 shadow-level-2">
-      <form id="trackingIdSearchForm" class="flex items-center gap-1.5 w-full">
-        <div class="relative flex-1">
-          <span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-primary text-base">verified</span>
-          <input id="inputTrackingId" type="text" placeholder="Enter Parcel Tracking ID (e.g. TRK-88219)" class="w-full pl-8 pr-2.5 py-2 bg-surface-container-low rounded-xl text-xs font-bold border-none focus:ring-2 focus:ring-primary text-on-surface uppercase placeholder:normal-case placeholder:font-normal" required />
-        </div>
-        <button type="submit" id="btnSearchTrackingId" class="bg-primary text-white text-xs font-bold px-3.5 py-2 rounded-xl hover:bg-primary-container shrink-0 flex items-center gap-1 transition-all shadow-md active:scale-95">
-          <span class="material-symbols-outlined text-[16px]">search</span>
-          <span>Verify & Track</span>
-        </button>
-      </form>
-    </div>
-
-    <!-- Error Toast -->
-    <div id="parcelSearchError" class="hidden bg-rose-50 border border-rose-200 text-rose-800 text-xs px-3 py-2 rounded-xl flex items-center justify-between shadow-md">
-      <div class="flex items-center gap-1.5">
-        <span class="material-symbols-outlined text-rose-600 text-base">error</span>
-        <span id="parcelSearchErrorMsg">Parcel ID not recognized. Please check your receipt.</span>
-      </div>
-      <button type="button" class="text-rose-600 font-bold ml-2" onclick="document.getElementById('parcelSearchError').classList.add('hidden')">✕</button>
-    </div>
-  </div>
-
-  <!-- Main Content Area (Map Canvas - Stitch Spec) -->
-  <main class="flex-grow relative map-bg pt-14 pb-16 md:pb-0 z-0">
-    <!-- Map Background Image (Stitch Spec) -->
+  <!-- Main Content Map Area (Exact Match to Image) -->
+  <main class="flex-grow relative pt-14 pb-16 z-0">
+    <!-- Map Background Image -->
     <div class="absolute inset-0 w-full h-full" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDVcZGP-nxpBEjrhNE0DfC_ZFkeDxkeeOM9vt73SLH0UyN1MWSW682pyR6fIXZBzD-6galIFLYeoffTtip8TIO7xlMVY--IAQG3YVe2kNwaAHj3DVVRhZybFxb3HMSJn8G5bzg0--whj6ZGsOdQW9Vz1loth7VSMuvLbZTC9Aj1ugO_fTlH-RVmt7lrntXi-e4xx7TRyl5OVlL7b2x9N8o33uSVTqT2Gj5ZscmpDftdSv7ZEszJP47M'); background-size: cover; background-position: center;"></div>
 
-    <!-- Live Interactive Leaflet Map Container (Overlaid seamlessly) -->
+    <!-- Live Interactive Leaflet Map Container -->
     <div id="liveTrackingMap" class="absolute inset-0 w-full h-full opacity-90"></div>
-
-    <!-- Tracking Pin (Bus - Stitch Spec) -->
-    <div class="absolute top-[40%] left-[50%] transform -translate-x-1/2 -translate-y-1/2 z-10 flex flex-col items-center pointer-events-none">
-      <div class="bg-primary text-on-primary w-12 h-12 rounded-full flex items-center justify-center shadow-[0px_8px_30px_rgba(0,102,255,0.2)] border-2 border-surface animate-bounce relative">
-        <span class="material-symbols-outlined" data-weight="fill">directions_bus</span>
-        <!-- Pulse effect -->
-        <div class="absolute inset-0 rounded-full bg-primary opacity-30 animate-ping"></div>
-      </div>
-      <div id="trackingPinLabel" class="mt-2 bg-surface text-on-surface font-label-sm text-label-sm px-3 py-1 rounded-full shadow-sm font-semibold tracking-wide border border-outline-variant/30">
-        Bus #402 (HR-55-AB-1234)
-      </div>
-    </div>
   </main>
 
-  <!-- Slide-up Bottom Sheet (Live Tracking Details - Stitch Spec) -->
-  <div class="absolute bottom-16 md:bottom-0 left-0 w-full z-40 animate-slide-up flex flex-col pointer-events-none md:pointer-events-auto">
-    <div class="bg-surface rounded-t-[24px] shadow-[0px_-4px_20px_rgba(0,0,0,0.08)] px-container-margin pt-4 pb-8 md:pb-6 pointer-events-auto max-w-2xl mx-auto w-full md:rounded-t-3xl md:mb-6 md:border md:border-outline-variant/20 max-h-[50vh] overflow-y-auto">
-      <!-- Handle -->
-      <div class="w-12 h-1.5 bg-outline-variant/40 rounded-full mx-auto mb-4"></div>
+  <!-- Slide-up Bottom Sheet (Exact Match to Image) -->
+  <div class="absolute bottom-14 left-0 right-0 w-full z-40 flex flex-col max-w-md mx-auto">
+    <div class="bg-white rounded-t-[28px] shadow-[0px_-8px_30px_rgba(0,0,0,0.08)] px-5 pt-3 pb-4 border-t border-outline-variant/10">
+      <!-- Drag Handle -->
+      <div class="w-12 h-1.5 bg-[#E1E2EE] rounded-full mx-auto mb-4"></div>
 
-      <!-- Verified ID & 30s Countdown -->
-      <div class="flex items-center justify-between bg-primary-fixed/40 border border-primary-fixed rounded-xl px-3 py-1.5 mb-3 text-xs">
-        <div class="flex items-center gap-1.5">
-          <span class="material-symbols-outlined text-primary text-sm">inventory_2</span>
-          <span class="text-[10px] text-on-surface-variant font-medium">Tracking ID:</span>
-          <span id="trackedIdDisplay" class="font-mono font-extrabold text-primary">TRK-88219</span>
-        </div>
-        <div class="flex items-center gap-1.5">
-          <span class="px-2 py-0.5 rounded-full bg-white text-primary text-[9px] font-mono font-extrabold shadow-sm flex items-center gap-1">
-            <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-ping"></span>
-            Auto-refresh: <span id="refreshCountdownSecs">30</span>s
-          </span>
-          <span class="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">VERIFIED</span>
-        </div>
-      </div>
-
-      <!-- Internal Parcel Insights Card -->
-      <div class="bg-surface-container-low border border-outline-variant/30 rounded-xl p-3 mb-3 shadow-sm space-y-1 text-xs">
-        <div class="flex justify-between items-center pb-1 border-b border-outline-variant/20">
-          <span class="text-[10px] font-bold text-outline uppercase tracking-wider">Internal Parcel Insights</span>
-          <span id="insightCargoBay" class="text-[10px] font-bold text-primary bg-primary-fixed/40 px-2 py-0.5 rounded-full">Bay B2 • QR Sealed</span>
-        </div>
-        <div class="grid grid-cols-2 gap-2 text-[11px]">
-          <div>
-            <span class="text-on-surface-variant text-[10px] block">Assigned Bus:</span>
-            <strong id="insightBusName" class="text-on-surface font-bold">Fleet Bus #402 (HR-55-AB-1234)</strong>
-          </div>
-          <div>
-            <span class="text-on-surface-variant text-[10px] block">Corridor:</span>
-            <strong id="insightRouteName" class="text-on-surface font-bold">Delhi ➔ Chandigarh</strong>
-          </div>
-          <div class="col-span-2 pt-1 border-t border-outline-variant/10 flex justify-between items-center text-[10px]">
-            <span class="text-on-surface-variant">Sender ➔ Receiver: <strong id="insightParties" class="text-on-surface">Aarav S. ➔ Rohan V.</strong></span>
-            <span id="insightSpeed" class="font-mono text-primary font-bold">Speed: 64 km/h</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Status Header (Stitch Spec) -->
-      <div class="flex justify-between items-start mb-stack-lg">
+      <!-- Header: Status & Est. Arrival -->
+      <div class="flex justify-between items-start mb-4">
         <div>
-          <h2 id="trackStatusTitle" class="font-headline-md text-headline-md text-on-surface mb-1">In Transit via Bus #402</h2>
-          <p class="font-body-md text-body-md text-on-surface-variant flex items-center gap-1">
-            <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-            Live updates syncing every 30s
+          <h2 id="trackStatusTitle" class="text-xl font-bold text-[#191B24] mb-0.5">In Transit via Bus #402</h2>
+          <p class="text-xs text-[#424656] flex items-center gap-1.5 font-medium">
+            <span class="w-2 h-2 rounded-full bg-[#0066FF] animate-pulse"></span>
+            Live updates
           </p>
         </div>
         <div class="text-right">
-          <p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-1">Est. Arrival</p>
-          <p id="trackEta" class="font-headline-md text-headline-md text-primary font-bold">14:30</p>
+          <p class="text-[10px] text-[#727687] font-bold uppercase tracking-wider mb-0.5">EST. ARRIVAL</p>
+          <p id="trackEta" class="text-2xl font-bold text-[#0066FF]">14:30</p>
         </div>
       </div>
 
-      <!-- Next Handoff Card (Stitch Spec) -->
-      <div class="bg-surface-container-low rounded-xl p-4 mb-stack-lg border border-outline-variant/30 flex items-center gap-4">
-        <div class="bg-secondary-container w-10 h-10 rounded-full flex items-center justify-center shrink-0">
-          <span class="material-symbols-outlined text-on-secondary-container">swap_horiz</span>
+      <!-- Next Handoff Card (Exact Match to Image) -->
+      <div class="bg-[#F2F3FF] rounded-[18px] p-3.5 mb-4 flex items-center justify-between border border-outline-variant/10">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-[#E0E3E5] flex items-center justify-center shrink-0 text-[#191C1E]">
+            <span class="material-symbols-outlined text-[20px]">swap_horiz</span>
+          </div>
+          <div>
+            <p class="text-[11px] text-[#5C5F61]">Next Handoff</p>
+            <p id="trackHandoffText" class="text-xs font-bold text-[#191B24]">Central Station to Rapido Rider</p>
+          </div>
         </div>
-        <div class="flex-grow">
-          <p class="font-label-sm text-label-sm text-on-surface-variant">Next Handoff</p>
-          <p id="trackHandoffText" class="font-label-md text-label-md text-on-surface font-semibold">Central Station to Rapido Rider</p>
-        </div>
-        <div class="shrink-0 text-right">
-          <p class="font-label-sm text-label-sm text-on-surface-variant">Distance</p>
-          <p id="trackDistance" class="font-label-md text-label-md text-on-surface font-semibold">2.4 km</p>
+        <div class="text-right shrink-0">
+          <p class="text-[11px] text-[#5C5F61]">Distance</p>
+          <p id="trackDistance" class="text-xs font-bold text-[#191B24]">2.4 km</p>
         </div>
       </div>
 
-      <!-- Timeline (Stitch Spec) -->
-      <div class="relative pl-6 space-y-6">
+      <!-- Stepper Timeline (Exact Match to Image) -->
+      <div class="relative pl-6 space-y-4 mb-5">
         <!-- Vertical Line -->
-        <div class="absolute left-[11px] top-2 bottom-4 w-1 bg-outline-variant/30 rounded-full">
-          <div class="absolute top-0 w-full bg-primary rounded-full" style="height: 65%;"></div>
-        </div>
+        <div class="absolute left-[7px] top-2 bottom-3 w-[2px] bg-[#0066FF]"></div>
 
         <!-- Event 1: Picked Up -->
         <div class="relative">
-          <div class="absolute -left-6 w-4 h-4 rounded-full bg-primary border-2 border-surface shadow-sm z-10 top-1"></div>
-          <div class="flex justify-between items-start">
+          <div class="absolute -left-6 w-3.5 h-3.5 rounded-full bg-[#0066FF] border-2 border-white shadow-sm top-0.5"></div>
+          <div class="flex justify-between items-start text-xs">
             <div>
-              <p class="font-label-md text-label-md text-on-surface font-semibold">Package Picked Up</p>
-              <p class="font-label-sm text-label-sm text-on-surface-variant mt-0.5">Origin Facility • Verified OTP</p>
+              <p class="font-bold text-[#191B24]">Package Picked Up</p>
+              <p class="text-[#727687] text-[11px]">Origin Facility</p>
             </div>
-            <p class="font-label-sm text-label-sm text-on-surface-variant">09:15 AM</p>
+            <p class="text-[#727687] text-[11px]">09:15 AM</p>
           </div>
         </div>
 
         <!-- Event 2: Arrived at Terminal -->
         <div class="relative">
-          <div class="absolute -left-6 w-4 h-4 rounded-full bg-primary border-2 border-surface shadow-sm z-10 top-1"></div>
-          <div class="flex justify-between items-start">
+          <div class="absolute -left-6 w-3.5 h-3.5 rounded-full bg-[#0066FF] border-2 border-white shadow-sm top-0.5"></div>
+          <div class="flex justify-between items-start text-xs">
             <div>
-              <p class="font-label-md text-label-md text-on-surface font-semibold">Arrived at Terminal</p>
-              <p class="font-label-sm text-label-sm text-on-surface-variant mt-0.5">North Hub Interchange</p>
+              <p class="font-bold text-[#191B24]">Arrived at Terminal</p>
+              <p class="text-[#727687] text-[11px]">North Hub Interchange</p>
             </div>
-            <p class="font-label-sm text-label-sm text-on-surface-variant">11:00 AM</p>
+            <p class="text-[#727687] text-[11px]">11:00 AM</p>
           </div>
         </div>
 
-        <!-- Event 3: In Transit -->
+        <!-- Event 3: In Transit (Current) -->
         <div class="relative">
-          <div class="absolute -left-[26px] w-5 h-5 rounded-full bg-surface border-2 border-primary flex items-center justify-center z-10 top-0.5 shadow-[0px_4px_10px_rgba(0,102,255,0.2)]">
-            <div class="w-2 h-2 rounded-full bg-primary animate-ping"></div>
+          <div class="absolute -left-[27px] w-5 h-5 rounded-full bg-white border-2 border-[#0066FF] flex items-center justify-center top-0 shadow-sm">
+            <div class="w-2 h-2 rounded-full bg-[#0066FF] animate-ping"></div>
           </div>
-          <div class="flex justify-between items-start">
+          <div class="flex justify-between items-start text-xs">
             <div>
-              <p class="font-label-md text-label-md text-primary font-bold">In Transit - Bus #402</p>
-              <p class="font-label-sm text-label-sm text-on-surface-variant mt-0.5">Currently on GT Highway</p>
+              <p class="font-bold text-[#0066FF]">In Transit – Bus #402</p>
+              <p class="text-[#424656] text-[11px]">Currently on Route 66</p>
             </div>
-            <p class="font-label-sm text-label-sm text-primary font-semibold">Now</p>
+            <p class="text-[#0066FF] text-[11px] font-bold">Now</p>
           </div>
         </div>
 
-        <!-- Event 4: Pending -->
-        <div class="relative opacity-50">
-          <div class="absolute -left-6 w-4 h-4 rounded-full bg-outline-variant border-2 border-surface shadow-sm z-10 top-1"></div>
-          <div class="flex justify-between items-start">
+        <!-- Event 4: Handoff Pending -->
+        <div class="relative opacity-60">
+          <div class="absolute -left-6 w-3.5 h-3.5 rounded-full bg-[#C2C6D8] border-2 border-white shadow-sm top-0.5"></div>
+          <div class="flex justify-between items-start text-xs">
             <div>
-              <p class="font-label-md text-label-md text-on-surface font-semibold">Handoff to Rapido</p>
-              <p class="font-label-sm text-label-sm text-on-surface-variant mt-0.5">Central Station Sector 17</p>
+              <p class="font-bold text-[#191B24]">Handoff to Rapido</p>
+              <p class="text-[#727687] text-[11px]">Central Station</p>
             </div>
-            <p class="font-label-sm text-label-sm text-on-surface-variant">Est. 13:45</p>
+            <p class="text-[#727687] text-[11px]">Est. 13:45</p>
           </div>
         </div>
       </div>
 
-      <!-- Action Area (Stitch Spec) -->
-      <div class="mt-stack-lg pt-4 border-t border-outline-variant/20 flex gap-4">
-        <a href="/help-support" class="flex-1 bg-surface-variant text-on-surface-variant font-label-md text-label-md font-semibold h-14 rounded-xl flex items-center justify-center gap-2 hover:bg-outline-variant/20 transition-colors">
-          <span class="material-symbols-outlined text-xl">help</span>
+      <!-- Action Buttons (Exact Match to Image) -->
+      <div class="flex gap-3">
+        <a href="/help-support" class="flex-1 bg-[#EEF2F6] text-[#191B24] font-bold text-xs h-12 rounded-2xl flex items-center justify-center gap-1.5 hover:bg-[#E2E8F0] transition-colors active:scale-[0.98]">
+          <span class="material-symbols-outlined text-[18px]">help_outline</span>
           Support
         </a>
-        <button class="flex-1 bg-primary text-on-primary font-label-md text-label-md font-semibold h-14 rounded-xl flex items-center justify-center gap-2 shadow-md hover:bg-primary-container transition-colors active:scale-95" onclick="navigator.clipboard ? navigator.clipboard.writeText(window.location.href).then(()=>alert('Tracking link copied to clipboard!')) : alert('Tracking URL: ' + window.location.href)">
-          <span class="material-symbols-outlined text-xl">share</span>
-          Share
+        <button class="flex-1 bg-[#0066FF] text-white font-bold text-xs h-12 rounded-2xl flex items-center justify-center gap-1.5 hover:bg-[#0050CB] transition-all shadow-md active:scale-[0.98]" onclick="navigator.clipboard ? navigator.clipboard.writeText(window.location.href).then(()=>alert('Tracking link copied!')) : alert('Tracking link: ' + window.location.href)">
+          <span class="material-symbols-outlined text-[18px]">share</span>
+          Share Link
         </button>
       </div>
     </div>
   </div>
 
-  <!-- Bottom Navigation Bar (Stitch Spec) -->
-  <nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-3 pb-safe border-t border-outline-variant bg-surface-container-lowest rounded-t-xl shadow-lg shadow-[0px_-4px_20px_rgba(0,0,0,0.03)] md:hidden">
-    <a href="/" class="flex flex-col items-center justify-center text-on-secondary-fixed-variant hover:opacity-80 transition-opacity">
-      <span class="material-symbols-outlined mb-1 text-[24px]">local_shipping</span>
-      <span class="text-label-sm font-label-sm">Deliver</span>
+  <!-- Bottom Navigation Bar (Exact Match to Image) -->
+  <nav class="fixed bottom-0 left-0 right-0 w-full flex justify-around items-center px-4 py-2 bg-white z-50 rounded-t-2xl shadow-[0px_-4px_20px_rgba(0,0,0,0.06)] border-t border-outline-variant/20">
+    <!-- Deliver -->
+    <a class="flex flex-col items-center justify-center text-[#424656] px-3 py-1 hover:text-[#0050CB] transition-colors group" href="/">
+      <span class="material-symbols-outlined mb-0.5 text-[22px] group-active:scale-90 transition-transform">package_2</span>
+      <span class="text-[11px] font-medium">Deliver</span>
     </a>
-    <a href="/tracking" class="flex flex-col items-center justify-center text-primary font-semibold hover:opacity-80 transition-opacity active:scale-[0.9] duration-200">
-      <span class="material-symbols-outlined fill mb-1 text-[24px]">distance</span>
-      <span class="text-label-sm font-label-sm">Tracking</span>
+    <!-- Tracking (Active Solid Blue Pill - Exact Match to Image) -->
+    <a class="flex flex-col items-center justify-center bg-[#0066FF] text-white rounded-2xl px-5 py-1.5 shadow-sm active:scale-95 transition-transform" href="/tracking">
+      <span class="material-symbols-outlined mb-0.5 text-[22px] fill">location_on</span>
+      <span class="text-[11px] font-bold">Tracking</span>
     </a>
-    <a href="/history" class="flex flex-col items-center justify-center text-on-secondary-fixed-variant hover:opacity-80 transition-opacity">
-      <span class="material-symbols-outlined mb-1 text-[24px]">history</span>
-      <span class="text-label-sm font-label-sm">History</span>
+    <!-- History -->
+    <a class="flex flex-col items-center justify-center text-[#424656] px-3 py-1 hover:text-[#0050CB] transition-colors group" href="/history">
+      <span class="material-symbols-outlined mb-0.5 text-[22px] group-active:scale-90 transition-transform">history</span>
+      <span class="text-[11px] font-medium">History</span>
     </a>
-    <a href="/profile" class="flex flex-col items-center justify-center text-on-secondary-fixed-variant hover:opacity-80 transition-opacity">
-      <span class="material-symbols-outlined mb-1 text-[24px]">person</span>
-      <span class="text-label-sm font-label-sm">Profile</span>
+    <!-- Profile -->
+    <a class="flex flex-col items-center justify-center text-[#424656] px-3 py-1 hover:text-[#0050CB] transition-colors group" href="/profile">
+      <span class="material-symbols-outlined mb-0.5 text-[22px] group-active:scale-90 transition-transform">person</span>
+      <span class="text-[11px] font-medium">Profile</span>
     </a>
   </nav>
-
-  <style>
-    .pb-safe { padding-bottom: env(safe-area-inset-bottom, 12px); }
-  </style>
 
   <!-- Modular Scripts -->
   <script defer src="/js/common.js"></script>

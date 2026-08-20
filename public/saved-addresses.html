@@ -14,100 +14,74 @@
   <link rel="stylesheet" href="/css/common.css" />
   <link rel="stylesheet" href="/css/saved-addresses.css" />
 </head>
-<body class="bg-background text-on-background min-h-screen pb-24 md:pb-0 antialiased">
+<body class="bg-[#FAF8FF] text-[#191B24] font-sans min-h-screen pt-14 pb-24 antialiased selection:bg-[#DAE1FF] selection:text-[#001849]">
 
-  <!-- TopAppBar (Stitch Spec) -->
-  <header class="bg-background text-primary docked full-width top-0 flat no shadows flex justify-between items-center px-container-margin w-full h-16 sticky z-40 border-b border-outline-variant/20">
-    <a href="/profile" aria-label="Back" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-low active:scale-95 transition-transform duration-150 text-on-surface-variant">
-      <span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+  <!-- TopAppBar (Exact Match to Image) -->
+  <header class="fixed top-0 left-0 right-0 w-full z-50 bg-[#FAF8FF] shadow-sm flex items-center px-5 h-14 transition-all border-b border-outline-variant/10">
+    <a href="/profile" aria-label="Back" class="hover:opacity-80 transition-opacity active:scale-95 flex items-center justify-center p-2 -ml-2 text-[#191B24]">
+      <span class="material-symbols-outlined text-[24px]">arrow_back</span>
     </a>
-    <h1 class="text-headline-md font-headline-md font-bold text-primary absolute left-1/2 transform -translate-x-1/2">
-      Saved Addresses
-    </h1>
-    <div class="w-10 h-10"></div>
+    <h1 class="text-xl font-bold text-[#0050CB] tracking-tight flex-1 text-center pr-6">Saved Addresses</h1>
   </header>
 
-  <!-- Main Content Canvas (Stitch Spec) -->
-  <main class="px-container-margin pt-stack-lg max-w-2xl mx-auto flex flex-col gap-stack-lg">
-    <!-- Addresses List -->
-    <div class="flex flex-col gap-stack-md">
-      <!-- Address Card: Home -->
-      <div class="saved-address-card bg-surface-container-lowest rounded-[16px] shadow-level-1 p-4 flex items-center justify-between group cursor-pointer hover:bg-surface-container-low transition-colors duration-200" data-address="123 Elm Street, Springfield, IL 62701">
-        <div class="flex items-center gap-4 flex-1">
-          <div class="w-12 h-12 rounded-full bg-primary-fixed flex items-center justify-center text-primary flex-shrink-0">
-            <span class="material-symbols-outlined icon-fill" data-icon="home" data-weight="fill">home</span>
-          </div>
-          <div class="flex flex-col">
-            <span class="text-label-md font-label-md text-on-surface font-semibold">Home</span>
-            <span class="text-label-sm font-label-sm text-on-surface-variant mt-1 line-clamp-1">123 Elm Street, Springfield, IL 62701</span>
-          </div>
+  <!-- Main Content Canvas (Exact Match to Image) -->
+  <main class="w-full max-w-md mx-auto px-5 py-5 flex flex-col gap-3.5">
+    <!-- Card 1: Home -->
+    <div class="saved-address-card bg-white rounded-[20px] p-4 flex items-center justify-between shadow-[0px_4px_20px_rgba(0,0,0,0.02)] border border-outline-variant/10 cursor-pointer hover:bg-[#F8FAFC] transition-colors" data-address="123 Elm Street, Springfield, IL 62701">
+      <div class="flex items-center gap-3.5 flex-1 min-w-0">
+        <div class="w-12 h-12 rounded-full bg-[#DAE1FF] flex items-center justify-center text-[#0050CB] shrink-0">
+          <span class="material-symbols-outlined text-[22px] fill">home</span>
         </div>
-        <button aria-label="Edit Home Address" class="w-10 h-10 flex items-center justify-center rounded-full text-outline hover:text-primary hover:bg-surface-container transition-colors duration-150 ml-2" onclick="event.stopPropagation(); alert('Edit Home Address')">
-          <span class="material-symbols-outlined text-[20px]" data-icon="edit">edit</span>
-        </button>
+        <div class="flex flex-col min-w-0 pr-2">
+          <span class="text-sm font-bold text-[#191B24]">Home</span>
+          <span class="text-xs text-[#5C5F61] truncate mt-0.5">123 Elm Street, Springfield, IL 62701</span>
+        </div>
       </div>
+      <button aria-label="Edit Home" class="w-9 h-9 flex items-center justify-center rounded-full text-[#5C5F61] hover:text-[#0050CB] hover:bg-gray-100 transition-colors shrink-0" onclick="event.stopPropagation(); alert('Edit Home Address')">
+        <span class="material-symbols-outlined text-[20px]">edit</span>
+      </button>
+    </div>
 
-      <!-- Address Card: Work -->
-      <div class="saved-address-card bg-surface-container-lowest rounded-[16px] shadow-level-1 p-4 flex items-center justify-between group cursor-pointer hover:bg-surface-container-low transition-colors duration-200" data-address="456 Corporate Blvd, Suite 200, Metropolis, NY 10001">
-        <div class="flex items-center gap-4 flex-1">
-          <div class="w-12 h-12 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant flex-shrink-0">
-            <span class="material-symbols-outlined icon-fill" data-icon="work" data-weight="fill">work</span>
-          </div>
-          <div class="flex flex-col">
-            <span class="text-label-md font-label-md text-on-surface font-semibold">Work</span>
-            <span class="text-label-sm font-label-sm text-on-surface-variant mt-1 line-clamp-1">456 Corporate Blvd, Suite 200, Metropolis, NY 10001</span>
-          </div>
+    <!-- Card 2: Work -->
+    <div class="saved-address-card bg-white rounded-[20px] p-4 flex items-center justify-between shadow-[0px_4px_20px_rgba(0,0,0,0.02)] border border-outline-variant/10 cursor-pointer hover:bg-[#F8FAFC] transition-colors" data-address="456 Corporate Blvd, Suite 200, Metropolis, NY 10001">
+      <div class="flex items-center gap-3.5 flex-1 min-w-0">
+        <div class="w-12 h-12 rounded-full bg-[#E0E3E5] flex items-center justify-center text-[#191C1E] shrink-0">
+          <span class="material-symbols-outlined text-[22px] fill">work</span>
         </div>
-        <button aria-label="Edit Work Address" class="w-10 h-10 flex items-center justify-center rounded-full text-outline hover:text-primary hover:bg-surface-container transition-colors duration-150 ml-2" onclick="event.stopPropagation(); alert('Edit Work Address')">
-          <span class="material-symbols-outlined text-[20px]" data-icon="edit">edit</span>
-        </button>
+        <div class="flex flex-col min-w-0 pr-2">
+          <span class="text-sm font-bold text-[#191B24]">Work</span>
+          <span class="text-xs text-[#5C5F61] truncate mt-0.5">456 Corporate Blvd, Suite 200,...</span>
+        </div>
       </div>
+      <button aria-label="Edit Work" class="w-9 h-9 flex items-center justify-center rounded-full text-[#5C5F61] hover:text-[#0050CB] hover:bg-gray-100 transition-colors shrink-0" onclick="event.stopPropagation(); alert('Edit Work Address')">
+        <span class="material-symbols-outlined text-[20px]">edit</span>
+      </button>
+    </div>
 
-      <!-- Address Card: Gym -->
-      <div class="saved-address-card bg-surface-container-lowest rounded-[16px] shadow-level-1 p-4 flex items-center justify-between group cursor-pointer hover:bg-surface-container-low transition-colors duration-200" data-address="789 Muscle Ave, Iron City, CA 90210">
-        <div class="flex items-center gap-4 flex-1">
-          <div class="w-12 h-12 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant flex-shrink-0">
-            <span class="material-symbols-outlined" data-icon="fitness_center">fitness_center</span>
-          </div>
-          <div class="flex flex-col">
-            <span class="text-label-md font-label-md text-on-surface font-semibold">Gym</span>
-            <span class="text-label-sm font-label-sm text-on-surface-variant mt-1 line-clamp-1">789 Muscle Ave, Iron City, CA 90210</span>
-          </div>
+    <!-- Card 3: Gym -->
+    <div class="saved-address-card bg-white rounded-[20px] p-4 flex items-center justify-between shadow-[0px_4px_20px_rgba(0,0,0,0.02)] border border-outline-variant/10 cursor-pointer hover:bg-[#F8FAFC] transition-colors" data-address="789 Muscle Ave, Iron City, CA 90210">
+      <div class="flex items-center gap-3.5 flex-1 min-w-0">
+        <div class="w-12 h-12 rounded-full bg-[#E0E3E5] flex items-center justify-center text-[#191C1E] shrink-0">
+          <span class="material-symbols-outlined text-[22px]">fitness_center</span>
         </div>
-        <button aria-label="Edit Gym Address" class="w-10 h-10 flex items-center justify-center rounded-full text-outline hover:text-primary hover:bg-surface-container transition-colors duration-150 ml-2" onclick="event.stopPropagation(); alert('Edit Gym Address')">
-          <span class="material-symbols-outlined text-[20px]" data-icon="edit">edit</span>
-        </button>
-      </div>
-
-      <!-- Address Card: Favorite Cafe -->
-      <div class="saved-address-card bg-surface-container-lowest rounded-[16px] shadow-level-1 p-4 flex items-center justify-between group cursor-pointer hover:bg-surface-container-low transition-colors duration-200" data-address="321 Bean Roasters Lane, Seattle, WA 98101">
-        <div class="flex items-center gap-4 flex-1">
-          <div class="w-12 h-12 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant flex-shrink-0">
-            <span class="material-symbols-outlined" data-icon="local_cafe">local_cafe</span>
-          </div>
-          <div class="flex flex-col">
-            <span class="text-label-md font-label-md text-on-surface font-semibold">Favorite Cafe</span>
-            <span class="text-label-sm font-label-sm text-on-surface-variant mt-1 line-clamp-1">321 Bean Roasters Lane, Seattle, WA 98101</span>
-          </div>
+        <div class="flex flex-col min-w-0 pr-2">
+          <span class="text-sm font-bold text-[#191B24]">Gym</span>
+          <span class="text-xs text-[#5C5F61] truncate mt-0.5">789 Muscle Ave, Iron City, CA 90210</span>
         </div>
-        <button aria-label="Edit Cafe Address" class="w-10 h-10 flex items-center justify-center rounded-full text-outline hover:text-primary hover:bg-surface-container transition-colors duration-150 ml-2" onclick="event.stopPropagation(); alert('Edit Cafe Address')">
-          <span class="material-symbols-outlined text-[20px]" data-icon="edit">edit</span>
-        </button>
       </div>
+      <button aria-label="Edit Gym" class="w-9 h-9 flex items-center justify-center rounded-full text-[#5C5F61] hover:text-[#0050CB] hover:bg-gray-100 transition-colors shrink-0" onclick="event.stopPropagation(); alert('Edit Gym Address')">
+        <span class="material-symbols-outlined text-[20px]">edit</span>
+      </button>
     </div>
   </main>
 
-  <!-- Floating Action Area (Bottom - Stitch Spec) -->
-  <div class="fixed bottom-0 left-0 w-full p-container-margin bg-gradient-to-t from-background via-background to-transparent z-30 pb-safe md:static md:bg-none md:mt-section-gap md:p-0 md:max-w-2xl md:mx-auto">
-    <button class="w-full h-[56px] bg-primary text-on-primary rounded-[16px] text-body-md font-body-md font-semibold shadow-level-2 hover:bg-primary-container active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2" onclick="alert('Add New Address Modal')">
-      <span class="material-symbols-outlined text-[20px]" data-icon="add">add</span>
+  <!-- Bottom Floating CTA (Exact Match to Image) -->
+  <div class="fixed bottom-0 left-0 right-0 w-full p-5 bg-gradient-to-t from-[#FAF8FF] via-[#FAF8FF] to-transparent z-40 max-w-md mx-auto">
+    <button class="w-full h-14 bg-[#0066FF] text-white rounded-[20px] text-base font-bold shadow-lg hover:bg-[#0050CB] active:scale-[0.98] transition-all flex items-center justify-center gap-2" onclick="alert('Add New Address')">
+      <span class="material-symbols-outlined text-[22px]">add</span>
       Add New Address
     </button>
   </div>
-
-  <style>
-    .pb-safe { padding-bottom: env(safe-area-inset-bottom, 20px); }
-  </style>
 
   <!-- Modular Scripts -->
   <script defer src="/js/common.js"></script>

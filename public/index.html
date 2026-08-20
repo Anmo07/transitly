@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"/>
   <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
-  <title>Transitly - Parcel Delivery</title>
+  <title>Transitly - Deliver</title>
   
   <!-- Preload Ambient Map Hero -->
   <link rel="preload" as="image" href="https://lh3.googleusercontent.com/aida-public/AB6AXuCKaaONLs8ZFEYkl9-pcv93l2AxSdoBCMty1uXuqPBGAcm-vhFHbLaFajnnDxD5Jwq-fw3xVcwtX3JtKzl7fbsMuUKlgXJYllNObokIOdN4dZhCMnuGgVBguCmB3npTgrQ45N86eWYhaIPMfFYnytiI9tJdN1BHXHSVkDC9vBDRNAFkQ3ZwsMrl6C1DhMGT32MwPxLoiBCzsasgJiuZYqUY2vKm3rOI9faoHPEVhiWrWbG0iS3yOFZM" fetchpriority="high"/>
@@ -17,227 +17,150 @@
   <link rel="stylesheet" href="/css/common.css" />
   <link rel="stylesheet" href="/css/deliver.css" />
 </head>
-<body class="bg-background text-on-surface font-body-md min-h-screen overflow-x-hidden relative selection:bg-primary-fixed selection:text-on-primary-fixed">
+<body class="bg-[#FAF8FF] text-[#191B24] font-sans min-h-screen overflow-x-hidden relative selection:bg-[#DAE1FF] selection:text-[#001849] antialiased">
 
-  <!-- Desktop Top App Bar -->
-  <header class="fixed top-0 w-full z-50 bg-surface/95 backdrop-blur-md shadow-sm border-b border-outline-variant/20 hidden md:block">
-    <div class="flex justify-between items-center px-6 h-14 max-w-4xl mx-auto w-full">
-      <div class="flex items-center gap-3">
-        <a href="/" class="text-primary flex items-center justify-center w-10 h-10 rounded-full hover:opacity-80">
-          <span class="material-symbols-outlined text-2xl">local_shipping</span>
-        </a>
-        <a href="/" class="text-xl font-bold text-primary tracking-tight">Transitly</a>
-      </div>
-      <nav class="flex items-center space-x-1">
-        <a class="desktop-nav-btn px-4 py-1.5 rounded-full text-xs font-bold text-primary bg-primary-fixed/50 flex items-center gap-1.5" href="/">
-          <span class="material-symbols-outlined text-[18px]">local_shipping</span>Deliver
-        </a>
-        <a class="desktop-nav-btn px-4 py-1.5 rounded-full text-xs font-medium text-on-surface-variant hover:bg-surface-variant flex items-center gap-1.5" href="/tracking">
-          <span class="material-symbols-outlined text-[18px]">distance</span>Tracking
-        </a>
-        <a class="desktop-nav-btn px-4 py-1.5 rounded-full text-xs font-medium text-on-surface-variant hover:bg-surface-variant flex items-center gap-1.5" href="/services">
-          <span class="material-symbols-outlined text-[18px]">apps</span>All Services
-        </a>
-        <a class="desktop-nav-btn px-4 py-1.5 rounded-full text-xs font-medium text-on-surface-variant hover:bg-surface-variant flex items-center gap-1.5" href="/history">
-          <span class="material-symbols-outlined text-[18px]">history</span>History
-        </a>
-        <a class="desktop-nav-btn px-4 py-1.5 rounded-full text-xs font-medium text-on-surface-variant hover:bg-surface-variant flex items-center gap-1.5" href="/profile">
-          <span class="material-symbols-outlined text-[18px]">person</span>Profile
-        </a>
-      </nav>
-      <div class="flex items-center gap-2">
-        <a href="/api/docs" target="_blank" title="API Docs" class="text-primary hover:opacity-80 flex items-center justify-center w-9 h-9 rounded-full">
-          <span class="material-symbols-outlined text-[20px]">menu_book</span>
-        </a>
-      </div>
-    </div>
-  </header>
-
-  <!-- Ambient Map Background (Fixed Behind Content - Stitch Spec) -->
-  <div class="fixed top-0 left-0 w-full h-[486px] z-0" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCKaaONLs8ZFEYkl9-pcv93l2AxSdoBCMty1uXuqPBGAcm-vhFHbLaFajnnDxD5Jwq-fw3xVcwtX3JtKzl7fbsMuUKlgXJYllNObokIOdN4dZhCMnuGgVBguCmB3npTgrQ45N86eWYhaIPMfFYnytiI9tJdN1BHXHSVkDC9vBDRNAFkQ3ZwsMrl6C1DhMGT32MwPxLoiBCzsasgJiuZYqUY2vKm3rOI9faoHPEVhiWrWbG0iS3yOFZM'); background-size: cover; background-position: center;">
-    <!-- Pickup Point Pin (Stitch Spec) -->
+  <!-- Ambient Map Background (Exact Match to Image) -->
+  <div class="fixed top-0 left-0 w-full h-[450px] z-0" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCKaaONLs8ZFEYkl9-pcv93l2AxSdoBCMty1uXuqPBGAcm-vhFHbLaFajnnDxD5Jwq-fw3xVcwtX3JtKzl7fbsMuUKlgXJYllNObokIOdN4dZhCMnuGgVBguCmB3npTgrQ45N86eWYhaIPMfFYnytiI9tJdN1BHXHSVkDC9vBDRNAFkQ3ZwsMrl6C1DhMGT32MwPxLoiBCzsasgJiuZYqUY2vKm3rOI9faoHPEVhiWrWbG0iS3yOFZM'); background-size: cover; background-position: center;">
+    <!-- Pickup Point Pin (Exact Match to Image) -->
     <div class="absolute top-[35%] left-1/2 transform -translate-x-1/2 flex flex-col items-center drop-shadow-md">
-      <div class="bg-[#128C55] text-white px-4 py-1.5 rounded-full text-label-md font-label-md mb-2 shadow-level-1 flex items-center gap-1.5">
-        <span class="w-2 h-2 rounded-full bg-white animate-pulse"></span>
+      <div class="bg-[#128C55] text-white px-4 py-1 rounded-full text-xs font-bold mb-1 shadow-md flex items-center gap-1.5">
         Pickup Point
       </div>
-      <div class="w-8 h-8 bg-primary-container rounded-full flex items-center justify-center shadow-lg border-2 border-white">
-        <span class="material-symbols-outlined text-white text-sm fill">person_pin_circle</span>
+      <div class="w-8 h-8 bg-[#0066FF] rounded-full flex items-center justify-center shadow-lg border-2 border-white">
+        <span class="material-symbols-outlined text-white text-base fill">location_on</span>
       </div>
     </div>
   </div>
 
-  <!-- Main Content Bottom Sheet (Stitch Spec) -->
-  <main class="relative z-10 mt-[397px] bg-surface-container-lowest rounded-t-[24px] pb-[100px] shadow-level-2 min-h-[530px] max-w-2xl mx-auto">
+  <!-- Main Content Bottom Sheet (Exact Match to Image) -->
+  <main class="relative z-10 mt-[380px] bg-white rounded-t-[28px] pb-24 shadow-[0px_-8px_30px_rgba(0,0,0,0.06)] min-h-[530px] max-w-md mx-auto px-5 pt-3">
     <!-- Drag Handle Indicator -->
-    <div class="w-full flex justify-center pt-3 pb-2">
-      <div class="w-12 h-1.5 bg-outline-variant rounded-full opacity-50"></div>
-    </div>
+    <div class="w-12 h-1.5 bg-[#E1E2EE] rounded-full mx-auto mb-4"></div>
 
-    <!-- Floating Search Bar (Stitch Spec) -->
-    <div class="px-container-margin mt-2">
-      <form id="deliverSearchForm" class="flex items-center bg-surface-container-lowest border border-outline-variant/30 rounded-full py-3 px-5 shadow-level-1 hover:border-primary-container hover:shadow-level-2 transition-all duration-300">
-        <span class="material-symbols-outlined text-on-surface-variant mr-3">search</span>
-        <input id="homeSearchInput" class="w-full bg-transparent outline-none text-body-md font-body-md text-on-surface placeholder:text-on-surface-variant/70 border-none p-0 focus:ring-0" placeholder="Where to send your parcel? (e.g. Chandigarh, Jaipur or TRK-88219)" type="text"/>
-        <button type="submit" id="btnQuickSearch" class="bg-primary text-white text-xs font-bold px-4 py-1.5 rounded-full hover:bg-primary-container shrink-0 flex items-center gap-1 transition-all shadow-sm active:scale-95 ml-2">
-          <span>Go</span>
-          <span class="material-symbols-outlined text-sm">arrow_forward</span>
+    <!-- Floating Search Bar (Exact Match to Image) -->
+    <form id="deliverSearchForm" class="flex items-center bg-white border border-[#E1E2EE] rounded-full py-3 px-4 shadow-sm hover:border-[#0066FF] hover:shadow-md transition-all duration-200 mb-5">
+      <span class="material-symbols-outlined text-[#727687] mr-3 text-xl">search</span>
+      <input id="homeSearchInput" class="w-full bg-transparent outline-none text-sm text-[#191B24] placeholder:text-[#727687] border-none p-0 focus:ring-0" placeholder="Where to send your parcel?" type="text"/>
+      <button type="submit" class="bg-[#0066FF] text-white text-xs font-bold px-3 py-1.5 rounded-full hover:bg-[#0050CB] shrink-0 transition-transform active:scale-95">Go</button>
+    </form>
+
+    <!-- Section Title -->
+    <h2 class="text-xl font-bold text-[#191B24] mb-3">Fast Intercity Delivery</h2>
+
+    <!-- Parcel Hero Card (Exact Match to Image) -->
+    <div class="bg-[#F2F3FF] rounded-[20px] p-5 flex flex-col justify-between relative overflow-hidden shadow-sm mb-5 h-[190px]">
+      <div class="relative z-10 w-[60%] flex flex-col justify-center h-full">
+        <p class="text-xs text-[#5C5F61] font-normal mb-1">Bus-to-Door Logistics</p>
+        <h3 class="text-xl font-bold text-[#191B24] leading-tight mb-3">Send Parcel<br/>Anywhere</h3>
+        <button id="btnOpenBookingModal" class="bg-[#0050CB] text-white px-5 py-2 rounded-full text-xs font-bold w-max shadow-md hover:bg-[#0066FF] transition-all active:scale-95" onclick="openBookingModal('HR-DEL-CHD')">
+          Book Now
         </button>
-      </form>
-    </div>
-
-    <!-- Section Title (Stitch Spec) -->
-    <div class="flex justify-between items-center px-container-margin mt-stack-lg mb-stack-md">
-      <h2 class="text-headline-md font-headline-md text-on-surface">Fast Intercity Delivery</h2>
-      <a href="/services" class="text-label-sm font-bold text-primary hover:underline">All Services ›</a>
-    </div>
-
-    <!-- Bento Grid Layout for Services (Stitch Spec) -->
-    <div class="px-container-margin">
-      <!-- Parcel Card (Hero - Stitch Spec) -->
-      <div class="bg-surface-container-low rounded-[16px] p-6 flex flex-col md:flex-row justify-between relative overflow-hidden shadow-level-1 hover:border hover:border-primary-container/30 transition-colors mb-stack-md h-[200px] md:h-[240px]">
-        <div class="relative z-10 w-full md:w-1/2 flex flex-col justify-center">
-          <p class="text-label-md font-label-md text-on-surface-variant font-normal mb-2">Bus-to-Door Logistics</p>
-          <h3 class="text-headline-lg-mobile md:text-headline-lg font-headline-lg-mobile md:font-headline-lg text-on-surface font-semibold leading-tight">Send Parcel <br/>Anywhere</h3>
-          <button id="btnOpenBookingModal" class="mt-4 bg-primary text-on-primary px-6 py-2 rounded-full text-label-md font-label-md w-max shadow-md hover:bg-primary-container transition-colors active:scale-95" onclick="openBookingModal('HR-DEL-CHD')">Book Now</button>
-        </div>
-        <img class="absolute bottom-[-15%] right-[-5%] w-[80%] md:w-[50%] max-w-[300px] object-contain pointer-events-none" alt="3D parcel box" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBllnUBLVKZ98CzNmZspoH0Mt_Pp_NEIXDbDxk1AvdzSgjZc_BBdOornwzGX9DgEwS9hA0K8pdfphcf7L2RHk1i-eijrkKYD1gxp7OTaUr5CztdkJjxLsHAniOGnQFl4NwxJwKrt1fJYBz9W9FgYxf-Yk-xhct1ypeebZCYqTdiXkIxvHJFMsQm5MslhTbwHFDXLbTeSXmzw_Q6o-OHXOxwsgJCNczNR3Rs6ToO86AVqoaqQ7N0G12f"/>
       </div>
+      <img class="absolute bottom-[-10%] right-[-5%] w-[52%] max-w-[220px] object-contain pointer-events-none" alt="3D delivery parcel" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBllnUBLVKZ98CzNmZspoH0Mt_Pp_NEIXDbDxk1AvdzSgjZc_BBdOornwzGX9DgEwS9hA0K8pdfphcf7L2RHk1i-eijrkKYD1gxp7OTaUr5CztdkJjxLsHAniOGnQFl4NwxJwKrt1fJYBz9W9FgYxf-Yk-xhct1ypeebZCYqTdiXkIxvHJFMsQm5MslhTbwHFDXLbTeSXmzw_Q6o-OHXOxwsgJCNczNR3Rs6ToO86AVqoaqQ7N0G12f"/>
+    </div>
 
-      <!-- Quick Intercity Corridors -->
-      <div class="grid grid-cols-2 gap-2.5 mb-stack-md">
-        <div class="corridor-card bg-surface-container rounded-[16px] p-3.5 shadow-sm border border-outline-variant/20 cursor-pointer hover:border-primary/40 transition-all" onclick="openBookingModal('HR-DEL-CHD')">
-          <div class="flex justify-between items-start">
-            <span class="text-[10px] font-bold bg-primary-fixed text-primary px-2 py-0.5 rounded-full">GT Road</span>
-            <span class="text-xs font-bold text-primary">₹120</span>
+    <!-- HOW IT WORKS Section (Exact Match to Image) -->
+    <h3 class="text-xs font-bold text-[#5C5F61] uppercase tracking-wider mb-2.5 px-0.5">HOW IT WORKS</h3>
+    <div class="bg-[#F2F3FF] rounded-[20px] p-5 shadow-sm mb-4">
+      <div class="flex items-center justify-between">
+        <!-- Step 1: Bus -->
+        <div class="flex flex-col items-center w-1/3 text-center">
+          <div class="w-12 h-12 bg-[#DAE1FF] rounded-full flex items-center justify-center mb-2 shadow-sm text-[#0050CB]">
+            <span class="material-symbols-outlined text-[24px]">directions_bus</span>
           </div>
-          <h4 class="text-xs font-bold text-on-surface mt-1.5">Delhi ➔ Chandigarh</h4>
-          <p class="text-[10px] text-on-surface-variant mt-0.5">ISBT Kashmiri Gate • Every 30 mins</p>
+          <p class="text-xs font-semibold text-[#191B24] leading-tight">Public Bus<br/>Transport</p>
         </div>
-        <div class="corridor-card bg-surface-container rounded-[16px] p-3.5 shadow-sm border border-outline-variant/20 cursor-pointer hover:border-primary/40 transition-all" onclick="openBookingModal('TR-DEL-JAI')">
-          <div class="flex justify-between items-start">
-            <span class="text-[10px] font-bold bg-primary-fixed text-primary px-2 py-0.5 rounded-full">NH-48</span>
-            <span class="text-xs font-bold text-primary">₹150</span>
+
+        <!-- Arrow Divider -->
+        <div class="flex-1 flex justify-center px-2">
+          <div class="w-full h-[1.5px] bg-[#C2C6D8] relative">
+            <div class="absolute right-0 top-1/2 transform -translate-y-1/2 w-0 h-0 border-y-[3.5px] border-y-transparent border-l-[6px] border-l-[#C2C6D8]"></div>
           </div>
-          <h4 class="text-xs font-bold text-on-surface mt-1.5">Delhi ➔ Jaipur</h4>
-          <p class="text-[10px] text-on-surface-variant mt-0.5">Dhaula Kuan • Every 1 hour</p>
+        </div>
+
+        <!-- Step 2: Door-to-Door Partners -->
+        <div class="flex flex-col items-center w-1/3 text-center">
+          <div class="w-12 h-12 bg-[#E0E3E5] rounded-full flex items-center justify-center mb-2 shadow-sm text-[#191C1E]">
+            <span class="material-symbols-outlined text-[24px]">two_wheeler</span>
+          </div>
+          <p class="text-xs font-semibold text-[#191B24] leading-tight">Door-to-Door<br/>Partners</p>
         </div>
       </div>
 
-      <!-- Logistics Flow Section (Stitch Spec) -->
-      <h3 class="text-label-md font-label-md text-on-surface-variant uppercase tracking-wider mb-stack-sm px-1">How it works</h3>
-      <div class="bg-surface-container rounded-[16px] p-5 shadow-sm border border-outline-variant/20 mb-stack-lg">
-        <div class="flex items-center justify-between">
-          <!-- Step 1: Bus -->
-          <div class="flex flex-col items-center w-1/3">
-            <div class="w-12 h-12 bg-primary-fixed rounded-full flex items-center justify-center mb-2 shadow-sm text-on-primary-fixed">
-              <span class="material-symbols-outlined text-[24px]">directions_bus</span>
-            </div>
-            <p class="text-label-sm font-label-sm text-center text-on-surface leading-tight font-medium">Public Bus<br/>Transport</p>
-          </div>
-          <!-- Arrow -->
-          <div class="flex-1 flex justify-center px-2">
-            <div class="w-full h-[2px] bg-outline-variant/50 relative">
-              <div class="absolute right-[-2px] top-1/2 transform -translate-y-1/2 w-0 h-0 border-y-[4px] border-y-transparent border-l-[6px] border-l-outline-variant/50"></div>
-            </div>
-          </div>
-          <!-- Step 2: Last Mile Partners -->
-          <div class="flex flex-col items-center w-1/3">
-            <div class="w-12 h-12 bg-secondary-fixed rounded-full flex items-center justify-center mb-2 shadow-sm text-on-secondary-fixed">
-              <span class="material-symbols-outlined text-[24px]">two_wheeler</span>
-            </div>
-            <p class="text-label-sm font-label-sm text-center text-on-surface leading-tight font-medium">Door-to-Door<br/>Partners</p>
-          </div>
-        </div>
-        <div class="mt-4 pt-3 border-t border-outline-variant/20 text-center">
-          <p class="text-[11px] font-label-sm text-on-surface-variant">Powered by trusted partners: inDrive, Rapido, Uber</p>
-        </div>
+      <div class="mt-4 pt-3 border-t border-[#E1E2EE] text-center">
+        <p class="text-[11px] text-[#5C5F61]">Powered by trusted partners: inDrive, Rapido, Uber</p>
       </div>
     </div>
   </main>
 
-  <!-- Multi-Modal Booking Modal (Integrated with Saga & Feasibility) -->
+  <!-- Multi-Modal Booking Modal -->
   <div id="bookingModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4">
-    <div class="bg-surface-container-lowest rounded-[24px] max-w-[480px] w-full p-6 shadow-level-2 max-h-[90vh] overflow-y-auto">
+    <div class="bg-white rounded-[24px] max-w-[440px] w-full p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
       <div class="flex justify-between items-center mb-4">
-        <h3 class="text-headline-md font-headline-md text-on-surface flex items-center gap-2">
-          <span class="material-symbols-outlined text-primary">local_shipping</span>
+        <h3 class="text-lg font-bold text-[#191B24] flex items-center gap-2">
+          <span class="material-symbols-outlined text-[#0066FF]">local_shipping</span>
           Book Intercity Parcel
         </h3>
-        <button id="btnCloseBookingModal" class="text-on-surface-variant hover:text-on-surface">
+        <button id="btnCloseBookingModal" class="text-gray-400 hover:text-gray-600">
           <span class="material-symbols-outlined">close</span>
         </button>
       </div>
 
-      <form id="modalBookingForm" class="space-y-3 text-label-md">
+      <form id="modalBookingForm" class="space-y-3 text-xs">
         <div>
-          <label class="font-bold block mb-1 text-on-surface">1. Pickup Address (Sender)</label>
-          <input type="text" id="modalSenderAddress" value="Connaught Place, New Delhi" class="w-full rounded-xl border border-outline-variant/50 p-2.5 text-xs focus:ring-primary focus:border-primary" required>
+          <label class="font-bold block mb-1 text-[#191B24]">1. Pickup Address (Sender)</label>
+          <input type="text" id="modalSenderAddress" value="Connaught Place, New Delhi" class="w-full rounded-xl border border-gray-200 p-2.5 focus:ring-[#0066FF] focus:border-[#0066FF]" required>
         </div>
 
         <div class="grid grid-cols-2 gap-2">
           <div>
-            <label class="font-bold block mb-1 text-on-surface">Sender Name</label>
-            <input type="text" id="modalSenderName" value="Aarav Sharma" class="w-full rounded-xl border border-outline-variant/50 p-2.5 text-xs focus:ring-primary" required>
+            <label class="font-bold block mb-1 text-[#191B24]">Sender Name</label>
+            <input type="text" id="modalSenderName" value="Aarav Sharma" class="w-full rounded-xl border border-gray-200 p-2.5 focus:ring-[#0066FF]" required>
           </div>
           <div>
-            <label class="font-bold block mb-1 text-on-surface">Sender Phone</label>
-            <input type="text" id="modalSenderPhone" value="+919876543210" class="w-full rounded-xl border border-outline-variant/50 p-2.5 text-xs focus:ring-primary" required>
+            <label class="font-bold block mb-1 text-[#191B24]">Sender Phone</label>
+            <input type="text" id="modalSenderPhone" value="+919876543210" class="w-full rounded-xl border border-gray-200 p-2.5 focus:ring-[#0066FF]" required>
           </div>
         </div>
 
         <div class="grid grid-cols-2 gap-2">
           <div>
-            <label class="font-bold block mb-1 text-on-surface">Intercity Corridor</label>
-            <select id="modalRouteSelect" class="w-full rounded-xl border border-outline-variant/50 p-2.5 text-xs focus:ring-primary">
+            <label class="font-bold block mb-1 text-[#191B24]">Intercity Corridor</label>
+            <select id="modalRouteSelect" class="w-full rounded-xl border border-gray-200 p-2.5 focus:ring-[#0066FF]">
               <option value="HR-DEL-CHD">Delhi ➔ Chandigarh (GT Road)</option>
               <option value="TR-DEL-JAI">Delhi ➔ Jaipur Highway</option>
               <option value="HR-DEL-SRS">Delhi ➔ Hisar ➔ Sirsa</option>
               <option value="HR-DEL-NRN">Delhi ➔ Rewari ➔ Narnaul</option>
-              <option value="HR-GGN-HDL">Gurgaon ➔ Faridabad ➔ Hodal</option>
-              <option value="HR-CHD-YMN">Chandigarh ➔ Yamunanagar</option>
             </select>
           </div>
           <div>
-            <label class="font-bold block mb-1 text-on-surface">Weight (kg)</label>
-            <input type="number" id="modalWeight" value="5.0" step="0.1" class="w-full rounded-xl border border-outline-variant/50 p-2.5 text-xs focus:ring-primary" required>
+            <label class="font-bold block mb-1 text-[#191B24]">Weight (kg)</label>
+            <input type="number" id="modalWeight" value="5.0" step="0.1" class="w-full rounded-xl border border-gray-200 p-2.5 focus:ring-[#0066FF]" required>
           </div>
         </div>
 
         <div>
-          <label class="font-bold block mb-1 text-on-surface">2. Delivery Address (Recipient)</label>
-          <input type="text" id="modalReceiverAddress" value="Sector 17, Chandigarh" class="w-full rounded-xl border border-outline-variant/50 p-2.5 text-xs focus:ring-primary focus:border-primary" required>
+          <label class="font-bold block mb-1 text-[#191B24]">2. Delivery Address (Recipient)</label>
+          <input type="text" id="modalReceiverAddress" value="Sector 17, Chandigarh" class="w-full rounded-xl border border-gray-200 p-2.5 focus:ring-[#0066FF]" required>
         </div>
 
-        <div class="grid grid-cols-2 gap-2">
-          <div>
-            <label class="font-bold block mb-1 text-on-surface">Recipient Name</label>
-            <input type="text" id="modalReceiverName" value="Rohan Verma" class="w-full rounded-xl border border-outline-variant/50 p-2.5 text-xs focus:ring-primary" required>
-          </div>
-          <div>
-            <label class="font-bold block mb-1 text-on-surface">Recipient Phone</label>
-            <input type="text" id="modalReceiverPhone" value="+919876543211" class="w-full rounded-xl border border-outline-variant/50 p-2.5 text-xs focus:ring-primary" required>
-          </div>
-        </div>
-
-        <div id="modalFeasibilityBox" class="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs mt-1">
+        <div id="modalFeasibilityBox" class="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs">
           <div class="flex justify-between font-bold">
-            <span>Customer Experience:</span>
-            <span class="text-emerald-700 font-extrabold">FULL DOOR-TO-DOOR</span>
+            <span>Route Feasibility:</span>
+            <span class="text-emerald-700 font-extrabold">DOOR-TO-DOOR ACTIVE</span>
           </div>
-          <p class="mt-0.5 text-emerald-800">Uber Direct Pickup ➔ Express Public Bus ➔ Rapido Delivery</p>
-          <div class="mt-2 pt-2 border-t border-emerald-200 flex justify-between font-extrabold">
-            <span>Total Multi-Modal Fare:</span>
+          <div class="mt-1 pt-1 border-t border-emerald-200 flex justify-between font-extrabold">
+            <span>Total Fare:</span>
             <span>₹450.00</span>
           </div>
         </div>
 
-        <div class="pt-3 flex gap-2">
-          <button type="button" id="btnModalCheckFeasibility" class="w-1/2 py-3 rounded-full border border-primary text-primary font-bold text-xs hover:bg-primary-fixed/20 transition-all">
-            Check Feasibility
+        <div class="pt-2 flex gap-2">
+          <button type="button" id="btnModalCheckFeasibility" class="w-1/2 py-2.5 rounded-full border border-[#0066FF] text-[#0066FF] font-bold hover:bg-blue-50 transition-all">
+            Check
           </button>
-          <button type="submit" id="btnModalSubmitBooking" class="w-1/2 py-3 rounded-full bg-primary text-white font-bold text-xs hover:bg-primary-container shadow-md transition-all active:scale-95">
-            Confirm Booking
+          <button type="submit" id="btnModalSubmitBooking" class="w-1/2 py-2.5 rounded-full bg-[#0066FF] text-white font-bold hover:bg-[#0050CB] shadow-md transition-all active:scale-95">
+            Confirm
           </button>
         </div>
       </form>
@@ -245,33 +168,29 @@
     </div>
   </div>
 
-  <!-- Bottom Navigation Bar (Stitch Spec) -->
-  <nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-3 pb-safe border-t border-outline-variant bg-surface-container-lowest rounded-t-xl shadow-lg shadow-[0px_-4px_20px_rgba(0,0,0,0.03)] md:hidden">
-    <!-- Active Tab: Deliver -->
-    <a href="/" class="flex flex-col items-center justify-center text-primary font-semibold hover:opacity-80 transition-opacity active:scale-[0.9] duration-200">
-      <span class="material-symbols-outlined fill mb-1 text-[24px]">local_shipping</span>
-      <span class="text-label-sm font-label-sm">Deliver</span>
+  <!-- Bottom Navigation Bar (Exact Match to Image) -->
+  <nav class="fixed bottom-0 left-0 right-0 w-full flex justify-around items-center px-4 py-2 bg-white z-50 rounded-t-2xl shadow-[0px_-4px_20px_rgba(0,0,0,0.06)] border-t border-outline-variant/20">
+    <!-- Deliver (Active - Exact Match to Image) -->
+    <a class="flex flex-col items-center justify-center text-[#0050CB] px-3 py-1 font-bold group" href="/">
+      <span class="material-symbols-outlined mb-0.5 text-[22px] fill">local_shipping</span>
+      <span class="text-[11px] font-bold">Deliver</span>
     </a>
-    <!-- Inactive Tab: Tracking -->
-    <a href="/tracking" class="flex flex-col items-center justify-center text-on-secondary-fixed-variant hover:opacity-80 transition-opacity">
-      <span class="material-symbols-outlined mb-1 text-[24px]">distance</span>
-      <span class="text-label-sm font-label-sm">Tracking</span>
+    <!-- Tracking -->
+    <a class="flex flex-col items-center justify-center text-[#424656] px-3 py-1 hover:text-[#0050CB] transition-colors group" href="/tracking">
+      <span class="material-symbols-outlined mb-0.5 text-[22px] group-active:scale-90 transition-transform">location_on</span>
+      <span class="text-[11px] font-medium">Tracking</span>
     </a>
-    <!-- Inactive Tab: History -->
-    <a href="/history" class="flex flex-col items-center justify-center text-on-secondary-fixed-variant hover:opacity-80 transition-opacity">
-      <span class="material-symbols-outlined mb-1 text-[24px]">history</span>
-      <span class="text-label-sm font-label-sm">History</span>
+    <!-- History -->
+    <a class="flex flex-col items-center justify-center text-[#424656] px-3 py-1 hover:text-[#0050CB] transition-colors group" href="/history">
+      <span class="material-symbols-outlined mb-0.5 text-[22px] group-active:scale-90 transition-transform">history</span>
+      <span class="text-[11px] font-medium">History</span>
     </a>
-    <!-- Inactive Tab: Profile -->
-    <a href="/profile" class="flex flex-col items-center justify-center text-on-secondary-fixed-variant hover:opacity-80 transition-opacity">
-      <span class="material-symbols-outlined mb-1 text-[24px]">person</span>
-      <span class="text-label-sm font-label-sm">Profile</span>
+    <!-- Profile -->
+    <a class="flex flex-col items-center justify-center text-[#424656] px-3 py-1 hover:text-[#0050CB] transition-colors group" href="/profile">
+      <span class="material-symbols-outlined mb-0.5 text-[22px] group-active:scale-90 transition-transform">person</span>
+      <span class="text-[11px] font-medium">Profile</span>
     </a>
   </nav>
-
-  <style>
-    .pb-safe { padding-bottom: env(safe-area-inset-bottom, 12px); }
-  </style>
 
   <!-- Modular Scripts -->
   <script defer src="/js/common.js"></script>

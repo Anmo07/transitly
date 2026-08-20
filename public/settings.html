@@ -14,163 +14,164 @@
   <link rel="stylesheet" href="/css/common.css" />
   <link rel="stylesheet" href="/css/settings.css" />
 </head>
-<body class="bg-background text-on-background min-h-screen flex flex-col font-body-md antialiased pb-safe">
+<body class="bg-[#FAF8FF] text-[#191B24] font-sans min-h-screen pt-14 pb-24 antialiased selection:bg-[#DAE1FF] selection:text-[#001849]">
 
-  <!-- TopAppBar (Stitch Spec) -->
-  <header class="flex justify-between items-center px-container-margin w-full h-16 bg-background docked full-width top-0 z-40 sticky border-b border-outline-variant/20">
-    <a href="/profile" class="flex items-center gap-stack-md hover:bg-surface-container-low p-2 rounded-full transition-colors duration-150 text-on-surface-variant">
-      <span class="material-symbols-outlined text-primary" data-icon="arrow_back">arrow_back</span>
+  <!-- TopAppBar (Exact Match to Image) -->
+  <header class="fixed top-0 left-0 right-0 w-full z-50 bg-[#FAF8FF] flex justify-between items-center px-5 h-14 transition-all border-b border-outline-variant/10">
+    <a href="/profile" class="p-2 -ml-2 text-[#191B24] hover:text-[#0050CB]">
+      <span class="material-symbols-outlined text-[24px]">menu</span>
     </a>
-    <div class="text-headline-md font-headline-md font-bold text-primary flex-1 text-center">
-      Transitly
-    </div>
-    <div class="flex items-center cursor-pointer hover:bg-surface-container-low p-1 rounded-full transition-colors duration-150">
-      <img alt="User profile picture" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDLN48DrAjYT_qN8qO59A-FJKKbQgyyG7WRz4xpYZy0EVOcqZqx8F7tHUTkuB324clCGABjLOt0veg09cZN1rbyt9Jl17RJykjWcKlV91ddB2rlo6sgcO4eoxgAw4AUH1U02wOk9r-QIyY8Grz3qjO48ETeN0tOaR4kTUDu1h63eExtZcCZs77llAfmhDMEIFE3c2jLH8loP92FENdfclpaKQKIFt_4B7VKMgJTxU5nKLcEFZ3YsxaJ"/>
-    </div>
+    <h1 class="text-xl font-bold text-[#0050CB] tracking-tight">Transitly</h1>
+    <a href="/profile" class="w-8 h-8 rounded-full overflow-hidden border border-white shadow-sm shrink-0">
+      <img alt="User profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDLN48DrAjYT_qN8qO59A-FJKKbQgyyG7WRz4xpYZy0EVOcqZqx8F7tHUTkuB324clCGABjLOt0veg09cZN1rbyt9Jl17RJykjWcKlV91ddB2rlo6sgcO4eoxgAw4AUH1U02wOk9r-QIyY8Grz3qjO48ETeN0tOaR4kTUDu1h63eExtZcCZs77llAfmhDMEIFE3c2jLH8loP92FENdfclpaKQKIFt_4B7VKMgJTxU5nKLcEFZ3YsxaJ"/>
+    </a>
   </header>
 
-  <!-- Main Content Canvas (Stitch Spec) -->
-  <main class="flex-1 px-container-margin py-stack-lg flex flex-col gap-section-gap max-w-2xl mx-auto w-full pb-32">
+  <!-- Main Content (Exact Match to Image) -->
+  <main class="w-full max-w-md mx-auto px-5 py-4 flex flex-col gap-5">
     <!-- Page Header -->
-    <div class="flex flex-col gap-stack-sm">
-      <h1 class="text-headline-lg-mobile font-headline-lg-mobile text-on-surface">Settings</h1>
-      <p class="text-body-md font-body-md text-on-surface-variant">Manage your preferences and account settings.</p>
+    <div>
+      <h2 class="text-2xl font-extrabold text-[#191B24]">Settings</h2>
+      <p class="text-sm text-[#5C5F61] mt-1">Manage your preferences and account settings.</p>
     </div>
 
-    <!-- Settings Section: Notifications (Stitch Spec) -->
-    <section class="flex flex-col gap-stack-md">
-      <h2 class="text-label-md font-label-md text-primary uppercase tracking-wider pl-1 font-bold">Notifications</h2>
-      <div class="bg-surface-container-lowest rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.05)] flex flex-col overflow-hidden">
+    <!-- NOTIFICATIONS Section (Exact Match to Image) -->
+    <section class="flex flex-col gap-2.5">
+      <h3 class="text-xs font-bold text-[#0050CB] uppercase tracking-wider px-1">NOTIFICATIONS</h3>
+      <div class="bg-white rounded-2xl shadow-sm border border-outline-variant/10 overflow-hidden">
         <!-- Push Notifications -->
-        <div class="flex items-center justify-between p-4 border-b border-surface-variant">
-          <div class="flex items-center gap-stack-md">
-            <div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-primary">
-              <span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+        <div class="flex items-center justify-between p-4 border-b border-gray-100">
+          <div class="flex items-center gap-3.5">
+            <div class="w-10 h-10 rounded-full bg-[#DAE1FF] flex items-center justify-center text-[#0050CB] shrink-0">
+              <span class="material-symbols-outlined text-[20px]">notifications</span>
             </div>
-            <div class="flex flex-col">
-              <span class="text-body-md font-body-md text-on-surface font-medium">Push Notifications</span>
-              <span class="text-label-sm font-label-sm text-on-surface-variant">Parcel updates and alerts</span>
+            <div>
+              <span class="text-sm font-bold text-[#191B24] block">Push Notifications</span>
+              <span class="text-xs text-[#5C5F61]">Ride updates and alerts</span>
             </div>
           </div>
-          <div class="relative inline-block w-12 align-middle select-none transition duration-200 ease-in">
-            <input checked="" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" id="push_toggle" name="toggle" type="checkbox"/>
-            <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer" for="push_toggle"></label>
+          <!-- Blue active toggle switch with checkmark -->
+          <div class="w-12 h-6 bg-[#0066FF] rounded-full flex items-center justify-end px-1 cursor-pointer shadow-inner">
+            <div class="w-5 h-5 bg-white rounded-full flex items-center justify-center shadow-sm text-[#0066FF]">
+              <span class="material-symbols-outlined text-[14px] font-bold">check</span>
+            </div>
           </div>
         </div>
 
         <!-- Email Updates -->
         <div class="flex items-center justify-between p-4">
-          <div class="flex items-center gap-stack-md">
-            <div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-primary">
-              <span class="material-symbols-outlined" data-icon="mail">mail</span>
+          <div class="flex items-center gap-3.5">
+            <div class="w-10 h-10 rounded-full bg-[#DAE1FF] flex items-center justify-center text-[#0050CB] shrink-0">
+              <span class="material-symbols-outlined text-[20px]">mail</span>
             </div>
-            <div class="flex flex-col">
-              <span class="text-body-md font-body-md text-on-surface font-medium">Email Updates</span>
-              <span class="text-label-sm font-label-sm text-on-surface-variant">Promotions and invoices</span>
+            <div>
+              <span class="text-sm font-bold text-[#191B24] block">Email Updates</span>
+              <span class="text-xs text-[#5C5F61]">Promotions and news</span>
             </div>
           </div>
-          <div class="relative inline-block w-12 align-middle select-none transition duration-200 ease-in">
-            <input class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" id="email_toggle" name="toggle" type="checkbox"/>
-            <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer" for="email_toggle"></label>
+          <!-- Inactive toggle switch -->
+          <div class="w-12 h-6 bg-gray-300 rounded-full flex items-center px-1 cursor-pointer">
+            <div class="w-5 h-5 bg-white rounded-full shadow-sm"></div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Settings Section: Privacy & Location (Stitch Spec) -->
-    <section class="flex flex-col gap-stack-md">
-      <h2 class="text-label-md font-label-md text-primary uppercase tracking-wider pl-1 font-bold">Privacy &amp; Location</h2>
-      <div class="bg-surface-container-lowest rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.05)] flex flex-col overflow-hidden">
+    <!-- PRIVACY & LOCATION Section (Exact Match to Image) -->
+    <section class="flex flex-col gap-2.5">
+      <h3 class="text-xs font-bold text-[#0050CB] uppercase tracking-wider px-1">PRIVACY &amp; LOCATION</h3>
+      <div class="bg-white rounded-2xl shadow-sm border border-outline-variant/10 overflow-hidden">
         <!-- Location Services -->
-        <div class="flex items-center justify-between p-4 border-b border-surface-variant">
-          <div class="flex items-center gap-stack-md">
-            <div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-primary">
-              <span class="material-symbols-outlined" data-icon="location_on">location_on</span>
+        <div class="flex items-center justify-between p-4 border-b border-gray-100">
+          <div class="flex items-center gap-3.5">
+            <div class="w-10 h-10 rounded-full bg-[#DAE1FF] flex items-center justify-center text-[#0050CB] shrink-0">
+              <span class="material-symbols-outlined text-[20px]">location_on</span>
             </div>
-            <div class="flex flex-col">
-              <span class="text-body-md font-body-md text-on-surface font-medium">Location Services</span>
-              <span class="text-label-sm font-label-sm text-on-surface-variant">Nearest ISBT hub detection</span>
+            <div>
+              <span class="text-sm font-bold text-[#191B24] block">Location Services</span>
+              <span class="text-xs text-[#5C5F61]">Required for ride hailing</span>
             </div>
           </div>
-          <div class="relative inline-block w-12 align-middle select-none transition duration-200 ease-in">
-            <input checked="" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" id="location_toggle" name="toggle" type="checkbox"/>
-            <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer" for="location_toggle"></label>
+          <!-- Blue active toggle switch with checkmark -->
+          <div class="w-12 h-6 bg-[#0066FF] rounded-full flex items-center justify-end px-1 cursor-pointer shadow-inner">
+            <div class="w-5 h-5 bg-white rounded-full flex items-center justify-center shadow-sm text-[#0066FF]">
+              <span class="material-symbols-outlined text-[14px] font-bold">check</span>
+            </div>
           </div>
         </div>
 
         <!-- Language -->
-        <a class="flex items-center justify-between p-4 border-b border-surface-variant hover:bg-surface-container-low transition-colors group cursor-pointer" onclick="alert('Language: English (US)')">
-          <div class="flex items-center gap-stack-md">
-            <div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-primary group-hover:bg-white transition-colors">
-              <span class="material-symbols-outlined" data-icon="language">language</span>
+        <a class="flex items-center justify-between p-4 border-b border-gray-100 hover:bg-gray-50 transition-colors" href="#">
+          <div class="flex items-center gap-3.5">
+            <div class="w-10 h-10 rounded-full bg-[#DAE1FF] flex items-center justify-center text-[#0050CB] shrink-0">
+              <span class="material-symbols-outlined text-[20px]">language</span>
             </div>
-            <span class="text-body-md font-body-md text-on-surface font-medium">Language</span>
+            <span class="text-sm font-bold text-[#191B24]">Language</span>
           </div>
-          <div class="flex items-center gap-2">
-            <span class="text-label-md font-label-md text-on-surface-variant">English (US)</span>
-            <span class="material-symbols-outlined text-outline" data-icon="chevron_right">chevron_right</span>
+          <div class="flex items-center gap-1.5 text-xs text-[#5C5F61]">
+            <span>English (US)</span>
+            <span class="material-symbols-outlined text-[18px]">chevron_right</span>
           </div>
         </a>
 
         <!-- Privacy Policy -->
-        <a class="flex items-center justify-between p-4 border-b border-surface-variant hover:bg-surface-container-low transition-colors group cursor-pointer" onclick="alert('Privacy Policy: All customer PII is encrypted and redacted.')">
-          <div class="flex items-center gap-stack-md">
-            <div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-primary group-hover:bg-white transition-colors">
-              <span class="material-symbols-outlined" data-icon="policy">policy</span>
+        <a class="flex items-center justify-between p-4 border-b border-gray-100 hover:bg-gray-50 transition-colors" href="#">
+          <div class="flex items-center gap-3.5">
+            <div class="w-10 h-10 rounded-full bg-[#DAE1FF] flex items-center justify-center text-[#0050CB] shrink-0">
+              <span class="material-symbols-outlined text-[20px]">policy</span>
             </div>
-            <span class="text-body-md font-body-md text-on-surface font-medium">Privacy Policy</span>
+            <span class="text-sm font-bold text-[#191B24]">Privacy Policy</span>
           </div>
-          <span class="material-symbols-outlined text-outline" data-icon="chevron_right">chevron_right</span>
+          <span class="material-symbols-outlined text-[18px] text-[#5C5F61]">chevron_right</span>
         </a>
 
         <!-- Terms of Service -->
-        <a class="flex items-center justify-between p-4 hover:bg-surface-container-low transition-colors group cursor-pointer" onclick="alert('Terms of Service: State Express Transport verified cargo rules.')">
-          <div class="flex items-center gap-stack-md">
-            <div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-primary group-hover:bg-white transition-colors">
-              <span class="material-symbols-outlined" data-icon="description">description</span>
+        <a class="flex items-center justify-between p-4 hover:bg-gray-50 transition-colors" href="#">
+          <div class="flex items-center gap-3.5">
+            <div class="w-10 h-10 rounded-full bg-[#DAE1FF] flex items-center justify-center text-[#0050CB] shrink-0">
+              <span class="material-symbols-outlined text-[20px]">description</span>
             </div>
-            <span class="text-body-md font-body-md text-on-surface font-medium">Terms of Service</span>
+            <span class="text-sm font-bold text-[#191B24]">Terms of Service</span>
           </div>
-          <span class="material-symbols-outlined text-outline" data-icon="chevron_right">chevron_right</span>
+          <span class="material-symbols-outlined text-[18px] text-[#5C5F61]">chevron_right</span>
         </a>
       </div>
     </section>
 
-    <!-- Account Actions -->
-    <section class="flex flex-col gap-stack-md pt-4">
-      <button class="w-full bg-surface-container-low text-error hover:bg-error-container hover:text-on-error-container rounded-xl py-4 font-label-md text-label-md transition-colors flex items-center justify-center gap-2 font-bold active:scale-95" onclick="alert('Signed out successfully.')">
-        <span class="material-symbols-outlined" data-icon="logout">logout</span>
+    <!-- Sign Out CTA & Version (Exact Match to Image) -->
+    <div class="flex flex-col items-center gap-3 mt-1">
+      <button class="w-full h-14 bg-[#EEF2F6] text-[#DC2626] text-sm font-bold rounded-2xl flex items-center justify-center gap-2 hover:bg-red-50 transition-all active:scale-[0.98]" onclick="alert('Signed out successfully.')">
+        <span class="material-symbols-outlined text-[20px]">logout</span>
         Sign Out
       </button>
-      <div class="text-center mt-4">
-        <span class="text-label-sm font-label-sm text-outline">Transitly v2.4.1</span>
-      </div>
-    </section>
+      <span class="text-xs text-[#727687]">Transitly v2.4.1</span>
+    </div>
   </main>
 
-  <!-- Bottom Navigation Bar (Stitch Spec) -->
-  <nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-3 pb-safe bg-surface-container-lowest rounded-t-xl shadow-lg border-t border-outline-variant md:hidden">
-    <a href="/" class="flex flex-col items-center justify-center text-on-secondary-fixed-variant hover:opacity-80 transition-opacity w-16">
-      <span class="material-symbols-outlined mb-1" data-icon="local_shipping">local_shipping</span>
-      <span class="text-label-sm font-label-sm">Deliver</span>
+  <!-- Bottom Navigation Bar (Exact Match to Image) -->
+  <nav class="fixed bottom-0 left-0 right-0 w-full flex justify-around items-center px-4 py-2 bg-white z-50 rounded-t-2xl shadow-[0px_-4px_20px_rgba(0,0,0,0.06)] border-t border-outline-variant/20">
+    <!-- Ride -->
+    <a class="flex flex-col items-center justify-center text-[#424656] px-3 py-1 hover:text-[#0050CB] transition-colors" href="/">
+      <span class="material-symbols-outlined mb-0.5 text-[22px]">home</span>
+      <span class="text-[11px] font-medium">Ride</span>
     </a>
-    <a href="/tracking" class="flex flex-col items-center justify-center text-on-secondary-fixed-variant hover:opacity-80 transition-opacity w-16">
-      <span class="material-symbols-outlined mb-1" data-icon="distance">distance</span>
-      <span class="text-label-sm font-label-sm">Tracking</span>
+    <!-- All Services -->
+    <a class="flex flex-col items-center justify-center text-[#424656] px-3 py-1 hover:text-[#0050CB] transition-colors" href="/services">
+      <span class="material-symbols-outlined mb-0.5 text-[22px]">apps</span>
+      <span class="text-[11px] font-medium">All Services</span>
     </a>
-    <a href="/services" class="flex flex-col items-center justify-center text-on-secondary-fixed-variant hover:opacity-80 transition-opacity w-16">
-      <span class="material-symbols-outlined mb-1" data-icon="apps">apps</span>
-      <span class="text-label-sm font-label-sm">Services</span>
+    <!-- Travel -->
+    <a class="flex flex-col items-center justify-center text-[#424656] px-3 py-1 hover:text-[#0050CB] transition-colors" href="/tracking">
+      <span class="material-symbols-outlined mb-0.5 text-[22px]">explore</span>
+      <span class="text-[11px] font-medium">Travel</span>
     </a>
-    <a href="/profile" class="flex flex-col items-center justify-center text-primary font-semibold scale-95 transition-transform duration-200 w-16 relative">
-      <span class="material-symbols-outlined mb-1 fill" data-icon="person">person</span>
-      <span class="text-label-sm font-label-sm font-bold">Profile</span>
+    <!-- Profile (Active with top bar indicator - Exact Match to Image) -->
+    <a class="flex flex-col items-center justify-center text-[#0050CB] px-3 py-1 relative" href="/profile">
+      <div class="absolute -top-2 w-8 h-1 bg-[#0050CB] rounded-full"></div>
+      <span class="material-symbols-outlined mb-0.5 text-[22px] fill">person</span>
+      <span class="text-[11px] font-bold">Profile</span>
     </a>
   </nav>
-
-  <style>
-    .pb-safe { padding-bottom: env(safe-area-inset-bottom, 12px); }
-  </style>
 
   <!-- Modular Scripts -->
   <script defer src="/js/common.js"></script>
