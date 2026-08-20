@@ -1,0 +1,17 @@
+/* ==========================================================================
+   Transitly — Delivery History Stylesheet
+   ========================================================================== */
+
+.history-item-card {
+  transition: all 0.15s ease-in-out;
+}
+
+.history-item-card:hover {
+  border-color: rgba(0, 80, 203, 0.3);
+  transform: translateX(2px);
+  box-shadow: 0px 8px 30px rgba(0, 102, 255, 0.08);
+}
+
+.history-chip {
+  transition: all 0.15s ease;
+}

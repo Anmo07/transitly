@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+  <title>Transitly — App Settings</title>
+  <meta name="description" content="Notification, location, and language settings.">
+  <meta name="theme-color" content="#0050cb">
+
+  <!-- Material Symbols (deferred) -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" media="print" onload="this.media='all'"/>
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/></noscript>
+
+  <!-- Production Compiled Tailwind CSS & Dedicated Styles -->
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/common.css" />
+  <link rel="stylesheet" href="/css/settings.css" />
+</head>
+<body class="bg-[#faf8ff] text-on-surface font-sans min-h-[100dvh] overflow-x-hidden flex flex-col antialiased">
+
+  <!-- ========================================================================= -->
+  <!-- SUB-SCREEN HEADER                                                         -->
+  <!-- ========================================================================= -->
+  <header class="bg-surface/95 backdrop-blur-md shadow-sm fixed top-0 left-0 right-0 w-full z-50 border-b border-outline-variant/20">
+    <div class="flex justify-between items-center px-4 h-14 max-w-2xl mx-auto w-full">
+      <a href="/profile" class="w-9 h-9 flex items-center justify-center rounded-full bg-surface-container-lowest shadow-sm text-on-surface hover:bg-surface-container-low active:scale-95" aria-label="Back to Profile">
+        <span class="material-symbols-outlined">arrow_back</span>
+      </a>
+      <h1 class="text-base font-bold text-on-surface">Settings</h1>
+      <div class="w-9 h-9"></div>
+    </div>
+  </header>
+
+  <!-- ========================================================================= -->
+  <!-- MAIN CONTENT: SETTINGS (STITCH DESIGN)                                    -->
+  <!-- ========================================================================= -->
+  <main class="w-full max-w-2xl mx-auto pt-16 pb-28 px-4 space-y-4 flex-1">
+    <div class="space-y-4">
+      <!-- Notifications -->
+      <section class="space-y-2">
+        <h2 class="text-[11px] font-bold text-primary uppercase tracking-wider pl-1">Notifications</h2>
+        <div class="bg-surface-container-lowest rounded-xl shadow-level-1 flex flex-col border border-outline-variant/20">
+          <div class="flex items-center justify-between p-3.5 border-b border-surface-variant">
+            <div class="flex items-center gap-3">
+              <span class="material-symbols-outlined text-primary text-xl">notifications</span>
+              <div>
+                <p class="text-xs font-bold text-on-surface">Push Notifications</p>
+                <p class="text-[10px] text-on-surface-variant">Parcel updates & telematics alerts</p>
+              </div>
+            </div>
+            <input checked="" class="toggle-checkbox" type="checkbox"/>
+          </div>
+          <div class="flex items-center justify-between p-3.5">
+            <div class="flex items-center gap-3">
+              <span class="material-symbols-outlined text-primary text-xl">mail</span>
+              <div>
+                <p class="text-xs font-bold text-on-surface">Email Updates</p>
+                <p class="text-[10px] text-on-surface-variant">Invoices and tracking summaries</p>
+              </div>
+            </div>
+            <input class="toggle-checkbox" type="checkbox"/>
+          </div>
+        </div>
+      </section>
+
+      <!-- Privacy & Location -->
+      <section class="space-y-2">
+        <h2 class="text-[11px] font-bold text-primary uppercase tracking-wider pl-1">Privacy & Location</h2>
+        <div class="bg-surface-container-lowest rounded-xl shadow-level-1 flex flex-col border border-outline-variant/20">
+          <div class="flex items-center justify-between p-3.5 border-b border-surface-variant">
+            <div class="flex items-center gap-3">
+              <span class="material-symbols-outlined text-primary text-xl">location_on</span>
+              <div>
+                <p class="text-xs font-bold text-on-surface">Location Services</p>
+                <p class="text-[10px] text-on-surface-variant">Nearest ISBT hub detection</p>
+              </div>
+            </div>
+            <input checked="" class="toggle-checkbox" type="checkbox"/>
+          </div>
+          <div class="flex items-center justify-between p-3.5 cursor-pointer hover:bg-surface-container-low" onclick="alert('Language: English (US)')">
+            <div class="flex items-center gap-3">
+              <span class="material-symbols-outlined text-primary text-xl">language</span>
+              <p class="text-xs font-bold text-on-surface">Language</p>
+            </div>
+            <span class="text-[11px] text-on-surface-variant">English (US) ›</span>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Modular Scripts -->
+  <script defer src="/js/common.js"></script>
+  <script defer src="/js/settings.js"></script>
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+  <title>Transitly — Saved Addresses</title>
+  <meta name="description" content="Manage your saved pickup and delivery addresses.">
+  <meta name="theme-color" content="#0050cb">
+
+  <!-- Material Symbols (deferred) -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" media="print" onload="this.media='all'"/>
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/></noscript>
+
+  <!-- Production Compiled Tailwind CSS & Dedicated Styles -->
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/common.css" />
+  <link rel="stylesheet" href="/css/saved-addresses.css" />
+</head>
+<body class="bg-[#faf8ff] text-on-surface font-sans min-h-[100dvh] overflow-x-hidden flex flex-col antialiased">
+
+  <!-- ========================================================================= -->
+  <!-- SUB-SCREEN HEADER                                                         -->
+  <!-- ========================================================================= -->
+  <header class="bg-surface/95 backdrop-blur-md shadow-sm fixed top-0 left-0 right-0 w-full z-50 border-b border-outline-variant/20">
+    <div class="flex justify-between items-center px-4 h-14 max-w-2xl mx-auto w-full">
+      <a href="/profile" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-surface-container-low active:scale-95 transition-transform text-on-surface-variant" aria-label="Back to Profile">
+        <span class="material-symbols-outlined">arrow_back</span>
+      </a>
+      <h1 class="text-base font-bold text-primary">Saved Addresses</h1>
+      <div class="w-9 h-9"></div>
+    </div>
+  </header>
+
+  <!-- ========================================================================= -->
+  <!-- MAIN CONTENT: SAVED ADDRESSES (STITCH DESIGN)                             -->
+  <!-- ========================================================================= -->
+  <main class="w-full max-w-2xl mx-auto pt-16 pb-28 px-4 space-y-4 flex-1">
+    <div class="flex flex-col gap-2.5">
+      <!-- Home -->
+      <div class="saved-address-card bg-surface-container-lowest rounded-[16px] shadow-level-1 p-3.5 flex items-center justify-between group cursor-pointer hover:bg-surface-container-low border border-outline-variant/20" data-address="123 Elm Street, Springfield, IL 62701">
+        <div class="flex items-center gap-3 flex-1">
+          <div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center text-primary shrink-0">
+            <span class="material-symbols-outlined icon-fill">home</span>
+          </div>
+          <div class="flex flex-col">
+            <span class="text-xs font-bold text-on-surface">Home</span>
+            <span class="text-[11px] text-on-surface-variant mt-0.5 line-clamp-1">123 Elm Street, Springfield, IL 62701</span>
+          </div>
+        </div>
+        <button class="w-8 h-8 flex items-center justify-center rounded-full text-outline hover:text-primary" onclick="event.stopPropagation(); alert('Edit Home Address')">
+          <span class="material-symbols-outlined text-[18px]">edit</span>
+        </button>
+      </div>
+
+      <!-- Work -->
+      <div class="saved-address-card bg-surface-container-lowest rounded-[16px] shadow-level-1 p-3.5 flex items-center justify-between group cursor-pointer hover:bg-surface-container-low border border-outline-variant/20" data-address="456 Corporate Blvd, Suite 200, Metropolis, NY 10001">
+        <div class="flex items-center gap-3 flex-1">
+          <div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant shrink-0">
+            <span class="material-symbols-outlined icon-fill">work</span>
+          </div>
+          <div class="flex flex-col">
+            <span class="text-xs font-bold text-on-surface">Work</span>
+            <span class="text-[11px] text-on-surface-variant mt-0.5 line-clamp-1">456 Corporate Blvd, Suite 200, Metropolis, NY 10001</span>
+          </div>
+        </div>
+        <button class="w-8 h-8 flex items-center justify-center rounded-full text-outline hover:text-primary" onclick="event.stopPropagation(); alert('Edit Work Address')">
+          <span class="material-symbols-outlined text-[18px]">edit</span>
+        </button>
+      </div>
+
+      <!-- Gym -->
+      <div class="saved-address-card bg-surface-container-lowest rounded-[16px] shadow-level-1 p-3.5 flex items-center justify-between group cursor-pointer hover:bg-surface-container-low border border-outline-variant/20" data-address="789 Muscle Ave, Iron City, CA 90210">
+        <div class="flex items-center gap-3 flex-1">
+          <div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant shrink-0">
+            <span class="material-symbols-outlined">fitness_center</span>
+          </div>
+          <div class="flex flex-col">
+            <span class="text-xs font-bold text-on-surface">Gym</span>
+            <span class="text-[11px] text-on-surface-variant mt-0.5 line-clamp-1">789 Muscle Ave, Iron City, CA 90210</span>
+          </div>
+        </div>
+        <button class="w-8 h-8 flex items-center justify-center rounded-full text-outline hover:text-primary" onclick="event.stopPropagation(); alert('Edit Gym Address')">
+          <span class="material-symbols-outlined text-[18px]">edit</span>
+        </button>
+      </div>
+
+      <!-- Favorite Cafe -->
+      <div class="saved-address-card bg-surface-container-lowest rounded-[16px] shadow-level-1 p-3.5 flex items-center justify-between group cursor-pointer hover:bg-surface-container-low border border-outline-variant/20" data-address="321 Coffee Lane, Bean Town, WA 98101">
+        <div class="flex items-center gap-3 flex-1">
+          <div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant shrink-0">
+            <span class="material-symbols-outlined">local_cafe</span>
+          </div>
+          <div class="flex flex-col">
+            <span class="text-xs font-bold text-on-surface">Favorite Cafe</span>
+            <span class="text-[11px] text-on-surface-variant mt-0.5 line-clamp-1">321 Coffee Lane, Bean Town, WA 98101</span>
+          </div>
+        </div>
+        <button class="w-8 h-8 flex items-center justify-center rounded-full text-outline hover:text-primary" onclick="event.stopPropagation(); alert('Edit Cafe Address')">
+          <span class="material-symbols-outlined text-[18px]">edit</span>
+        </button>
+      </div>
+    </div>
+
+    <button class="w-full h-12 bg-surface-container-lowest border-2 border-dashed border-outline-variant/60 rounded-xl flex items-center justify-center gap-2 text-primary text-xs font-bold hover:bg-surface-container-low" onclick="alert('Add New Address')">
+      <span class="material-symbols-outlined text-lg">add</span>
+      Add New Address
+    </button>
+  </main>
+
+  <!-- Modular Scripts -->
+  <script defer src="/js/common.js"></script>
+  <script defer src="/js/saved-addresses.js"></script>
+</body>
+</html>

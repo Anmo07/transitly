@@ -57,9 +57,21 @@ app.use('/api', (req, res) => {
   res.status(404).json({ error: 'Endpoint Not Found' });
 });
 
-// SPA Fallback to index.html for Frontend
+// Frontend Screen Routes (Clean URL mapping for all 9 Google Stitch screens)
+const publicDir = path.join(__dirname, '../public');
+app.get(['/', '/deliver'], (req, res) => res.sendFile(path.join(publicDir, 'index.html')));
+app.get('/tracking', (req, res) => res.sendFile(path.join(publicDir, 'tracking.html')));
+app.get('/services', (req, res) => res.sendFile(path.join(publicDir, 'services.html')));
+app.get('/history', (req, res) => res.sendFile(path.join(publicDir, 'history.html')));
+app.get('/profile', (req, res) => res.sendFile(path.join(publicDir, 'profile.html')));
+app.get('/saved-addresses', (req, res) => res.sendFile(path.join(publicDir, 'saved-addresses.html')));
+app.get('/payment-methods', (req, res) => res.sendFile(path.join(publicDir, 'payment-methods.html')));
+app.get('/settings', (req, res) => res.sendFile(path.join(publicDir, 'settings.html')));
+app.get('/help-support', (req, res) => res.sendFile(path.join(publicDir, 'help-support.html')));
+
+// Fallback to index.html
 app.use((req, res) => {
-  res.sendFile(path.join(__dirname, '../public/index.html'));
+  res.sendFile(path.join(publicDir, 'index.html'));
 });
 
 module.exports = app;

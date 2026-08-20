@@ -1,0 +1,17 @@
+/* ==========================================================================
+   Transitly — Saved Addresses Stylesheet
+   ========================================================================== */
+
+.saved-address-card {
+  transition: all 0.15s ease-in-out;
+}
+
+.saved-address-card:hover {
+  transform: translateY(-1px);
+  border-color: rgba(0, 80, 203, 0.3);
+  background-color: #f2f3ff;
+}
+
+.saved-address-card:active {
+  transform: scale(0.99);
+}

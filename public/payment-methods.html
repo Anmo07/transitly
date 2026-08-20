@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+  <title>Transitly — Payment Methods</title>
+  <meta name="description" content="Manage your saved cards, UPI, and digital wallets.">
+  <meta name="theme-color" content="#0050cb">
+
+  <!-- Material Symbols (deferred) -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" media="print" onload="this.media='all'"/>
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/></noscript>
+
+  <!-- Production Compiled Tailwind CSS & Dedicated Styles -->
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/common.css" />
+  <link rel="stylesheet" href="/css/payment-methods.css" />
+</head>
+<body class="bg-[#faf8ff] text-on-surface font-sans min-h-[100dvh] overflow-x-hidden flex flex-col antialiased">
+
+  <!-- ========================================================================= -->
+  <!-- SUB-SCREEN HEADER                                                         -->
+  <!-- ========================================================================= -->
+  <header class="bg-surface/95 backdrop-blur-md shadow-sm fixed top-0 left-0 right-0 w-full z-50 border-b border-outline-variant/20">
+    <div class="flex justify-between items-center px-4 h-14 max-w-2xl mx-auto w-full">
+      <a href="/profile" class="w-9 h-9 flex items-center justify-center rounded-full bg-surface-container-lowest shadow-sm text-on-surface hover:bg-surface-container-low active:scale-95" aria-label="Back to Profile">
+        <span class="material-symbols-outlined">arrow_back</span>
+      </a>
+      <h1 class="text-base font-bold text-on-surface">Payment Methods</h1>
+      <div class="w-9 h-9"></div>
+    </div>
+  </header>
+
+  <!-- ========================================================================= -->
+  <!-- MAIN CONTENT: PAYMENT METHODS (STITCH DESIGN)                             -->
+  <!-- ========================================================================= -->
+  <main class="w-full max-w-2xl mx-auto pt-16 pb-28 px-4 space-y-4 flex-1">
+    <div class="flex flex-col gap-4">
+      <!-- Saved Cards -->
+      <section class="space-y-2.5">
+        <h2 class="text-[11px] font-bold text-on-surface-variant uppercase tracking-wider">Saved Cards</h2>
+        <div class="glass-card active-card rounded-xl p-3.5 flex items-center justify-between cursor-pointer payment-card-item" data-method="VISA •••• 4242">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-7 bg-[#1A1F36] rounded flex items-center justify-center text-white font-bold text-[10px] italic">VISA</div>
+            <div>
+              <p class="text-xs font-bold text-on-surface">•••• 4242</p>
+              <p class="text-[10px] text-outline">Expires 12/25</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <span class="px-2 py-0.5 bg-primary-fixed text-primary text-[10px] font-bold rounded-full">Default</span>
+            <span class="material-symbols-outlined text-primary fill text-[18px]">check_circle</span>
+          </div>
+        </div>
+
+        <div class="glass-card rounded-xl p-3.5 flex items-center justify-between cursor-pointer payment-card-item border border-outline-variant/30" data-method="Mastercard •••• 8831">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-7 bg-[#EB001B] relative rounded overflow-hidden flex items-center justify-center">
+              <div class="w-4 h-4 rounded-full bg-[#F79E1B] absolute right-1"></div>
+              <div class="w-4 h-4 rounded-full bg-[#EB001B] absolute left-1"></div>
+            </div>
+            <div>
+              <p class="text-xs font-bold text-on-surface">•••• 8831</p>
+              <p class="text-[10px] text-outline">Expires 08/24</p>
+            </div>
+          </div>
+          <button class="text-outline hover:text-primary" onclick="alert('Card options')">
+            <span class="material-symbols-outlined text-lg">more_vert</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Digital Wallets (Stitch Spec) -->
+      <section class="space-y-2.5">
+        <h2 class="text-[11px] font-bold text-on-surface-variant uppercase tracking-wider">Digital Wallets</h2>
+        <div class="grid grid-cols-2 gap-2.5">
+          <div class="glass-card rounded-xl p-3.5 flex flex-col items-center justify-center gap-1.5 cursor-pointer hover:bg-surface-container-lowest" onclick="alert('Apple Pay Connected')">
+            <div class="w-8 h-8 bg-black rounded-full flex items-center justify-center text-white">
+              <span class="material-symbols-outlined fill text-base">file_download</span>
+            </div>
+            <span class="text-xs font-bold text-on-surface">Apple Pay</span>
+          </div>
+          <div class="glass-card rounded-xl p-3.5 flex flex-col items-center justify-center gap-1.5 cursor-pointer hover:bg-surface-container-lowest" onclick="alert('UPI Connected')">
+            <div class="w-8 h-8 bg-white border border-outline-variant rounded-full flex items-center justify-center">
+              <div class="flex gap-0.5">
+                <div class="w-2 h-2 rounded-full bg-orange-500"></div>
+                <div class="w-2 h-2 rounded-full bg-green-500"></div>
+              </div>
+            </div>
+            <span class="text-xs font-bold text-on-surface">UPI</span>
+          </div>
+        </div>
+      </section>
+
+      <button id="btnAddNewPaymentMethod" class="w-full h-12 bg-surface-container-lowest border-2 border-dashed border-outline-variant/60 rounded-xl flex items-center justify-center gap-2 text-primary text-xs font-bold hover:bg-surface-container-low">
+        <span class="material-symbols-outlined text-lg">add</span>
+        Add Payment Method
+      </button>
+    </div>
+  </main>
+
+  <!-- Modular Scripts -->
+  <script defer src="/js/common.js"></script>
+  <script defer src="/js/payment-methods.js"></script>
+</body>
+</html>

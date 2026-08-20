@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+  <title>Transitly — Help & Support (WhatsApp AI)</title>
+  <meta name="description" content="24/7 customer support and automated WhatsApp AI assistance.">
+  <meta name="theme-color" content="#0050cb">
+
+  <!-- Material Symbols (deferred) -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" media="print" onload="this.media='all'"/>
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/></noscript>
+
+  <!-- Production Compiled Tailwind CSS & Dedicated Styles -->
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/common.css" />
+  <link rel="stylesheet" href="/css/help-support.css" />
+</head>
+<body class="bg-[#faf8ff] text-on-surface font-sans min-h-[100dvh] overflow-x-hidden flex flex-col antialiased">
+
+  <!-- ========================================================================= -->
+  <!-- SUB-SCREEN HEADER                                                         -->
+  <!-- ========================================================================= -->
+  <header class="bg-surface/95 backdrop-blur-md shadow-sm fixed top-0 left-0 right-0 w-full z-50 border-b border-outline-variant/20">
+    <div class="flex justify-between items-center px-4 h-14 max-w-4xl mx-auto w-full">
+      <a href="/profile" class="w-9 h-9 flex items-center justify-center rounded-full bg-surface-container-lowest shadow-sm text-on-surface hover:bg-surface-container-low active:scale-95" aria-label="Back to Profile">
+        <span class="material-symbols-outlined">arrow_back</span>
+      </a>
+      <h1 class="text-base font-bold text-on-surface">Help & Support</h1>
+      <div class="w-9 h-9"></div>
+    </div>
+  </header>
+
+  <!-- ========================================================================= -->
+  <!-- MAIN CONTENT: HELP & SUPPORT (STITCH DESIGN)                              -->
+  <!-- ========================================================================= -->
+  <main class="w-full max-w-4xl mx-auto pt-16 pb-28 px-4 space-y-5 flex-1">
+    <!-- Header Section (Stitch Spec) -->
+    <div class="text-center mb-4">
+      <h2 class="text-xl md:text-2xl font-bold text-on-surface tracking-tight mb-1">How can we help you?</h2>
+      <p class="text-xs text-on-surface-variant">Find instant answers or chat directly with our WhatsApp AI logistics agent.</p>
+    </div>
+
+    <!-- 4 Knowledge Categories (Stitch Spec) -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <!-- 1. Tracking & Delivery -->
+      <div class="faq-card bg-surface-container-lowest rounded-2xl p-4 shadow-sm border border-outline-variant/30 hover:border-primary/40 transition-all cursor-pointer" onclick="window.location.href='/tracking.html?id=TRK-88219'">
+        <div class="w-10 h-10 rounded-xl bg-primary-fixed flex items-center justify-center text-primary mb-2.5">
+          <span class="material-symbols-outlined fill text-xl">distance</span>
+        </div>
+        <h3 class="text-sm font-bold text-on-surface mb-1">Tracking & Delivery</h3>
+        <p class="text-[11px] text-on-surface-variant leading-relaxed">Real-time bus GPS telematics, ETA calculations, and delivery status updates.</p>
+        <div class="mt-3 flex items-center text-primary text-[11px] font-bold">
+          View guides <span class="material-symbols-outlined text-sm ml-0.5">arrow_forward</span>
+        </div>
+      </div>
+
+      <!-- 2. Security & QR Seals -->
+      <div class="faq-card bg-surface-container-lowest rounded-2xl p-4 shadow-sm border border-outline-variant/30 hover:border-primary/40 transition-all cursor-pointer" onclick="alert('Digital Seals: HMAC-SHA256 authenticated tamper-proof QR codes protect your cargo.')">
+        <div class="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center text-emerald-700 mb-2.5">
+          <span class="material-symbols-outlined fill text-xl">lock_person</span>
+        </div>
+        <h3 class="text-sm font-bold text-on-surface mb-1">Security & QR Seals</h3>
+        <p class="text-[11px] text-on-surface-variant leading-relaxed">HMAC-SHA256 tamper-evident seals, chain of custody verification, and OTP handoffs.</p>
+        <div class="mt-3 flex items-center text-primary text-[11px] font-bold">
+          Learn about security <span class="material-symbols-outlined text-sm ml-0.5">arrow_forward</span>
+        </div>
+      </div>
+
+      <!-- 3. Payments & Invoices -->
+      <div class="faq-card bg-surface-container-lowest rounded-2xl p-4 shadow-sm border border-outline-variant/30 hover:border-primary/40 transition-all cursor-pointer" onclick="window.location.href='/payment-methods.html'">
+        <div class="w-10 h-10 rounded-xl bg-secondary-fixed flex items-center justify-center text-on-secondary-fixed mb-2.5">
+          <span class="material-symbols-outlined fill text-xl">receipt_long</span>
+        </div>
+        <h3 class="text-sm font-bold text-on-surface mb-1">Payments & Billing</h3>
+        <p class="text-[11px] text-on-surface-variant leading-relaxed">Multi-modal dynamic pricing breakdowns, GST invoices, and wallet refunds.</p>
+        <div class="mt-3 flex items-center text-primary text-[11px] font-bold">
+          Manage billing <span class="material-symbols-outlined text-sm ml-0.5">arrow_forward</span>
+        </div>
+      </div>
+
+      <!-- 4. Claims & Escalations -->
+      <div class="faq-card bg-surface-container-lowest rounded-2xl p-4 shadow-sm border border-outline-variant/30 hover:border-primary/40 transition-all cursor-pointer" onclick="alert('Claims: Transitly covers full invoice value for verified claims.')">
+        <div class="w-10 h-10 rounded-xl bg-rose-50 flex items-center justify-center text-rose-600 mb-2.5">
+          <span class="material-symbols-outlined fill text-xl">verified_user</span>
+        </div>
+        <h3 class="text-sm font-bold text-on-surface mb-1">Claims & Safety</h3>
+        <p class="text-[11px] text-on-surface-variant leading-relaxed">Driver feedback, safety concerns, and terminal handoffs.</p>
+        <div class="mt-3 flex items-center text-primary text-[11px] font-bold">
+          View articles <span class="material-symbols-outlined text-sm ml-0.5">arrow_forward</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact Support Prominent Card (Stitch Spec) -->
+    <div class="bg-primary-container rounded-2xl p-5 text-white shadow-level-2 mt-4 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div>
+        <h3 class="text-base md:text-lg font-bold mb-0.5">Still need help?</h3>
+        <p class="text-xs text-primary-fixed">Our WhatsApp AI assistant is active 24/7 for instant replies.</p>
+      </div>
+      <button id="btnHelpChatSupport" class="bg-white text-primary font-bold text-xs px-5 py-2.5 rounded-xl shadow-sm hover:bg-surface-container-low flex items-center justify-center gap-1.5 shrink-0 active:scale-95 transition-all">
+        <span class="material-symbols-outlined text-base">chat</span>
+        Chat on WhatsApp
+      </button>
+    </div>
+  </main>
+
+  <!-- Floating WhatsApp Action Button -->
+  <button id="btnFloatingWhatsAppHelp" aria-label="WhatsApp Support" class="fixed bottom-6 right-4 w-12 h-12 bg-[#25d366] text-white rounded-full shadow-[0px_6px_20px_rgba(37,211,102,0.4)] flex items-center justify-center z-40 hover:scale-105 active:scale-95 transition-transform">
+    <span class="material-symbols-outlined text-2xl fill">chat</span>
+  </button>
+
+  <!-- Modular Scripts -->
+  <script defer src="/js/common.js"></script>
+  <script defer src="/js/help-support.js"></script>
+</body>
+</html>
