@@ -1,107 +1,219 @@
 <!DOCTYPE html>
-<html class="light" lang="en">
-<head>
-  <meta charset="utf-8"/>
-  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
-  <title>Transitly - Payment Methods</title>
 
-  <!-- Material Symbols -->
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" media="print" onload="this.media='all'"/>
-  <noscript><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/></noscript>
-
-  <!-- Production Compiled Tailwind CSS & Dedicated Styles -->
-  <link rel="stylesheet" href="/css/style.css" />
-  <link rel="stylesheet" href="/css/common.css" />
-  <link rel="stylesheet" href="/css/payment-methods.css" />
-</head>
-<body class="bg-[#FAF8FF] text-[#191B24] font-sans min-h-screen pt-14 pb-20 antialiased selection:bg-[#DAE1FF] selection:text-[#001849]">
-
-  <!-- TopAppBar Header Component (Exact Match to Image) -->
-  <header class="fixed top-0 left-0 right-0 w-full z-50 bg-[#FAF8FF] flex items-center px-5 h-16 transition-all border-b border-outline-variant/10">
-    <a href="/profile" aria-label="Go back" class="w-10 h-10 flex items-center justify-center rounded-full bg-white shadow-sm text-[#191B24] hover:bg-gray-50 transition-colors active:scale-95">
-      <span class="material-symbols-outlined text-[22px]">arrow_back</span>
-    </a>
-    <h1 class="text-lg font-bold text-[#191B24] flex-1 text-center pr-10">Payment Methods</h1>
-  </header>
-
-  <!-- Main Content Canvas (Exact Match to Image) -->
-  <main class="w-full max-w-md mx-auto px-5 py-4 flex flex-col gap-6">
-    <!-- Saved Cards Section -->
-    <section class="flex flex-col gap-3">
-      <h2 class="text-xs font-bold text-[#727687] uppercase tracking-wider px-1">SAVED CARDS</h2>
-      <div class="flex flex-col gap-3">
-        <!-- Card 1: Visa (Default Active - Exact Match to Image) -->
-        <div class="bg-white rounded-2xl p-4 flex items-center justify-between shadow-sm border-2 border-[#0066FF] cursor-pointer relative overflow-hidden transition-all">
-          <div class="flex items-center gap-3.5 relative z-10">
-            <div class="w-12 h-8 bg-[#1A1F36] rounded-md flex items-center justify-center shrink-0 shadow-sm">
-              <span class="text-white font-black text-xs italic tracking-tighter">VISA</span>
-            </div>
-            <div class="flex flex-col">
-              <span class="text-sm font-bold text-[#191B24]">•••• 4242</span>
-              <span class="text-xs text-[#727687]">Expires 12/25</span>
-            </div>
-          </div>
-          <div class="flex items-center gap-2.5 relative z-10">
-            <span class="px-2.5 py-0.5 bg-[#DAE1FF] text-[#0050CB] text-[11px] font-bold rounded-full">Default</span>
-            <span class="material-symbols-outlined text-[#0066FF] fill text-[20px]">check_circle</span>
-          </div>
-        </div>
-
-        <!-- Card 2: Mastercard (Exact Match to Image) -->
-        <div class="bg-white rounded-2xl p-4 flex items-center justify-between shadow-sm border border-outline-variant/10 cursor-pointer hover:border-gray-300 transition-all">
-          <div class="flex items-center gap-3.5">
-            <div class="w-12 h-8 bg-[#EB001B] relative rounded-md overflow-hidden shrink-0 shadow-sm">
-              <div class="absolute w-5 h-5 rounded-full bg-[#F79E1B] mix-blend-screen right-1 top-1.5"></div>
-              <div class="absolute w-5 h-5 rounded-full bg-[#EB001B] left-1 top-1.5 z-10"></div>
-            </div>
-            <div class="flex flex-col">
-              <span class="text-sm font-bold text-[#191B24]">•••• 8831</span>
-              <span class="text-xs text-[#727687]">Expires 08/24</span>
-            </div>
-          </div>
-          <button aria-label="More options" class="w-8 h-8 flex items-center justify-center rounded-full text-[#727687] hover:bg-gray-100 transition-colors" onclick="alert('Card Options')">
-            <span class="material-symbols-outlined text-[20px]">more_vert</span>
-          </button>
-        </div>
-      </div>
-    </section>
-
-    <!-- Digital Wallets Section (Exact Match to Image) -->
-    <section class="flex flex-col gap-3">
-      <h2 class="text-xs font-bold text-[#727687] uppercase tracking-wider px-1">DIGITAL WALLETS</h2>
-      <div class="grid grid-cols-2 gap-3.5">
-        <!-- Apple Pay -->
-        <div class="bg-white rounded-2xl p-5 flex flex-col items-center justify-center gap-2.5 cursor-pointer shadow-sm border border-outline-variant/10 hover:border-[#0066FF]/30 transition-all" onclick="alert('Apple Pay Selected')">
-          <div class="w-12 h-12 bg-black rounded-full flex items-center justify-center text-white shadow-sm">
-            <span class="material-symbols-outlined fill text-[22px]">file_download</span>
-          </div>
-          <span class="text-xs font-bold text-[#191B24]">Apple Pay</span>
-        </div>
-
-        <!-- UPI -->
-        <div class="bg-white rounded-2xl p-5 flex flex-col items-center justify-center gap-2.5 cursor-pointer shadow-sm border border-outline-variant/10 hover:border-[#0066FF]/30 transition-all" onclick="alert('UPI Selected')">
-          <div class="w-12 h-12 bg-white border border-[#E1E2EE] rounded-full flex items-center justify-center shadow-sm">
-            <div class="flex items-center justify-center gap-1">
-              <div class="w-2.5 h-2.5 rounded-full bg-[#EA580C]"></div>
-              <div class="w-2.5 h-2.5 rounded-full bg-[#16A34A]"></div>
-            </div>
-          </div>
-          <span class="text-xs font-bold text-[#191B24]">UPI</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- Dashed Add Payment Method Outline (Exact Match to Image) -->
-    <div class="mt-auto pt-6">
-      <button class="w-full h-14 bg-transparent border-2 border-dashed border-[#C2C6D8] rounded-2xl flex items-center justify-center gap-2 text-[#0066FF] text-sm font-bold hover:bg-white hover:border-[#0066FF] transition-all" onclick="alert('Add Payment Method')">
-        <span class="material-symbols-outlined">add</span>
-        Add Payment Method
-      </button>
-    </div>
-  </main>
-
-  <!-- Modular Scripts -->
-  <script defer src="/js/common.js"></script>
-  <script defer src="/js/payment-methods.js"></script>
-</body>
-</html>
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Transitly - Payment Methods</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              colors: {
+                "inverse-surface": "#2e303a",
+                "on-tertiary-fixed-variant": "#832600",
+                "secondary-fixed-dim": "#c4c7c9",
+                "on-tertiary": "#ffffff",
+                "surface-dim": "#d8d9e6",
+                "on-primary": "#ffffff",
+                "on-surface": "#191b24",
+                "secondary-fixed": "#e0e3e5",
+                "surface-tint": "#0054d6",
+                "primary-fixed-dim": "#b3c5ff",
+                "on-error-container": "#93000a",
+                "on-secondary-fixed": "#191c1e",
+                "secondary-container": "#e0e3e5",
+                "surface": "#faf8ff",
+                "tertiary-container": "#cc4204",
+                "secondary": "#5c5f61",
+                "on-tertiary-fixed": "#390c00",
+                "on-primary-container": "#f8f7ff",
+                "tertiary-fixed": "#ffdbd0",
+                "surface-container": "#ecedfa",
+                "surface-variant": "#e1e2ee",
+                "primary-fixed": "#dae1ff",
+                "surface-container-low": "#f2f3ff",
+                "on-error": "#ffffff",
+                "error": "#ba1a1a",
+                "surface-container-high": "#e6e7f4",
+                "background": "#faf8ff",
+                "error-container": "#ffdad6",
+                "primary": "#0050cb",
+                "on-primary-fixed": "#001849",
+                "on-secondary-container": "#626567",
+                "primary-container": "#0066ff",
+                "on-secondary": "#ffffff",
+                "inverse-on-surface": "#eff0fd",
+                "on-primary-fixed-variant": "#003fa4",
+                "on-background": "#191b24",
+                "outline-variant": "#c2c6d8",
+                "tertiary": "#a33200",
+                "tertiary-fixed-dim": "#ffb59d",
+                "on-surface-variant": "#424656",
+                "surface-container-lowest": "#ffffff",
+                "outline": "#727687",
+                "inverse-primary": "#b3c5ff",
+                "on-secondary-fixed-variant": "#444749",
+                "surface-bright": "#faf8ff",
+                "surface-container-highest": "#e1e2ee",
+                "on-tertiary-container": "#fff6f4"
+              },
+              borderRadius: {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+              },
+              spacing: {
+                "stack-md": "12px",
+                "gutter": "16px",
+                "stack-sm": "4px",
+                "stack-lg": "24px",
+                "section-gap": "40px",
+                "base": "8px",
+                "container-margin": "20px"
+              },
+              fontFamily: {
+                "label-sm": ["Plus Jakarta Sans"],
+                "display": ["Plus Jakarta Sans"],
+                "headline-md": ["Plus Jakarta Sans"],
+                "label-md": ["Plus Jakarta Sans"],
+                "body-lg": ["Plus Jakarta Sans"],
+                "body-md": ["Plus Jakarta Sans"],
+                "headline-lg": ["Plus Jakarta Sans"],
+                "headline-lg-mobile": ["Plus Jakarta Sans"]
+              },
+              fontSize: {
+                "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+                "display": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }],
+                "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "700" }]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        body {
+            -webkit-tap-highlight-color: transparent;
+            background-color: theme('colors.background');
+            color: theme('colors.on-background');
+        }
+        
+        .pb-safe {
+            padding-bottom: env(safe-area-inset-bottom, 20px);
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.05);
+        }
+        
+        .active-card {
+            box-shadow: 0px 8px 30px rgba(0, 102, 255, 0.08);
+            border: 2px solid theme('colors.primary');
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="antialiased min-h-screen flex flex-col relative md:hidden">
+<!-- TopAppBar Header Component (Semantic Navigation Suppressed, Task-Focused Screen) -->
+<header class="flex justify-between items-center px-container-margin w-full h-16 bg-background sticky top-0 z-40">
+<button onclick="window.location.href='/profile'" aria-label="Go back" class="w-10 h-10 flex items-center justify-center rounded-full bg-surface-container-lowest shadow-sm text-on-surface hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">arrow_back</span>
+</button>
+<h1 class="text-headline-md font-headline-md font-bold text-on-surface">Payment Methods</h1>
+<div class="w-10 h-10"></div> <!-- Balancer for centering -->
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 px-container-margin py-stack-lg flex flex-col gap-section-gap pb-32">
+<!-- Saved Cards Section -->
+<section class="flex flex-col gap-stack-md">
+<h2 class="text-label-md font-label-md text-on-surface-variant uppercase tracking-wider">Saved Cards</h2>
+<div class="flex flex-col gap-stack-md">
+<!-- Primary Card (Active) -->
+<div class="glass-card active-card rounded-xl p-4 flex items-center justify-between cursor-pointer relative overflow-hidden transition-all duration-200">
+<div class="flex items-center gap-4 relative z-10">
+<div class="w-12 h-8 bg-[#1A1F36] rounded flex items-center justify-center shrink-0">
+<!-- Visa Logo Approximation -->
+<span class="text-white font-bold text-xs italic tracking-tighter">VISA</span>
+</div>
+<div class="flex flex-col">
+<span class="text-body-md font-body-md text-on-surface font-semibold">•••• 4242</span>
+<span class="text-label-sm font-label-sm text-outline">Expires 12/25</span>
+</div>
+</div>
+<div class="flex items-center gap-3 relative z-10">
+<span class="px-2 py-1 bg-primary-fixed text-primary font-label-sm text-label-sm rounded-full">Default</span>
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<!-- Subtle ambient glow for active state -->
+<div class="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent pointer-events-none"></div>
+</div>
+<!-- Secondary Card -->
+<div class="glass-card rounded-xl p-4 flex items-center justify-between cursor-pointer border border-transparent hover:border-outline-variant transition-all duration-200">
+<div class="flex items-center gap-4">
+<div class="w-12 h-8 bg-[#EB001B] relative rounded overflow-hidden shrink-0">
+<!-- Mastercard Logo Approximation -->
+<div class="absolute w-5 h-5 rounded-full bg-[#F79E1B] mix-blend-screen right-1 top-1.5"></div>
+<div class="absolute w-5 h-5 rounded-full bg-[#EB001B] left-1 top-1.5 z-10"></div>
+</div>
+<div class="flex flex-col">
+<span class="text-body-md font-body-md text-on-surface">•••• 8831</span>
+<span class="text-label-sm font-label-sm text-outline">Expires 08/24</span>
+</div>
+</div>
+<button aria-label="More options" class="w-8 h-8 flex items-center justify-center rounded-full text-outline hover:bg-surface-variant transition-colors" onclick="alert('Card Options')">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Digital Wallets Section -->
+<section class="flex flex-col gap-stack-md">
+<h2 class="text-label-md font-label-md text-on-surface-variant uppercase tracking-wider">Digital Wallets</h2>
+<div class="grid grid-cols-2 gap-gutter">
+<!-- Apple Pay -->
+<div class="glass-card rounded-xl p-4 flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-surface-container-lowest transition-colors border border-transparent hover:border-outline-variant" onclick="alert('Apple Pay Selected')">
+<div class="w-10 h-10 bg-black rounded-full flex items-center justify-center text-white mb-1">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">file_download</span>
+</div>
+<span class="text-label-md font-label-md text-on-surface">Apple Pay</span>
+</div>
+<!-- UPI -->
+<div class="glass-card rounded-xl p-4 flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-surface-container-lowest transition-colors border border-transparent hover:border-outline-variant" onclick="alert('UPI Selected')">
+<div class="w-10 h-10 bg-white border border-outline-variant rounded-full flex items-center justify-center mb-1">
+<!-- UPI abstract icon -->
+<div class="flex items-center justify-center gap-0.5">
+<div class="w-2 h-2 rounded-full bg-orange-500"></div>
+<div class="w-2 h-2 rounded-full bg-green-500"></div>
+</div>
+</div>
+<span class="text-label-md font-label-md text-on-surface">UPI</span>
+</div>
+</div>
+</section>
+<!-- Add New Method CTA (Pinned to bottom visually, but in flow) -->
+<div class="mt-auto pt-section-gap">
+<button onclick="alert('Add Payment Method')" class="w-full h-14 bg-surface-container-lowest border-2 border-dashed border-outline-variant rounded-xl flex items-center justify-center gap-2 text-primary font-label-md text-label-md hover:bg-surface-container-low hover:border-primary transition-all duration-200">
+<span class="material-symbols-outlined">add</span>
+                Add Payment Method
+            </button>
+</div>
+</main>
+<!-- Contextual FAB Suppression: Not rendering FAB on this task-focused settings screen -->
+<!-- No BottomNavBar on task-focused sub-screens -->
+</body></html>

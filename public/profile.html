@@ -1,147 +1,219 @@
 <!DOCTYPE html>
-<html class="light" lang="en">
-<head>
-  <meta charset="utf-8"/>
-  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
-  <title>Transitly - Profile</title>
 
-  <!-- Material Symbols -->
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" media="print" onload="this.media='all'"/>
-  <noscript><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/></noscript>
-
-  <!-- Production Compiled Tailwind CSS & Dedicated Styles -->
-  <link rel="stylesheet" href="/css/style.css" />
-  <link rel="stylesheet" href="/css/common.css" />
-  <link rel="stylesheet" href="/css/profile.css" />
-  <style>
-    .glass-card {
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(242, 246, 255, 0.85) 100%);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.8);
-    }
-  </style>
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Transitly - Profile</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-surface": "#2e303a",
+                        "on-tertiary-fixed-variant": "#832600",
+                        "secondary-fixed-dim": "#c4c7c9",
+                        "on-tertiary": "#ffffff",
+                        "surface-dim": "#d8d9e6",
+                        "on-primary": "#ffffff",
+                        "on-surface": "#191b24",
+                        "secondary-fixed": "#e0e3e5",
+                        "surface-tint": "#0054d6",
+                        "primary-fixed-dim": "#b3c5ff",
+                        "on-error-container": "#93000a",
+                        "on-secondary-fixed": "#191c1e",
+                        "secondary-container": "#e0e3e5",
+                        "surface": "#faf8ff",
+                        "tertiary-container": "#cc4204",
+                        "secondary": "#5c5f61",
+                        "on-tertiary-fixed": "#390c00",
+                        "on-primary-container": "#f8f7ff",
+                        "tertiary-fixed": "#ffdbd0",
+                        "surface-container": "#ecedfa",
+                        "surface-variant": "#e1e2ee",
+                        "primary-fixed": "#dae1ff",
+                        "surface-container-low": "#f2f3ff",
+                        "on-error": "#ffffff",
+                        "error": "#ba1a1a",
+                        "surface-container-high": "#e6e7f4",
+                        "background": "#faf8ff",
+                        "error-container": "#ffdad6",
+                        "primary": "#0050cb",
+                        "on-primary-fixed": "#001849",
+                        "on-secondary-container": "#626567",
+                        "primary-container": "#0066ff",
+                        "on-secondary": "#ffffff",
+                        "inverse-on-surface": "#eff0fd",
+                        "on-primary-fixed-variant": "#003fa4",
+                        "on-background": "#191b24",
+                        "outline-variant": "#c2c6d8",
+                        "tertiary": "#a33200",
+                        "tertiary-fixed-dim": "#ffb59d",
+                        "on-surface-variant": "#424656",
+                        "surface-container-lowest": "#ffffff",
+                        "outline": "#727687",
+                        "inverse-primary": "#b3c5ff",
+                        "on-secondary-fixed-variant": "#444749",
+                        "surface-bright": "#faf8ff",
+                        "surface-container-highest": "#e1e2ee",
+                        "on-tertiary-container": "#fff6f4"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-md": "12px",
+                        "gutter": "16px",
+                        "stack-sm": "4px",
+                        "stack-lg": "24px",
+                        "section-gap": "40px",
+                        "base": "8px",
+                        "container-margin": "20px"
+                    },
+                    "fontFamily": {
+                        "label-sm": ["Plus Jakarta Sans"],
+                        "display": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "label-md": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+                        "display": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            -webkit-tap-highlight-color: transparent;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+    </style>
 </head>
-<body class="bg-[#FAF8FF] text-[#191B24] min-h-screen font-sans flex flex-col pt-14 pb-20 antialiased selection:bg-[#DAE1FF] selection:text-[#001849]">
-
-  <!-- TopAppBar (Exact Match to Image) -->
-  <header class="fixed top-0 left-0 right-0 w-full z-50 bg-[#FAF8FF] shadow-sm flex justify-between items-center px-5 h-14 transition-all border-b border-outline-variant/10">
-    <a href="/" aria-label="Deliver" class="hover:opacity-80 transition-opacity active:scale-95 flex items-center justify-center p-2 text-[#0050CB]">
-      <span class="material-symbols-outlined text-[24px]">local_shipping</span>
-    </a>
-    <h1 class="text-xl font-bold text-[#0050CB] tracking-tight">Transitly</h1>
-    <button aria-label="Notifications" class="hover:opacity-80 transition-opacity active:scale-95 flex items-center justify-center p-2 text-[#0050CB]" onclick="alert('No new notifications.')">
-      <span class="material-symbols-outlined text-[24px]">notifications</span>
-    </button>
-  </header>
-
-  <!-- Main Content Canvas (Exact Match to Image) -->
-  <main class="flex-grow px-5 py-4 max-w-md mx-auto w-full flex flex-col gap-4">
-    <!-- Profile Header (Glassmorphism Bento Box) -->
-    <section class="glass-card rounded-[24px] p-6 flex flex-col items-center justify-center text-center shadow-[0px_8px_30px_rgba(0,102,255,0.06)] relative overflow-hidden">
-      <!-- Decorative Background Blobs -->
-      <div class="absolute -top-12 -right-12 w-36 h-36 bg-[#DAE1FF] rounded-full mix-blend-multiply filter blur-2xl opacity-60"></div>
-      <div class="absolute -bottom-12 -left-12 w-36 h-36 bg-[#E0E7FF] rounded-full mix-blend-multiply filter blur-2xl opacity-60"></div>
-
-      <!-- Avatar -->
-      <div class="relative w-20 h-20 mb-3 rounded-full shadow-[0px_4px_16px_rgba(0,0,0,0.08)] border-4 border-white overflow-hidden bg-white z-10">
-        <img class="w-full h-full object-cover" alt="Alex Mitchell avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBzAACyzyleKmM4JQVt8Aa-jr70QVcpj9loY9wKp5o9O4E4p6Pw4_DrVmOHt4kkJfjfzprBQFcotrP67UIXwwodZ_N8y_NQMBXmYt1FUgmWEZU3RkLHv9mtX5_jewodrd3AC22FofPIl1pDv6bTKcqN63TR8-Ce6clfaRjIaxwp6CeKnOIoGAZdfBFJX_YfrWG4DCAk26zr7uiOS6j2JNkj4E16URTfm8orQCRZ5X_7hBMsGpV5UeKJ"/>
-      </div>
-      
-      <!-- Name & Email -->
-      <h2 class="text-xl font-bold text-[#191B24] z-10">Alex Mitchell</h2>
-      <p class="text-sm text-[#424656] mb-3 z-10">alex.mitchell@example.com</p>
-      
-      <!-- Rating Chip -->
-      <div class="flex items-center gap-1.5 bg-[#EEF2F6] px-4 py-1.5 rounded-full z-10 shadow-sm">
-        <span class="material-symbols-outlined fill text-[#F59E0B] text-[16px]">star</span>
-        <span class="text-xs font-bold text-[#191B24]">4.9</span>
-        <span class="text-xs text-[#727687] ml-0.5">(124 trips)</span>
-      </div>
-    </section>
-
-    <!-- Menu Options (Bento List - Exact 4 Items from Image) -->
-    <section class="flex flex-col gap-2.5">
-      <!-- 1. Saved Addresses -->
-      <a href="/saved-addresses" class="w-full bg-white rounded-2xl p-4 flex items-center justify-between shadow-[0px_4px_20px_rgba(0,0,0,0.02)] border border-outline-variant/10 active:scale-[0.98] transition-transform group hover:bg-[#F8FAFC]">
-        <div class="flex items-center gap-3.5">
-          <div class="w-11 h-11 rounded-full bg-[#DAE1FF] flex items-center justify-center text-[#0050CB] group-hover:bg-[#0066FF] group-hover:text-white transition-colors shrink-0">
-            <span class="material-symbols-outlined text-[20px]">location_on</span>
-          </div>
-          <span class="text-sm font-semibold text-[#191B24]">Saved Addresses</span>
-        </div>
-        <span class="material-symbols-outlined text-[#C2C6D8] group-hover:text-[#0050CB] transition-colors text-[20px]">chevron_right</span>
-      </a>
-
-      <!-- 2. Payment Methods -->
-      <a href="/payment-methods" class="w-full bg-white rounded-2xl p-4 flex items-center justify-between shadow-[0px_4px_20px_rgba(0,0,0,0.02)] border border-outline-variant/10 active:scale-[0.98] transition-transform group hover:bg-[#F8FAFC]">
-        <div class="flex items-center gap-3.5">
-          <div class="w-11 h-11 rounded-full bg-[#DAE1FF] flex items-center justify-center text-[#0050CB] group-hover:bg-[#0066FF] group-hover:text-white transition-colors shrink-0">
-            <span class="material-symbols-outlined text-[20px]">payment</span>
-          </div>
-          <span class="text-sm font-semibold text-[#191B24]">Payment Methods</span>
-        </div>
-        <span class="material-symbols-outlined text-[#C2C6D8] group-hover:text-[#0050CB] transition-colors text-[20px]">chevron_right</span>
-      </a>
-
-      <!-- 3. Help & Support -->
-      <a href="/help-support" class="w-full bg-white rounded-2xl p-4 flex items-center justify-between shadow-[0px_4px_20px_rgba(0,0,0,0.02)] border border-outline-variant/10 active:scale-[0.98] transition-transform group hover:bg-[#F8FAFC]">
-        <div class="flex items-center gap-3.5">
-          <div class="w-11 h-11 rounded-full bg-[#DAE1FF] flex items-center justify-center text-[#0050CB] group-hover:bg-[#0066FF] group-hover:text-white transition-colors shrink-0">
-            <span class="material-symbols-outlined text-[20px]">support_agent</span>
-          </div>
-          <span class="text-sm font-semibold text-[#191B24]">Help &amp; Support</span>
-        </div>
-        <span class="material-symbols-outlined text-[#C2C6D8] group-hover:text-[#0050CB] transition-colors text-[20px]">chevron_right</span>
-      </a>
-
-      <!-- 4. Settings -->
-      <a href="/settings" class="w-full bg-white rounded-2xl p-4 flex items-center justify-between shadow-[0px_4px_20px_rgba(0,0,0,0.02)] border border-outline-variant/10 active:scale-[0.98] transition-transform group hover:bg-[#F8FAFC]">
-        <div class="flex items-center gap-3.5">
-          <div class="w-11 h-11 rounded-full bg-[#DAE1FF] flex items-center justify-center text-[#0050CB] group-hover:bg-[#0066FF] group-hover:text-white transition-colors shrink-0">
-            <span class="material-symbols-outlined text-[20px]">settings</span>
-          </div>
-          <span class="text-sm font-semibold text-[#191B24]">Settings</span>
-        </div>
-        <span class="material-symbols-outlined text-[#C2C6D8] group-hover:text-[#0050CB] transition-colors text-[20px]">chevron_right</span>
-      </a>
-    </section>
-
-    <!-- Logout Action (Exact Match to Image) -->
-    <div class="mt-2 w-full">
-      <button id="btnLogout" class="w-full h-14 rounded-2xl bg-[#EEF2F6] text-[#0050CB] text-sm font-bold flex items-center justify-center gap-2 active:scale-[0.98] transition-all shadow-sm hover:bg-[#E2E8F0]" onclick="alert('Signed out successfully.')">
-        <span class="material-symbols-outlined text-[20px]">logout</span>
-        Log Out
-      </button>
-    </div>
-  </main>
-
-  <!-- Bottom Navigation Bar (Exact Match to Image) -->
-  <nav class="fixed bottom-0 left-0 right-0 w-full flex justify-around items-center px-4 py-2 bg-white z-50 rounded-t-2xl shadow-[0px_-4px_20px_rgba(0,0,0,0.06)] border-t border-outline-variant/20">
-    <!-- Deliver -->
-    <a class="flex flex-col items-center justify-center text-[#424656] px-3 py-1 hover:text-[#0050CB] transition-colors group" href="/">
-      <span class="material-symbols-outlined mb-0.5 text-[22px] group-active:scale-90 transition-transform">package_2</span>
-      <span class="text-[11px] font-medium">Deliver</span>
-    </a>
-    <!-- Tracking -->
-    <a class="flex flex-col items-center justify-center text-[#424656] px-3 py-1 hover:text-[#0050CB] transition-colors group" href="/tracking">
-      <span class="material-symbols-outlined mb-0.5 text-[22px] group-active:scale-90 transition-transform">location_on</span>
-      <span class="text-[11px] font-medium">Tracking</span>
-    </a>
-    <!-- History -->
-    <a class="flex flex-col items-center justify-center text-[#424656] px-3 py-1 hover:text-[#0050CB] transition-colors group" href="/history">
-      <span class="material-symbols-outlined mb-0.5 text-[22px] group-active:scale-90 transition-transform">history</span>
-      <span class="text-[11px] font-medium">History</span>
-    </a>
-    <!-- Profile (Active Solid Blue Pill - Exact Match to Image) -->
-    <a class="flex flex-col items-center justify-center bg-[#0066FF] text-white rounded-2xl px-5 py-1.5 shadow-sm active:scale-95 transition-transform" href="/profile">
-      <span class="material-symbols-outlined mb-0.5 text-[22px] fill">person</span>
-      <span class="text-[11px] font-bold">Profile</span>
-    </a>
-  </nav>
-
-  <!-- Modular Scripts -->
-  <script defer src="/js/common.js"></script>
-  <script defer src="/js/profile.js"></script>
-</body>
-</html>
+<body class="bg-background text-on-background min-h-screen font-body-md flex flex-col pt-14 pb-16 antialiased">
+<!-- TopAppBar (Shared Component) -->
+<header class="fixed top-0 w-full z-50 bg-surface shadow-sm flex justify-between items-center px-container-margin h-14 transition-all">
+<a href="/" aria-label="Menu" class="hover:opacity-80 transition-opacity active:scale-95 transition-transform flex items-center justify-center p-2 -ml-2 text-primary">
+<span class="material-symbols-outlined text-[24px]" data-icon="local_shipping">local_shipping</span>
+</a>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary">Transitly</h1>
+<button aria-label="Notifications" class="hover:opacity-80 transition-opacity active:scale-95 transition-transform flex items-center justify-center p-2 -mr-2 text-primary" onclick="alert('No new alerts.')">
+<span class="material-symbols-outlined text-[24px]" data-icon="notifications">notifications</span>
+</button>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow px-container-margin py-stack-lg max-w-md mx-auto w-full flex flex-col gap-stack-lg">
+<!-- Profile Header (Glassmorphism Bento Box) -->
+<section class="glass-card rounded-[24px] p-stack-lg flex flex-col items-center justify-center text-center shadow-[0px_8px_30px_rgba(0,102,255,0.04)] relative overflow-hidden">
+<!-- Decorative Background Blob -->
+<div class="absolute -top-12 -right-12 w-32 h-32 bg-primary-fixed rounded-full mix-blend-multiply filter blur-2xl opacity-50"></div>
+<div class="absolute -bottom-12 -left-12 w-32 h-32 bg-surface-tint rounded-full mix-blend-multiply filter blur-2xl opacity-20"></div>
+<div class="relative w-24 h-24 mb-stack-md rounded-full shadow-[0px_4px_20px_rgba(0,0,0,0.05)] border-4 border-surface overflow-hidden bg-surface-container-high z-10">
+<img class="w-full h-full object-cover" data-alt="A highly detailed, professional headshot portrait of a modern urban commuter. The lighting is soft and flattering studio lighting, creating a bright, light-mode aesthetic. The subject is wearing stylish, contemporary casual clothing suitable for a logistics or transit service app. The background is a clean, minimal gradient of pale whites and soft blues, perfectly matching the Transitly app's airy, premium design system." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBzAACyzyleKmM4JQVt8Aa-jr70QVcpj9loY9wKp5o9O4E4p6Pw4_DrVmOHt4kkJfjfzprBQFcotrP67UIXwwodZ_N8y_NQMBXmYt1FUgmWEZU3RkLHv9mtX5_jewodrd3AC22FofPIl1pDv6bTKcqN63TR8-Ce6clfaRjIaxwp6CeKnOIoGAZdfBFJX_YfrWG4DCAk26zr7uiOS6j2JNkj4E16URTfm8orQCRZ5X_7hBMsGpV5UeKJ"/>
+</div>
+<h2 class="font-headline-md text-headline-md text-on-surface z-10">Alex Mitchell</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mb-stack-md z-10">alex.mitchell@example.com</p>
+<div class="flex items-center gap-1 bg-surface-container px-3 py-1.5 rounded-full z-10 shadow-sm">
+<span class="material-symbols-outlined fill text-[#F59E0B] text-[16px]">star</span>
+<span class="font-label-md text-label-md text-on-surface">4.9</span>
+<span class="font-label-sm text-label-sm text-outline ml-1">(124 trips)</span>
+</div>
+</section>
+<!-- Menu Options (Bento List) -->
+<section class="flex flex-col gap-stack-sm">
+<button onclick="window.location.href='/saved-addresses'" class="w-full bg-surface rounded-xl p-4 flex items-center justify-between shadow-[0px_4px_20px_rgba(0,0,0,0.02)] active:scale-[0.98] transition-transform group hover:bg-surface-container-lowest">
+<div class="flex items-center gap-stack-md">
+<div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center text-primary-container group-hover:bg-primary-container group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="location_on">location_on</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface">Saved Addresses</span>
+</div>
+<span class="material-symbols-outlined text-outline-variant group-hover:text-primary transition-colors" data-icon="chevron_right">chevron_right</span>
+</button>
+<button onclick="window.location.href='/payment-methods'" class="w-full bg-surface rounded-xl p-4 flex items-center justify-between shadow-[0px_4px_20px_rgba(0,0,0,0.02)] active:scale-[0.98] transition-transform group hover:bg-surface-container-lowest">
+<div class="flex items-center gap-stack-md">
+<div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center text-primary-container group-hover:bg-primary-container group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="payment">payment</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface">Payment Methods</span>
+</div>
+<span class="material-symbols-outlined text-outline-variant group-hover:text-primary transition-colors" data-icon="chevron_right">chevron_right</span>
+</button>
+<button onclick="window.location.href='/help-support'" class="w-full bg-surface rounded-xl p-4 flex items-center justify-between shadow-[0px_4px_20px_rgba(0,0,0,0.02)] active:scale-[0.98] transition-transform group hover:bg-surface-container-lowest">
+<div class="flex items-center gap-stack-md">
+<div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center text-primary-container group-hover:bg-primary-container group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="support_agent">support_agent</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface">Help &amp; Support</span>
+</div>
+<span class="material-symbols-outlined text-outline-variant group-hover:text-primary transition-colors" data-icon="chevron_right">chevron_right</span>
+</button>
+<button onclick="window.location.href='/settings'" class="w-full bg-surface rounded-xl p-4 flex items-center justify-between shadow-[0px_4px_20px_rgba(0,0,0,0.02)] active:scale-[0.98] transition-transform group hover:bg-surface-container-lowest">
+<div class="flex items-center gap-stack-md">
+<div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center text-primary-container group-hover:bg-primary-container group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface">Settings</span>
+</div>
+<span class="material-symbols-outlined text-outline-variant group-hover:text-primary transition-colors" data-icon="chevron_right">chevron_right</span>
+</button>
+</section>
+<!-- Logout Action -->
+<div class="mt-auto pt-section-gap pb-4 w-full">
+<button onclick="alert('Signed out successfully.')" class="w-full h-[56px] rounded-[16px] bg-[#F1F5F9] text-primary font-label-md text-label-md flex items-center justify-center gap-2 active:scale-95 transition-all shadow-sm hover:bg-surface-container-high">
+<span class="material-symbols-outlined text-[20px]" data-icon="logout">logout</span>
+                Log Out
+            </button>
+</div>
+</main>
+<!-- BottomNavBar (Shared Component) -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-base pb-safe h-16 bg-surface z-50 rounded-t-xl shadow-[0px_-4px_20px_rgba(0,0,0,0.05)] md:hidden">
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-variant transition-colors group" href="/">
+<span class="material-symbols-outlined mb-1 group-active:scale-90 transition-transform duration-200 text-[24px]" data-icon="package_2">package_2</span>
+<span class="font-label-sm text-label-sm">Deliver</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-variant transition-colors group" href="/tracking">
+<span class="material-symbols-outlined mb-1 group-active:scale-90 transition-transform duration-200 text-[24px]" data-icon="distance">distance</span>
+<span class="font-label-sm text-label-sm">Tracking</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-variant transition-colors group" href="/history">
+<span class="material-symbols-outlined mb-1 group-active:scale-90 transition-transform duration-200 text-[24px]" data-icon="history">history</span>
+<span class="font-label-sm text-label-sm">History</span>
+</a>
+<!-- Active State for Profile -->
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-xl px-4 py-1 group" href="/profile">
+<span class="material-symbols-outlined mb-1 group-active:scale-90 transition-transform duration-200 text-[24px] fill" data-icon="person">person</span>
+<span class="font-label-sm text-label-sm">Profile</span>
+</a>
+</nav>
+</body></html>
