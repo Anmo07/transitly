@@ -14,7 +14,18 @@ const userSchema = new mongoose.Schema({
   role: {
     type: String,
     enum: ['CUSTOMER', 'OPERATOR', 'OPERATIONS_MANAGER', 'DELIVERY_PARTNER'],
-    required: true
+    required: true,
+    default: 'CUSTOMER'
+  },
+  avatarUrl: { 
+    type: String, 
+    default: 'https://ui-avatars.com/api/?name=Alex+Mitchell&background=0066FF&color=fff' 
+  },
+  settings: {
+    pushNotifications: { type: Boolean, default: true },
+    emailUpdates: { type: Boolean, default: false },
+    locationServices: { type: Boolean, default: true },
+    language: { type: String, default: 'English (US)' }
   }
 }, { timestamps: true });
 

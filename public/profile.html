@@ -81,15 +81,16 @@
       <div class="absolute -bottom-12 -left-12 w-32 h-32 bg-surface-tint rounded-full mix-blend-multiply filter blur-2xl opacity-20"></div>
 
       <div class="relative w-20 h-20 mb-2.5 rounded-full shadow-sm border-2 border-surface overflow-hidden bg-surface-container-high z-10">
-        <img class="w-full h-full object-cover" alt="Alex Mitchell avatar" width="80" height="80" loading="lazy" decoding="async" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBzAACyzyleKmM4JQVt8Aa-jr70QVcpj9loY9wKp5o9O4E4p6Pw4_DrVmOHt4kkJfjfzprBQFcotrP67UIXwwodZ_N8y_NQMBXmYt1FUgmWEZU3RkLHv9mtX5_jewodrd3AC22FofPIl1pDv6bTKcqN63TR8-Ce6clfaRjIaxwp6CeKnOIoGAZdfBFJX_YfrWG4DCAk26zr7uiOS6j2JNkj4E16URTfm8orQCRZ5X_7hBMsGpV5UeKJ"/>
+        <img id="profileAvatar" class="w-full h-full object-cover" alt="Avatar" width="80" height="80" loading="lazy" decoding="async" src=""/>
       </div>
-      <h1 class="text-lg font-bold text-on-surface z-10">Alex Mitchell</h1>
-      <p class="text-xs text-on-surface-variant mb-2 z-10">alex.mitchell@example.com</p>
+      <h1 id="profileName" class="text-lg font-bold text-on-surface z-10">...</h1>
+      <p id="profileEmail" class="text-xs text-on-surface-variant mb-2 z-10">...</p>
       <div class="flex items-center gap-1 bg-surface-container px-2.5 py-1 rounded-full z-10 shadow-sm">
         <span class="material-symbols-outlined fill text-[#F59E0B] text-[14px]">star</span>
         <span class="text-xs font-bold text-on-surface">4.9</span>
-        <span class="text-xs text-outline ml-0.5">(124 trips)</span>
+        <span id="profileTrips" class="text-xs text-outline ml-0.5">(... trips)</span>
       </div>
+      <button id="btnEditProfile" class="mt-4 px-4 py-2 bg-primary text-on-primary rounded-full text-xs font-bold shadow-sm active:scale-95 transition-all z-10">Edit Profile</button>
     </section>
 
     <!-- Bento Options List (Stitch Spec) -->
@@ -153,6 +154,33 @@
       </button>
     </div>
   </main>
+
+  <!-- Edit Profile Modal -->
+  <div id="editProfileModal" class="hidden fixed inset-0 z-[100] bg-on-surface/40 backdrop-blur-sm items-center justify-center p-4">
+    <div class="bg-surface w-full max-w-sm rounded-[24px] shadow-level-3 p-6 animate-slide-up">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-lg font-bold text-on-surface">Edit Profile</h2>
+        <button id="btnCloseEditProfile" class="text-on-surface-variant p-1 rounded-full hover:bg-surface-variant">
+          <span class="material-symbols-outlined text-2xl">close</span>
+        </button>
+      </div>
+      <form id="editProfileForm" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-on-surface-variant mb-1">Full Name</label>
+          <input type="text" id="editName" class="w-full bg-surface-container h-12 px-4 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary" required>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-on-surface-variant mb-1">Email</label>
+          <input type="email" id="editEmail" class="w-full bg-surface-container h-12 px-4 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary" required>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-on-surface-variant mb-1">Phone</label>
+          <input type="tel" id="editPhone" class="w-full bg-surface-container h-12 px-4 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+        </div>
+        <button type="submit" class="w-full h-12 bg-primary text-on-primary font-bold rounded-xl active:scale-95 transition-all">Save Changes</button>
+      </form>
+    </div>
+  </div>
 
   <!-- ========================================================================= -->
   <!-- MOBILE BOTTOM NAVIGATION BAR (STITCH DESIGN)                              -->

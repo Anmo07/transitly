@@ -57,7 +57,21 @@ class BookingController {
   async listShipments(req, res) {
     try {
       const limit = parseInt(req.query.limit || '20', 10);
-      const shipments = await Shipment.find().sort({ createdAt: -1 }).limit(limit).lean();
+      const { status, search } = req.query;
+      
+      let filter = {};
+      if (status && status !== 'ALL') {
+        filter.status = status;
+      }
+      if (search) {
+        filter.$or = [
+          { trackingId: { $regex: search, $options: 'i' } },
+          { 'sender.name': { $regex: search, $options: 'i' } },
+          { 'recipient.name': { $regex: search, $options: 'i' } }
+        ];
+      }
+
+      const shipments = await Shipment.find(filter).sort({ createdAt: -1 }).limit(limit).lean();
       return res.status(200).json({
         status: 'success',
         count: shipments.length,

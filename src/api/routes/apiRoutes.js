@@ -5,9 +5,36 @@ const custodyController = require('../controllers/custodyController');
 const capacityController = require('../controllers/capacityController');
 const whatsappController = require('../controllers/whatsappController');
 const telemetryController = require('../../modules/tracking/telemetryController');
+const userController = require('../controllers/userController');
+const addressController = require('../controllers/addressController');
+const paymentController = require('../controllers/paymentController');
+const supportController = require('../controllers/supportController');
 const { pool } = require('../../config/postgres');
 
 const router = express.Router();
+
+// 0. User Profile & Settings
+router.get('/profile', (req, res) => userController.getProfile(req, res));
+router.put('/profile', (req, res) => userController.updateProfile(req, res));
+router.get('/settings', (req, res) => userController.getSettings(req, res));
+router.put('/settings', (req, res) => userController.updateSettings(req, res));
+
+// 0.1 User Addresses
+router.get('/addresses', (req, res) => addressController.listAddresses(req, res));
+router.post('/addresses', (req, res) => addressController.createAddress(req, res));
+router.put('/addresses/:id', (req, res) => addressController.updateAddress(req, res));
+router.delete('/addresses/:id', (req, res) => addressController.deleteAddress(req, res));
+
+// 0.2 User Payment Methods
+router.get('/payment-methods', (req, res) => paymentController.listPaymentMethods(req, res));
+router.post('/payment-methods', (req, res) => paymentController.createPaymentMethod(req, res));
+router.patch('/payment-methods/:id/default', (req, res) => paymentController.setDefault(req, res));
+router.delete('/payment-methods/:id', (req, res) => paymentController.deletePaymentMethod(req, res));
+
+// 0.3 Support Tickets
+router.get('/support/tickets', (req, res) => supportController.listTickets(req, res));
+router.post('/support/tickets', (req, res) => supportController.createTicket(req, res));
+
 
 // 1. Bookings & Sagas
 router.post('/bookings', (req, res) => bookingController.createBooking(req, res));

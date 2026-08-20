@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
-    "build:css": "tailwindcss -i ./src/css/input.css -o ./public/css/style.css --minify",
+    "build:css": "tailwindcss -i ./src/css/input.css -o ./public/css/style.css",
+    "build:css:min": "tailwindcss -i ./src/css/input.css -o ./public/css/style.css --minify",
     "watch:css": "tailwindcss -i ./src/css/input.css -o ./public/css/style.css --watch",
     "db:init": "node src/db/initDb.js",
     "test": "node tests/security.test.js && node tests/architecture.test.js && node tests/lastMile.test.js && node tests/whatsapp.test.js && node tests/telemetry.test.js && node tests/schema.test.js && node tests/haryanaRoadways.test.js"

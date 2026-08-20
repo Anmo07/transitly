@@ -95,12 +95,73 @@
 
     <!-- History Card Container (Stitch Spec with Carrier Logos) -->
     <div id="historyListContainer" class="space-y-4">
+      <!-- Active & In-Transit Parcels -->
+      <div class="history-month-section" data-month="Current Active">
+        <h3 class="text-[10px] font-bold text-primary mb-2 uppercase tracking-wider pl-1 flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+          Live Intercity Shipments
+        </h3>
+        <div class="space-y-2.5">
+          <!-- Active Card 1: Bus Cargo TRK-88219 -->
+          <div class="history-item-card bg-surface rounded-xl p-3 shadow-level-1 hover:shadow-level-2 transition-all border border-outline-variant/30 cursor-pointer" data-status="IN_TRANSIT" data-search="TRK-88219 Sector 17 Chandigarh Delhi Express Haryana Roadways" data-tracking-id="TRK-88219">
+            <div class="flex items-center justify-between w-full">
+              <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center shrink-0 text-primary">
+                  <span class="material-symbols-outlined fill text-xl">directions_bus</span>
+                </div>
+                <div>
+                  <h4 class="text-xs font-bold text-on-surface">Delhi ➔ Sector 17, Chandigarh</h4>
+                  <div class="flex items-center space-x-1.5 mt-0.5">
+                    <span class="text-[10px] text-on-surface-variant font-mono">TRK-88219</span>
+                    <span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+                    <span class="text-[10px] text-on-surface-variant font-medium">Haryana Roadways #402</span>
+                  </div>
+                </div>
+              </div>
+              <div class="flex flex-col items-end">
+                <div class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center space-x-1 mb-0.5">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse"></span>
+                  <span>In Transit</span>
+                </div>
+                <span class="text-xs font-bold text-on-surface">₹450.00</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Active Card 2: Express Bus TRK-60912 -->
+          <div class="history-item-card bg-surface rounded-xl p-3 shadow-level-1 hover:shadow-level-2 transition-all border border-outline-variant/30 cursor-pointer" data-status="IN_TRANSIT" data-search="TRK-60912 Sindhi Camp Jaipur Delhi Highway" data-tracking-id="TRK-60912">
+            <div class="flex items-center justify-between w-full">
+              <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center shrink-0 text-primary">
+                  <span class="material-symbols-outlined fill text-xl">local_shipping</span>
+                </div>
+                <div>
+                  <h4 class="text-xs font-bold text-on-surface">Delhi ➔ Sindhi Camp, Jaipur</h4>
+                  <div class="flex items-center space-x-1.5 mt-0.5">
+                    <span class="text-[10px] text-on-surface-variant font-mono">TRK-60912</span>
+                    <span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+                    <span class="text-[10px] text-on-surface-variant font-medium">Express Bus #108</span>
+                  </div>
+                </div>
+              </div>
+              <div class="flex flex-col items-end">
+                <div class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center space-x-1 mb-0.5">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse"></span>
+                  <span>In Transit</span>
+                </div>
+                <span class="text-xs font-bold text-on-surface">₹380.00</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- October 2023 -->
       <div class="history-month-section" data-month="October 2023">
         <h3 class="text-[10px] font-bold text-outline mb-2 uppercase tracking-wider pl-1">October 2023</h3>
         <div class="space-y-2.5">
           <!-- Card 1: Uber Direct -->
-          <div class="history-item-card bg-surface rounded-xl p-3 shadow-level-1 hover:shadow-level-2 transition-all border border-outline-variant/30 cursor-pointer" data-status="DELIVERED" data-search="124 Maple Street, Apt 4B Uber Direct">
+          <div class="history-item-card bg-surface rounded-xl p-3 shadow-level-1 hover:shadow-level-2 transition-all border border-outline-variant/30 cursor-pointer" data-status="DELIVERED" data-search="124 Maple Street, Apt 4B Uber Direct" data-tracking-id="TRK-88219">
             <div class="flex items-center justify-between w-full">
               <div class="flex items-center space-x-3">
                 <div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center shrink-0 p-1.5">
@@ -126,7 +187,7 @@
           </div>
 
           <!-- Card 2: Rapido Express -->
-          <div class="history-item-card bg-surface rounded-xl p-3 shadow-level-1 hover:shadow-level-2 transition-all border border-outline-variant/30 cursor-pointer" data-status="DELIVERED" data-search="890 Tech Blvd, Suite 200 Rapido Express">
+          <div class="history-item-card bg-surface rounded-xl p-3 shadow-level-1 hover:shadow-level-2 transition-all border border-outline-variant/30 cursor-pointer" data-status="DELIVERED" data-search="890 Tech Blvd, Suite 200 Rapido Express" data-tracking-id="TRK-88219">
             <div class="flex items-center justify-between w-full">
               <div class="flex items-center space-x-3">
                 <div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center shrink-0 p-1.5">
@@ -150,6 +211,31 @@
               </div>
             </div>
           </div>
+
+          <!-- Card 3: Cancelled Order -->
+          <div class="history-item-card bg-surface rounded-xl p-3 shadow-level-1 hover:shadow-level-2 transition-all border border-outline-variant/30 cursor-pointer" data-status="CANCELLED" data-search="55 Sector 14 Gurgaon Cancelled Route" data-tracking-id="TRK-88219">
+            <div class="flex items-center justify-between w-full">
+              <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-full bg-rose-50 flex items-center justify-center shrink-0 text-rose-600">
+                  <span class="material-symbols-outlined text-lg">cancel</span>
+                </div>
+                <div>
+                  <h4 class="text-xs font-bold text-on-surface">55 Sector 14, Gurgaon</h4>
+                  <div class="flex items-center space-x-1.5 mt-0.5">
+                    <span class="text-[10px] text-on-surface-variant">Oct 12, 11:20 AM</span>
+                    <span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+                    <span class="text-[10px] text-rose-600 font-medium">Sender Cancelled</span>
+                  </div>
+                </div>
+              </div>
+              <div class="flex flex-col items-end">
+                <div class="bg-rose-100 text-rose-800 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center space-x-1 mb-0.5">
+                  <span>Refunded</span>
+                </div>
+                <span class="text-xs font-bold text-outline line-through">₹180.00</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -157,8 +243,8 @@
       <div class="history-month-section" data-month="September 2023">
         <h3 class="text-[10px] font-bold text-outline mb-2 uppercase tracking-wider pl-1">September 2023</h3>
         <div class="space-y-2.5">
-          <!-- Card 3: inDrive -->
-          <div class="history-item-card bg-surface rounded-xl p-3 shadow-level-1 hover:shadow-level-2 transition-all border border-outline-variant/30 cursor-pointer" data-status="DELIVERED" data-search="45 West End Ave inDrive">
+          <!-- Card 4: inDrive -->
+          <div class="history-item-card bg-surface rounded-xl p-3 shadow-level-1 hover:shadow-level-2 transition-all border border-outline-variant/30 cursor-pointer" data-status="DELIVERED" data-search="45 West End Ave inDrive" data-tracking-id="TRK-88219">
             <div class="flex items-center justify-between w-full">
               <div class="flex items-center space-x-3">
                 <div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center shrink-0 p-1.5">
@@ -183,6 +269,15 @@
             </div>
           </div>
         </div>
+      </div>
+
+      <!-- Empty State Container -->
+      <div id="historyEmptyState" class="hidden text-center py-10 bg-surface-container-lowest rounded-2xl border border-outline-variant/20 p-6">
+        <div class="w-12 h-12 rounded-full bg-primary-fixed flex items-center justify-center text-primary mx-auto mb-2">
+          <span class="material-symbols-outlined text-2xl">search_off</span>
+        </div>
+        <h4 class="text-xs font-bold text-on-surface">No shipments match this filter</h4>
+        <p class="text-[10px] text-on-surface-variant mt-1">Try selecting another filter chip or clearing your search keywords.</p>
       </div>
     </div>
   </main>

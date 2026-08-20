@@ -97,10 +97,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   };
 
   const initMap = async () => {
-    await loadLeaflet();
     if (!window.L || map) return;
 
     const defaultParcel = parcelDatabase['TRK-88219'];
+    const mapElement = document.getElementById('liveTrackingMap');
+    if (!mapElement) return;
+
     map = L.map('liveTrackingMap', { zoomControl: false }).setView(defaultParcel.stops[1], 11);
 
     L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
@@ -131,6 +133,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     busMarker = L.marker(defaultParcel.stops[1], { icon: busIcon }).addTo(map);
     map.fitBounds(routeLine.getBounds(), { padding: [40, 40] });
+
+    setTimeout(() => {
+      if (map) map.invalidateSize();
+    }, 200);
+
+    window.addEventListener('resize', () => {
+      if (map) map.invalidateSize();
+    });
   };
 
   const updateInsightsCard = (parcel) => {
@@ -144,6 +154,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const trackEta = document.getElementById('trackEta');
     const trackHandoffText = document.getElementById('trackHandoffText');
     const trackDistance = document.getElementById('trackDistance');
+    const timelineActiveStopTitle = document.getElementById('timelineActiveStopTitle');
+    const timelineActiveStopSub = document.getElementById('timelineActiveStopSub');
 
     if (trackedIdDisplay) trackedIdDisplay.innerText = parcel.trackingId;
     if (insightBusName) insightBusName.innerText = parcel.busNumber;
@@ -155,6 +167,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (trackEta) trackEta.innerText = parcel.eta;
     if (trackHandoffText) trackHandoffText.innerText = parcel.handoffText;
     if (trackDistance) trackDistance.innerText = parcel.distance;
+    if (timelineActiveStopTitle) timelineActiveStopTitle.innerText = `In Transit – ${parcel.busNumber.split(' ')[2] || 'Bus #402'}`;
+    if (timelineActiveStopSub) timelineActiveStopSub.innerText = `Currently on ${parcel.routeName}`;
   };
 
   const start30SecAutoRefresh = (parcel) => {

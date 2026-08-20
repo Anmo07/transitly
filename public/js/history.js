@@ -8,15 +8,37 @@ document.addEventListener('DOMContentLoaded', () => {
   const historySearchInput = document.getElementById('historySearchInput');
   let activeHistoryFilter = 'ALL';
 
+  const emptyState = document.getElementById('historyEmptyState');
+
   const filterHistory = () => {
     const query = historySearchInput ? historySearchInput.value.toLowerCase().trim() : '';
+    let visibleCount = 0;
+
     historyCards.forEach((card) => {
       const status = card.getAttribute('data-status');
       const searchData = (card.getAttribute('data-search') || '').toLowerCase();
       const matchesStatus = activeHistoryFilter === 'ALL' || status === activeHistoryFilter;
       const matchesSearch = query === '' || searchData.includes(query);
-      card.style.display = (matchesStatus && matchesSearch) ? 'block' : 'none';
+      const isVisible = matchesStatus && matchesSearch;
+
+      card.style.display = isVisible ? 'block' : 'none';
+      if (isVisible) visibleCount++;
     });
+
+    // Toggle month section visibility
+    document.querySelectorAll('.history-month-section').forEach((section) => {
+      const cards = section.querySelectorAll('.history-item-card');
+      const hasVisible = Array.from(cards).some((c) => c.style.display !== 'none');
+      section.style.display = hasVisible ? 'block' : 'none';
+    });
+
+    if (emptyState) {
+      if (visibleCount === 0) {
+        emptyState.classList.remove('hidden');
+      } else {
+        emptyState.classList.add('hidden');
+      }
+    }
   };
 
   historyChips.forEach((chip) => {
@@ -37,7 +59,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // Click card to track
   historyCards.forEach(card => {
     card.addEventListener('click', () => {
-      window.location.href = '/tracking.html?id=TRK-88219';
+      const trackingId = card.getAttribute('data-tracking-id') || 'TRK-88219';
+      window.location.href = `/tracking?id=${encodeURIComponent(trackingId)}`;
     });
   });
 });

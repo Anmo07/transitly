@@ -30,11 +30,17 @@ app.use(cors());
 app.use(express.json());
 app.use(morgan('dev'));
 
-// Static Frontend Assets with aggressive caching for production performance
+// Static Frontend Assets (Prevent aggressive caching on HTML while caching static assets)
 app.use(express.static(path.join(__dirname, '../public'), {
-  maxAge: '1d',
   etag: true,
-  lastModified: true
+  lastModified: true,
+  setHeaders: (res, filePath) => {
+    if (filePath.endsWith('.html')) {
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    } else {
+      res.setHeader('Cache-Control', 'public, max-age=86400');
+    }
+  }
 }));
 
 // OpenAPI / Swagger Documentation

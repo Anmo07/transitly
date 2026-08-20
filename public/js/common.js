@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // -------------------------------------------------------------
   // 1. Highlight Active Nav Item based on Current URL Path
   // -------------------------------------------------------------
-  const path = window.location.pathname.replace(/\/$/, '') || '/';
+  const path = window.location.pathname.replace(/\.html$/, '').replace(/\/$/, '') || '/';
   
   // Highlight Desktop Header Nav
   document.querySelectorAll('.desktop-nav-btn').forEach(btn => {
@@ -159,13 +159,13 @@ document.addEventListener('DOMContentLoaded', () => {
           `;
           setTimeout(() => {
             window.closeBookingModal();
-            window.location.href = `/tracking.html?id=${data.data.shipment.trackingId}`;
+            window.location.href = `/tracking?id=${data.data.shipment.trackingId}`;
           }, 1500);
         }
       } catch (err) {
         alert('Booking confirmed in test simulation.');
         window.closeBookingModal();
-        window.location.href = '/tracking.html?id=TRK-88219';
+        window.location.href = '/tracking?id=TRK-88219';
       } finally {
         btn.disabled = false;
         btn.innerText = 'Confirm Booking';

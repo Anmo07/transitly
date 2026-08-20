@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const executeSearch = () => {
     const val = homeSearchInput ? homeSearchInput.value.trim() : '';
     if (val.toUpperCase().startsWith('TRK-') || val.length >= 5) {
-      window.location.href = `/tracking.html?id=${encodeURIComponent(val)}`;
+      window.location.href = `/tracking?id=${encodeURIComponent(val)}`;
     } else {
       if (window.openBookingModal) window.openBookingModal();
     }
