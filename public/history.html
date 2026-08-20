@@ -3,15 +3,9 @@
 <head>
   <meta charset="utf-8"/>
   <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
-  <title>Transitly — Delivery History</title>
-  <meta name="description" content="View past and active intercity bus parcel shipments.">
-  <meta name="theme-color" content="#0050cb">
+  <title>Transitly - Delivery History</title>
 
-  <!-- Resource Hints for Carrier Logos -->
-  <link rel="dns-prefetch" href="https://lh3.googleusercontent.com"/>
-  <link crossorigin="" href="https://lh3.googleusercontent.com" rel="preconnect"/>
-
-  <!-- Material Symbols (deferred) -->
+  <!-- Material Symbols -->
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" media="print" onload="this.media='all'"/>
   <noscript><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/></noscript>
 
@@ -20,295 +14,217 @@
   <link rel="stylesheet" href="/css/common.css" />
   <link rel="stylesheet" href="/css/history.css" />
 </head>
-<body class="bg-[#faf8ff] text-on-surface font-sans min-h-[100dvh] overflow-x-hidden flex flex-col antialiased">
+<body class="bg-background text-on-background antialiased pb-24 md:pb-0 pt-16">
 
-  <!-- ========================================================================= -->
-  <!-- TOP APP BAR & DESKTOP NAVBAR (STITCH DESIGN)                              -->
-  <!-- ========================================================================= -->
-  <header id="mainAppHeader" class="bg-surface/95 backdrop-blur-md shadow-sm fixed top-0 left-0 right-0 w-full z-50 border-b border-outline-variant/20 transition-all duration-200">
-    <div class="flex justify-between items-center px-4 md:px-6 h-14 max-w-4xl mx-auto w-full">
-      <div class="flex items-center gap-3">
-        <a href="/" aria-label="Home" class="text-primary hover:opacity-80 transition-opacity active:scale-95 flex items-center justify-center w-10 h-10 rounded-full">
-          <span class="material-symbols-outlined text-2xl">local_shipping</span>
+  <!-- TopAppBar (Stitch Spec) -->
+  <header class="fixed top-0 w-full z-50 bg-surface shadow-sm border-b border-outline-variant/20">
+    <div class="flex justify-between items-center px-container-margin h-14 max-w-4xl mx-auto w-full">
+      <a href="/" aria-label="Home" class="text-primary hover:opacity-80 transition-opacity active:scale-95 flex items-center justify-center w-10 h-10 rounded-full">
+        <span class="material-symbols-outlined" data-icon="local_shipping">local_shipping</span>
+      </a>
+      <h1 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg font-bold text-primary tracking-tight">
+        Transitly
+      </h1>
+      
+      <!-- Desktop Nav -->
+      <nav class="hidden md:flex items-center space-x-1">
+        <a class="desktop-nav-btn px-4 py-1.5 rounded-full text-xs font-medium text-on-surface-variant hover:bg-surface-variant flex items-center gap-1.5" href="/">
+          <span class="material-symbols-outlined text-[18px]">local_shipping</span>Deliver
         </a>
-        <a href="/" class="text-lg md:text-xl font-bold text-primary tracking-tight">
-          Transitly
+        <a class="desktop-nav-btn px-4 py-1.5 rounded-full text-xs font-medium text-on-surface-variant hover:bg-surface-variant flex items-center gap-1.5" href="/tracking">
+          <span class="material-symbols-outlined text-[18px]">distance</span>Tracking
         </a>
-      </div>
-
-      <!-- Desktop Navigation Bar -->
-      <nav class="hidden md:flex items-center space-x-1" id="desktopNavTabs">
-        <a class="desktop-nav-btn px-3.5 py-1.5 rounded-full text-xs font-medium text-on-surface-variant hover:bg-surface-variant transition-all flex items-center gap-1.5" href="/">
-          <span class="material-symbols-outlined text-[18px]">local_shipping</span>
-          Deliver
+        <a class="desktop-nav-btn px-4 py-1.5 rounded-full text-xs font-medium text-on-surface-variant hover:bg-surface-variant flex items-center gap-1.5" href="/services">
+          <span class="material-symbols-outlined text-[18px]">apps</span>All Services
         </a>
-        <a class="desktop-nav-btn px-3.5 py-1.5 rounded-full text-xs font-medium text-on-surface-variant hover:bg-surface-variant transition-all flex items-center gap-1.5" href="/tracking">
-          <span class="material-symbols-outlined text-[18px]">distance</span>
-          Tracking
+        <a class="desktop-nav-btn px-4 py-1.5 rounded-full text-xs font-bold text-primary bg-primary-fixed/50 flex items-center gap-1.5" href="/history">
+          <span class="material-symbols-outlined text-[18px]">history</span>History
         </a>
-        <a class="desktop-nav-btn px-3.5 py-1.5 rounded-full text-xs font-medium text-on-surface-variant hover:bg-surface-variant transition-all flex items-center gap-1.5" href="/services">
-          <span class="material-symbols-outlined text-[18px]">apps</span>
-          All Services
-        </a>
-        <a class="desktop-nav-btn px-3.5 py-1.5 rounded-full text-xs font-bold text-primary bg-primary-fixed/50 transition-all flex items-center gap-1.5 shadow-sm" href="/history">
-          <span class="material-symbols-outlined text-[18px]">history</span>
-          History
-        </a>
-        <a class="desktop-nav-btn px-3.5 py-1.5 rounded-full text-xs font-medium text-on-surface-variant hover:bg-surface-variant transition-all flex items-center gap-1.5" href="/profile">
-          <span class="material-symbols-outlined text-[18px]">person</span>
-          Profile
+        <a class="desktop-nav-btn px-4 py-1.5 rounded-full text-xs font-medium text-on-surface-variant hover:bg-surface-variant flex items-center gap-1.5" href="/profile">
+          <span class="material-symbols-outlined text-[18px]">person</span>Profile
         </a>
       </nav>
 
-      <div class="flex items-center gap-1">
-        <a href="/api/docs" target="_blank" title="API Docs (Swagger)" class="text-primary hover:opacity-80 transition-opacity active:scale-95 flex items-center justify-center w-9 h-9 rounded-full">
-          <span class="material-symbols-outlined text-[20px]">menu_book</span>
-        </a>
-        <button id="btnNotifications" aria-label="Notifications" class="text-primary hover:opacity-80 transition-opacity active:scale-95 flex items-center justify-center w-9 h-9 rounded-full" onclick="alert('All corridors on schedule.')">
-          <span class="material-symbols-outlined text-[22px]">notifications</span>
-        </button>
-      </div>
+      <button aria-label="Notifications" class="text-primary hover:opacity-80 transition-opacity active:scale-95 flex items-center justify-center w-10 h-10 rounded-full" onclick="alert('No new alerts.')">
+        <span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+      </button>
     </div>
   </header>
 
-  <!-- ========================================================================= -->
-  <!-- MAIN CONTENT: DELIVERY HISTORY (STITCH DESIGN)                            -->
-  <!-- ========================================================================= -->
-  <main class="w-full max-w-2xl mx-auto pt-16 pb-24 px-4 flex-1">
-    <div class="mb-4">
-      <h1 class="text-lg font-bold text-on-surface mb-2">Delivery History</h1>
+  <!-- Main History Content (Stitch Spec) -->
+  <main class="w-full max-w-4xl mx-auto px-container-margin md:mt-6 pt-stack-lg">
+    <!-- Page Title & Search -->
+    <div class="mb-stack-lg animate-fade-in-up">
+      <h2 class="font-headline-md text-headline-md text-on-background mb-stack-md">Delivery History</h2>
       <div class="relative w-full">
-        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-          <span class="material-symbols-outlined text-outline text-lg">search</span>
+        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+          <span class="material-symbols-outlined text-outline">search</span>
         </div>
-        <input id="historySearchInput" class="w-full pl-10 pr-10 py-2.5 bg-surface border border-outline-variant/40 rounded-xl focus:outline-none focus:border-primary text-xs placeholder-outline shadow-sm transition-all" placeholder="Search by tracking number, destination..." type="text"/>
+        <input id="historySearchInput" class="w-full pl-12 pr-4 py-4 bg-surface border border-surface-variant rounded-xl focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary font-body-md text-body-md placeholder-outline transition-all shadow-[0px_4px_20px_rgba(0,0,0,0.02)] hover:shadow-[0px_4px_20px_rgba(0,0,0,0.05)]" placeholder="Search by tracking number, destination..." type="text"/>
+        <button class="absolute inset-y-0 right-0 pr-4 flex items-center text-primary hover:opacity-80">
+          <span class="material-symbols-outlined" data-icon="filter_list">filter_list</span>
+        </button>
       </div>
     </div>
 
-    <!-- Filter Chips (Stitch Spec) -->
-    <div class="flex overflow-x-auto no-scrollbar space-x-2 mb-4 pb-1" id="historyFilterChips">
-      <button class="history-chip shrink-0 bg-primary text-on-primary text-xs font-semibold px-3.5 py-1.5 rounded-full shadow-sm" data-filter="ALL">All</button>
-      <button class="history-chip shrink-0 bg-surface text-on-surface-variant border border-outline-variant/50 text-xs font-semibold px-3.5 py-1.5 rounded-full hover:bg-surface-variant" data-filter="DELIVERED">Delivered</button>
-      <button class="history-chip shrink-0 bg-surface text-on-surface-variant border border-outline-variant/50 text-xs font-semibold px-3.5 py-1.5 rounded-full hover:bg-surface-variant" data-filter="IN_TRANSIT">In Transit</button>
-      <button class="history-chip shrink-0 bg-surface text-on-surface-variant border border-outline-variant/50 text-xs font-semibold px-3.5 py-1.5 rounded-full hover:bg-surface-variant" data-filter="CANCELLED">Cancelled</button>
+    <!-- Filters Chips (Stitch Spec) -->
+    <div class="flex overflow-x-auto no-scrollbar space-x-stack-md mb-stack-lg pb-2">
+      <button class="history-chip flex-shrink-0 bg-primary text-on-primary font-label-md text-label-md px-4 py-2 rounded-full shadow-[0px_4px_12px_rgba(0,80,203,0.15)] transition-transform hover:scale-105" data-filter="ALL">
+        All
+      </button>
+      <button class="history-chip flex-shrink-0 bg-surface text-on-surface-variant border border-surface-variant font-label-md text-label-md px-4 py-2 rounded-full hover:bg-surface-variant transition-colors" data-filter="DELIVERED">
+        Delivered
+      </button>
+      <button class="history-chip flex-shrink-0 bg-surface text-on-surface-variant border border-surface-variant font-label-md text-label-md px-4 py-2 rounded-full hover:bg-surface-variant transition-colors" data-filter="IN_TRANSIT">
+        In Transit
+      </button>
+      <button class="history-chip flex-shrink-0 bg-surface text-on-surface-variant border border-surface-variant font-label-md text-label-md px-4 py-2 rounded-full hover:bg-surface-variant transition-colors" data-filter="CANCELLED">
+        Cancelled
+      </button>
     </div>
 
-    <!-- History Card Container (Stitch Spec with Carrier Logos) -->
-    <div id="historyListContainer" class="space-y-4">
-      <!-- Active & In-Transit Parcels -->
-      <div class="history-month-section" data-month="Current Active">
-        <h3 class="text-[10px] font-bold text-primary mb-2 uppercase tracking-wider pl-1 flex items-center gap-1.5">
-          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
-          Live Intercity Shipments
-        </h3>
-        <div class="space-y-2.5">
-          <!-- Active Card 1: Bus Cargo TRK-88219 -->
-          <div class="history-item-card bg-surface rounded-xl p-3 shadow-level-1 hover:shadow-level-2 transition-all border border-outline-variant/30 cursor-pointer" data-status="IN_TRANSIT" data-search="TRK-88219 Sector 17 Chandigarh Delhi Express Haryana Roadways" data-tracking-id="TRK-88219">
-            <div class="flex items-center justify-between w-full">
-              <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center shrink-0 text-primary">
-                  <span class="material-symbols-outlined fill text-xl">directions_bus</span>
-                </div>
-                <div>
-                  <h4 class="text-xs font-bold text-on-surface">Delhi ➔ Sector 17, Chandigarh</h4>
-                  <div class="flex items-center space-x-1.5 mt-0.5">
-                    <span class="text-[10px] text-on-surface-variant font-mono">TRK-88219</span>
-                    <span class="w-1 h-1 rounded-full bg-outline-variant"></span>
-                    <span class="text-[10px] text-on-surface-variant font-medium">Haryana Roadways #402</span>
-                  </div>
-                </div>
+    <!-- Month Section: October 2023 -->
+    <div class="mb-section-gap">
+      <h3 class="font-label-md text-label-md text-outline mb-stack-md uppercase tracking-wider pl-2">October 2023</h3>
+      <div class="space-y-stack-md">
+        <!-- History Card 1: Uber Direct -->
+        <div class="history-item-card bg-surface rounded-xl p-stack-md flex flex-col md:flex-row shadow-[0px_4px_20px_rgba(0,0,0,0.05)] hover:shadow-[0px_8px_30px_rgba(0,102,255,0.08)] transition-all border border-transparent cursor-pointer group" data-status="DELIVERED" data-search="124 Maple Street, Apt 4B Uber Direct">
+          <div class="flex items-start md:items-center justify-between w-full">
+            <div class="flex items-center space-x-stack-md">
+              <div class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center flex-shrink-0 relative overflow-hidden">
+                <img class="w-8 h-8 object-contain" alt="Uber logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYAQ9aSqwa-XMGtXzOUqUAsQqCSs_obgXAe7mLh9mhAXassnu6VGp2vt_NOQSqt4TP7kNwFW_CVo9s9AKlZKtZWi8M2B1uH1lzX4IBMtN0M5C8DgsAy9AwvZJWeI5slO7FbXzfkfASWEU5KiP1GT4CvdxzRCd5JrvSNwutgbpvZ8_thcv0PpAHRF_aA7etonssvasIJxnAIh002Uz-gZQcG7Z6YqyYg6PNHA4E4yRmklN9KG2wCRMg"/>
               </div>
-              <div class="flex flex-col items-end">
-                <div class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center space-x-1 mb-0.5">
-                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse"></span>
-                  <span>In Transit</span>
+              <div>
+                <h4 class="font-body-md text-body-md font-semibold text-on-surface group-hover:text-primary transition-colors">124 Maple Street, Apt 4B</h4>
+                <div class="flex items-center space-x-2 mt-1">
+                  <span class="font-label-sm text-label-sm text-on-surface-variant">Oct 24, 2:30 PM</span>
+                  <span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+                  <span class="font-label-sm text-label-sm text-on-surface-variant">Uber Direct</span>
                 </div>
-                <span class="text-xs font-bold text-on-surface">₹450.00</span>
               </div>
             </div>
+            <div class="flex flex-col items-end">
+              <div class="bg-[#e6f4ea] text-[#137333] font-label-sm text-label-sm px-3 py-1 rounded-full flex items-center space-x-1 mb-1">
+                <span class="material-symbols-outlined text-[14px]" data-icon="check_circle" data-weight="fill">check_circle</span>
+                <span>Delivered</span>
+              </div>
+              <span class="font-body-md text-body-md font-semibold text-on-surface">₹320.00</span>
+            </div>
           </div>
+        </div>
 
-          <!-- Active Card 2: Express Bus TRK-60912 -->
-          <div class="history-item-card bg-surface rounded-xl p-3 shadow-level-1 hover:shadow-level-2 transition-all border border-outline-variant/30 cursor-pointer" data-status="IN_TRANSIT" data-search="TRK-60912 Sindhi Camp Jaipur Delhi Highway" data-tracking-id="TRK-60912">
-            <div class="flex items-center justify-between w-full">
-              <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center shrink-0 text-primary">
-                  <span class="material-symbols-outlined fill text-xl">local_shipping</span>
-                </div>
-                <div>
-                  <h4 class="text-xs font-bold text-on-surface">Delhi ➔ Sindhi Camp, Jaipur</h4>
-                  <div class="flex items-center space-x-1.5 mt-0.5">
-                    <span class="text-[10px] text-on-surface-variant font-mono">TRK-60912</span>
-                    <span class="w-1 h-1 rounded-full bg-outline-variant"></span>
-                    <span class="text-[10px] text-on-surface-variant font-medium">Express Bus #108</span>
-                  </div>
+        <!-- History Card 2: CitySprint / Rapido -->
+        <div class="history-item-card bg-surface rounded-xl p-stack-md flex flex-col md:flex-row shadow-[0px_4px_20px_rgba(0,0,0,0.05)] hover:shadow-[0px_8px_30px_rgba(0,102,255,0.08)] transition-all border border-transparent cursor-pointer group" data-status="DELIVERED" data-search="890 Tech Blvd, Suite 200 CitySprint Rapido">
+          <div class="flex items-start md:items-center justify-between w-full">
+            <div class="flex items-center space-x-stack-md">
+              <div class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center flex-shrink-0 relative overflow-hidden">
+                <img class="w-8 h-8 object-contain" alt="Courier logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBHXHZfLMWyw3Re_BA2t9bbGCLvR7XTq8gY-b4LJ-fTye15E4BOJtBNro4_FVzl8bPKGKTSTsp0hBlqyJJgqzDG2MVBQcyfBptrdsVdnxRw7INFcOUnhuRJeOGXjRAQADDoGLJgCLbuoH8cW6q2k7NIuNHkhkylz0F8B0gwrRYlDlFCnW9pTkhvqjIb7jviRWO0Wo7_SKTcTOIhvqz-EqOxTtdaI27pW6SZAeqXpOaZzoR91wMZU6Bj"/>
+              </div>
+              <div>
+                <h4 class="font-body-md text-body-md font-semibold text-on-surface group-hover:text-primary transition-colors">890 Tech Blvd, Suite 200</h4>
+                <div class="flex items-center space-x-2 mt-1">
+                  <span class="font-label-sm text-label-sm text-on-surface-variant">Oct 21, 10:15 AM</span>
+                  <span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+                  <span class="font-label-sm text-label-sm text-on-surface-variant">Rapido Express</span>
                 </div>
               </div>
-              <div class="flex flex-col items-end">
-                <div class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center space-x-1 mb-0.5">
-                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse"></span>
-                  <span>In Transit</span>
-                </div>
-                <span class="text-xs font-bold text-on-surface">₹380.00</span>
+            </div>
+            <div class="flex flex-col items-end">
+              <div class="bg-[#e6f4ea] text-[#137333] font-label-sm text-label-sm px-3 py-1 rounded-full flex items-center space-x-1 mb-1">
+                <span class="material-symbols-outlined text-[14px]" data-icon="check_circle" data-weight="fill">check_circle</span>
+                <span>Delivered</span>
               </div>
+              <span class="font-body-md text-body-md font-semibold text-on-surface">₹240.00</span>
             </div>
           </div>
         </div>
       </div>
+    </div>
 
-      <!-- October 2023 -->
-      <div class="history-month-section" data-month="October 2023">
-        <h3 class="text-[10px] font-bold text-outline mb-2 uppercase tracking-wider pl-1">October 2023</h3>
-        <div class="space-y-2.5">
-          <!-- Card 1: Uber Direct -->
-          <div class="history-item-card bg-surface rounded-xl p-3 shadow-level-1 hover:shadow-level-2 transition-all border border-outline-variant/30 cursor-pointer" data-status="DELIVERED" data-search="124 Maple Street, Apt 4B Uber Direct" data-tracking-id="TRK-88219">
-            <div class="flex items-center justify-between w-full">
-              <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center shrink-0 p-1.5">
-                  <img class="w-full h-full object-contain" alt="Uber Direct logo" width="40" height="40" loading="lazy" decoding="async" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYAQ9aSqwa-XMGtXzOUqUAsQqCSs_obgXAe7mLh9mhAXassnu6VGp2vt_NOQSqt4TP7kNwFW_CVo9s9AKlZKtZWi8M2B1uH1lzX4IBMtN0M5C8DgsAy9AwvZJWeI5slO7FbXzfkfASWEU5KiP1GT4CvdxzRCd5JrvSNwutgbpvZ8_thcv0PpAHRF_aA7etonssvasIJxnAIh002Uz-gZQcG7Z6YqyYg6PNHA4E4yRmklN9KG2wCRMg"/>
-                </div>
-                <div>
-                  <h4 class="text-xs font-bold text-on-surface">124 Maple Street, Apt 4B</h4>
-                  <div class="flex items-center space-x-1.5 mt-0.5">
-                    <span class="text-[10px] text-on-surface-variant">Oct 24, 2:30 PM</span>
-                    <span class="w-1 h-1 rounded-full bg-outline-variant"></span>
-                    <span class="text-[10px] text-on-surface-variant font-medium">Uber Direct</span>
-                  </div>
-                </div>
+    <!-- Month Section: September 2023 -->
+    <div class="mb-section-gap">
+      <h3 class="font-label-md text-label-md text-outline mb-stack-md uppercase tracking-wider pl-2">September 2023</h3>
+      <div class="space-y-stack-md">
+        <!-- History Card 3: inDrive -->
+        <div class="history-item-card bg-surface rounded-xl p-stack-md flex flex-col md:flex-row shadow-[0px_4px_20px_rgba(0,0,0,0.05)] hover:shadow-[0px_8px_30px_rgba(0,102,255,0.08)] transition-all border border-transparent cursor-pointer group" data-status="DELIVERED" data-search="45 West End Ave inDrive">
+          <div class="flex items-start md:items-center justify-between w-full">
+            <div class="flex items-center space-x-stack-md">
+              <div class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center flex-shrink-0 relative overflow-hidden">
+                <img class="w-8 h-8 object-contain" alt="inDrive logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDrpKcQmpLjn_y-PaiKIsV-IM2nsejfBd4rKKjae-dWpXLA6QSup1NQmeAmlh2KiHiy6tONhRlelzktm30BKuWaNSJDLZdfDZodWG1OXoOJO85Jc-i143lE0QZARhgsU1q6jM4YEph1n-22sdr7XI-9iVgukoZzJ8K4tdDmyDZbQH-LaZF0maSNU-yvg3erXbIO87cGew0AVtR2zaVMmy37r9QJ7DK4qXiM2HvbOYXe3CTssarU8OcC"/>
               </div>
-              <div class="flex flex-col items-end">
-                <div class="bg-[#e6f4ea] text-[#137333] text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center space-x-1 mb-0.5">
-                  <span class="material-symbols-outlined text-[12px] fill">check_circle</span>
-                  <span>Delivered</span>
+              <div>
+                <h4 class="font-body-md text-body-md font-semibold text-on-surface group-hover:text-primary transition-colors">45 West End Ave</h4>
+                <div class="flex items-center space-x-2 mt-1">
+                  <span class="font-label-sm text-label-sm text-on-surface-variant">Sep 15, 6:45 PM</span>
+                  <span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+                  <span class="font-label-sm text-label-sm text-on-surface-variant">inDrive</span>
                 </div>
-                <span class="text-xs font-bold text-on-surface">₹320.00</span>
               </div>
             </div>
-          </div>
-
-          <!-- Card 2: Rapido Express -->
-          <div class="history-item-card bg-surface rounded-xl p-3 shadow-level-1 hover:shadow-level-2 transition-all border border-outline-variant/30 cursor-pointer" data-status="DELIVERED" data-search="890 Tech Blvd, Suite 200 Rapido Express" data-tracking-id="TRK-88219">
-            <div class="flex items-center justify-between w-full">
-              <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center shrink-0 p-1.5">
-                  <img class="w-full h-full object-contain" alt="Rapido Express logo" width="40" height="40" loading="lazy" decoding="async" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBHXHZfLMWyw3Re_BA2t9bbGCLvR7XTq8gY-b4LJ-fTye15E4BOJtBNro4_FVzl8bPKGKTSTsp0hBlqyJJgqzDG2MVBQcyfBptrdsVdnxRw7INFcOUnhuRJeOGXjRAQADDoGLJgCLbuoH8cW6q2k7NIuNHkhkylz0F8B0gwrRYlDlFCnW9pTkhvqjIb7jviRWO0Wo7_SKTcTOIhvqz-EqOxTtdaI27pW6SZAeqXpOaZzoR91wMZU6Bj"/>
-                </div>
-                <div>
-                  <h4 class="text-xs font-bold text-on-surface">890 Tech Blvd, Suite 200</h4>
-                  <div class="flex items-center space-x-1.5 mt-0.5">
-                    <span class="text-[10px] text-on-surface-variant">Oct 21, 10:15 AM</span>
-                    <span class="w-1 h-1 rounded-full bg-outline-variant"></span>
-                    <span class="text-[10px] text-on-surface-variant font-medium">Rapido Express</span>
-                  </div>
-                </div>
+            <div class="flex flex-col items-end">
+              <div class="bg-[#e6f4ea] text-[#137333] font-label-sm text-label-sm px-3 py-1 rounded-full flex items-center space-x-1 mb-1">
+                <span class="material-symbols-outlined text-[14px]" data-icon="check_circle" data-weight="fill">check_circle</span>
+                <span>Delivered</span>
               </div>
-              <div class="flex flex-col items-end">
-                <div class="bg-[#e6f4ea] text-[#137333] text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center space-x-1 mb-0.5">
-                  <span class="material-symbols-outlined text-[12px] fill">check_circle</span>
-                  <span>Delivered</span>
-                </div>
-                <span class="text-xs font-bold text-on-surface">₹240.00</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Card 3: Cancelled Order -->
-          <div class="history-item-card bg-surface rounded-xl p-3 shadow-level-1 hover:shadow-level-2 transition-all border border-outline-variant/30 cursor-pointer" data-status="CANCELLED" data-search="55 Sector 14 Gurgaon Cancelled Route" data-tracking-id="TRK-88219">
-            <div class="flex items-center justify-between w-full">
-              <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 rounded-full bg-rose-50 flex items-center justify-center shrink-0 text-rose-600">
-                  <span class="material-symbols-outlined text-lg">cancel</span>
-                </div>
-                <div>
-                  <h4 class="text-xs font-bold text-on-surface">55 Sector 14, Gurgaon</h4>
-                  <div class="flex items-center space-x-1.5 mt-0.5">
-                    <span class="text-[10px] text-on-surface-variant">Oct 12, 11:20 AM</span>
-                    <span class="w-1 h-1 rounded-full bg-outline-variant"></span>
-                    <span class="text-[10px] text-rose-600 font-medium">Sender Cancelled</span>
-                  </div>
-                </div>
-              </div>
-              <div class="flex flex-col items-end">
-                <div class="bg-rose-100 text-rose-800 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center space-x-1 mb-0.5">
-                  <span>Refunded</span>
-                </div>
-                <span class="text-xs font-bold text-outline line-through">₹180.00</span>
-              </div>
+              <span class="font-body-md text-body-md font-semibold text-on-surface">₹210.00</span>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- September 2023 -->
-      <div class="history-month-section" data-month="September 2023">
-        <h3 class="text-[10px] font-bold text-outline mb-2 uppercase tracking-wider pl-1">September 2023</h3>
-        <div class="space-y-2.5">
-          <!-- Card 4: inDrive -->
-          <div class="history-item-card bg-surface rounded-xl p-3 shadow-level-1 hover:shadow-level-2 transition-all border border-outline-variant/30 cursor-pointer" data-status="DELIVERED" data-search="45 West End Ave inDrive" data-tracking-id="TRK-88219">
-            <div class="flex items-center justify-between w-full">
-              <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center shrink-0 p-1.5">
-                  <img class="w-full h-full object-contain" alt="inDrive logo" width="40" height="40" loading="lazy" decoding="async" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDrpKcQmpLjn_y-PaiKIsV-IM2nsejfBd4rKKjae-dWpXLA6QSup1NQmeAmlh2KiHiy6tONhRlelzktm30BKuWaNSJDLZdfDZodWG1OXoOJO85Jc-i143lE0QZARhgsU1q6jM4YEph1n-22sdr7XI-9iVgukoZzJ8K4tdDmyDZbQH-LaZF0maSNU-yvg3erXbIO87cGew0AVtR2zaVMmy37r9QJ7DK4qXiM2HvbOYXe3CTssarU8OcC"/>
-                </div>
-                <div>
-                  <h4 class="text-xs font-bold text-on-surface">45 West End Ave</h4>
-                  <div class="flex items-center space-x-1.5 mt-0.5">
-                    <span class="text-[10px] text-on-surface-variant">Sep 15, 6:45 PM</span>
-                    <span class="w-1 h-1 rounded-full bg-outline-variant"></span>
-                    <span class="text-[10px] text-on-surface-variant font-medium">inDrive</span>
-                  </div>
+        <!-- History Card 4: Cancelled -->
+        <div class="history-item-card bg-surface rounded-xl p-stack-md flex flex-col md:flex-row shadow-[0px_4px_20px_rgba(0,0,0,0.05)] hover:shadow-[0px_8px_30px_rgba(0,0,0,0.08)] transition-all border border-transparent cursor-pointer group opacity-75" data-status="CANCELLED" data-search="770 Pine Street FastTrack">
+          <div class="flex items-start md:items-center justify-between w-full">
+            <div class="flex items-center space-x-stack-md">
+              <div class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center flex-shrink-0 relative overflow-hidden grayscale">
+                <img class="w-8 h-8 object-contain" alt="Delivery van" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAtQwsSpM7sNDLyLziK6itj0ogVNcged_gHCVOkaVBd7Di_BpkYkpH-1NbPem08TwB2Hp8BJY3NWbV7Z6k55ptAtrAOFqtL-G6vP1laj_jkSj5VMy3wYtw4aKJWpMCHc5imFFHTU7DxcqvRdn8hT0FNTh0s0Ub4snOGP6rCcxH7uEfLb8fNEBITsj22axC7A_S7upDBQNGBPQZ5JN0MZp2C8MznM8o4hZ80TqG82CFTqCn7K4zWEn-0"/>
+              </div>
+              <div>
+                <h4 class="font-body-md text-body-md font-semibold text-on-surface group-hover:text-primary transition-colors">770 Pine Street</h4>
+                <div class="flex items-center space-x-2 mt-1">
+                  <span class="font-label-sm text-label-sm text-on-surface-variant">Sep 02, 1:00 PM</span>
+                  <span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+                  <span class="font-label-sm text-label-sm text-on-surface-variant">State Bus Cargo</span>
                 </div>
               </div>
-              <div class="flex flex-col items-end">
-                <div class="bg-[#e6f4ea] text-[#137333] text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center space-x-1 mb-0.5">
-                  <span class="material-symbols-outlined text-[12px] fill">check_circle</span>
-                  <span>Delivered</span>
-                </div>
-                <span class="text-xs font-bold text-on-surface">₹210.00</span>
+            </div>
+            <div class="flex flex-col items-end">
+              <div class="bg-surface-variant text-on-surface-variant font-label-sm text-label-sm px-3 py-1 rounded-full flex items-center space-x-1 mb-1">
+                <span class="material-symbols-outlined text-[14px]" data-icon="cancel">cancel</span>
+                <span>Cancelled</span>
               </div>
+              <span class="font-body-md text-body-md font-semibold text-outline line-through">₹180.00</span>
             </div>
           </div>
         </div>
-      </div>
-
-      <!-- Empty State Container -->
-      <div id="historyEmptyState" class="hidden text-center py-10 bg-surface-container-lowest rounded-2xl border border-outline-variant/20 p-6">
-        <div class="w-12 h-12 rounded-full bg-primary-fixed flex items-center justify-center text-primary mx-auto mb-2">
-          <span class="material-symbols-outlined text-2xl">search_off</span>
-        </div>
-        <h4 class="text-xs font-bold text-on-surface">No shipments match this filter</h4>
-        <p class="text-[10px] text-on-surface-variant mt-1">Try selecting another filter chip or clearing your search keywords.</p>
       </div>
     </div>
   </main>
 
-  <!-- ========================================================================= -->
-  <!-- MOBILE BOTTOM NAVIGATION BAR (STITCH DESIGN)                              -->
-  <!-- ========================================================================= -->
-  <nav id="mainBottomNav" class="bg-surface/95 backdrop-blur-md shadow-[0px_-4px_20px_rgba(0,0,0,0.05)] fixed bottom-0 left-0 right-0 w-full z-50 rounded-t-xl border-t border-outline-variant/30 transition-all duration-200 md:hidden">
-    <div class="flex justify-around items-center px-1 pb-safe h-16 max-w-2xl mx-auto w-full">
-      <a id="navBtnDeliver" class="nav-tab-btn flex flex-col items-center justify-center text-on-surface-variant px-2 py-1 hover:bg-surface-variant rounded-xl transition-all active:scale-90 w-1/5" href="/">
-        <span class="material-symbols-outlined text-[20px]">local_shipping</span>
-        <span class="text-[10px] font-medium">Deliver</span>
+  <!-- BottomNavBar (Stitch Spec) -->
+  <nav class="md:hidden fixed bottom-0 w-full z-50 rounded-t-xl bg-surface shadow-[0px_-4px_20px_rgba(0,0,0,0.05)] border-t border-outline-variant">
+    <div class="flex justify-around items-center px-4 pb-safe h-16 bg-surface">
+      <a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-variant transition-colors rounded-xl" href="/">
+        <span class="material-symbols-outlined mb-1" data-icon="package_2">package_2</span>
+        <span class="font-label-sm text-label-sm">Deliver</span>
       </a>
-      <a id="navBtnTracking" class="nav-tab-btn flex flex-col items-center justify-center text-on-surface-variant px-2 py-1 hover:bg-surface-variant rounded-xl transition-all active:scale-90 w-1/5" href="/tracking">
-        <span class="material-symbols-outlined text-[20px]">distance</span>
-        <span class="text-[10px] font-medium">Tracking</span>
+      <a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-variant transition-colors rounded-xl" href="/tracking">
+        <span class="material-symbols-outlined mb-1" data-icon="distance">distance</span>
+        <span class="font-label-sm text-label-sm">Tracking</span>
       </a>
-      <a id="navBtnServices" class="nav-tab-btn flex flex-col items-center justify-center text-on-surface-variant px-2 py-1 hover:bg-surface-variant rounded-xl transition-all active:scale-90 w-1/5" href="/services">
-        <span class="material-symbols-outlined text-[20px]">apps</span>
-        <span class="text-[10px] font-medium">Services</span>
+      <a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-xl px-4 py-1 scale-90 transition-all duration-200" href="/history">
+        <span class="material-symbols-outlined mb-1" data-icon="history" data-weight="fill">history</span>
+        <span class="font-label-sm text-label-sm font-bold">History</span>
       </a>
-      <a id="navBtnHistory" class="nav-tab-btn flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-xl px-2 py-1 transition-all active:scale-90 w-1/5" href="/history">
-        <span class="material-symbols-outlined text-[20px]" data-weight="fill">history</span>
-        <span class="text-[10px] font-bold">History</span>
-      </a>
-      <a id="navBtnProfile" class="nav-tab-btn flex flex-col items-center justify-center text-on-surface-variant px-2 py-1 hover:bg-surface-variant rounded-xl transition-all active:scale-90 w-1/5" href="/profile">
-        <span class="material-symbols-outlined text-[20px]">person</span>
-        <span class="text-[10px] font-medium">Profile</span>
+      <a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-variant transition-colors rounded-xl" href="/profile">
+        <span class="material-symbols-outlined mb-1" data-icon="person">person</span>
+        <span class="font-label-sm text-label-sm">Profile</span>
       </a>
     </div>
   </nav>
+
+  <style>
+    .pb-safe { padding-bottom: env(safe-area-inset-bottom, 12px); }
+  </style>
 
   <!-- Modular Scripts -->
   <script defer src="/js/common.js"></script>

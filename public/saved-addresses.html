@@ -3,11 +3,9 @@
 <head>
   <meta charset="utf-8"/>
   <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
-  <title>Transitly — Saved Addresses</title>
-  <meta name="description" content="Manage your saved pickup and delivery addresses.">
-  <meta name="theme-color" content="#0050cb">
+  <title>Transitly - Saved Addresses</title>
 
-  <!-- Material Symbols (deferred) -->
+  <!-- Material Symbols -->
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" media="print" onload="this.media='all'"/>
   <noscript><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/></noscript>
 
@@ -16,185 +14,100 @@
   <link rel="stylesheet" href="/css/common.css" />
   <link rel="stylesheet" href="/css/saved-addresses.css" />
 </head>
-<body class="bg-[#faf8ff] text-on-surface font-sans min-h-[100dvh] overflow-x-hidden flex flex-col antialiased">
+<body class="bg-background text-on-background min-h-screen pb-24 md:pb-0 antialiased">
 
-  <!-- ========================================================================= -->
-  <!-- SUB-SCREEN HEADER                                                         -->
-  <!-- ========================================================================= -->
-  <header class="bg-surface/95 backdrop-blur-md shadow-sm fixed top-0 left-0 right-0 w-full z-50 border-b border-outline-variant/20">
-    <div class="flex justify-between items-center px-4 h-14 max-w-2xl mx-auto w-full">
-      <a href="/profile" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-surface-container-low active:scale-95 transition-transform text-on-surface-variant" aria-label="Back to Profile">
-        <span class="material-symbols-outlined">arrow_back</span>
-      </a>
-      <h1 class="text-base font-bold text-primary">Saved Addresses</h1>
-      <div class="w-9 h-9"></div>
-    </div>
+  <!-- TopAppBar (Stitch Spec) -->
+  <header class="bg-background text-primary docked full-width top-0 flat no shadows flex justify-between items-center px-container-margin w-full h-16 sticky z-40 border-b border-outline-variant/20">
+    <a href="/profile" aria-label="Back" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-low active:scale-95 transition-transform duration-150 text-on-surface-variant">
+      <span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+    </a>
+    <h1 class="text-headline-md font-headline-md font-bold text-primary absolute left-1/2 transform -translate-x-1/2">
+      Saved Addresses
+    </h1>
+    <div class="w-10 h-10"></div>
   </header>
 
-  <!-- ========================================================================= -->
-  <!-- MAIN CONTENT: SAVED ADDRESSES (STITCH DESIGN)                             -->
-  <!-- ========================================================================= -->
-  <main class="w-full max-w-2xl mx-auto pt-16 pb-28 px-4 space-y-4 flex-1">
-    <div class="flex flex-col gap-2.5">
-      <!-- Home -->
-      <div class="saved-address-card bg-surface-container-lowest rounded-[16px] shadow-level-1 p-3.5 flex items-center justify-between group cursor-pointer hover:bg-surface-container-low border border-outline-variant/20" data-address="123 Elm Street, Springfield, IL 62701">
-        <div class="flex items-center gap-3 flex-1">
-          <div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center text-primary shrink-0">
-            <span class="material-symbols-outlined icon-fill">home</span>
+  <!-- Main Content Canvas (Stitch Spec) -->
+  <main class="px-container-margin pt-stack-lg max-w-2xl mx-auto flex flex-col gap-stack-lg">
+    <!-- Addresses List -->
+    <div class="flex flex-col gap-stack-md">
+      <!-- Address Card: Home -->
+      <div class="saved-address-card bg-surface-container-lowest rounded-[16px] shadow-level-1 p-4 flex items-center justify-between group cursor-pointer hover:bg-surface-container-low transition-colors duration-200" data-address="123 Elm Street, Springfield, IL 62701">
+        <div class="flex items-center gap-4 flex-1">
+          <div class="w-12 h-12 rounded-full bg-primary-fixed flex items-center justify-center text-primary flex-shrink-0">
+            <span class="material-symbols-outlined icon-fill" data-icon="home" data-weight="fill">home</span>
           </div>
           <div class="flex flex-col">
-            <span class="text-xs font-bold text-on-surface">Home</span>
-            <span class="text-[11px] text-on-surface-variant mt-0.5 line-clamp-1">123 Elm Street, Springfield, IL 62701</span>
+            <span class="text-label-md font-label-md text-on-surface font-semibold">Home</span>
+            <span class="text-label-sm font-label-sm text-on-surface-variant mt-1 line-clamp-1">123 Elm Street, Springfield, IL 62701</span>
           </div>
         </div>
-        <button class="w-8 h-8 flex items-center justify-center rounded-full text-outline hover:text-primary" onclick="event.stopPropagation(); alert('Edit Home Address')">
-          <span class="material-symbols-outlined text-[18px]">edit</span>
+        <button aria-label="Edit Home Address" class="w-10 h-10 flex items-center justify-center rounded-full text-outline hover:text-primary hover:bg-surface-container transition-colors duration-150 ml-2" onclick="event.stopPropagation(); alert('Edit Home Address')">
+          <span class="material-symbols-outlined text-[20px]" data-icon="edit">edit</span>
         </button>
       </div>
 
-      <!-- Work -->
-      <div class="saved-address-card bg-surface-container-lowest rounded-[16px] shadow-level-1 p-3.5 flex items-center justify-between group cursor-pointer hover:bg-surface-container-low border border-outline-variant/20" data-address="456 Corporate Blvd, Suite 200, Metropolis, NY 10001">
-        <div class="flex items-center gap-3 flex-1">
-          <div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant shrink-0">
-            <span class="material-symbols-outlined icon-fill">work</span>
+      <!-- Address Card: Work -->
+      <div class="saved-address-card bg-surface-container-lowest rounded-[16px] shadow-level-1 p-4 flex items-center justify-between group cursor-pointer hover:bg-surface-container-low transition-colors duration-200" data-address="456 Corporate Blvd, Suite 200, Metropolis, NY 10001">
+        <div class="flex items-center gap-4 flex-1">
+          <div class="w-12 h-12 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant flex-shrink-0">
+            <span class="material-symbols-outlined icon-fill" data-icon="work" data-weight="fill">work</span>
           </div>
           <div class="flex flex-col">
-            <span class="text-xs font-bold text-on-surface">Work</span>
-            <span class="text-[11px] text-on-surface-variant mt-0.5 line-clamp-1">456 Corporate Blvd, Suite 200, Metropolis, NY 10001</span>
+            <span class="text-label-md font-label-md text-on-surface font-semibold">Work</span>
+            <span class="text-label-sm font-label-sm text-on-surface-variant mt-1 line-clamp-1">456 Corporate Blvd, Suite 200, Metropolis, NY 10001</span>
           </div>
         </div>
-        <button class="w-8 h-8 flex items-center justify-center rounded-full text-outline hover:text-primary" onclick="event.stopPropagation(); alert('Edit Work Address')">
-          <span class="material-symbols-outlined text-[18px]">edit</span>
+        <button aria-label="Edit Work Address" class="w-10 h-10 flex items-center justify-center rounded-full text-outline hover:text-primary hover:bg-surface-container transition-colors duration-150 ml-2" onclick="event.stopPropagation(); alert('Edit Work Address')">
+          <span class="material-symbols-outlined text-[20px]" data-icon="edit">edit</span>
         </button>
       </div>
 
-      <!-- Gym -->
-      <div class="saved-address-card bg-surface-container-lowest rounded-[16px] shadow-level-1 p-3.5 flex items-center justify-between group cursor-pointer hover:bg-surface-container-low border border-outline-variant/20" data-address="789 Muscle Ave, Iron City, CA 90210">
-        <div class="flex items-center gap-3 flex-1">
-          <div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant shrink-0">
-            <span class="material-symbols-outlined">fitness_center</span>
+      <!-- Address Card: Gym -->
+      <div class="saved-address-card bg-surface-container-lowest rounded-[16px] shadow-level-1 p-4 flex items-center justify-between group cursor-pointer hover:bg-surface-container-low transition-colors duration-200" data-address="789 Muscle Ave, Iron City, CA 90210">
+        <div class="flex items-center gap-4 flex-1">
+          <div class="w-12 h-12 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant flex-shrink-0">
+            <span class="material-symbols-outlined" data-icon="fitness_center">fitness_center</span>
           </div>
           <div class="flex flex-col">
-            <span class="text-xs font-bold text-on-surface">Gym</span>
-            <span class="text-[11px] text-on-surface-variant mt-0.5 line-clamp-1">789 Muscle Ave, Iron City, CA 90210</span>
+            <span class="text-label-md font-label-md text-on-surface font-semibold">Gym</span>
+            <span class="text-label-sm font-label-sm text-on-surface-variant mt-1 line-clamp-1">789 Muscle Ave, Iron City, CA 90210</span>
           </div>
         </div>
-        <button class="w-8 h-8 flex items-center justify-center rounded-full text-outline hover:text-primary" onclick="event.stopPropagation(); alert('Edit Gym Address')">
-          <span class="material-symbols-outlined text-[18px]">edit</span>
+        <button aria-label="Edit Gym Address" class="w-10 h-10 flex items-center justify-center rounded-full text-outline hover:text-primary hover:bg-surface-container transition-colors duration-150 ml-2" onclick="event.stopPropagation(); alert('Edit Gym Address')">
+          <span class="material-symbols-outlined text-[20px]" data-icon="edit">edit</span>
         </button>
       </div>
 
-      <!-- Favorite Cafe -->
-      <div class="saved-address-card bg-surface-container-lowest rounded-[16px] shadow-level-1 p-3.5 flex items-center justify-between group cursor-pointer hover:bg-surface-container-low border border-outline-variant/20" data-address="321 Coffee Lane, Bean Town, WA 98101">
-        <div class="flex items-center gap-3 flex-1">
-          <div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant shrink-0">
-            <span class="material-symbols-outlined">local_cafe</span>
+      <!-- Address Card: Favorite Cafe -->
+      <div class="saved-address-card bg-surface-container-lowest rounded-[16px] shadow-level-1 p-4 flex items-center justify-between group cursor-pointer hover:bg-surface-container-low transition-colors duration-200" data-address="321 Bean Roasters Lane, Seattle, WA 98101">
+        <div class="flex items-center gap-4 flex-1">
+          <div class="w-12 h-12 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant flex-shrink-0">
+            <span class="material-symbols-outlined" data-icon="local_cafe">local_cafe</span>
           </div>
           <div class="flex flex-col">
-            <span class="text-xs font-bold text-on-surface">Favorite Cafe</span>
-            <span class="text-[11px] text-on-surface-variant mt-0.5 line-clamp-1">321 Coffee Lane, Bean Town, WA 98101</span>
+            <span class="text-label-md font-label-md text-on-surface font-semibold">Favorite Cafe</span>
+            <span class="text-label-sm font-label-sm text-on-surface-variant mt-1 line-clamp-1">321 Bean Roasters Lane, Seattle, WA 98101</span>
           </div>
         </div>
-        <button class="w-8 h-8 flex items-center justify-center rounded-full text-outline hover:text-primary" onclick="event.stopPropagation(); alert('Edit Cafe Address')">
-          <span class="material-symbols-outlined text-[18px]">edit</span>
+        <button aria-label="Edit Cafe Address" class="w-10 h-10 flex items-center justify-center rounded-full text-outline hover:text-primary hover:bg-surface-container transition-colors duration-150 ml-2" onclick="event.stopPropagation(); alert('Edit Cafe Address')">
+          <span class="material-symbols-outlined text-[20px]" data-icon="edit">edit</span>
         </button>
       </div>
     </div>
+  </main>
 
-    <button class="w-full h-12 bg-surface-container-lowest border-2 border-dashed border-outline-variant/60 rounded-xl flex items-center justify-center gap-2 text-primary text-xs font-bold hover:bg-surface-container-low" onclick="alert('Add New Address')">
-      <span class="material-symbols-outlined text-lg">add</span>
+  <!-- Floating Action Area (Bottom - Stitch Spec) -->
+  <div class="fixed bottom-0 left-0 w-full p-container-margin bg-gradient-to-t from-background via-background to-transparent z-30 pb-safe md:static md:bg-none md:mt-section-gap md:p-0 md:max-w-2xl md:mx-auto">
+    <button class="w-full h-[56px] bg-primary text-on-primary rounded-[16px] text-body-md font-body-md font-semibold shadow-level-2 hover:bg-primary-container active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2" onclick="alert('Add New Address Modal')">
+      <span class="material-symbols-outlined text-[20px]" data-icon="add">add</span>
       Add New Address
     </button>
-  <!-- ========================================================================= -->
-  <!-- BOOKING MODAL (DUAL FEASIBILITY + SAGA BOOKING)                           -->
-  <!-- ========================================================================= -->
-  <div id="bookingModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4">
-    <div class="bg-white rounded-[20px] max-w-[480px] w-full p-5 shadow-2xl max-h-[90vh] overflow-y-auto">
-      <div class="flex justify-between items-center mb-3">
-        <h3 class="text-base font-bold text-on-surface flex items-center gap-1.5">
-          <span class="material-symbols-outlined text-primary">local_shipping</span>
-          Book Intercity Parcel
-        </h3>
-        <button id="btnCloseBookingModal" class="text-on-surface-variant hover:text-on-surface">
-          <span class="material-symbols-outlined">close</span>
-        </button>
-      </div>
-
-      <form id="modalBookingForm" class="space-y-2.5 text-xs">
-        <div>
-          <label class="font-bold block mb-0.5">1. Pickup Address (Sender)</label>
-          <input type="text" id="modalSenderAddress" value="Connaught Place, New Delhi" class="w-full rounded-xl border border-outline-variant/50 p-2 text-xs focus:ring-primary focus:border-primary" required>
-        </div>
-
-        <div class="grid grid-cols-2 gap-2">
-          <div>
-            <label class="font-bold block mb-0.5">Sender Name</label>
-            <input type="text" id="modalSenderName" value="Aarav Sharma" class="w-full rounded-xl border border-outline-variant/50 p-2 text-xs focus:ring-primary" required>
-          </div>
-          <div>
-            <label class="font-bold block mb-0.5">Sender Phone</label>
-            <input type="text" id="modalSenderPhone" value="+919876543210" class="w-full rounded-xl border border-outline-variant/50 p-2 text-xs focus:ring-primary" required>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-2 gap-2">
-          <div>
-            <label class="font-bold block mb-0.5">Intercity Route</label>
-            <select id="modalRouteSelect" class="w-full rounded-xl border border-outline-variant/50 p-2 text-xs focus:ring-primary">
-              <option value="HR-DEL-CHD">Delhi ➔ Chandigarh (GT Road)</option>
-              <option value="TR-DEL-JAI">Delhi ➔ Jaipur Highway</option>
-              <option value="HR-DEL-SRS">Delhi ➔ Hisar ➔ Sirsa</option>
-              <option value="HR-DEL-NRN">Delhi ➔ Rewari ➔ Narnaul</option>
-              <option value="HR-GGN-HDL">Gurgaon ➔ Faridabad ➔ Hodal</option>
-              <option value="HR-CHD-YMN">Chandigarh ➔ Yamunanagar</option>
-            </select>
-          </div>
-          <div>
-            <label class="font-bold block mb-0.5">Weight (kg)</label>
-            <input type="number" id="modalWeight" value="5.0" step="0.1" class="w-full rounded-xl border border-outline-variant/50 p-2 text-xs focus:ring-primary" required>
-          </div>
-        </div>
-
-        <div>
-          <label class="font-bold block mb-0.5">2. Delivery Address (Recipient)</label>
-          <input type="text" id="modalReceiverAddress" value="Sector 17, Chandigarh" class="w-full rounded-xl border border-outline-variant/50 p-2 text-xs focus:ring-primary focus:border-primary" required>
-        </div>
-
-        <div class="grid grid-cols-2 gap-2">
-          <div>
-            <label class="font-bold block mb-0.5">Recipient Name</label>
-            <input type="text" id="modalReceiverName" value="Rohan Verma" class="w-full rounded-xl border border-outline-variant/50 p-2 text-xs focus:ring-primary" required>
-          </div>
-          <div>
-            <label class="font-bold block mb-0.5">Recipient Phone</label>
-            <input type="text" id="modalReceiverPhone" value="+919876543211" class="w-full rounded-xl border border-outline-variant/50 p-2 text-xs focus:ring-primary" required>
-          </div>
-        </div>
-
-        <div id="modalFeasibilityBox" class="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-[11px] mt-1">
-          <div class="flex justify-between font-bold">
-            <span>Customer Experience:</span>
-            <span class="text-emerald-700 font-extrabold">FULL DOOR-TO-DOOR</span>
-          </div>
-          <p class="mt-0.5 text-emerald-800">Uber Direct Pickup ➔ Express Public Bus ➔ Rapido Delivery</p>
-          <div class="mt-1.5 pt-1.5 border-t border-emerald-200 flex justify-between font-extrabold text-xs">
-            <span>Total Multi-Modal Fare:</span>
-            <span>₹450.00</span>
-          </div>
-        </div>
-
-        <div class="pt-2 flex gap-2">
-          <button type="button" id="btnModalCheckFeasibility" class="w-1/2 py-2.5 rounded-full border border-primary text-primary font-bold text-xs hover:bg-primary-fixed/20">
-            Check Feasibility
-          </button>
-          <button type="submit" id="btnModalSubmitBooking" class="w-1/2 py-2.5 rounded-full bg-primary text-white font-bold text-xs hover:bg-primary-container shadow-md">
-            Confirm Booking
-          </button>
-        </div>
-      </form>
-      <div id="modalBookingSuccess" class="hidden mt-3 p-2.5 bg-emerald-100 text-emerald-800 rounded-xl text-xs font-semibold"></div>
-    </div>
   </div>
+
+  <style>
+    .pb-safe { padding-bottom: env(safe-area-inset-bottom, 20px); }
+  </style>
 
   <!-- Modular Scripts -->
   <script defer src="/js/common.js"></script>

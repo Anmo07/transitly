@@ -3,11 +3,9 @@
 <head>
   <meta charset="utf-8"/>
   <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
-  <title>Transitly — Help & Support (WhatsApp AI)</title>
-  <meta name="description" content="24/7 customer support and automated WhatsApp AI assistance.">
-  <meta name="theme-color" content="#0050cb">
+  <title>Transitly - Help & Support</title>
 
-  <!-- Material Symbols (deferred) -->
+  <!-- Material Symbols -->
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" media="print" onload="this.media='all'"/>
   <noscript><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/></noscript>
 
@@ -16,99 +14,176 @@
   <link rel="stylesheet" href="/css/common.css" />
   <link rel="stylesheet" href="/css/help-support.css" />
 </head>
-<body class="bg-[#faf8ff] text-on-surface font-sans min-h-[100dvh] overflow-x-hidden flex flex-col antialiased">
+<body class="bg-background text-on-surface font-body-md antialiased h-full flex flex-col md:bg-surface-container-lowest">
 
-  <!-- ========================================================================= -->
-  <!-- SUB-SCREEN HEADER                                                         -->
-  <!-- ========================================================================= -->
-  <header class="bg-surface/95 backdrop-blur-md shadow-sm fixed top-0 left-0 right-0 w-full z-50 border-b border-outline-variant/20">
-    <div class="flex justify-between items-center px-4 h-14 max-w-4xl mx-auto w-full">
-      <a href="/profile" class="w-9 h-9 flex items-center justify-center rounded-full bg-surface-container-lowest shadow-sm text-on-surface hover:bg-surface-container-low active:scale-95" aria-label="Back to Profile">
-        <span class="material-symbols-outlined">arrow_back</span>
+  <!-- TopAppBar (Stitch Spec) -->
+  <header class="bg-background flex justify-between items-center px-container-margin w-full h-16 docked full-width top-0 z-40 sticky shadow-sm border-b border-outline-variant/20 transition-shadow duration-300" id="top-app-bar">
+    <div class="flex items-center gap-4">
+      <a href="/profile" class="cursor-pointer hover:bg-surface-container-low rounded-full p-2 transition-colors text-primary" aria-label="Back">
+        <span class="material-symbols-outlined text-primary" data-icon="arrow_back">arrow_back</span>
       </a>
-      <h1 class="text-base font-bold text-on-surface">Help & Support</h1>
-      <div class="w-9 h-9"></div>
+      <span class="text-headline-md font-headline-md font-bold text-primary">Transitly</span>
     </div>
+
+    <!-- Desktop Nav -->
+    <nav class="hidden md:flex gap-8 absolute left-1/2 transform -translate-x-1/2">
+      <a class="text-on-surface-variant hover:bg-surface-container-low px-4 py-2 rounded-full transition-colors flex items-center gap-2" href="/">
+        <span class="text-label-md font-label-md">Deliver</span>
+      </a>
+      <a class="text-on-surface-variant hover:bg-surface-container-low px-4 py-2 rounded-full transition-colors flex items-center gap-2" href="/tracking">
+        <span class="text-label-md font-label-md">Tracking</span>
+      </a>
+      <a class="text-on-surface-variant hover:bg-surface-container-low px-4 py-2 rounded-full transition-colors flex items-center gap-2" href="/services">
+        <span class="text-label-md font-label-md">All Services</span>
+      </a>
+      <a class="text-primary font-bold hover:bg-surface-container-low px-4 py-2 rounded-full transition-colors flex items-center gap-2 bg-surface-container-low" href="/help-support">
+        <span class="text-label-md font-label-md">Help &amp; Support</span>
+      </a>
+      <a class="text-on-surface-variant hover:bg-surface-container-low px-4 py-2 rounded-full transition-colors flex items-center gap-2" href="/profile">
+        <span class="text-label-md font-label-md">Profile</span>
+      </a>
+    </nav>
+
+    <a href="/profile" class="w-8 h-8 rounded-full overflow-hidden bg-surface-container-high flex items-center justify-center cursor-pointer hover:bg-surface-container-low transition-colors">
+      <span class="material-symbols-outlined text-on-surface-variant text-[20px]" data-icon="person">person</span>
+    </a>
   </header>
 
-  <!-- ========================================================================= -->
-  <!-- MAIN CONTENT: HELP & SUPPORT (STITCH DESIGN)                              -->
-  <!-- ========================================================================= -->
-  <main class="w-full max-w-4xl mx-auto pt-16 pb-28 px-4 space-y-5 flex-1">
-    <!-- Header Section (Stitch Spec) -->
-    <div class="text-center mb-4">
-      <h2 class="text-xl md:text-2xl font-bold text-on-surface tracking-tight mb-1">How can we help you?</h2>
-      <p class="text-xs text-on-surface-variant">Find instant answers or chat directly with our WhatsApp AI logistics agent.</p>
+  <!-- Main Content Canvas (Stitch Spec) -->
+  <main class="flex-1 overflow-y-auto px-container-margin pb-32 md:pb-12 pt-section-gap max-w-4xl mx-auto w-full">
+    <!-- Header Section -->
+    <div class="text-center mb-section-gap">
+      <h1 class="text-headline-lg-mobile md:text-headline-lg font-headline-lg-mobile md:font-headline-lg text-on-surface mb-stack-md font-bold">How can we help you?</h1>
+      <p class="text-body-md font-body-md text-on-surface-variant max-w-lg mx-auto">Search our knowledge base or browse common topics below to find answers quickly.</p>
+      <!-- Search Bar -->
+      <div class="mt-stack-lg relative max-w-xl mx-auto group">
+        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+          <span class="material-symbols-outlined text-outline-variant group-focus-within:text-primary transition-colors" data-icon="search">search</span>
+        </div>
+        <input class="w-full pl-12 pr-4 py-4 rounded-xl border border-outline-variant bg-surface-container-lowest focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-all duration-300 text-body-md font-body-md placeholder:text-on-surface-variant/50 shadow-sm hover:shadow-md focus:shadow-md" placeholder="Search for 'missing parcel' or 'refund'" type="text"/>
+      </div>
     </div>
 
-    <!-- 4 Knowledge Categories (Stitch Spec) -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-      <!-- 1. Tracking & Delivery -->
-      <div class="faq-card bg-surface-container-lowest rounded-2xl p-4 shadow-sm border border-outline-variant/30 hover:border-primary/40 transition-all cursor-pointer" onclick="window.location.href='/tracking?id=TRK-88219'">
-        <div class="w-10 h-10 rounded-xl bg-primary-fixed flex items-center justify-center text-primary mb-2.5">
-          <span class="material-symbols-outlined fill text-xl">distance</span>
+    <!-- Bento Grid Topics (Stitch Spec) -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-stack-lg mb-section-gap">
+      <!-- Topic Card 1: Tracking Issues -->
+      <div class="faq-card bg-surface-container-lowest rounded-xl p-stack-lg shadow-[0px_4px_20px_rgba(0,0,0,0.05)] hover:shadow-[0px_8px_30px_rgba(0,102,255,0.08)] transition-all duration-300 cursor-pointer border border-transparent hover:border-primary/20 group flex flex-col h-full" onclick="window.location.href='/tracking'">
+        <div class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center mb-stack-md group-hover:bg-primary/10 transition-colors">
+          <span class="material-symbols-outlined text-primary fill" data-icon="local_shipping">local_shipping</span>
         </div>
-        <h3 class="text-sm font-bold text-on-surface mb-1">Tracking & Delivery</h3>
-        <p class="text-[11px] text-on-surface-variant leading-relaxed">Real-time bus GPS telematics, ETA calculations, and delivery status updates.</p>
-        <div class="mt-3 flex items-center text-primary text-[11px] font-bold">
-          View guides <span class="material-symbols-outlined text-sm ml-0.5">arrow_forward</span>
-        </div>
-      </div>
-
-      <!-- 2. Security & QR Seals -->
-      <div class="faq-card bg-surface-container-lowest rounded-2xl p-4 shadow-sm border border-outline-variant/30 hover:border-primary/40 transition-all cursor-pointer" onclick="alert('Digital Seals: HMAC-SHA256 authenticated tamper-proof QR codes protect your cargo.')">
-        <div class="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center text-emerald-700 mb-2.5">
-          <span class="material-symbols-outlined fill text-xl">lock_person</span>
-        </div>
-        <h3 class="text-sm font-bold text-on-surface mb-1">Security & QR Seals</h3>
-        <p class="text-[11px] text-on-surface-variant leading-relaxed">HMAC-SHA256 tamper-evident seals, chain of custody verification, and OTP handoffs.</p>
-        <div class="mt-3 flex items-center text-primary text-[11px] font-bold">
-          Learn about security <span class="material-symbols-outlined text-sm ml-0.5">arrow_forward</span>
+        <h3 class="text-headline-md font-headline-md text-on-surface mb-stack-sm font-bold">Tracking Issues</h3>
+        <p class="text-body-md font-body-md text-on-surface-variant flex-1">Where is my parcel? Delivery delays and tracking updates.</p>
+        <div class="mt-stack-md flex items-center text-primary text-label-md font-label-md group-hover:underline">
+          View articles <span class="material-symbols-outlined text-[16px] ml-1" data-icon="arrow_forward">arrow_forward</span>
         </div>
       </div>
 
-      <!-- 3. Payments & Invoices -->
-      <div class="faq-card bg-surface-container-lowest rounded-2xl p-4 shadow-sm border border-outline-variant/30 hover:border-primary/40 transition-all cursor-pointer" onclick="window.location.href='/payment-methods'">
-        <div class="w-10 h-10 rounded-xl bg-secondary-fixed flex items-center justify-center text-on-secondary-fixed mb-2.5">
-          <span class="material-symbols-outlined fill text-xl">receipt_long</span>
+      <!-- Topic Card 2: Payment Queries -->
+      <div class="faq-card bg-surface-container-lowest rounded-xl p-stack-lg shadow-[0px_4px_20px_rgba(0,0,0,0.05)] hover:shadow-[0px_8px_30px_rgba(0,102,255,0.08)] transition-all duration-300 cursor-pointer border border-transparent hover:border-primary/20 group flex flex-col h-full" onclick="window.location.href='/payment-methods'">
+        <div class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center mb-stack-md group-hover:bg-primary/10 transition-colors">
+          <span class="material-symbols-outlined text-primary fill" data-icon="payments">payments</span>
         </div>
-        <h3 class="text-sm font-bold text-on-surface mb-1">Payments & Billing</h3>
-        <p class="text-[11px] text-on-surface-variant leading-relaxed">Multi-modal dynamic pricing breakdowns, GST invoices, and wallet refunds.</p>
-        <div class="mt-3 flex items-center text-primary text-[11px] font-bold">
-          Manage billing <span class="material-symbols-outlined text-sm ml-0.5">arrow_forward</span>
+        <h3 class="text-headline-md font-headline-md text-on-surface mb-stack-sm font-bold">Payment Queries</h3>
+        <p class="text-body-md font-body-md text-on-surface-variant flex-1">Invoices, refunds, promo codes, and billing issues.</p>
+        <div class="mt-stack-md flex items-center text-primary text-label-md font-label-md group-hover:underline">
+          View articles <span class="material-symbols-outlined text-[16px] ml-1" data-icon="arrow_forward">arrow_forward</span>
         </div>
       </div>
 
-      <!-- 4. Claims & Escalations -->
-      <div class="faq-card bg-surface-container-lowest rounded-2xl p-4 shadow-sm border border-outline-variant/30 hover:border-primary/40 transition-all cursor-pointer" onclick="alert('Claims: Transitly covers full invoice value for verified claims.')">
-        <div class="w-10 h-10 rounded-xl bg-rose-50 flex items-center justify-center text-rose-600 mb-2.5">
-          <span class="material-symbols-outlined fill text-xl">verified_user</span>
+      <!-- Topic Card 3: Damaged or Lost -->
+      <div class="faq-card bg-surface-container-lowest rounded-xl p-stack-lg shadow-[0px_4px_20px_rgba(0,0,0,0.05)] hover:shadow-[0px_8px_30px_rgba(0,102,255,0.08)] transition-all duration-300 cursor-pointer border border-transparent hover:border-primary/20 group flex flex-col h-full lg:row-span-2 lg:col-span-1 bg-gradient-to-br from-surface-container-lowest to-surface-container-low" onclick="alert('Claims: File an instant claim for compensation.')">
+        <div class="w-12 h-12 rounded-full bg-error-container/50 flex items-center justify-center mb-stack-md group-hover:bg-error-container transition-colors">
+          <span class="material-symbols-outlined text-error fill" data-icon="broken_image">broken_image</span>
         </div>
-        <h3 class="text-sm font-bold text-on-surface mb-1">Claims & Safety</h3>
-        <p class="text-[11px] text-on-surface-variant leading-relaxed">Driver feedback, safety concerns, and terminal handoffs.</p>
-        <div class="mt-3 flex items-center text-primary text-[11px] font-bold">
-          View articles <span class="material-symbols-outlined text-sm ml-0.5">arrow_forward</span>
+        <h3 class="text-headline-md font-headline-md text-on-surface mb-stack-sm font-bold">Damaged or Lost</h3>
+        <p class="text-body-md font-body-md text-on-surface-variant flex-1">Report a damaged package, missing items, or initiate a claim.</p>
+        <div class="mt-stack-md flex flex-col gap-2">
+          <button class="w-full bg-surface text-on-surface border border-outline-variant py-2.5 rounded-lg text-label-md font-label-md hover:bg-surface-container-highest transition-colors flex items-center justify-center gap-2 font-bold">
+            File a Claim <span class="material-symbols-outlined text-[16px]" data-icon="assignment">assignment</span>
+          </button>
+          <div class="flex items-center justify-center text-primary text-label-md font-label-md group-hover:underline mt-2">
+            View articles <span class="material-symbols-outlined text-[16px] ml-1" data-icon="arrow_forward">arrow_forward</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Topic Card 4: Account Settings -->
+      <div class="faq-card bg-surface-container-lowest rounded-xl p-stack-lg shadow-[0px_4px_20px_rgba(0,0,0,0.05)] hover:shadow-[0px_8px_30px_rgba(0,102,255,0.08)] transition-all duration-300 cursor-pointer border border-transparent hover:border-primary/20 group flex flex-col h-full" onclick="window.location.href='/settings'">
+        <div class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center mb-stack-md group-hover:bg-primary/10 transition-colors">
+          <span class="material-symbols-outlined text-primary fill" data-icon="person">person</span>
+        </div>
+        <h3 class="text-headline-md font-headline-md text-on-surface mb-stack-sm font-bold">Account Settings</h3>
+        <p class="text-body-md font-body-md text-on-surface-variant flex-1">Update profile, change password, and manage notifications.</p>
+        <div class="mt-stack-md flex items-center text-primary text-label-md font-label-md group-hover:underline">
+          View articles <span class="material-symbols-outlined text-[16px] ml-1" data-icon="arrow_forward">arrow_forward</span>
+        </div>
+      </div>
+
+      <!-- Topic Card 5: Route Experience -->
+      <div class="faq-card bg-surface-container-lowest rounded-xl p-stack-lg shadow-[0px_4px_20px_rgba(0,0,0,0.05)] hover:shadow-[0px_8px_30px_rgba(0,102,255,0.08)] transition-all duration-300 cursor-pointer border border-transparent hover:border-primary/20 group flex flex-col h-full" onclick="window.location.href='/services'">
+        <div class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center mb-stack-md group-hover:bg-primary/10 transition-colors">
+          <span class="material-symbols-outlined text-primary fill" data-icon="directions_bus">directions_bus</span>
+        </div>
+        <h3 class="text-headline-md font-headline-md text-on-surface mb-stack-sm font-bold">Cargo & Bus Service</h3>
+        <p class="text-body-md font-body-md text-on-surface-variant flex-1">Bus captain feedback, route timings, and depot collection.</p>
+        <div class="mt-stack-md flex items-center text-primary text-label-md font-label-md group-hover:underline">
+          View articles <span class="material-symbols-outlined text-[16px] ml-1" data-icon="arrow_forward">arrow_forward</span>
         </div>
       </div>
     </div>
 
     <!-- Contact Support Prominent Card (Stitch Spec) -->
-    <div class="bg-primary-container rounded-2xl p-5 text-white shadow-level-2 mt-4 flex flex-col md:flex-row items-center justify-between gap-4">
-      <div>
-        <h3 class="text-base md:text-lg font-bold mb-0.5">Still need help?</h3>
-        <p class="text-xs text-primary-fixed">Our WhatsApp AI assistant is active 24/7 for instant replies.</p>
+    <div class="bg-primary-container rounded-2xl p-stack-lg md:p-section-gap relative overflow-hidden shadow-[0px_8px_30px_rgba(0,102,255,0.15)] flex flex-col md:flex-row items-center justify-between gap-stack-lg">
+      <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 24px 24px;"></div>
+      <div class="relative z-10 text-center md:text-left flex-1">
+        <h2 class="text-headline-lg-mobile md:text-headline-lg font-headline-lg-mobile md:font-headline-lg text-on-primary mb-stack-sm font-bold">Still need help?</h2>
+        <p class="text-body-lg font-body-lg text-primary-fixed mb-0">Our WhatsApp AI assistant and support team are available 24/7.</p>
       </div>
-      <button id="btnHelpChatSupport" class="bg-white text-primary font-bold text-xs px-5 py-2.5 rounded-xl shadow-sm hover:bg-surface-container-low flex items-center justify-center gap-1.5 shrink-0 active:scale-95 transition-all">
-        <span class="material-symbols-outlined text-base">chat</span>
-        Chat on WhatsApp
-      </button>
+      <div class="relative z-10 w-full md:w-auto flex flex-col sm:flex-row gap-stack-md">
+        <button id="btnHelpChatSupport" class="bg-surface-container-lowest text-primary px-8 py-4 rounded-xl font-label-md text-label-md hover:bg-surface-container-low transition-colors shadow-sm flex items-center justify-center gap-2 h-[56px] font-bold active:scale-95">
+          <span class="material-symbols-outlined" data-icon="chat">chat</span>
+          Chat on WhatsApp
+        </button>
+      </div>
     </div>
   </main>
 
-  <!-- Floating WhatsApp Action Button -->
-  <button id="btnFloatingWhatsAppHelp" aria-label="WhatsApp Support" class="fixed bottom-6 right-4 w-12 h-12 bg-[#25d366] text-white rounded-full shadow-[0px_6px_20px_rgba(37,211,102,0.4)] flex items-center justify-center z-40 hover:scale-105 active:scale-95 transition-transform">
-    <span class="material-symbols-outlined text-2xl fill">chat</span>
+  <!-- Floating Action Button (Mobile Chat - Stitch Spec) -->
+  <button id="btnFloatingWhatsAppHelp" class="md:hidden fixed bottom-24 right-4 w-14 h-14 bg-primary-container text-on-primary rounded-full shadow-[0px_8px_30px_rgba(0,102,255,0.3)] flex items-center justify-center z-40 hover:scale-105 active:scale-95 transition-transform">
+    <span class="material-symbols-outlined text-[28px] fill" data-icon="chat">chat</span>
   </button>
+
+  <!-- BottomNavBar (Stitch Spec) -->
+  <nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-3 pb-safe bg-surface-container-lowest border-t border-outline-variant shadow-lg rounded-t-xl" id="bottom-nav-bar">
+    <a class="flex flex-col items-center justify-center text-on-secondary-fixed-variant hover:opacity-80 transition-opacity w-16 group" href="/">
+      <div class="mb-1 p-1 rounded-full group-hover:bg-surface-container-low transition-colors">
+        <span class="material-symbols-outlined" data-icon="local_shipping">local_shipping</span>
+      </div>
+      <span class="text-label-sm font-label-sm">Deliver</span>
+    </a>
+    <a class="flex flex-col items-center justify-center text-on-secondary-fixed-variant hover:opacity-80 transition-opacity w-16 group" href="/tracking">
+      <div class="mb-1 p-1 rounded-full group-hover:bg-surface-container-low transition-colors">
+        <span class="material-symbols-outlined" data-icon="distance">distance</span>
+      </div>
+      <span class="text-label-sm font-label-sm">Tracking</span>
+    </a>
+    <a class="flex flex-col items-center justify-center text-on-secondary-fixed-variant hover:opacity-80 transition-opacity w-16 group" href="/services">
+      <div class="mb-1 p-1 rounded-full group-hover:bg-surface-container-low transition-colors">
+        <span class="material-symbols-outlined" data-icon="apps">apps</span>
+      </div>
+      <span class="text-label-sm font-label-sm">Services</span>
+    </a>
+    <a class="flex flex-col items-center justify-center text-on-secondary-fixed-variant hover:opacity-80 transition-opacity w-16 group" href="/profile">
+      <div class="mb-1 p-1 rounded-full group-hover:bg-surface-container-low transition-colors">
+        <span class="material-symbols-outlined" data-icon="person">person</span>
+      </div>
+      <span class="text-label-sm font-label-sm">Profile</span>
+    </a>
+  </nav>
+
+  <style>
+    .pb-safe { padding-bottom: env(safe-area-inset-bottom, 12px); }
+  </style>
 
   <!-- Modular Scripts -->
   <script defer src="/js/common.js"></script>
