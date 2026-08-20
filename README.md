@@ -73,4 +73,9 @@ Transitly is specified as a JavaScript (ES2022+) platform running on Node.js 20 
 3. Use a managed secret store in staging and production; `.env` is for local development only.
 4. Never commit the completed `.env` file.
 
-See [PRD.md](PRD.md) for detailed product requirements.
+## Documentation & Architecture References
+
+- [PRD (Product Requirements Document)](PRD.md)
+- [Master Project Documentation](docs/PROJECT_DOCUMENTATION.md)
+- [TRD (Technical Requirements Document)](docs/TRD.md)
+- [OpenAPI / Swagger API Docs](http://localhost:3000/api/docs)
