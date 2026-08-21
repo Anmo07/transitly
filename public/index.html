@@ -124,21 +124,62 @@
     body {
       min-height: max(884px, 100dvh);
     }
-  </style>
+<link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <style>
+        .custom-pickup-pin { background: transparent; border: none; }
+    </style>
 </head>
 <body class="bg-background text-on-surface font-body-md min-h-screen overflow-x-hidden relative selection:bg-primary-fixed selection:text-on-primary-fixed">
-<!-- Ambient Map Background (Fixed Behind Content) -->
-<div id="homeMapContainer" class="fixed top-0 left-0 w-full h-[486px] z-0" data-alt="A minimalist, light-mode 3d street map view of a city, rendered with soft pastel colors, emphasizing clean roads, subtle topography, and a modern airy UI background aesthetic." data-location="Chandigarh" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCKaaONLs8ZFEYkl9-pcv93l2AxSdoBCMty1uXuqPBGAcm-vhFHbLaFajnnDxD5Jwq-fw3xVcwtX3JtKzl7fbsMuUKlgXJYllNObokIOdN4dZhCMnuGgVBguCmB3npTgrQ45N86eWYhaIPMfFYnytiI9tJdN1BHXHSVkDC9vBDRNAFkQ3ZwsMrl6C1DhMGT32MwPxLoiBCzsasgJiuZYqUY2vKm3rOI9faoHPEVhiWrWbG0iS3yOFZM'); background-size: cover; background-position: center;">
-<!-- Pickup Point Pin with Live Geolocation -->
-<div id="liveLocationPinContainer" class="absolute top-[35%] left-1/2 transform -translate-x-1/2 flex flex-col items-center drop-shadow-md cursor-pointer transition-all duration-300 hover:scale-105" title="Click to refresh live GPS location">
-<div id="livePickupBadge" class="bg-[#128C55] text-white px-4 py-1.5 rounded-full text-label-md font-label-md mb-2 shadow-level-1 flex items-center gap-1.5 transition-all">
-  <span id="liveGpsDot" class="w-2 h-2 rounded-full bg-white animate-ping"></span>
-  <span id="liveLocationText">Detecting live location...</span>
-</div>
-<div class="w-8 h-8 bg-primary-container rounded-full flex items-center justify-center shadow-lg border-2 border-white animate-bounce">
-<span class="material-symbols-outlined text-white text-sm fill">person_pin_circle</span>
-</div>
-</div>
+<!-- Interactive Map Section (Fixed Behind Content) -->
+<div id="homeMapContainer" class="fixed top-0 left-0 w-full h-[486px] z-0 overflow-hidden">
+  <!-- Interactive Leaflet Canvas -->
+  <div id="homeInteractiveMap" class="absolute inset-0 w-full h-full z-0"></div>
+
+  <!-- Fallback Static Map Graphic (displays before tiles load) -->
+  <div id="homeStaticFallback" class="absolute inset-0 w-full h-full z-0 pointer-events-none" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCKaaONLs8ZFEYkl9-pcv93l2AxSdoBCMty1uXuqPBGAcm-vhFHbLaFajnnDxD5Jwq-fw3xVcwtX3JtKzl7fbsMuUKlgXJYllNObokIOdN4dZhCMnuGgVBguCmB3npTgrQ45N86eWYhaIPMfFYnytiI9tJdN1BHXHSVkDC9vBDRNAFkQ3ZwsMrl6C1DhMGT32MwPxLoiBCzsasgJiuZYqUY2vKm3rOI9faoHPEVhiWrWbG0iS3yOFZM'); background-size: cover; background-position: center;"></div>
+
+  <!-- Live Location Permission Banner (Prompting User) -->
+  <div id="locationPermissionBanner" class="absolute top-4 left-4 right-16 z-20 max-w-sm bg-surface/95 backdrop-blur-md p-3 rounded-2xl shadow-lg border border-primary/30 flex items-center justify-between gap-2.5 animate-slide-up pointer-events-auto">
+    <div class="flex items-center gap-2.5 overflow-hidden">
+      <div class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
+        <span class="material-symbols-outlined text-lg animate-pulse">location_on</span>
+      </div>
+      <div class="truncate">
+        <h4 class="text-xs font-bold text-on-surface truncate">Use Live GPS Location</h4>
+        <p class="text-[10px] text-on-surface-variant leading-tight truncate">Tap allow for automatic bus hub rates</p>
+      </div>
+    </div>
+    <button type="button" id="btnAllowLocation" class="bg-primary text-on-primary px-3 py-1.5 rounded-xl text-xs font-bold shadow-sm hover:bg-primary-container active:scale-95 transition-all shrink-0">
+      Allow GPS
+    </button>
+  </div>
+
+  <!-- Floating Map Navigation & Zoom Controls -->
+  <div class="absolute top-4 right-4 z-20 flex flex-col gap-2 pointer-events-auto">
+    <!-- Locate Me / Live GPS -->
+    <button type="button" id="btnMapLocateMe" class="w-10 h-10 rounded-xl bg-surface/95 backdrop-blur-md shadow-md border border-outline-variant/30 flex items-center justify-center text-primary hover:bg-primary-container hover:text-on-primary transition-all active:scale-95" title="Locate My Live GPS">
+      <span class="material-symbols-outlined text-[20px]">my_location</span>
+    </button>
+    <!-- Zoom In -->
+    <button type="button" id="btnMapZoomIn" class="w-10 h-10 rounded-xl bg-surface/95 backdrop-blur-md shadow-md border border-outline-variant/30 flex items-center justify-center text-on-surface hover:bg-surface-variant transition-all active:scale-95" title="Zoom In">
+      <span class="material-symbols-outlined text-[20px]">add</span>
+    </button>
+    <!-- Zoom Out -->
+    <button type="button" id="btnMapZoomOut" class="w-10 h-10 rounded-xl bg-surface/95 backdrop-blur-md shadow-md border border-outline-variant/30 flex items-center justify-center text-on-surface hover:bg-surface-variant transition-all active:scale-95" title="Zoom Out">
+      <span class="material-symbols-outlined text-[20px]">remove</span>
+    </button>
+  </div>
+
+  <!-- Central Pickup Point Pin with Live Geolocation Badge -->
+  <div id="liveLocationPinContainer" class="absolute top-[32%] left-1/2 transform -translate-x-1/2 flex flex-col items-center drop-shadow-md cursor-pointer transition-all duration-300 hover:scale-105 z-10 pointer-events-auto" title="Click to change or refresh pickup location">
+    <div id="livePickupBadge" class="bg-[#128C55] text-white px-4 py-1.5 rounded-full text-label-md font-label-md mb-2 shadow-level-1 flex items-center gap-1.5 transition-all">
+      <span id="liveGpsDot" class="w-2 h-2 rounded-full bg-white animate-ping"></span>
+      <span id="liveLocationText">Detecting live location...</span>
+    </div>
+    <div class="w-8 h-8 bg-primary-container rounded-full flex items-center justify-center shadow-lg border-2 border-white animate-bounce">
+      <span class="material-symbols-outlined text-white text-sm fill">person_pin_circle</span>
+    </div>
+  </div>
 </div>
 <!-- Main Content Bottom Sheet -->
 <div class="relative z-10 mt-[397px] bg-surface-container-lowest rounded-t-[24px] pb-[100px] shadow-level-2 min-h-[530px]">
@@ -283,6 +324,7 @@
         .pb-safe { padding-bottom: env(safe-area-inset-bottom, 12px); }
 </style>
 <!-- Modular Scripts -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script defer src="/js/common.js"></script>
 <script defer src="/js/deliver.js"></script>
 </body></html>

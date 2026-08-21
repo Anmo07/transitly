@@ -1,13 +1,29 @@
 /**
- * Transitly — Deliver / Home Controller with Multi-Tiered Live Geolocation
+ * Transitly — Deliver / Home Controller with Interactive Map, Zoom, and Live Location Services
  */
 
 document.addEventListener('DOMContentLoaded', () => {
+  let homeMap = null;
+  let userMarker = null;
+  let userAccuracyCircle = null;
+  let watchId = null;
+
+  let currentLat = 28.4595;
+  let currentLng = 77.0266;
+  let currentLocationName = 'Gurgaon, Haryana';
+
   const liveLocationText = document.getElementById('liveLocationText');
   const livePickupBadge = document.getElementById('livePickupBadge');
   const liveGpsDot = document.getElementById('liveGpsDot');
   const liveLocationPinContainer = document.getElementById('liveLocationPinContainer');
   const homeSearchInput = document.getElementById('homeSearchInput');
+
+  // Floating map buttons
+  const btnMapZoomIn = document.getElementById('btnMapZoomIn');
+  const btnMapZoomOut = document.getElementById('btnMapZoomOut');
+  const btnMapLocateMe = document.getElementById('btnMapLocateMe');
+  const locationPermissionBanner = document.getElementById('locationPermissionBanner');
+  const btnAllowLocation = document.getElementById('btnAllowLocation');
 
   // Modal elements
   const locationPickerModal = document.getElementById('locationPickerModal');
@@ -15,14 +31,107 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnTriggerGpsDetect = document.getElementById('btnTriggerGpsDetect');
   const inputCustomLocation = document.getElementById('inputCustomLocation');
 
-  let currentLat = 28.4595;
-  let currentLng = 77.0266;
-  let currentLocationName = 'Gurgaon, Haryana';
+  /**
+   * Initialize Leaflet Interactive Map on Homepage
+   */
+  const initHomeMap = (lat = currentLat, lng = currentLng) => {
+    const mapElement = document.getElementById('homeInteractiveMap');
+    const staticFallback = document.getElementById('homeStaticFallback');
+    if (!mapElement || !window.L || homeMap) return;
+
+    if (staticFallback) staticFallback.style.display = 'none';
+
+    homeMap = L.map('homeInteractiveMap', {
+      zoomControl: false,
+      attributionControl: false,
+      center: [lat, lng],
+      zoom: 14,
+      scrollWheelZoom: true,
+      dragging: true,
+      touchZoom: true
+    });
+
+    // Clean light-mode voyager tiles
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+      maxZoom: 19
+    }).addTo(homeMap);
+
+    // Custom Live User Pickup Pin
+    const pinIcon = L.divIcon({
+      className: 'custom-pickup-pin',
+      html: `
+        <div class="flex flex-col items-center drop-shadow-md">
+          <div class="w-8 h-8 bg-primary-container rounded-full flex items-center justify-center shadow-lg border-2 border-white animate-bounce">
+            <span class="material-symbols-outlined text-white text-sm" style="font-variation-settings: 'FILL' 1;">person_pin_circle</span>
+          </div>
+        </div>
+      `,
+      iconSize: [32, 32],
+      iconAnchor: [16, 32]
+    });
+
+    userMarker = L.marker([lat, lng], { icon: pinIcon, draggable: true }).addTo(homeMap);
+
+    // Drag pin on map to pick custom location
+    userMarker.on('dragend', async (e) => {
+      const pos = e.target.getLatLng();
+      currentLat = pos.lat;
+      currentLng = pos.lng;
+      const reverseName = await reverseGeocode(pos.lat, pos.lng);
+      applyLocationToUI(reverseName, pos.lat, pos.lng, false);
+    });
+
+    // Wire Zoom Buttons
+    if (btnMapZoomIn) {
+      btnMapZoomIn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        homeMap.zoomIn();
+      });
+    }
+
+    if (btnMapZoomOut) {
+      btnMapZoomOut.addEventListener('click', (e) => {
+        e.stopPropagation();
+        homeMap.zoomOut();
+      });
+    }
+
+    // Invalidate size
+    setTimeout(() => {
+      if (homeMap) homeMap.invalidateSize();
+    }, 250);
+  };
 
   /**
-   * Update all UI elements with the active location
+   * Reverse Geocode (Coordinates -> Readable City/Street Name)
    */
-  const applyLocationToUI = (name, lat, lng) => {
+  const reverseGeocode = async (lat, lng) => {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 2500);
+
+      const res = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`, {
+        signal: controller.signal
+      });
+      clearTimeout(timeoutId);
+
+      if (res.ok) {
+        const data = await res.json();
+        const locality = data.locality || data.suburb || data.city;
+        const city = data.city || data.principalSubdivision;
+        if (locality && city && locality !== city) return `${locality}, ${city}`;
+        if (city) return `${city}, ${data.principalSubdivision || ''}`.replace(/,\s*$/, '');
+        if (data.locality) return data.locality;
+      }
+    } catch (_) {}
+
+    return `Lat ${lat.toFixed(3)}°, Lng ${lng.toFixed(3)}°`;
+  };
+
+  /**
+   * Update UI with location
+   */
+  const applyLocationToUI = (name, lat, lng, panMap = true) => {
     currentLocationName = name;
     if (lat) currentLat = lat;
     if (lng) currentLng = lng;
@@ -35,13 +144,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     if (livePickupBadge) {
       livePickupBadge.className = 'bg-[#128C55] text-white px-4 py-1.5 rounded-full text-label-md font-label-md mb-2 shadow-level-1 flex items-center gap-1.5 transition-all';
-      livePickupBadge.title = `Current Pickup: ${currentLocationName} (Click to change)`;
+      livePickupBadge.title = `Live Location: ${currentLocationName} (Click to change)`;
     }
     if (homeSearchInput) {
       homeSearchInput.placeholder = `From: ${currentLocationName} ➔ Where to send?`;
     }
 
-    // Persist
+    // Update Map
+    if (homeMap) {
+      if (userMarker) userMarker.setLatLng([currentLat, currentLng]);
+      if (panMap) homeMap.flyTo([currentLat, currentLng], 15, { animate: true, duration: 1.2 });
+    }
+
     localStorage.setItem('transitly_pickup_location', JSON.stringify({
       name: currentLocationName,
       lat: currentLat,
@@ -51,95 +165,71 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   /**
-   * Tier 1: Instant Client IP Geolocation (Zero Permission, Instantaneous)
+   * Request User Location Services
    */
-  const detectLocationByIP = async () => {
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 2000);
-
-      // Fast BigDataCloud Reverse IP Client
-      const res = await fetch('https://api.bigdatacloud.net/data/reverse-geocode-client', {
-        signal: controller.signal
-      });
-      clearTimeout(timeoutId);
-
-      if (res.ok) {
-        const data = await res.json();
-        const city = data.city || data.locality || data.principalSubdivision;
-        const state = data.principalSubdivision || data.countryName;
-        if (city) {
-          applyLocationToUI(`${city}, ${state}`, data.latitude, data.longitude);
-          return true;
-        }
-      }
-    } catch (_) {
-      // Fallback
-    }
-
-    try {
-      const res2 = await fetch('https://ipapi.co/json/');
-      if (res2.ok) {
-        const data2 = await res2.json();
-        if (data2.city) {
-          applyLocationToUI(`${data2.city}, ${data2.region}`, data2.latitude, data2.longitude);
-          return true;
-        }
-      }
-    } catch (_) {}
-
-    return false;
-  };
-
-  /**
-   * Tier 2: Browser Device GPS (High Accuracy Refinement)
-   */
-  const detectLocationByGPS = (silent = false) => {
+  const requestLiveDeviceLocation = (fromUserPrompt = false) => {
     if (!navigator.geolocation) {
-      if (!silent) alert('Geolocation is not supported by your browser.');
+      alert('Geolocation is not supported by your device browser.');
       return;
     }
 
-    if (!silent && liveLocationText) {
-      liveLocationText.innerText = 'Detecting live device GPS...';
-      if (liveGpsDot) liveGpsDot.className = 'w-2 h-2 rounded-full bg-yellow-300 animate-ping';
-    }
+    if (liveLocationText) liveLocationText.innerText = 'Requesting GPS Location Services...';
+    if (liveGpsDot) liveGpsDot.className = 'w-2 h-2 rounded-full bg-yellow-300 animate-ping';
 
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         const lat = position.coords.latitude;
         const lng = position.coords.longitude;
+        const accuracy = Math.round(position.coords.accuracy || 10);
 
-        try {
-          const res = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`);
-          if (res.ok) {
-            const data = await res.json();
-            const locality = data.locality || data.suburb || data.city;
-            const city = data.city || data.principalSubdivision;
-            const label = locality && city && locality !== city ? `${locality}, ${city}` : (city || `GPS (${lat.toFixed(2)}°, ${lng.toFixed(2)}°)`);
-            applyLocationToUI(label, lat, lng);
-            closeLocationModal();
-            return;
-          }
-        } catch (_) {}
+        const revName = await reverseGeocode(lat, lng);
+        applyLocationToUI(revName, lat, lng, true);
 
-        applyLocationToUI(`Live GPS (${lat.toFixed(3)}° N, ${lng.toFixed(3)}° E)`, lat, lng);
+        // Hide permission banner once granted
+        if (locationPermissionBanner) locationPermissionBanner.classList.add('hidden');
         closeLocationModal();
+
+        // Continuous watch
+        if (!watchId) {
+          watchId = navigator.geolocation.watchPosition((pos) => {
+            currentLat = pos.coords.latitude;
+            currentLng = pos.coords.longitude;
+            if (userMarker) userMarker.setLatLng([currentLat, currentLng]);
+          }, null, { enableHighAccuracy: true, maximumAge: 10000 });
+        }
       },
-      (err) => {
-        console.warn('GPS notice:', err.message);
-        if (!silent) {
-          // If GPS denied/unavailable, prompt user with location picker modal
+      (error) => {
+        console.warn('Geolocation prompt notice:', error.message);
+        if (fromUserPrompt) {
+          alert('Location permission was not granted. You can select your pickup hub from the list.');
           openLocationModal();
         }
       },
-      { enableHighAccuracy: true, timeout: 5000, maximumAge: 60000 }
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 60000
+      }
     );
   };
 
-  /**
-   * Modal Management
-   */
+  // Wire Map Floating Locate Me Button
+  if (btnMapLocateMe) {
+    btnMapLocateMe.addEventListener('click', (e) => {
+      e.stopPropagation();
+      requestLiveDeviceLocation(true);
+    });
+  }
+
+  // Wire In-App Permission Banner Button
+  if (btnAllowLocation) {
+    btnAllowLocation.addEventListener('click', (e) => {
+      e.stopPropagation();
+      requestLiveDeviceLocation(true);
+    });
+  }
+
+  // Modal Open / Close Handlers
   const openLocationModal = () => {
     if (locationPickerModal) locationPickerModal.classList.remove('hidden');
   };
@@ -158,53 +248,65 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Trigger GPS button inside modal
+  // GPS Button in Modal
   if (btnTriggerGpsDetect) {
     btnTriggerGpsDetect.addEventListener('click', () => {
-      detectLocationByGPS(false);
+      requestLiveDeviceLocation(true);
     });
   }
 
-  // Quick Hub Select buttons
+  // Quick Hub Buttons
   document.querySelectorAll('.hub-select-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const name = btn.getAttribute('data-name');
       const lat = parseFloat(btn.getAttribute('data-lat'));
       const lng = parseFloat(btn.getAttribute('data-lng'));
-      applyLocationToUI(name, lat, lng);
+      applyLocationToUI(name, lat, lng, true);
       closeLocationModal();
     });
   });
 
-  // Custom Search Input in modal
+  // Custom Search Input in Modal
   if (inputCustomLocation) {
-    inputCustomLocation.addEventListener('keydown', (e) => {
+    inputCustomLocation.addEventListener('keydown', async (e) => {
       if (e.key === 'Enter' && inputCustomLocation.value.trim()) {
-        applyLocationToUI(inputCustomLocation.value.trim(), null, null);
+        const val = inputCustomLocation.value.trim();
+        applyLocationToUI(val, null, null, false);
         closeLocationModal();
       }
     });
   }
 
-  // Initial Load Pipeline
+  // Initialize Map and Location Pipeline
+  initHomeMap(currentLat, currentLng);
+
+  // Check saved or request IP & device GPS
   const saved = localStorage.getItem('transitly_pickup_location');
   if (saved) {
     try {
       const parsed = JSON.parse(saved);
-      applyLocationToUI(parsed.name, parsed.lat, parsed.lng);
+      applyLocationToUI(parsed.name, parsed.lat, parsed.lng, true);
     } catch (_) {}
   } else {
-    // 1. Instantly detect location from IP
-    detectLocationByIP().then((found) => {
-      if (!found) {
-        applyLocationToUI('Delhi NCR Hub (Default)', 28.6139, 77.2090);
-      }
-      // 2. Refine in background with GPS if authorized
-      detectLocationByGPS(true);
-    });
+    // Show banner to ask user for Location Services
+    if (locationPermissionBanner) locationPermissionBanner.classList.remove('hidden');
+
+    // Auto-detect fast initial IP location
+    fetch('https://api.bigdatacloud.net/data/reverse-geocode-client')
+      .then(res => res.json())
+      .then(data => {
+        const city = data.city || data.locality || data.principalSubdivision;
+        if (city && data.latitude && data.longitude) {
+          applyLocationToUI(`${city}, ${data.principalSubdivision || ''}`.replace(/,\s*$/, ''), data.latitude, data.longitude, true);
+        }
+      })
+      .catch(() => {});
+
+    // Trigger browser prompt
+    requestLiveDeviceLocation(false);
   }
 
-  // Home Quick Search Input
+  // Search input redirects to tracking or booking
   if (homeSearchInput) {
     homeSearchInput.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
