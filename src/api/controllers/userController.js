@@ -41,7 +41,7 @@ class UserController {
 
   async updateProfile(req, res) {
     try {
-      const { name, email, phone } = req.body;
+      const { name, email, phone, avatarUrl, avatar } = req.body;
       let user = await User.findOne();
       
       if (!user) {
@@ -51,6 +51,9 @@ class UserController {
       user.name = name || user.name;
       user.email = email || user.email;
       user.phone = phone || user.phone;
+      if (avatarUrl || avatar) {
+        user.avatarUrl = avatarUrl || avatar;
+      }
       
       await user.save();
 

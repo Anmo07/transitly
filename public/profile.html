@@ -138,9 +138,24 @@
 <!-- Decorative Background Blob -->
 <div class="absolute -top-12 -right-12 w-32 h-32 bg-primary-fixed rounded-full mix-blend-multiply filter blur-2xl opacity-50"></div>
 <div class="absolute -bottom-12 -left-12 w-32 h-32 bg-surface-tint rounded-full mix-blend-multiply filter blur-2xl opacity-20"></div>
-<div class="relative w-24 h-24 mb-stack-md rounded-full shadow-[0px_4px_20px_rgba(0,0,0,0.05)] border-4 border-surface overflow-hidden bg-surface-container-high z-10">
-<img class="w-full h-full object-cover" data-alt="Alex Mitchell profile" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBzAACyzyleKmM4JQVt8Aa-jr70QVcpj9loY9wKp5o9O4E4p6Pw4_DrVmOHt4kkJfjfzprBQFcotrP67UIXwwodZ_N8y_NQMBXmYt1FUgmWEZU3RkLHv9mtX5_jewodrd3AC22FofPIl1pDv6bTKcqN63TR8-Ce6clfaRjIaxwp6CeKnOIoGAZdfBFJX_YfrWG4DCAk26zr7uiOS6j2JNkj4E16URTfm8orQCRZ5X_7hBMsGpV5UeKJ"/>
+
+<!-- Interactive Profile Avatar with Upload Badge -->
+<div class="relative mb-stack-md z-10 group">
+  <div class="w-24 h-24 rounded-full shadow-[0px_4px_20px_rgba(0,0,0,0.08)] border-4 border-surface overflow-hidden bg-surface-container-high relative cursor-pointer group-hover:ring-4 group-hover:ring-primary/20 transition-all" id="avatarClickContainer" title="Click to upload profile picture">
+    <img id="profileAvatarImg" class="w-full h-full object-cover" data-alt="User profile photo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBzAACyzyleKmM4JQVt8Aa-jr70QVcpj9loY9wKp5o9O4E4p6Pw4_DrVmOHt4kkJfjfzprBQFcotrP67UIXwwodZ_N8y_NQMBXmYt1FUgmWEZU3RkLHv9mtX5_jewodrd3AC22FofPIl1pDv6bTKcqN63TR8-Ce6clfaRjIaxwp6CeKnOIoGAZdfBFJX_YfrWG4DCAk26zr7uiOS6j2JNkj4E16URTfm8orQCRZ5X_7hBMsGpV5UeKJ"/>
+    <!-- Hover Overlay -->
+    <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+      <span class="material-symbols-outlined text-xl">upload</span>
+    </div>
+  </div>
+  <!-- Floating Camera Button -->
+  <button type="button" id="btnUploadAvatar" class="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-primary text-on-primary shadow-lg border-2 border-surface flex items-center justify-center hover:bg-primary-container active:scale-90 transition-all" title="Upload Photo">
+    <span class="material-symbols-outlined text-[16px]">photo_camera</span>
+  </button>
+  <!-- Hidden File Input -->
+  <input type="file" id="inputAvatarFile" accept="image/*" class="hidden" />
 </div>
+
 <h2 id="profileUserName" class="font-headline-md text-headline-md text-on-surface z-10 font-bold">Alex Mitchell</h2>
 <p id="profileUserEmail" class="font-body-md text-body-md text-on-surface-variant mb-2 z-10">alex.mitchell@example.com</p>
 <p id="profileUserPhone" class="text-xs text-outline mb-stack-md z-10 font-semibold">+91 98765 43210</p>
@@ -153,7 +168,7 @@
   </div>
   <button type="button" id="btnOpenEditProfileModal" class="flex items-center gap-1 bg-primary text-on-primary px-3 py-1.5 rounded-full text-xs font-bold shadow-sm hover:bg-primary-container active:scale-95 transition-all">
     <span class="material-symbols-outlined text-[14px]">edit</span>
-    <span>Edit</span>
+    <span>Edit Profile</span>
   </button>
 </div>
 </section>
@@ -209,12 +224,26 @@
 
 <!-- Edit Profile Modal -->
 <div id="editProfileModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-  <div class="bg-surface rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-outline-variant/30 animate-slide-up">
+  <div class="bg-surface rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-outline-variant/30 animate-slide-up max-h-[90vh] overflow-y-auto">
     <div class="flex justify-between items-center pb-3 border-b border-outline-variant/20 mb-4">
       <h3 class="font-bold text-base text-on-surface">Edit Profile</h3>
       <button type="button" id="btnCloseEditProfileModal" class="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center">
         <span class="material-symbols-outlined text-base">close</span>
       </button>
+    </div>
+
+    <!-- Modal Avatar Change Area -->
+    <div class="flex items-center gap-3 p-3 bg-surface-container-low rounded-2xl mb-4 border border-outline-variant/20">
+      <div class="w-14 h-14 rounded-full overflow-hidden border-2 border-primary shadow-md shrink-0 bg-white">
+        <img id="editModalAvatarPreview" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBzAACyzyleKmM4JQVt8Aa-jr70QVcpj9loY9wKp5o9O4E4p6Pw4_DrVmOHt4kkJfjfzprBQFcotrP67UIXwwodZ_N8y_NQMBXmYt1FUgmWEZU3RkLHv9mtX5_jewodrd3AC22FofPIl1pDv6bTKcqN63TR8-Ce6clfaRjIaxwp6CeKnOIoGAZdfBFJX_YfrWG4DCAk26zr7uiOS6j2JNkj4E16URTfm8orQCRZ5X_7hBMsGpV5UeKJ" alt="Avatar preview">
+      </div>
+      <div class="flex flex-col gap-1">
+        <span class="text-xs font-bold text-on-surface">Profile Picture</span>
+        <button type="button" id="btnModalUploadPhoto" class="px-3 py-1 bg-primary text-on-primary rounded-lg text-[11px] font-bold shadow-sm hover:bg-primary-container active:scale-95 transition-all flex items-center gap-1">
+          <span class="material-symbols-outlined text-[14px]">upload</span>
+          <span>Upload Photo</span>
+        </button>
+      </div>
     </div>
 
     <form id="formEditProfile" class="space-y-3 text-xs">
@@ -239,6 +268,12 @@
       </div>
     </form>
   </div>
+</div>
+
+<!-- Profile Toast -->
+<div id="profileToast" class="hidden fixed top-20 left-1/2 transform -translate-x-1/2 z-50 bg-on-surface text-surface px-4 py-2.5 rounded-full text-xs font-bold shadow-2xl animate-fade-in flex items-center gap-2">
+  <span class="material-symbols-outlined text-sm text-emerald-400">check_circle</span>
+  <span id="profileToastText">Profile updated</span>
 </div>
 
 <!-- BottomNavBar (Shared Component) -->
