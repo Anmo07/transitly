@@ -142,7 +142,20 @@
   <div id="liveTrackingMap" class="absolute inset-0 w-full h-full z-0"></div>
 
   <!-- Fallback Static Map Graphic (Displays while Leaflet loads) -->
-  <div id="staticMapFallback" class="absolute inset-0 w-full h-full z-0 pointer-events-none" data-alt="A clean, minimalist high-contrast city map focused on urban transit routes." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDVcZGP-nxpBEjrhNE0DfC_ZFkeDxkeeOM9vt73SLH0UyN1MWSW682pyR6fIXZBzD-6galIFLYeoffTtip8TIO7xlMVY--IAQG3YVe2kNwaAHj3DVVRhZybFxb3HMSJn8G5bzg0--whj6ZGsOdQW9Vz1loth7VSMuvLbZTC9Aj1ugO_fTlH-RVmt7lrntXi-e4xx7TRyl5OVlL7b2x9N8o33uSVTqT2Gj5ZscmpDftdSv7ZEszJP47M'); background-size: cover; background-position: center;"></div>
+  <div id="staticMapFallback" class="absolute inset-0 w-full h-full z-0 pointer-events-none" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDVcZGP-nxpBEjrhNE0DfC_ZFkeDxkeeOM9vt73SLH0UyN1MWSW682pyR6fIXZBzD-6galIFLYeoffTtip8TIO7xlMVY--IAQG3YVe2kNwaAHj3DVVRhZybFxb3HMSJn8G5bzg0--whj6ZGsOdQW9Vz1loth7VSMuvLbZTC9Aj1ugO_fTlH-RVmt7lrntXi-e4xx7TRyl5OVlL7b2x9N8o33uSVTqT2Gj5ZscmpDftdSv7ZEszJP47M'); background-size: cover; background-position: center;"></div>
+
+  <!-- Floating Map Controls: Zoom & Re-Center on Bus -->
+  <div class="absolute top-36 left-4 z-20 flex flex-col gap-2 pointer-events-auto">
+    <button type="button" id="btnTrackZoomIn" class="w-9 h-9 rounded-xl bg-surface/95 backdrop-blur-md shadow-md border border-outline-variant/30 flex items-center justify-center text-on-surface hover:bg-surface-variant transition-all active:scale-95" title="Zoom In">
+      <span class="material-symbols-outlined text-[18px]">add</span>
+    </button>
+    <button type="button" id="btnTrackZoomOut" class="w-9 h-9 rounded-xl bg-surface/95 backdrop-blur-md shadow-md border border-outline-variant/30 flex items-center justify-center text-on-surface hover:bg-surface-variant transition-all active:scale-95" title="Zoom Out">
+      <span class="material-symbols-outlined text-[18px]">remove</span>
+    </button>
+    <button type="button" id="btnCenterBus" class="w-9 h-9 rounded-xl bg-surface/95 backdrop-blur-md shadow-md border border-outline-variant/30 flex items-center justify-center text-primary hover:bg-primary-container hover:text-on-primary transition-all active:scale-95" title="Center on Vehicle">
+      <span class="material-symbols-outlined text-[18px]">directions_bus</span>
+    </button>
+  </div>
 
   <!-- Telematics Floating HUD -->
   <div id="telematicsHud" class="absolute top-36 right-4 z-20 bg-surface/95 backdrop-blur-md rounded-2xl p-3 shadow-lg border border-outline-variant/30 flex flex-col items-end gap-1 pointer-events-auto">
@@ -152,6 +165,13 @@
     </div>
     <div class="text-[15px] font-extrabold text-primary" id="hudSpeed">68 km/h</div>
     <div class="text-[10px] text-on-surface-variant font-medium" id="hudCoords">29.685° N, 76.990° E</div>
+    <!-- Simulation Speed Control -->
+    <div class="flex items-center gap-1 mt-1 pt-1 border-t border-outline-variant/20 text-[10px]">
+      <span class="text-outline font-semibold">Speed:</span>
+      <button type="button" class="btn-sim-speed px-1.5 py-0.5 rounded bg-primary text-white font-bold" data-speed="1">1x</button>
+      <button type="button" class="btn-sim-speed px-1.5 py-0.5 rounded bg-surface-container-low text-on-surface-variant hover:bg-surface-variant font-bold" data-speed="2">2x</button>
+      <button type="button" class="btn-sim-speed px-1.5 py-0.5 rounded bg-surface-container-low text-on-surface-variant hover:bg-surface-variant font-bold" data-speed="5">5x</button>
+    </div>
   </div>
 </main>
 

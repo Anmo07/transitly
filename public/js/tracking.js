@@ -1,19 +1,23 @@
 /**
  * Transitly — Live Journey Vehicle Simulation & Telematics Controller
+ * High-FPS animated bus movement with Leaflet, real-time highway telematics, and Start/Restart/End lifecycle.
  */
 
 document.addEventListener('DOMContentLoaded', () => {
   let map = null;
   let busMarker = null;
   let routePolyline = null;
+  let stopMarkers = [];
   let journeyInterval = null;
   let isRunning = false;
   let currentSegmentIndex = 0;
   let currentSubStep = 0;
   let currentActiveRoute = null;
-  const SUB_STEPS_PER_SEGMENT = 12;
+  let simSpeedMultiplier = 1;
 
-  // Rich Multi-Corridor Database
+  const SUB_STEPS_PER_SEGMENT = 30; // Smooth 30 sub-steps per stop segment
+
+  // Multi-Corridor Database
   const routesData = {
     'TRK-88219': {
       trackingId: 'TRK-88219',
@@ -75,13 +79,26 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   /**
-   * Linear Coordinate Interpolation between two LatLngs
+   * Linear Coordinate Interpolation
    */
   const interpolateCoord = (start, end, fraction) => {
     return [
       start[0] + (end[0] - start[0]) * fraction,
       start[1] + (end[1] - start[1]) * fraction
     ];
+  };
+
+  /**
+   * Bearing between 2 coords in degrees
+   */
+  const calculateBearing = (start, end) => {
+    const lat1 = (start[0] * Math.PI) / 180;
+    const lat2 = (end[0] * Math.PI) / 180;
+    const dLng = ((end[1] - start[1]) * Math.PI) / 180;
+    const y = Math.sin(dLng) * Math.cos(lat2);
+    const x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLng);
+    const brng = (Math.atan2(y, x) * 180) / Math.PI;
+    return (brng + 360) % 360;
   };
 
   /**
@@ -103,7 +120,26 @@ document.addEventListener('DOMContentLoaded', () => {
       L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
         maxZoom: 19
       }).addTo(map);
+
+      // Wire zoom & center buttons
+      const btnTrackZoomIn = document.getElementById('btnTrackZoomIn');
+      const btnTrackZoomOut = document.getElementById('btnTrackZoomOut');
+      const btnCenterBus = document.getElementById('btnCenterBus');
+
+      if (btnTrackZoomIn) btnTrackZoomIn.addEventListener('click', () => map && map.zoomIn());
+      if (btnTrackZoomOut) btnTrackZoomOut.addEventListener('click', () => map && map.zoomOut());
+      if (btnCenterBus) {
+        btnCenterBus.addEventListener('click', () => {
+          if (busMarker && map) {
+            map.flyTo(busMarker.getLatLng(), 13, { animate: true, duration: 1.0 });
+          }
+        });
+      }
     }
+
+    // Clear old stop markers
+    stopMarkers.forEach(m => map.removeLayer(m));
+    stopMarkers = [];
 
     // Render polyline route
     const allCoords = route.stops.map(s => s.coords);
@@ -113,8 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
       routePolyline = L.polyline(allCoords, {
         color: '#0050cb',
         weight: 6,
-        opacity: 0.85,
-        dashArray: '10, 8',
+        opacity: 0.9,
         lineCap: 'round'
       }).addTo(map);
     }
@@ -132,16 +167,17 @@ document.addEventListener('DOMContentLoaded', () => {
         iconSize: [20, 20],
         iconAnchor: [10, 10]
       });
-      L.marker(stop.coords, { icon: markerIcon }).addTo(map).bindPopup(`<b>${stop.name}</b>`);
+      const marker = L.marker(stop.coords, { icon: markerIcon }).addTo(map).bindPopup(`<b>${stop.name}</b><br><span class="text-xs text-outline">${stop.milestone}</span>`);
+      stopMarkers.push(marker);
     });
 
-    // Custom Bus Marker
+    // Custom Bus Marker with animated radar ping
     const busDivIcon = L.divIcon({
       className: 'custom-bus-marker',
       html: `
-        <div class="relative flex items-center justify-center w-12 h-12">
+        <div id="busMarkerInner" class="relative flex items-center justify-center w-12 h-12 transition-transform duration-300">
           <div class="absolute w-12 h-12 rounded-full bg-primary/25 animate-ping"></div>
-          <div class="w-9 h-9 rounded-full bg-primary border-2 border-white shadow-xl flex items-center justify-center text-white z-10 transition-transform duration-300">
+          <div class="w-9 h-9 rounded-full bg-primary border-2 border-white shadow-xl flex items-center justify-center text-white z-10">
             <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">directions_bus</span>
           </div>
         </div>
@@ -156,12 +192,17 @@ document.addEventListener('DOMContentLoaded', () => {
       busMarker = L.marker(route.stops[0].coords, { icon: busDivIcon, zIndexOffset: 1000 }).addTo(map);
     }
 
-    map.fitBounds(routePolyline.getBounds(), { padding: [50, 50] });
+    // Fit map bounds with padding
+    map.fitBounds(routePolyline.getBounds(), {
+      paddingTopLeft: [20, 80],
+      paddingBottomRight: [20, 180]
+    });
+
     setTimeout(() => map && map.invalidateSize(), 300);
   };
 
   /**
-   * Tick step execution
+   * Tick step execution (Runs continuously on interval)
    */
   const executeTick = () => {
     if (!currentActiveRoute) return;
@@ -180,19 +221,19 @@ document.addEventListener('DOMContentLoaded', () => {
       busMarker.setLatLng(currentPos);
     }
 
-    // Smoothly pan map to follow vehicle
-    if (map && currentSubStep % 3 === 0) {
-      map.panTo(currentPos, { animate: true, duration: 1.0 });
+    // Smoothly pan map to follow vehicle every 5 steps
+    if (map && currentSubStep % 5 === 0) {
+      map.panTo(currentPos, { animate: true, duration: 0.5 });
     }
 
     // Calculate Telematics Metrics
     const totalStepsOverall = (totalStops - 1) * SUB_STEPS_PER_SEGMENT;
     const currentGlobalStep = currentSegmentIndex * SUB_STEPS_PER_SEGMENT + currentSubStep;
-    const progressRatio = Math.min(currentGlobalStep / totalStepsOverall, 0.96);
-    const progressPct = Math.round(20 + progressRatio * 75);
+    const progressRatio = Math.min(currentGlobalStep / totalStepsOverall, 0.98);
+    const progressPct = Math.round(15 + progressRatio * 82);
 
-    const remainingDistanceKm = Math.max(1.2, (route.totalKm * (1 - progressRatio))).toFixed(1);
-    const simulatedSpeed = (62 + Math.sin(currentGlobalStep) * 9).toFixed(0);
+    const remainingDistanceKm = Math.max(0.4, (route.totalKm * (1 - progressRatio))).toFixed(1);
+    const simulatedSpeed = (62 + Math.sin(currentGlobalStep / 2) * 8).toFixed(0);
 
     // Update Telematics HUD
     const hudSpeed = document.getElementById('hudSpeed');
@@ -221,7 +262,7 @@ document.addEventListener('DOMContentLoaded', () => {
       currentSubStep = 0;
       currentSegmentIndex++;
 
-      // Conclude or wrap
+      // Conclude journey when last stop reached
       if (currentSegmentIndex >= totalStops - 1) {
         endLiveJourney();
       }
@@ -238,6 +279,15 @@ document.addEventListener('DOMContentLoaded', () => {
     if (journeyInterval) clearInterval(journeyInterval);
     isRunning = true;
 
+    // Update button states
+    const btnStart = document.getElementById('btnStartJourney');
+    const btnRestart = document.getElementById('btnRestartJourney');
+    const btnEnd = document.getElementById('btnEndJourney');
+
+    if (btnStart) btnStart.className = 'px-3 py-1.5 rounded-xl bg-primary text-on-primary text-xs font-bold shadow-md ring-2 ring-primary/40 active:scale-95 transition-all flex items-center gap-1';
+    if (btnRestart) btnRestart.className = 'px-3 py-1.5 rounded-xl bg-surface border border-outline-variant/30 text-xs font-bold text-on-surface hover:bg-surface-variant active:scale-95 transition-all flex items-center gap-1';
+    if (btnEnd) btnEnd.className = 'px-3 py-1.5 rounded-xl bg-surface border border-error/30 text-xs font-bold text-error hover:bg-error-container active:scale-95 transition-all flex items-center gap-1';
+
     // UI Updates
     const trackStatusTitle = document.getElementById('trackStatusTitle');
     const trackedIdBadge = document.getElementById('trackedIdBadge');
@@ -251,7 +301,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (trackStatusTitle) trackStatusTitle.innerText = `In Transit via ${route.busNumber.split('(')[0].trim()}`;
     if (trackedIdBadge) trackedIdBadge.innerText = route.trackingId;
-    if (trackLiveStatusText) trackLiveStatusText.innerText = `${route.corridorName} • Live GPS Journey`;
+    if (trackLiveStatusText) trackLiveStatusText.innerText = `${route.corridorName} • Live Highway Telematics`;
     if (trackEta) trackEta.innerText = route.eta;
     if (trackNextHandoff) trackNextHandoff.innerText = route.nextHandoff;
     if (timelinePickupLoc) timelinePickupLoc.innerText = `${route.origin} • Driver Verified`;
@@ -261,8 +311,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     initLeafletMap(route);
 
-    // Start interval
-    journeyInterval = setInterval(executeTick, 1200);
+    // High FPS smooth interval (200ms divided by multiplier)
+    const intervalMs = Math.max(40, Math.round(220 / simSpeedMultiplier));
+    journeyInterval = setInterval(executeTick, intervalMs);
   };
 
   /**
@@ -298,7 +349,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (timelineLiveStopTitle) timelineLiveStopTitle.innerText = `Departing ${route.origin}`;
     if (timelineLiveStopSub) timelineLiveStopSub.innerText = 'Bus cargo sealed & on route to highway';
 
-    journeyInterval = setInterval(executeTick, 1200);
+    const intervalMs = Math.max(40, Math.round(220 / simSpeedMultiplier));
+    journeyInterval = setInterval(executeTick, intervalMs);
   };
 
   /**
@@ -351,19 +403,45 @@ document.addEventListener('DOMContentLoaded', () => {
   /**
    * Search / Submit Handler
    */
-  const handleTrackingLookup = (idVal) => {
+  const handleTrackingLookup = async (idVal) => {
     const cleanId = (idVal || '').trim().toUpperCase();
-    const route = routesData[cleanId] || {
-      trackingId: cleanId || 'TRK-CUSTOM',
-      busNumber: `Fleet Bus #${cleanId.slice(-3) || '402'} (HR-Intercity)`,
-      corridorName: `Custom Intercity Corridor (${cleanId})`,
-      eta: '15:10',
-      totalKm: 220,
-      origin: 'Delhi Central Logistics Hub',
-      destination: 'Regional Intercity Terminal',
-      nextHandoff: 'Destination Bus Bay ➔ Doorstep Agent',
-      stops: routesData['TRK-88219'].stops
-    };
+
+    // Check backend first for real booking
+    let route = routesData[cleanId];
+    if (!route) {
+      try {
+        const res = await fetch(`/api/v1/shipments/${cleanId}`);
+        if (res.ok) {
+          const json = await res.json();
+          const d = json.data;
+          route = {
+            trackingId: d.trackingId || cleanId,
+            busNumber: 'Fleet Bus #402 (Express)',
+            corridorName: `${d.sender?.address || 'Delhi'} ➔ ${d.recipient?.address || 'Chandigarh'}`,
+            eta: '14:30',
+            totalKm: 248,
+            origin: d.sender?.address || 'Origin Hub',
+            destination: d.recipient?.address || 'Destination Terminal',
+            nextHandoff: 'Destination Hub ➔ Rapido Agent',
+            stops: routesData['TRK-88219'].stops
+          };
+        }
+      } catch (_) {}
+    }
+
+    if (!route) {
+      route = {
+        trackingId: cleanId || 'TRK-CUSTOM',
+        busNumber: `Fleet Bus #${cleanId.slice(-3) || '402'} (HR-Express)`,
+        corridorName: `Intercity Corridor (${cleanId})`,
+        eta: '15:10',
+        totalKm: 220,
+        origin: 'Delhi Central Logistics Hub',
+        destination: 'Regional Intercity Terminal',
+        nextHandoff: 'Destination Bus Bay ➔ Doorstep Agent',
+        stops: routesData['TRK-88219'].stops
+      };
+    }
 
     const inputTrackingId = document.getElementById('inputTrackingId');
     if (inputTrackingId) inputTrackingId.value = route.trackingId;
@@ -384,25 +462,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Wire up 3 Buttons: Start, Restart, End
   const btnStart = document.getElementById('btnStartJourney');
-  if (btnStart) {
-    btnStart.addEventListener('click', () => {
-      startLiveJourney(currentActiveRoute);
-    });
-  }
+  if (btnStart) btnStart.addEventListener('click', () => startLiveJourney(currentActiveRoute));
 
   const btnRestart = document.getElementById('btnRestartJourney');
-  if (btnRestart) {
-    btnRestart.addEventListener('click', () => {
-      restartLiveJourney();
-    });
-  }
+  if (btnRestart) btnRestart.addEventListener('click', () => restartLiveJourney());
 
   const btnEnd = document.getElementById('btnEndJourney');
-  if (btnEnd) {
-    btnEnd.addEventListener('click', () => {
-      endLiveJourney();
-    });
-  }
+  if (btnEnd) btnEnd.addEventListener('click', () => endLiveJourney());
 
   // Form submission
   const searchForm = document.getElementById('trackingIdSearchForm');
@@ -422,7 +488,24 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Auto-start on load from URL query or default TRK-88219
+  // Simulation Speed Multipliers (1x, 2x, 5x)
+  document.querySelectorAll('.btn-sim-speed').forEach(btn => {
+    btn.addEventListener('click', () => {
+      simSpeedMultiplier = parseInt(btn.getAttribute('data-speed') || '1', 10);
+      document.querySelectorAll('.btn-sim-speed').forEach(b => {
+        b.className = 'btn-sim-speed px-1.5 py-0.5 rounded bg-surface-container-low text-on-surface-variant hover:bg-surface-variant font-bold';
+      });
+      btn.className = 'btn-sim-speed px-1.5 py-0.5 rounded bg-primary text-white font-bold';
+
+      if (isRunning) {
+        const intervalMs = Math.max(40, Math.round(220 / simSpeedMultiplier));
+        clearInterval(journeyInterval);
+        journeyInterval = setInterval(executeTick, intervalMs);
+      }
+    });
+  });
+
+  // Auto-start on load
   const urlParams = new URLSearchParams(window.location.search);
   const initialId = urlParams.get('id') || 'TRK-88219';
   handleTrackingLookup(initialId);
