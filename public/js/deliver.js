@@ -60,8 +60,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let activeCreatedTrackingId = 'TRK-88219';
 
+  let googleRoadmapLayer = null;
+  let googleSatelliteLayer = null;
+  let isSatelliteMode = false;
+
   /**
-   * Initialize Leaflet Interactive Map on Homepage
+   * Initialize Authentic Google Maps on Homepage
    */
   const initHomeMap = (lat = currentLat, lng = currentLng) => {
     const mapElement = document.getElementById('homeInteractiveMap');
@@ -80,26 +84,45 @@ document.addEventListener('DOMContentLoaded', () => {
       touchZoom: true
     });
 
-    // Clean Carto Voyager tiles
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-      maxZoom: 19
+    // Authentic Google Maps Roadmap Tile Layer
+    googleRoadmapLayer = L.tileLayer('https://mt{s}.google.com/vt/lyrs=m&hl=en&x={x}&y={y}&z={z}', {
+      subdomains: ['0', '1', '2', '3'],
+      maxZoom: 21,
+      attribution: '© Google Maps'
     }).addTo(homeMap);
 
-    // Custom Live User Pickup Pin
-    const pinIcon = L.divIcon({
-      className: 'custom-pickup-pin',
-      html: `
-        <div class="flex flex-col items-center drop-shadow-md">
-          <div class="w-8 h-8 bg-primary-container rounded-full flex items-center justify-center shadow-lg border-2 border-white animate-bounce">
-            <span class="material-symbols-outlined text-white text-sm" style="font-variation-settings: 'FILL' 1;">person_pin_circle</span>
-          </div>
-        </div>
-      `,
-      iconSize: [32, 32],
-      iconAnchor: [16, 32]
+    // Google Maps Satellite / Hybrid Layer
+    googleSatelliteLayer = L.tileLayer('https://mt{s}.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}', {
+      subdomains: ['0', '1', '2', '3'],
+      maxZoom: 21,
+      attribution: '© Google Maps'
     });
 
-    userMarker = L.marker([lat, lng], { icon: pinIcon, draggable: true }).addTo(homeMap);
+    // Custom Live User Pickup Pin with Integrated Pulsing Badge
+    const createPinIcon = (locationName) => {
+      return L.divIcon({
+        className: 'custom-pickup-pin',
+        html: `
+          <div class="flex flex-col items-center drop-shadow-xl cursor-pointer pointer-events-auto" style="transform: translate(-50%, -100%);">
+            <div class="bg-[#128C55] text-white px-3 py-1 rounded-full text-[11px] font-bold shadow-lg flex items-center gap-1.5 whitespace-nowrap mb-1 hover:scale-105 transition-transform">
+              <span class="w-2 h-2 rounded-full bg-white animate-ping"></span>
+              <span id="mapPinLocationLabel">📍 Pickup: ${locationName || currentLocationName}</span>
+            </div>
+            <div class="w-8 h-8 bg-primary-container rounded-full flex items-center justify-center shadow-2xl border-2 border-white animate-bounce">
+              <span class="material-symbols-outlined text-white text-base" style="font-variation-settings: 'FILL' 1;">person_pin_circle</span>
+            </div>
+          </div>
+        `,
+        iconSize: [0, 0],
+        iconAnchor: [0, 0]
+      });
+    };
+
+    userMarker = L.marker([lat, lng], { icon: createPinIcon(currentLocationName), draggable: true }).addTo(homeMap);
+
+    userMarker.on('click', () => {
+      openLocationModal();
+    });
 
     userMarker.on('dragend', async (e) => {
       const pos = e.target.getLatLng();
@@ -108,6 +131,26 @@ document.addEventListener('DOMContentLoaded', () => {
       const reverseName = await reverseGeocode(pos.lat, pos.lng);
       applyLocationToUI(reverseName, pos.lat, pos.lng, false);
     });
+
+    // Map layer toggle (Streets <-> Satellite)
+    const btnToggleMapLayer = document.getElementById('btnToggleMapLayer');
+    if (btnToggleMapLayer) {
+      btnToggleMapLayer.addEventListener('click', (e) => {
+        e.stopPropagation();
+        isSatelliteMode = !isSatelliteMode;
+        if (isSatelliteMode) {
+          homeMap.removeLayer(googleRoadmapLayer);
+          googleSatelliteLayer.addTo(homeMap);
+          btnToggleMapLayer.className = 'w-10 h-10 rounded-xl bg-primary text-white shadow-md border border-primary flex items-center justify-center transition-all active:scale-95';
+          showLocationToast('Google Maps: Satellite View enabled');
+        } else {
+          homeMap.removeLayer(googleSatelliteLayer);
+          googleRoadmapLayer.addTo(homeMap);
+          btnToggleMapLayer.className = 'w-10 h-10 rounded-xl bg-surface/95 backdrop-blur-md shadow-md border border-outline-variant/30 flex items-center justify-center text-on-surface hover:bg-surface-variant transition-all active:scale-95';
+          showLocationToast('Google Maps: Standard Roadmap enabled');
+        }
+      });
+    }
 
     if (btnMapZoomIn) {
       btnMapZoomIn.addEventListener('click', (e) => {
@@ -188,6 +231,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     if (homeSearchInput) {
       homeSearchInput.placeholder = `From: ${currentLocationName} ➔ Where to send?`;
+    }
+
+    const mapPinLocationLabel = document.getElementById('mapPinLocationLabel');
+    if (mapPinLocationLabel) {
+      mapPinLocationLabel.innerText = `📍 Pickup: ${currentLocationName}`;
     }
 
     if (homeMap) {

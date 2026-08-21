@@ -154,11 +154,15 @@
     </button>
   </div>
 
-  <!-- Floating Map Navigation & Zoom Controls -->
+  <!-- Floating Map Navigation & Google Maps Layer Controls -->
   <div class="absolute top-4 right-4 z-20 flex flex-col gap-2 pointer-events-auto">
     <!-- Locate Me / Live GPS -->
     <button type="button" id="btnMapLocateMe" class="w-10 h-10 rounded-xl bg-surface/95 backdrop-blur-md shadow-md border border-outline-variant/30 flex items-center justify-center text-primary hover:bg-primary-container hover:text-on-primary transition-all active:scale-95" title="Locate My Live GPS">
       <span class="material-symbols-outlined text-[20px]">my_location</span>
+    </button>
+    <!-- Google Maps Map / Satellite Toggle -->
+    <button type="button" id="btnToggleMapLayer" class="w-10 h-10 rounded-xl bg-surface/95 backdrop-blur-md shadow-md border border-outline-variant/30 flex items-center justify-center text-on-surface hover:bg-surface-variant transition-all active:scale-95" title="Switch Google Maps Style (Satellite / Streets)">
+      <span class="material-symbols-outlined text-[20px]">layers</span>
     </button>
     <!-- Zoom In -->
     <button type="button" id="btnMapZoomIn" class="w-10 h-10 rounded-xl bg-surface/95 backdrop-blur-md shadow-md border border-outline-variant/30 flex items-center justify-center text-on-surface hover:bg-surface-variant transition-all active:scale-95" title="Zoom In">
@@ -170,15 +174,10 @@
     </button>
   </div>
 
-  <!-- Central Pickup Point Pin with Live Geolocation Badge -->
-  <div id="liveLocationPinContainer" class="absolute top-[32%] left-1/2 transform -translate-x-1/2 flex flex-col items-center drop-shadow-md cursor-pointer transition-all duration-300 hover:scale-105 z-10 pointer-events-auto" title="Click to change or refresh pickup location">
-    <div id="livePickupBadge" class="bg-[#128C55] text-white px-4 py-1.5 rounded-full text-label-md font-label-md mb-2 shadow-level-1 flex items-center gap-1.5 transition-all">
-      <span id="liveGpsDot" class="w-2 h-2 rounded-full bg-white animate-ping"></span>
-      <span id="liveLocationText">Detecting live location...</span>
-    </div>
-    <div class="w-8 h-8 bg-primary-container rounded-full flex items-center justify-center shadow-lg border-2 border-white animate-bounce">
-      <span class="material-symbols-outlined text-white text-sm fill">person_pin_circle</span>
-    </div>
+  <!-- Google Maps Official Brand Badge -->
+  <div class="absolute bottom-28 left-4 z-10 pointer-events-none flex items-center gap-1 px-2.5 py-1 rounded-md bg-white/80 backdrop-blur-sm shadow-sm border border-black/5 text-[11px] font-bold text-gray-700">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/a/aa/Google_Maps_icon_%282020%29.svg" alt="Google Maps" class="w-3.5 h-3.5 object-contain">
+    <span>Google Maps Engine</span>
   </div>
 </div>
 <!-- Main Content Bottom Sheet -->

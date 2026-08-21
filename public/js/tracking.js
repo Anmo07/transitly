@@ -117,8 +117,11 @@ document.addEventListener('DOMContentLoaded', () => {
         attributionControl: false
       }).setView(route.stops[0].coords, 10);
 
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-        maxZoom: 19
+      // Authentic Google Maps Roadmap Tile Layer
+      L.tileLayer('https://mt{s}.google.com/vt/lyrs=m&hl=en&x={x}&y={y}&z={z}', {
+        subdomains: ['0', '1', '2', '3'],
+        maxZoom: 21,
+        attribution: '© Google Maps'
       }).addTo(map);
 
       // Wire zoom & center buttons
