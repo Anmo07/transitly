@@ -229,32 +229,24 @@
     </div>
   </div>
 
-  <!-- ========================================================================= -->
-  <!-- MOBILE BOTTOM NAVIGATION BAR (STITCH DESIGN)                              -->
-  <!-- ========================================================================= -->
-  <nav id="mainBottomNav" class="bg-surface/95 backdrop-blur-md shadow-[0px_-4px_20px_rgba(0,0,0,0.05)] fixed bottom-0 left-0 right-0 w-full z-50 rounded-t-xl border-t border-outline-variant/30 transition-all duration-200 md:hidden">
-    <div class="flex justify-around items-center px-1 pb-safe h-16 max-w-2xl mx-auto w-full">
-      <a id="navBtnDeliver" class="nav-tab-btn flex flex-col items-center justify-center text-on-surface-variant px-2 py-1 hover:bg-surface-variant rounded-xl transition-all active:scale-90 w-1/5" href="/">
-        <span class="material-symbols-outlined text-[20px]">local_shipping</span>
-        <span class="text-[10px] font-medium">Deliver</span>
-      </a>
-      <a id="navBtnTracking" class="nav-tab-btn flex flex-col items-center justify-center text-on-surface-variant px-2 py-1 hover:bg-surface-variant rounded-xl transition-all active:scale-90 w-1/5" href="/tracking">
-        <span class="material-symbols-outlined text-[20px]">distance</span>
-        <span class="text-[10px] font-medium">Tracking</span>
-      </a>
-      <a id="navBtnServices" class="nav-tab-btn flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-xl px-2 py-1 transition-all active:scale-90 w-1/5" href="/services">
-        <span class="material-symbols-outlined text-[20px]" data-weight="fill">apps</span>
-        <span class="text-[10px] font-bold">Services</span>
-      </a>
-      <a id="navBtnHistory" class="nav-tab-btn flex flex-col items-center justify-center text-on-surface-variant px-2 py-1 hover:bg-surface-variant rounded-xl transition-all active:scale-90 w-1/5" href="/history">
-        <span class="material-symbols-outlined text-[20px]">history</span>
-        <span class="text-[10px] font-medium">History</span>
-      </a>
-      <a id="navBtnProfile" class="nav-tab-btn flex flex-col items-center justify-center text-on-surface-variant px-2 py-1 hover:bg-surface-variant rounded-xl transition-all active:scale-90 w-1/5" href="/profile">
-        <span class="material-symbols-outlined text-[20px]">person</span>
-        <span class="text-[10px] font-medium">Profile</span>
-      </a>
-    </div>
+  <!-- BottomNavBar (Shared Component) -->
+  <nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-base pb-safe h-16 bg-surface border-t border-outline-variant/20 rounded-t-xl shadow-[0px_-4px_20px_rgba(0,0,0,0.05)] md:hidden">
+    <a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-variant transition-colors group rounded-xl" href="/">
+      <span class="material-symbols-outlined mb-1 group-active:scale-90 transition-transform duration-200 text-[24px]" data-icon="local_shipping">local_shipping</span>
+      <span class="font-label-sm text-label-sm">Deliver</span>
+    </a>
+    <a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-variant transition-colors group rounded-xl" href="/tracking">
+      <span class="material-symbols-outlined mb-1 group-active:scale-90 transition-transform duration-200 text-[24px]" data-icon="distance">distance</span>
+      <span class="font-label-sm text-label-sm">Tracking</span>
+    </a>
+    <a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-variant transition-colors group rounded-xl" href="/history">
+      <span class="material-symbols-outlined mb-1 group-active:scale-90 transition-transform duration-200 text-[24px]" data-icon="history">history</span>
+      <span class="font-label-sm text-label-sm">History</span>
+    </a>
+    <a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-variant transition-colors group rounded-xl" href="/profile">
+      <span class="material-symbols-outlined mb-1 group-active:scale-90 transition-transform duration-200 text-[24px]" data-icon="person">person</span>
+      <span class="font-label-sm text-label-sm">Profile</span>
+    </a>
   </nav>
 
   <!-- Modular Scripts -->

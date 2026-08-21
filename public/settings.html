@@ -275,28 +275,24 @@
 </div>
 </section>
 </main>
-<!-- BottomNavBar -->
-<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-3 pb-safe bg-surface-container-lowest dark:bg-on-surface rounded-t-xl shadow-lg dark:shadow-none md:hidden">
-<!-- Inactive: Ride -->
-<a class="flex flex-col items-center justify-center text-on-secondary-fixed-variant dark:text-outline-variant hover:opacity-80 transition-opacity w-16" href="/">
-<span class="material-symbols-outlined mb-1" data-icon="home">home</span>
-<span class="text-label-sm font-label-sm">Ride</span>
+<!-- BottomNavBar (Shared Component) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-base pb-safe h-16 bg-surface border-t border-outline-variant/20 rounded-t-xl shadow-[0px_-4px_20px_rgba(0,0,0,0.05)] md:hidden">
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-variant transition-colors group rounded-xl" href="/">
+<span class="material-symbols-outlined mb-1 group-active:scale-90 transition-transform duration-200 text-[24px]" data-icon="local_shipping">local_shipping</span>
+<span class="font-label-sm text-label-sm">Deliver</span>
 </a>
-<!-- Inactive: All Services -->
-<a class="flex flex-col items-center justify-center text-on-secondary-fixed-variant dark:text-outline-variant hover:opacity-80 transition-opacity w-16" href="/services">
-<span class="material-symbols-outlined mb-1" data-icon="apps">apps</span>
-<span class="text-label-sm font-label-sm">All Services</span>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-variant transition-colors group rounded-xl" href="/tracking">
+<span class="material-symbols-outlined mb-1 group-active:scale-90 transition-transform duration-200 text-[24px]" data-icon="distance">distance</span>
+<span class="font-label-sm text-label-sm">Tracking</span>
 </a>
-<!-- Inactive: Travel -->
-<a class="flex flex-col items-center justify-center text-on-secondary-fixed-variant dark:text-outline-variant hover:opacity-80 transition-opacity w-16" href="/tracking">
-<span class="material-symbols-outlined mb-1" data-icon="explore">explore</span>
-<span class="text-label-sm font-label-sm">Travel</span>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-variant transition-colors group rounded-xl" href="/history">
+<span class="material-symbols-outlined mb-1 group-active:scale-90 transition-transform duration-200 text-[24px]" data-icon="history">history</span>
+<span class="font-label-sm text-label-sm">History</span>
 </a>
-<!-- Active: Profile (Settings sits under Profile logically) -->
-<a class="flex flex-col items-center justify-center text-primary dark:text-primary-fixed-dim font-semibold scale-95 transition-transform duration-200 w-16 relative" href="/profile">
-<div class="absolute -top-3 w-12 h-1 bg-primary rounded-b-full"></div>
-<span class="material-symbols-outlined mb-1" data-icon="person" style="font-variation-settings: 'FILL' 1;">person</span>
-<span class="text-label-sm font-label-sm">Profile</span>
+<!-- Active State for Profile -->
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-xl px-4 py-1 group" href="/profile">
+<span class="material-symbols-outlined mb-1 group-active:scale-90 transition-transform duration-200 text-[24px] fill" data-icon="person">person</span>
+<span class="font-label-sm text-label-sm">Profile</span>
 </a>
 </nav>
 </body></html>

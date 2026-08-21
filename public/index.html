@@ -198,28 +198,27 @@
 </div>
 </div>
 </div>
-<!-- BottomNavBar (Generated from JSON) -->
-<!-- Applying structural shell layout, separation, bg, shape, and active/inactive states -->
-<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-3 pb-safe border-t border-outline-variant bg-surface-container-lowest rounded-t-xl shadow-lg shadow-[0px_-4px_20px_rgba(0,0,0,0.03)]">
-<!-- Active Tab: Deliver (Intent Match) -->
-<a href="/" aria-label="Deliver" class="flex flex-col items-center justify-center text-primary-container font-semibold hover:opacity-80 transition-opacity active:scale-[0.9] duration-200">
-<span class="material-symbols-outlined fill mb-1 text-[24px]">local_shipping</span>
-<span class="text-label-sm font-label-sm">Deliver</span>
+<!-- BottomNavBar (Shared Component) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-base pb-safe h-16 bg-surface border-t border-outline-variant/20 rounded-t-xl shadow-[0px_-4px_20px_rgba(0,0,0,0.05)]">
+<!-- Active Tab: Deliver -->
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-xl px-4 py-1 group" href="/">
+<span class="material-symbols-outlined mb-1 group-active:scale-90 transition-transform duration-200 text-[24px] fill" data-icon="local_shipping">local_shipping</span>
+<span class="font-label-sm text-label-sm">Deliver</span>
 </a>
 <!-- Inactive Tab: Tracking -->
-<a href="/tracking" aria-label="Tracking" class="flex flex-col items-center justify-center text-on-secondary-fixed-variant hover:opacity-80 transition-opacity">
-<span class="material-symbols-outlined mb-1 text-[24px]">location_on</span>
-<span class="text-label-sm font-label-sm">Tracking</span>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-variant transition-colors group rounded-xl" href="/tracking">
+<span class="material-symbols-outlined mb-1 group-active:scale-90 transition-transform duration-200 text-[24px]" data-icon="distance">distance</span>
+<span class="font-label-sm text-label-sm">Tracking</span>
 </a>
 <!-- Inactive Tab: History -->
-<a href="/history" aria-label="History" class="flex flex-col items-center justify-center text-on-secondary-fixed-variant hover:opacity-80 transition-opacity">
-<span class="material-symbols-outlined mb-1 text-[24px]">history</span>
-<span class="text-label-sm font-label-sm">History</span>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-variant transition-colors group rounded-xl" href="/history">
+<span class="material-symbols-outlined mb-1 group-active:scale-90 transition-transform duration-200 text-[24px]" data-icon="history">history</span>
+<span class="font-label-sm text-label-sm">History</span>
 </a>
 <!-- Inactive Tab: Profile -->
-<a href="/profile" aria-label="Profile" class="flex flex-col items-center justify-center text-on-secondary-fixed-variant hover:opacity-80 transition-opacity">
-<span class="material-symbols-outlined mb-1 text-[24px]">person</span>
-<span class="text-label-sm font-label-sm">Profile</span>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-variant transition-colors group rounded-xl" href="/profile">
+<span class="material-symbols-outlined mb-1 group-active:scale-90 transition-transform duration-200 text-[24px]" data-icon="person">person</span>
+<span class="font-label-sm text-label-sm">Profile</span>
 </a>
 </nav>
 <!-- Support for iOS safe area padding at the bottom -->

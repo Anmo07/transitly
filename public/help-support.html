@@ -237,30 +237,24 @@
 </div>
 </main>
 <!-- BottomNavBar (Mobile Only) -->
-<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-3 pb-safe bg-surface-container-lowest dark:bg-on-surface border-t border-outline-variant dark:border-outline shadow-lg dark:shadow-none rounded-t-xl" id="bottom-nav-bar">
-<a class="flex flex-col items-center justify-center text-on-secondary-fixed-variant dark:text-outline-variant hover:opacity-80 transition-opacity w-16 group" href="/">
-<div class="mb-1 p-1 rounded-full group-hover:bg-surface-container-low transition-colors">
-<span class="material-symbols-outlined" data-icon="home">home</span>
-</div>
-<span class="text-label-sm font-label-sm">Ride</span>
+<!-- BottomNavBar (Shared Component) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-base pb-safe h-16 bg-surface border-t border-outline-variant/20 rounded-t-xl shadow-[0px_-4px_20px_rgba(0,0,0,0.05)] md:hidden">
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-variant transition-colors group rounded-xl" href="/">
+<span class="material-symbols-outlined mb-1 group-active:scale-90 transition-transform duration-200 text-[24px]" data-icon="local_shipping">local_shipping</span>
+<span class="font-label-sm text-label-sm">Deliver</span>
 </a>
-<a class="flex flex-col items-center justify-center text-on-secondary-fixed-variant dark:text-outline-variant hover:opacity-80 transition-opacity w-16 group" href="/services">
-<div class="mb-1 p-1 rounded-full group-hover:bg-surface-container-low transition-colors">
-<span class="material-symbols-outlined" data-icon="apps">apps</span>
-</div>
-<span class="text-label-sm font-label-sm">All Services</span>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-variant transition-colors group rounded-xl" href="/tracking">
+<span class="material-symbols-outlined mb-1 group-active:scale-90 transition-transform duration-200 text-[24px]" data-icon="distance">distance</span>
+<span class="font-label-sm text-label-sm">Tracking</span>
 </a>
-<a class="flex flex-col items-center justify-center text-on-secondary-fixed-variant dark:text-outline-variant hover:opacity-80 transition-opacity w-16 group" href="/tracking">
-<div class="mb-1 p-1 rounded-full group-hover:bg-surface-container-low transition-colors">
-<span class="material-symbols-outlined" data-icon="explore">explore</span>
-</div>
-<span class="text-label-sm font-label-sm">Travel</span>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-variant transition-colors group rounded-xl" href="/history">
+<span class="material-symbols-outlined mb-1 group-active:scale-90 transition-transform duration-200 text-[24px]" data-icon="history">history</span>
+<span class="font-label-sm text-label-sm">History</span>
 </a>
-<a class="flex flex-col items-center justify-center text-on-secondary-fixed-variant dark:text-outline-variant hover:opacity-80 transition-opacity w-16 group" href="/profile">
-<div class="mb-1 p-1 rounded-full group-hover:bg-surface-container-low transition-colors">
-<span class="material-symbols-outlined" data-icon="person">person</span>
-</div>
-<span class="text-label-sm font-label-sm">Profile</span>
+<!-- Active State for Profile -->
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-xl px-4 py-1 group" href="/profile">
+<span class="material-symbols-outlined mb-1 group-active:scale-90 transition-transform duration-200 text-[24px] fill" data-icon="person">person</span>
+<span class="font-label-sm text-label-sm">Profile</span>
 </a>
 </nav>
 <!-- Floating Action Button (Mobile Chat) -->

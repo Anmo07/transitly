@@ -213,7 +213,24 @@
                 Add Payment Method
             </button>
 </div>
-</main>
-<!-- Contextual FAB Suppression: Not rendering FAB on this task-focused settings screen -->
-<!-- No BottomNavBar on task-focused sub-screens -->
+<!-- BottomNavBar (Shared Component) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-base pb-safe h-16 bg-surface border-t border-outline-variant/20 rounded-t-xl shadow-[0px_-4px_20px_rgba(0,0,0,0.05)] md:hidden">
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-variant transition-colors group rounded-xl" href="/">
+<span class="material-symbols-outlined mb-1 group-active:scale-90 transition-transform duration-200 text-[24px]" data-icon="local_shipping">local_shipping</span>
+<span class="font-label-sm text-label-sm">Deliver</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-variant transition-colors group rounded-xl" href="/tracking">
+<span class="material-symbols-outlined mb-1 group-active:scale-90 transition-transform duration-200 text-[24px]" data-icon="distance">distance</span>
+<span class="font-label-sm text-label-sm">Tracking</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-variant transition-colors group rounded-xl" href="/history">
+<span class="material-symbols-outlined mb-1 group-active:scale-90 transition-transform duration-200 text-[24px]" data-icon="history">history</span>
+<span class="font-label-sm text-label-sm">History</span>
+</a>
+<!-- Active State for Profile -->
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-xl px-4 py-1 group" href="/profile">
+<span class="material-symbols-outlined mb-1 group-active:scale-90 transition-transform duration-200 text-[24px] fill" data-icon="person">person</span>
+<span class="font-label-sm text-label-sm">Profile</span>
+</a>
+</nav>
 </body></html>

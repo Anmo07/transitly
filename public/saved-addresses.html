@@ -203,10 +203,30 @@
 </div>
 </main>
 <!-- Floating Action Area (Bottom) -->
-<div class="fixed bottom-0 left-0 w-full p-container-margin bg-gradient-to-t from-background via-background to-transparent z-30 pb-safe md:static md:bg-none md:mt-section-gap md:p-0 md:max-w-2xl md:mx-auto">
+<div class="fixed bottom-20 left-0 w-full p-container-margin bg-gradient-to-t from-background via-background to-transparent z-30 pb-safe md:static md:bg-none md:mt-section-gap md:p-0 md:max-w-2xl md:mx-auto">
 <button onclick="alert('Add New Address Modal')" class="w-full h-[56px] bg-primary-container text-on-primary rounded-[16px] text-body-md font-body-md font-semibold shadow-level-2 hover:opacity-90 active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2">
 <span class="material-symbols-outlined text-[20px]" data-icon="add">add</span>
             Add New Address
         </button>
 </div>
+<!-- BottomNavBar (Shared Component) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-base pb-safe h-16 bg-surface border-t border-outline-variant/20 rounded-t-xl shadow-[0px_-4px_20px_rgba(0,0,0,0.05)] md:hidden">
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-variant transition-colors group rounded-xl" href="/">
+<span class="material-symbols-outlined mb-1 group-active:scale-90 transition-transform duration-200 text-[24px]" data-icon="local_shipping">local_shipping</span>
+<span class="font-label-sm text-label-sm">Deliver</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-variant transition-colors group rounded-xl" href="/tracking">
+<span class="material-symbols-outlined mb-1 group-active:scale-90 transition-transform duration-200 text-[24px]" data-icon="distance">distance</span>
+<span class="font-label-sm text-label-sm">Tracking</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-variant transition-colors group rounded-xl" href="/history">
+<span class="material-symbols-outlined mb-1 group-active:scale-90 transition-transform duration-200 text-[24px]" data-icon="history">history</span>
+<span class="font-label-sm text-label-sm">History</span>
+</a>
+<!-- Active State for Profile -->
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-xl px-4 py-1 group" href="/profile">
+<span class="material-symbols-outlined mb-1 group-active:scale-90 transition-transform duration-200 text-[24px] fill" data-icon="person">person</span>
+<span class="font-label-sm text-label-sm">Profile</span>
+</a>
+</nav>
 </body></html>
