@@ -1,5 +1,5 @@
 /**
- * Transitly — Deliver / Home Controller with Live Device Geolocation
+ * Transitly — Deliver / Home Controller with Multi-Tiered Live Geolocation
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -9,126 +9,212 @@ document.addEventListener('DOMContentLoaded', () => {
   const liveLocationPinContainer = document.getElementById('liveLocationPinContainer');
   const homeSearchInput = document.getElementById('homeSearchInput');
 
-  let currentLat = null;
-  let currentLng = null;
-  let currentLocationName = 'Current Location';
+  // Modal elements
+  const locationPickerModal = document.getElementById('locationPickerModal');
+  const btnCloseLocationModal = document.getElementById('btnCloseLocationModal');
+  const btnTriggerGpsDetect = document.getElementById('btnTriggerGpsDetect');
+  const inputCustomLocation = document.getElementById('inputCustomLocation');
+
+  let currentLat = 28.4595;
+  let currentLng = 77.0266;
+  let currentLocationName = 'Gurgaon, Haryana';
 
   /**
-   * Reverse Geocode coordinates to human-readable address
+   * Update all UI elements with the active location
    */
-  const reverseGeocode = async (lat, lng) => {
+  const applyLocationToUI = (name, lat, lng) => {
+    currentLocationName = name;
+    if (lat) currentLat = lat;
+    if (lng) currentLng = lng;
+
+    if (liveLocationText) {
+      liveLocationText.innerText = `📍 Pickup: ${currentLocationName}`;
+    }
+    if (liveGpsDot) {
+      liveGpsDot.className = 'w-2 h-2 rounded-full bg-white';
+    }
+    if (livePickupBadge) {
+      livePickupBadge.className = 'bg-[#128C55] text-white px-4 py-1.5 rounded-full text-label-md font-label-md mb-2 shadow-level-1 flex items-center gap-1.5 transition-all';
+      livePickupBadge.title = `Current Pickup: ${currentLocationName} (Click to change)`;
+    }
+    if (homeSearchInput) {
+      homeSearchInput.placeholder = `From: ${currentLocationName} ➔ Where to send?`;
+    }
+
+    // Persist
+    localStorage.setItem('transitly_pickup_location', JSON.stringify({
+      name: currentLocationName,
+      lat: currentLat,
+      lng: currentLng,
+      time: Date.now()
+    }));
+  };
+
+  /**
+   * Tier 1: Instant Client IP Geolocation (Zero Permission, Instantaneous)
+   */
+  const detectLocationByIP = async () => {
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 2500);
+      const timeoutId = setTimeout(() => controller.abort(), 2000);
 
-      const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=14`, {
-        signal: controller.signal,
-        headers: { 'Accept': 'application/json' }
+      // Fast BigDataCloud Reverse IP Client
+      const res = await fetch('https://api.bigdatacloud.net/data/reverse-geocode-client', {
+        signal: controller.signal
       });
       clearTimeout(timeoutId);
 
       if (res.ok) {
         const data = await res.json();
-        const address = data.address || {};
-        const area = address.suburb || address.neighbourhood || address.residential || address.commercial || address.road;
-        const city = address.city || address.town || address.village || address.state_district || address.county || address.state;
-
-        if (area && city) return `${area}, ${city}`;
-        if (city) return city;
-        if (data.display_name) return data.display_name.split(',').slice(0, 2).join(', ');
+        const city = data.city || data.locality || data.principalSubdivision;
+        const state = data.principalSubdivision || data.countryName;
+        if (city) {
+          applyLocationToUI(`${city}, ${state}`, data.latitude, data.longitude);
+          return true;
+        }
       }
     } catch (_) {
-      // Fallback on network or timeout
+      // Fallback
     }
-    return `Lat ${lat.toFixed(3)}°, Lng ${lng.toFixed(3)}°`;
+
+    try {
+      const res2 = await fetch('https://ipapi.co/json/');
+      if (res2.ok) {
+        const data2 = await res2.json();
+        if (data2.city) {
+          applyLocationToUI(`${data2.city}, ${data2.region}`, data2.latitude, data2.longitude);
+          return true;
+        }
+      }
+    } catch (_) {}
+
+    return false;
   };
 
   /**
-   * Fetch Live Current Geolocation
+   * Tier 2: Browser Device GPS (High Accuracy Refinement)
    */
-  const detectLiveLocation = () => {
+  const detectLocationByGPS = (silent = false) => {
     if (!navigator.geolocation) {
-      if (liveLocationText) liveLocationText.innerText = '📍 Pickup: Default Hub (GPS Unsupported)';
+      if (!silent) alert('Geolocation is not supported by your browser.');
       return;
     }
 
-    if (liveLocationText) liveLocationText.innerText = 'Detecting GPS position...';
-    if (liveGpsDot) liveGpsDot.className = 'w-2 h-2 rounded-full bg-yellow-300 animate-ping';
+    if (!silent && liveLocationText) {
+      liveLocationText.innerText = 'Detecting live device GPS...';
+      if (liveGpsDot) liveGpsDot.className = 'w-2 h-2 rounded-full bg-yellow-300 animate-ping';
+    }
 
     navigator.geolocation.getCurrentPosition(
       async (position) => {
-        currentLat = position.coords.latitude;
-        currentLng = position.coords.longitude;
-        const accuracy = Math.round(position.coords.accuracy || 15);
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
 
-        // Reverse geocode
-        currentLocationName = await reverseGeocode(currentLat, currentLng);
+        try {
+          const res = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`);
+          if (res.ok) {
+            const data = await res.json();
+            const locality = data.locality || data.suburb || data.city;
+            const city = data.city || data.principalSubdivision;
+            const label = locality && city && locality !== city ? `${locality}, ${city}` : (city || `GPS (${lat.toFixed(2)}°, ${lng.toFixed(2)}°)`);
+            applyLocationToUI(label, lat, lng);
+            closeLocationModal();
+            return;
+          }
+        } catch (_) {}
 
-        // Update UI
-        if (liveLocationText) {
-          liveLocationText.innerText = `📍 Pickup: ${currentLocationName}`;
-        }
-        if (liveGpsDot) {
-          liveGpsDot.className = 'w-2 h-2 rounded-full bg-white';
-        }
-        if (livePickupBadge) {
-          livePickupBadge.className = 'bg-[#128C55] text-white px-4 py-1.5 rounded-full text-label-md font-label-md mb-2 shadow-level-1 flex items-center gap-1.5 transition-all';
-          livePickupBadge.title = `Live Location: ${currentLocationName} (Accuracy: ±${accuracy}m)`;
-        }
-        if (homeSearchInput) {
-          homeSearchInput.placeholder = `From: ${currentLocationName} ➔ Where to send?`;
-        }
-
-        // Save session state
-        sessionStorage.setItem('transitly_user_location', JSON.stringify({
-          lat: currentLat,
-          lng: currentLng,
-          name: currentLocationName,
-          timestamp: Date.now()
-        }));
+        applyLocationToUI(`Live GPS (${lat.toFixed(3)}° N, ${lng.toFixed(3)}° E)`, lat, lng);
+        closeLocationModal();
       },
-      (error) => {
-        console.warn('Geolocation notice:', error.message);
-        if (liveLocationText) {
-          liveLocationText.innerText = '📍 Pickup: Current Location (Tap to retry)';
-        }
-        if (liveGpsDot) {
-          liveGpsDot.className = 'w-2 h-2 rounded-full bg-white/70';
+      (err) => {
+        console.warn('GPS notice:', err.message);
+        if (!silent) {
+          // If GPS denied/unavailable, prompt user with location picker modal
+          openLocationModal();
         }
       },
-      {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 30000
-      }
+      { enableHighAccuracy: true, timeout: 5000, maximumAge: 60000 }
     );
   };
 
-  // Immediate location detection
-  detectLiveLocation();
+  /**
+   * Modal Management
+   */
+  const openLocationModal = () => {
+    if (locationPickerModal) locationPickerModal.classList.remove('hidden');
+  };
 
-  // Tap pin to refresh location
-  if (liveLocationPinContainer) {
-    liveLocationPinContainer.addEventListener('click', () => {
-      detectLiveLocation();
+  const closeLocationModal = () => {
+    if (locationPickerModal) locationPickerModal.classList.add('hidden');
+  };
+
+  if (liveLocationPinContainer) liveLocationPinContainer.addEventListener('click', openLocationModal);
+  if (livePickupBadge) livePickupBadge.addEventListener('click', openLocationModal);
+  if (btnCloseLocationModal) btnCloseLocationModal.addEventListener('click', closeLocationModal);
+
+  if (locationPickerModal) {
+    locationPickerModal.addEventListener('click', (e) => {
+      if (e.target === locationPickerModal) closeLocationModal();
     });
   }
 
-  // Home Quick Search
-  const btnQuickSearch = document.getElementById('btnQuickSearch');
-  const executeSearch = () => {
-    const val = homeSearchInput ? homeSearchInput.value.trim() : '';
-    if (val.toUpperCase().startsWith('TRK-') || val.length >= 5) {
-      window.location.href = `/tracking?id=${encodeURIComponent(val)}`;
-    } else {
-      window.location.href = `/tracking?id=TRK-88219`;
-    }
-  };
+  // Trigger GPS button inside modal
+  if (btnTriggerGpsDetect) {
+    btnTriggerGpsDetect.addEventListener('click', () => {
+      detectLocationByGPS(false);
+    });
+  }
 
-  if (btnQuickSearch) btnQuickSearch.addEventListener('click', executeSearch);
+  // Quick Hub Select buttons
+  document.querySelectorAll('.hub-select-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const name = btn.getAttribute('data-name');
+      const lat = parseFloat(btn.getAttribute('data-lat'));
+      const lng = parseFloat(btn.getAttribute('data-lng'));
+      applyLocationToUI(name, lat, lng);
+      closeLocationModal();
+    });
+  });
+
+  // Custom Search Input in modal
+  if (inputCustomLocation) {
+    inputCustomLocation.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && inputCustomLocation.value.trim()) {
+        applyLocationToUI(inputCustomLocation.value.trim(), null, null);
+        closeLocationModal();
+      }
+    });
+  }
+
+  // Initial Load Pipeline
+  const saved = localStorage.getItem('transitly_pickup_location');
+  if (saved) {
+    try {
+      const parsed = JSON.parse(saved);
+      applyLocationToUI(parsed.name, parsed.lat, parsed.lng);
+    } catch (_) {}
+  } else {
+    // 1. Instantly detect location from IP
+    detectLocationByIP().then((found) => {
+      if (!found) {
+        applyLocationToUI('Delhi NCR Hub (Default)', 28.6139, 77.2090);
+      }
+      // 2. Refine in background with GPS if authorized
+      detectLocationByGPS(true);
+    });
+  }
+
+  // Home Quick Search Input
   if (homeSearchInput) {
     homeSearchInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') executeSearch();
+      if (e.key === 'Enter') {
+        const val = homeSearchInput.value.trim();
+        if (val.toUpperCase().startsWith('TRK-')) {
+          window.location.href = `/tracking?id=${encodeURIComponent(val.toUpperCase())}`;
+        } else {
+          window.location.href = `/tracking?id=TRK-88219`;
+        }
+      }
     });
   }
 });

@@ -6,11 +6,11 @@ document.addEventListener('DOMContentLoaded', () => {
   let map = null;
   let busMarker = null;
   let routePolyline = null;
-  let pulseCircle = null;
   let journeyInterval = null;
-  let isPaused = false;
+  let isRunning = false;
   let currentSegmentIndex = 0;
   let currentSubStep = 0;
+  let currentActiveRoute = null;
   const SUB_STEPS_PER_SEGMENT = 12;
 
   // Rich Multi-Corridor Database
@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
         { name: 'Karnal Oasis Depot', coords: [29.6857, 76.9905], milestone: 'Passing Karnal Midpoint Hub' },
         { name: 'Kurukshetra Pipli Junction', coords: [29.9695, 76.8783], milestone: 'Cruising Kurukshetra Sector 3' },
         { name: 'Ambala Cantt Interchange', coords: [30.3782, 76.7767], milestone: 'Approaching Ambala Flyover' },
-        { name: 'Chandigarh Sector 17 ISBT', coords: [30.7410, 76.7790], milestone: 'Arrived at Destination Hub' }
+        { name: 'Chandigarh Sector 17 ISBT', coords: [30.7410, 76.7790], milestone: 'Arrived at Chandigarh Destination Hub' }
       ]
     },
     'TRK-60912': {
@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
         { name: 'Bawal Intercity Interchange', coords: [28.0050, 76.5800], milestone: 'Passing Bawal Express Node' },
         { name: 'Behror Midway Oasis', coords: [27.7900, 76.3200], milestone: 'Cruising Behror Highway corridor' },
         { name: 'Kotputli Express Bypass', coords: [27.3500, 75.9800], milestone: 'Passing Kotputli Junction' },
-        { name: 'Sindhi Camp ISBT, Jaipur', coords: [26.9124, 75.7873], milestone: 'Arrived at Jaipur Hub' }
+        { name: 'Sindhi Camp ISBT, Jaipur', coords: [26.9124, 75.7873], milestone: 'Arrived at Jaipur Destination Hub' }
       ]
     },
     'TRK-74911': {
@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
         { name: 'Hansi City Interchange', coords: [29.1000, 75.9600], milestone: 'Cruising Hansi Flyover' },
         { name: 'Hisar Cantt Central Hub', coords: [29.1492, 75.7217], milestone: 'Cleared Hisar Transit Checkpoint' },
         { name: 'Agroha Heritage Highway', coords: [29.3500, 75.6000], milestone: 'Approaching Agroha Toll' },
-        { name: 'Sirsa ISBT Bus Terminal', coords: [29.5320, 75.0318], milestone: 'Arrived at Sirsa Hub' }
+        { name: 'Sirsa ISBT Bus Terminal', coords: [29.5320, 75.0318], milestone: 'Arrived at Sirsa Destination Hub' }
       ]
     }
   };
@@ -100,7 +100,6 @@ document.addEventListener('DOMContentLoaded', () => {
         attributionControl: false
       }).setView(route.stops[0].coords, 10);
 
-      // Clean Voyager map tiles
       L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
         maxZoom: 19
       }).addTo(map);
@@ -162,109 +161,191 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   /**
-   * Start Dynamic Live Journey Simulation for a given Route
+   * Tick step execution
    */
-  const startLiveJourney = (route) => {
-    if (journeyInterval) clearInterval(journeyInterval);
-    isPaused = false;
-    currentSegmentIndex = 1;
-    currentSubStep = 0;
+  const executeTick = () => {
+    if (!currentActiveRoute) return;
+    const route = currentActiveRoute;
+    const totalStops = route.stops.length;
 
-    // Update UI Elements with Route Details
-    const trackStatusTitle = document.getElementById('trackStatusTitle');
-    const trackedIdBadge = document.getElementById('trackedIdBadge');
-    const trackRouteSubtitle = document.getElementById('trackRouteSubtitle');
-    const trackEta = document.getElementById('trackEta');
-    const trackNextHandoff = document.getElementById('trackNextHandoff');
+    const p1 = route.stops[currentSegmentIndex].coords;
+    const p2 = route.stops[Math.min(currentSegmentIndex + 1, totalStops - 1)].coords;
+
+    currentSubStep++;
+    const fraction = currentSubStep / SUB_STEPS_PER_SEGMENT;
+    const currentPos = interpolateCoord(p1, p2, Math.min(fraction, 1));
+
+    // Move Bus Marker
+    if (busMarker) {
+      busMarker.setLatLng(currentPos);
+    }
+
+    // Smoothly pan map to follow vehicle
+    if (map && currentSubStep % 3 === 0) {
+      map.panTo(currentPos, { animate: true, duration: 1.0 });
+    }
+
+    // Calculate Telematics Metrics
+    const totalStepsOverall = (totalStops - 1) * SUB_STEPS_PER_SEGMENT;
+    const currentGlobalStep = currentSegmentIndex * SUB_STEPS_PER_SEGMENT + currentSubStep;
+    const progressRatio = Math.min(currentGlobalStep / totalStepsOverall, 0.96);
+    const progressPct = Math.round(20 + progressRatio * 75);
+
+    const remainingDistanceKm = Math.max(1.2, (route.totalKm * (1 - progressRatio))).toFixed(1);
+    const simulatedSpeed = (62 + Math.sin(currentGlobalStep) * 9).toFixed(0);
+
+    // Update Telematics HUD
+    const hudSpeed = document.getElementById('hudSpeed');
+    const hudCoords = document.getElementById('hudCoords');
+    const trackDistance = document.getElementById('trackDistance');
+    const trackProgressBar = document.getElementById('trackProgressBar');
     const timelineLiveStopTitle = document.getElementById('timelineLiveStopTitle');
     const timelineLiveStopSub = document.getElementById('timelineLiveStopSub');
+
+    if (hudSpeed) hudSpeed.innerText = `${simulatedSpeed} km/h`;
+    if (hudCoords) hudCoords.innerText = `${currentPos[0].toFixed(3)}° N, ${currentPos[1].toFixed(3)}° E`;
+    if (trackDistance) trackDistance.innerText = `${remainingDistanceKm} km`;
+    if (trackProgressBar) trackProgressBar.style.height = `${progressPct}%`;
+
+    // Update Active Milestone
+    const currentStopInfo = route.stops[currentSegmentIndex];
+    if (timelineLiveStopTitle) {
+      timelineLiveStopTitle.innerText = `In Transit — ${route.busNumber.split('(')[0].trim()}`;
+    }
+    if (timelineLiveStopSub) {
+      timelineLiveStopSub.innerText = `${currentStopInfo.milestone} • Speed: ${simulatedSpeed} km/h`;
+    }
+
+    // Advance to next route segment
+    if (currentSubStep >= SUB_STEPS_PER_SEGMENT) {
+      currentSubStep = 0;
+      currentSegmentIndex++;
+
+      // Conclude or wrap
+      if (currentSegmentIndex >= totalStops - 1) {
+        endLiveJourney();
+      }
+    }
+  };
+
+  /**
+   * Action 1: START JOURNEY
+   */
+  const startLiveJourney = (route = currentActiveRoute) => {
+    if (!route) return;
+    currentActiveRoute = route;
+
+    if (journeyInterval) clearInterval(journeyInterval);
+    isRunning = true;
+
+    // UI Updates
+    const trackStatusTitle = document.getElementById('trackStatusTitle');
+    const trackedIdBadge = document.getElementById('trackedIdBadge');
+    const trackEta = document.getElementById('trackEta');
+    const trackNextHandoff = document.getElementById('trackNextHandoff');
     const timelinePickupLoc = document.getElementById('timelinePickupLoc');
     const timelineFinalTitle = document.getElementById('timelineFinalTitle');
     const timelineFinalSub = document.getElementById('timelineFinalSub');
     const hudJourneyState = document.getElementById('hudJourneyState');
-    const iconPlayPause = document.getElementById('iconPlayPause');
-    const textPlayPause = document.getElementById('textPlayPause');
+    const trackLiveStatusText = document.getElementById('trackLiveStatusText');
 
     if (trackStatusTitle) trackStatusTitle.innerText = `In Transit via ${route.busNumber.split('(')[0].trim()}`;
     if (trackedIdBadge) trackedIdBadge.innerText = route.trackingId;
-    if (trackRouteSubtitle) {
-      const liveText = document.getElementById('trackLiveStatusText');
-      if (liveText) liveText.innerText = `${route.corridorName} • Moving on Highway`;
-    }
+    if (trackLiveStatusText) trackLiveStatusText.innerText = `${route.corridorName} • Live GPS Journey`;
     if (trackEta) trackEta.innerText = route.eta;
     if (trackNextHandoff) trackNextHandoff.innerText = route.nextHandoff;
     if (timelinePickupLoc) timelinePickupLoc.innerText = `${route.origin} • Driver Verified`;
     if (timelineFinalTitle) timelineFinalTitle.innerText = `${route.destination} Handoff`;
     if (timelineFinalSub) timelineFinalSub.innerText = `${route.nextHandoff}`;
     if (hudJourneyState) hudJourneyState.innerText = 'GPS LIVE JOURNEY';
-    if (iconPlayPause) iconPlayPause.innerText = 'pause';
-    if (textPlayPause) textPlayPause.innerText = 'Pause';
 
     initLeafletMap(route);
 
-    const totalStops = route.stops.length;
+    // Start interval
+    journeyInterval = setInterval(executeTick, 1200);
+  };
 
-    // Live Tick Loop (Every 1.2 seconds)
-    journeyInterval = setInterval(() => {
-      if (isPaused) return;
+  /**
+   * Action 2: RESTART JOURNEY
+   */
+  const restartLiveJourney = () => {
+    if (!currentActiveRoute) return;
+    const route = currentActiveRoute;
 
-      const p1 = route.stops[currentSegmentIndex].coords;
-      const p2 = route.stops[Math.min(currentSegmentIndex + 1, totalStops - 1)].coords;
+    if (journeyInterval) clearInterval(journeyInterval);
+    currentSegmentIndex = 0;
+    currentSubStep = 0;
+    isRunning = true;
 
-      currentSubStep++;
-      const fraction = currentSubStep / SUB_STEPS_PER_SEGMENT;
-      const currentPos = interpolateCoord(p1, p2, Math.min(fraction, 1));
+    if (busMarker) {
+      busMarker.setLatLng(route.stops[0].coords);
+    }
+    if (map) {
+      map.setView(route.stops[0].coords, 11);
+    }
 
-      // Move Bus Marker
-      if (busMarker) {
-        busMarker.setLatLng(currentPos);
-      }
+    const trackProgressBar = document.getElementById('trackProgressBar');
+    const trackDistance = document.getElementById('trackDistance');
+    const hudSpeed = document.getElementById('hudSpeed');
+    const hudJourneyState = document.getElementById('hudJourneyState');
+    const timelineLiveStopTitle = document.getElementById('timelineLiveStopTitle');
+    const timelineLiveStopSub = document.getElementById('timelineLiveStopSub');
 
-      // Smoothly pan map to follow vehicle
-      if (map && currentSubStep % 3 === 0) {
-        map.panTo(currentPos, { animate: true, duration: 1.0 });
-      }
+    if (trackProgressBar) trackProgressBar.style.height = '15%';
+    if (trackDistance) trackDistance.innerText = `${route.totalKm} km`;
+    if (hudSpeed) hudSpeed.innerText = '58 km/h';
+    if (hudJourneyState) hudJourneyState.innerText = 'JOURNEY RESTARTED';
+    if (timelineLiveStopTitle) timelineLiveStopTitle.innerText = `Departing ${route.origin}`;
+    if (timelineLiveStopSub) timelineLiveStopSub.innerText = 'Bus cargo sealed & on route to highway';
 
-      // Calculate Telematics Metrics
-      const totalStepsOverall = (totalStops - 1) * SUB_STEPS_PER_SEGMENT;
-      const currentGlobalStep = currentSegmentIndex * SUB_STEPS_PER_SEGMENT + currentSubStep;
-      const progressRatio = Math.min(currentGlobalStep / totalStepsOverall, 0.96);
-      const progressPct = Math.round(25 + progressRatio * 70);
+    journeyInterval = setInterval(executeTick, 1200);
+  };
 
-      const remainingDistanceKm = Math.max(1.2, (route.totalKm * (1 - progressRatio))).toFixed(1);
-      const simulatedSpeed = (62 + Math.sin(currentGlobalStep) * 9).toFixed(0);
+  /**
+   * Action 3: END JOURNEY
+   */
+  const endLiveJourney = () => {
+    if (!currentActiveRoute) return;
+    const route = currentActiveRoute;
 
-      // Update Telematics HUD
-      const hudSpeed = document.getElementById('hudSpeed');
-      const hudCoords = document.getElementById('hudCoords');
-      const trackDistance = document.getElementById('trackDistance');
-      const trackProgressBar = document.getElementById('trackProgressBar');
+    if (journeyInterval) clearInterval(journeyInterval);
+    isRunning = false;
 
-      if (hudSpeed) hudSpeed.innerText = `${simulatedSpeed} km/h`;
-      if (hudCoords) hudCoords.innerText = `${currentPos[0].toFixed(3)}° N, ${currentPos[1].toFixed(3)}° E`;
-      if (trackDistance) trackDistance.innerText = `${remainingDistanceKm} km`;
-      if (trackProgressBar) trackProgressBar.style.height = `${progressPct}%`;
+    const finalStop = route.stops[route.stops.length - 1];
+    currentSegmentIndex = route.stops.length - 1;
+    currentSubStep = SUB_STEPS_PER_SEGMENT;
 
-      // Update Active Milestone
-      const currentStopInfo = route.stops[currentSegmentIndex];
-      if (timelineLiveStopTitle) {
-        timelineLiveStopTitle.innerText = `In Transit — ${route.busNumber.split('(')[0].trim()}`;
-      }
-      if (timelineLiveStopSub) {
-        timelineLiveStopSub.innerText = `${currentStopInfo.milestone} • Speed: ${simulatedSpeed} km/h`;
-      }
+    if (busMarker) {
+      busMarker.setLatLng(finalStop.coords);
+    }
+    if (map) {
+      map.setView(finalStop.coords, 13);
+    }
 
-      // Advance to next route segment
-      if (currentSubStep >= SUB_STEPS_PER_SEGMENT) {
-        currentSubStep = 0;
-        currentSegmentIndex++;
+    // Set UI to 100% Completed
+    const trackStatusTitle = document.getElementById('trackStatusTitle');
+    const trackLiveStatusText = document.getElementById('trackLiveStatusText');
+    const trackProgressBar = document.getElementById('trackProgressBar');
+    const trackDistance = document.getElementById('trackDistance');
+    const hudSpeed = document.getElementById('hudSpeed');
+    const hudCoords = document.getElementById('hudCoords');
+    const hudJourneyState = document.getElementById('hudJourneyState');
+    const timelineLiveStopTitle = document.getElementById('timelineLiveStopTitle');
+    const timelineLiveStopSub = document.getElementById('timelineLiveStopSub');
+    const timelineFinalDot = document.getElementById('timelineFinalDot');
+    const timelineFinalTitle = document.getElementById('timelineFinalTitle');
 
-        // Loop back or conclude route
-        if (currentSegmentIndex >= totalStops - 1) {
-          currentSegmentIndex = 0;
-        }
-      }
-    }, 1200);
+    if (trackStatusTitle) trackStatusTitle.innerText = `Arrived at ${route.destination}`;
+    if (trackLiveStatusText) trackLiveStatusText.innerText = `Trip Concluded • Parcel Handed Over to Last-Mile Partner`;
+    if (trackProgressBar) trackProgressBar.style.height = '100%';
+    if (trackDistance) trackDistance.innerText = '0.0 km';
+    if (hudSpeed) hudSpeed.innerText = '0 km/h (Parked)';
+    if (hudCoords) hudCoords.innerText = `${finalStop.coords[0].toFixed(3)}° N, ${finalStop.coords[1].toFixed(3)}° E`;
+    if (hudJourneyState) hudJourneyState.innerText = 'JOURNEY COMPLETED';
+    if (timelineLiveStopTitle) timelineLiveStopTitle.innerText = `Arrived at ${finalStop.name}`;
+    if (timelineLiveStopSub) timelineLiveStopSub.innerText = 'Handoff QR scanned and verified at terminal';
+    if (timelineFinalDot) timelineFinalDot.className = 'absolute -left-6 w-4 h-4 rounded-full bg-emerald-600 border-2 border-surface shadow-sm z-10 top-1';
+    if (timelineFinalTitle) timelineFinalTitle.innerText = 'Successfully Delivered / Ready for Pickup';
   };
 
   /**
@@ -296,8 +377,32 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
+    currentSegmentIndex = 1;
+    currentSubStep = 0;
     startLiveJourney(route);
   };
+
+  // Wire up 3 Buttons: Start, Restart, End
+  const btnStart = document.getElementById('btnStartJourney');
+  if (btnStart) {
+    btnStart.addEventListener('click', () => {
+      startLiveJourney(currentActiveRoute);
+    });
+  }
+
+  const btnRestart = document.getElementById('btnRestartJourney');
+  if (btnRestart) {
+    btnRestart.addEventListener('click', () => {
+      restartLiveJourney();
+    });
+  }
+
+  const btnEnd = document.getElementById('btnEndJourney');
+  if (btnEnd) {
+    btnEnd.addEventListener('click', () => {
+      endLiveJourney();
+    });
+  }
 
   // Form submission
   const searchForm = document.getElementById('trackingIdSearchForm');
@@ -316,37 +421,6 @@ document.addEventListener('DOMContentLoaded', () => {
       handleTrackingLookup(id);
     });
   });
-
-  // Play / Pause Button
-  const btnPlayPause = document.getElementById('btnPlayPauseJourney');
-  if (btnPlayPause) {
-    btnPlayPause.addEventListener('click', () => {
-      isPaused = !isPaused;
-      const icon = document.getElementById('iconPlayPause');
-      const text = document.getElementById('textPlayPause');
-      const hudJourneyState = document.getElementById('hudJourneyState');
-
-      if (isPaused) {
-        if (icon) icon.innerText = 'play_arrow';
-        if (text) text.innerText = 'Resume';
-        if (hudJourneyState) hudJourneyState.innerText = 'JOURNEY PAUSED';
-      } else {
-        if (icon) icon.innerText = 'pause';
-        if (text) text.innerText = 'Pause';
-        if (hudJourneyState) hudJourneyState.innerText = 'GPS LIVE JOURNEY';
-      }
-    });
-  }
-
-  // Restart Button
-  const btnRestart = document.getElementById('btnRestartJourney');
-  if (btnRestart) {
-    btnRestart.addEventListener('click', () => {
-      const input = document.getElementById('inputTrackingId');
-      const currentId = input ? input.value : 'TRK-88219';
-      handleTrackingLookup(currentId);
-    });
-  }
 
   // Auto-start on load from URL query or default TRK-88219
   const urlParams = new URLSearchParams(window.location.search);
