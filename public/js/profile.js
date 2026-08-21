@@ -1,6 +1,6 @@
 /**
  * Transitly — Profile Controller
- * Handles user profile details and profile photo upload from local device storage with backend sync & local storage persistence.
+ * Handles user profile details and profile photo upload from local device storage with instant preview, backend sync & local storage persistence.
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -11,10 +11,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const profileAvatarImg = document.getElementById('profileAvatarImg');
 
   // Photo Upload Trigger Elements
-  const avatarClickContainer = document.getElementById('avatarClickContainer');
-  const btnUploadAvatar = document.getElementById('btnUploadAvatar');
-  const btnPickPhotoDevice = document.getElementById('btnPickPhotoDevice');
   const inputAvatarFile = document.getElementById('inputAvatarFile');
+  const inputModalAvatarFile = document.getElementById('inputModalAvatarFile');
+  const editModalAvatarPreview = document.getElementById('editModalAvatarPreview');
+  const btnRemoveAvatar = document.getElementById('btnRemoveAvatar');
 
   // Modal Elements
   const btnOpenEditProfileModal = document.getElementById('btnOpenEditProfileModal');
@@ -22,13 +22,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnCloseEditProfileModal = document.getElementById('btnCloseEditProfileModal');
   const btnCancelEditProfile = document.getElementById('btnCancelEditProfile');
   const formEditProfile = document.getElementById('formEditProfile');
-
-  const modalDropZone = document.getElementById('modalDropZone');
-  const modalAvatarClickArea = document.getElementById('modalAvatarClickArea');
-  const editModalAvatarPreview = document.getElementById('editModalAvatarPreview');
-  const btnModalUploadPhoto = document.getElementById('btnModalUploadPhoto');
-  const btnRemoveAvatar = document.getElementById('btnRemoveAvatar');
-  const inputModalAvatarFile = document.getElementById('inputModalAvatarFile');
 
   const inputProfileName = document.getElementById('inputProfileName');
   const inputProfileEmail = document.getElementById('inputProfileEmail');
@@ -69,7 +62,6 @@ document.addEventListener('DOMContentLoaded', () => {
    * Fetch profile from backend
    */
   const loadProfile = async () => {
-    // Check local storage first
     const localAvatar = localStorage.getItem('transitly_user_avatar');
     if (localAvatar) {
       currentUser.avatarUrl = localAvatar;
@@ -106,110 +98,63 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   /**
-   * Optimize & crop image file to standard 400x400 data URL for instant crisp rendering & backend sync
+   * Process and upload image from local device storage
    */
   const processImageFile = (file) => {
     if (!file) return;
-    if (!file.type || !file.type.startsWith('image/')) {
-      showToast('Please select a valid image file (PNG, JPG, WebP, GIF).', false);
-      return;
-    }
 
     const reader = new FileReader();
     reader.onload = (e) => {
+      const rawData = e.target.result;
+
+      // 1. Instant optimistic UI update
+      currentUser.avatarUrl = rawData;
+      localStorage.setItem('transitly_user_avatar', rawData);
+      renderProfile();
+      showToast('📷 Profile photo uploaded from device!');
+
+      // 2. High performance background canvas center-crop and compression
       const img = new Image();
       img.onload = async () => {
         try {
-          // Crop and resize to square 400x400 canvas
           const canvas = document.createElement('canvas');
           const size = 400;
           canvas.width = size;
           canvas.height = size;
           const ctx = canvas.getContext('2d');
 
-          // Calculate center crop
           const minDim = Math.min(img.width, img.height);
           const sx = (img.width - minDim) / 2;
           const sy = (img.height - minDim) / 2;
 
           ctx.drawImage(img, sx, sy, minDim, minDim, 0, 0, size, size);
-
-          // Get optimized WebP or JPEG data URL
           const optimizedDataUrl = canvas.toDataURL('image/jpeg', 0.92);
 
-          // Update UI immediately
           currentUser.avatarUrl = optimizedDataUrl;
           localStorage.setItem('transitly_user_avatar', optimizedDataUrl);
           renderProfile();
 
-          // Sync with backend API
-          try {
-            await fetch('/api/v1/profile', {
-              method: 'PUT',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ avatarUrl: optimizedDataUrl })
-            });
-          } catch (_) {}
-
-          showToast('📷 Profile photo uploaded from device successfully!');
+          // Sync with database
+          await fetch('/api/v1/profile', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ avatarUrl: optimizedDataUrl })
+          });
         } catch (err) {
-          // Fallback to raw dataUrl if canvas operations fail
-          currentUser.avatarUrl = e.target.result;
-          localStorage.setItem('transitly_user_avatar', e.target.result);
-          renderProfile();
-          showToast('📷 Profile photo updated successfully!');
+          // Fallback to raw dataUrl
+          fetch('/api/v1/profile', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ avatarUrl: rawData })
+          }).catch(() => {});
         }
       };
-      img.src = e.target.result;
+      img.src = rawData;
     };
     reader.readAsDataURL(file);
   };
 
-  /**
-   * File Picker Triggers
-   */
-  const triggerDeviceFilePicker = (inputEl) => {
-    if (inputEl) {
-      inputEl.value = ''; // Reset value to allow picking same image again
-      inputEl.click();
-    }
-  };
-
-  if (btnPickPhotoDevice) {
-    btnPickPhotoDevice.addEventListener('click', (e) => {
-      e.stopPropagation();
-      triggerDeviceFilePicker(inputAvatarFile);
-    });
-  }
-
-  if (avatarClickContainer) {
-    avatarClickContainer.addEventListener('click', () => {
-      triggerDeviceFilePicker(inputAvatarFile);
-    });
-  }
-
-  if (btnUploadAvatar) {
-    btnUploadAvatar.addEventListener('click', (e) => {
-      e.stopPropagation();
-      triggerDeviceFilePicker(inputAvatarFile);
-    });
-  }
-
-  if (btnModalUploadPhoto) {
-    btnModalUploadPhoto.addEventListener('click', (e) => {
-      e.stopPropagation();
-      triggerDeviceFilePicker(inputModalAvatarFile || inputAvatarFile);
-    });
-  }
-
-  if (modalAvatarClickArea) {
-    modalAvatarClickArea.addEventListener('click', (e) => {
-      e.stopPropagation();
-      triggerDeviceFilePicker(inputModalAvatarFile || inputAvatarFile);
-    });
-  }
-
-  // Handle Main File Input Change
+  // Main input change listener
   if (inputAvatarFile) {
     inputAvatarFile.addEventListener('change', (e) => {
       const file = e.target.files && e.target.files[0];
@@ -217,7 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Handle Modal File Input Change
+  // Modal input change listener
   if (inputModalAvatarFile) {
     inputModalAvatarFile.addEventListener('change', (e) => {
       const file = e.target.files && e.target.files[0];
@@ -225,9 +170,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Reset / Remove custom avatar
+  // Remove / Reset Avatar
   if (btnRemoveAvatar) {
     btnRemoveAvatar.addEventListener('click', async (e) => {
+      e.preventDefault();
       e.stopPropagation();
       currentUser.avatarUrl = DEFAULT_AVATAR;
       localStorage.removeItem('transitly_user_avatar');
@@ -244,52 +190,37 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /**
-   * Drag and drop support on main avatar
+   * Drag and drop support
    */
+  const avatarClickContainer = document.getElementById('avatarClickContainer');
   if (avatarClickContainer) {
-    ['dragenter', 'dragover'].forEach(eventName => {
-      avatarClickContainer.addEventListener(eventName, (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        avatarClickContainer.classList.add('ring-4', 'ring-primary');
-      });
+    avatarClickContainer.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      avatarClickContainer.classList.add('ring-4', 'ring-primary');
     });
-
-    ['dragleave', 'drop'].forEach(eventName => {
-      avatarClickContainer.addEventListener(eventName, (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        avatarClickContainer.classList.remove('ring-4', 'ring-primary');
-      });
+    avatarClickContainer.addEventListener('dragleave', () => {
+      avatarClickContainer.classList.remove('ring-4', 'ring-primary');
     });
-
     avatarClickContainer.addEventListener('drop', (e) => {
+      e.preventDefault();
+      avatarClickContainer.classList.remove('ring-4', 'ring-primary');
       const file = e.dataTransfer.files && e.dataTransfer.files[0];
       if (file) processImageFile(file);
     });
   }
 
-  /**
-   * Drag and drop support on modal drop zone
-   */
+  const modalDropZone = document.getElementById('modalDropZone');
   if (modalDropZone) {
-    ['dragenter', 'dragover'].forEach(eventName => {
-      modalDropZone.addEventListener(eventName, (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        modalDropZone.classList.add('border-primary', 'bg-primary/10');
-      });
+    modalDropZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      modalDropZone.classList.add('border-primary', 'bg-primary/10');
     });
-
-    ['dragleave', 'drop'].forEach(eventName => {
-      modalDropZone.addEventListener(eventName, (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        modalDropZone.classList.remove('border-primary', 'bg-primary/10');
-      });
+    modalDropZone.addEventListener('dragleave', () => {
+      modalDropZone.classList.remove('border-primary', 'bg-primary/10');
     });
-
     modalDropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      modalDropZone.classList.remove('border-primary', 'bg-primary/10');
       const file = e.dataTransfer.files && e.dataTransfer.files[0];
       if (file) processImageFile(file);
     });
