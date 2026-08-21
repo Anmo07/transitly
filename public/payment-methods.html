@@ -128,8 +128,7 @@
       min-height: max(884px, 100dvh);
     }
   </style>
-  </head>
-<body class="antialiased min-h-screen flex flex-col relative md:hidden">
+<body class="bg-background text-on-background min-h-screen flex flex-col relative antialiased pb-24">
 <!-- TopAppBar Header Component (Semantic Navigation Suppressed, Task-Focused Screen) -->
 <header class="flex justify-between items-center px-container-margin w-full h-16 bg-background sticky top-0 z-40">
 <button onclick="window.location.href='/profile'" aria-label="Go back" class="w-10 h-10 flex items-center justify-center rounded-full bg-surface-container-lowest shadow-sm text-on-surface hover:bg-surface-container-low transition-colors">
@@ -214,7 +213,7 @@
             </button>
 </div>
 <!-- BottomNavBar (Shared Component) -->
-<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-base pb-safe h-16 bg-surface border-t border-outline-variant/20 rounded-t-xl shadow-[0px_-4px_20px_rgba(0,0,0,0.05)] md:hidden">
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-base pb-safe h-16 bg-surface border-t border-outline-variant/20 rounded-t-xl shadow-[0px_-4px_20px_rgba(0,0,0,0.05)]">
 <a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-variant transition-colors group rounded-xl" href="/">
 <span class="material-symbols-outlined mb-1 group-active:scale-90 transition-transform duration-200 text-[24px]" data-icon="local_shipping">local_shipping</span>
 <span class="font-label-sm text-label-sm">Deliver</span>
