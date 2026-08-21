@@ -131,48 +131,91 @@
 </div>
 </header>
 <main class="w-full max-w-4xl mx-auto px-container-margin md:mt-12 pt-stack-lg">
-<!-- Page Title & Search -->
+<!<!-- Page Title & Search -->
 <div class="mb-stack-lg animate-fade-in-up">
 <h2 class="font-headline-md text-headline-md text-on-background mb-stack-md">Delivery History</h2>
 <div class="relative w-full">
 <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
 <span class="material-symbols-outlined text-outline">search</span>
 </div>
-<input class="w-full pl-12 pr-4 py-4 bg-surface border border-surface-variant rounded-xl focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary font-body-md text-body-md placeholder-outline transition-all shadow-[0px_4px_20px_rgba(0,0,0,0.02)] hover:shadow-[0px_4px_20px_rgba(0,0,0,0.05)]" placeholder="Search by tracking number, destination..." type="text"/>
-<button class="absolute inset-y-0 right-0 pr-4 flex items-center text-primary hover:opacity-80">
-<span class="material-symbols-outlined" data-icon="filter_list">filter_list</span>
+<input id="historySearchInput" class="w-full pl-12 pr-4 py-3.5 bg-surface border border-surface-variant rounded-xl focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary font-body-md text-body-md placeholder-outline transition-all shadow-[0px_4px_20px_rgba(0,0,0,0.02)] hover:shadow-[0px_4px_20px_rgba(0,0,0,0.05)]" placeholder="Search by tracking ID (e.g. TRK-88219), destination, status..." type="text"/>
+<button id="btnClearHistorySearch" class="hidden absolute inset-y-0 right-0 pr-4 flex items-center text-outline hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-lg">close</span>
 </button>
 </div>
 </div>
+
 <!-- Filters Chips -->
-<div class="flex overflow-x-auto no-scrollbar space-x-stack-md mb-stack-lg pb-2">
-<button class="flex-shrink-0 bg-primary text-on-primary font-label-md text-label-md px-4 py-2 rounded-full shadow-[0px_4px_12px_rgba(0,80,203,0.15)] transition-transform hover:scale-105">
-                All
-            </button>
-<button class="flex-shrink-0 bg-surface text-on-surface-variant border border-surface-variant font-label-md text-label-md px-4 py-2 rounded-full hover:bg-surface-variant transition-colors">
-                Delivered
-            </button>
-<button class="flex-shrink-0 bg-surface text-on-surface-variant border border-surface-variant font-label-md text-label-md px-4 py-2 rounded-full hover:bg-surface-variant transition-colors">
-                In Transit
-            </button>
-<button class="flex-shrink-0 bg-surface text-on-surface-variant border border-surface-variant font-label-md text-label-md px-4 py-2 rounded-full hover:bg-surface-variant transition-colors">
-                Cancelled
-            </button>
+<div class="flex overflow-x-auto no-scrollbar space-x-2 mb-stack-lg pb-2" id="historyFiltersContainer">
+<button type="button" class="history-chip flex-shrink-0 bg-primary text-on-primary font-label-md text-label-md px-4 py-2 rounded-full shadow-[0px_4px_12px_rgba(0,80,203,0.15)] transition-transform active:scale-95" data-filter="ALL">
+    All
+</button>
+<button type="button" class="history-chip flex-shrink-0 bg-surface text-on-surface-variant border border-surface-variant font-label-md text-label-md px-4 py-2 rounded-full hover:bg-surface-variant transition-colors active:scale-95" data-filter="DELIVERED">
+    Delivered
+</button>
+<button type="button" class="history-chip flex-shrink-0 bg-surface text-on-surface-variant border border-surface-variant font-label-md text-label-md px-4 py-2 rounded-full hover:bg-surface-variant transition-colors active:scale-95" data-filter="IN_TRANSIT">
+    In Transit
+</button>
+<button type="button" class="history-chip flex-shrink-0 bg-surface text-on-surface-variant border border-surface-variant font-label-md text-label-md px-4 py-2 rounded-full hover:bg-surface-variant transition-colors active:scale-95" data-filter="CANCELLED">
+    Cancelled
+</button>
 </div>
-<!-- Month Section -->
-<div class="mb-section-gap">
+
+<!-- Empty State Filter Notice -->
+<div id="historyEmptyState" class="hidden text-center py-12 px-4 bg-surface rounded-2xl border border-outline-variant/20 mb-stack-lg shadow-sm">
+  <span class="material-symbols-outlined text-4xl text-outline mb-2">search_off</span>
+  <p class="font-bold text-on-surface">No matching deliveries</p>
+  <p class="text-xs text-on-surface-variant mt-1">Try searching for a different keyword or reset filters.</p>
+</div>
+
+<!-- Active Month Section -->
+<div class="history-month-section mb-section-gap">
 <h3 class="font-label-md text-label-md text-outline mb-stack-md uppercase tracking-wider pl-2">October 2023</h3>
 <div class="space-y-stack-md">
-<!-- History Card 1 -->
-<div class="bg-surface rounded-xl p-stack-md flex flex-col md:flex-row shadow-[0px_4px_20px_rgba(0,0,0,0.05)] hover:shadow-[0px_8px_30px_rgba(0,102,255,0.08)] transition-all border border-transparent cursor-pointer group">
+
+<!-- History Card 1 (In Transit) -->
+<div class="history-item-card bg-surface rounded-xl p-stack-md flex flex-col md:flex-row shadow-[0px_4px_20px_rgba(0,0,0,0.05)] hover:shadow-[0px_8px_30px_rgba(0,102,255,0.08)] transition-all border border-primary/20 cursor-pointer group" data-status="IN_TRANSIT" data-tracking-id="TRK-88219" data-search="TRK-88219 Fleet Bus #402 Delhi to Chandigarh Sector 17 GT Road In Transit High Priority Package">
 <div class="flex items-start md:items-center justify-between w-full">
 <!-- Left: Icon & Location -->
 <div class="flex items-center space-x-stack-md">
-<div class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center flex-shrink-0 relative overflow-hidden">
-<img class="w-8 h-8 object-contain" data-alt="A clean, minimalist logo icon for Uber, featuring simple black geometric shapes on a pristine white background. High contrast, sharp edges, modern corporate aesthetic. 8k resolution, flat lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYAQ9aSqwa-XMGtXzOUqUAsQqCSs_obgXAe7mLh9mhAXassnu6VGp2vt_NOQSqt4TP7kNwFW_CVo9s9AKlZKtZWi8M2B1uH1lzX4IBMtN0M5C8DgsAy9AwvZJWeI5slO7FbXzfkfASWEU5KiP1GT4CvdxzRCd5JrvSNwutgbpvZ8_thcv0PpAHRF_aA7etonssvasIJxnAIh002Uz-gZQcG7Z6YqyYg6PNHA4E4yRmklN9KG2wCRMg"/>
+<div class="w-12 h-12 rounded-full bg-primary-container/10 text-primary flex items-center justify-center flex-shrink-0 relative overflow-hidden border border-primary-container/30">
+<span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">directions_bus</span>
 </div>
 <div>
-<h4 class="font-body-md text-body-md font-semibold text-on-surface group-hover:text-primary transition-colors">124 Maple Street, Apt 4B</h4>
+<div class="flex items-center gap-2">
+  <h4 class="font-body-md text-body-md font-bold text-on-surface group-hover:text-primary transition-colors">Chandigarh ISBT Sector 17</h4>
+  <span class="bg-primary-container/20 text-primary text-[10px] font-bold px-2 py-0.5 rounded-full">TRK-88219</span>
+</div>
+<div class="flex items-center space-x-2 mt-1">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Today, In Route</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<span class="font-label-sm text-label-sm text-primary font-semibold">Fleet Bus #402 (Express)</span>
+</div>
+</div>
+</div>
+<!-- Right: Status & Price -->
+<div class="flex flex-col items-end">
+<div class="bg-primary-container/20 text-primary font-label-sm text-label-sm px-3 py-1 rounded-full flex items-center space-x-1 mb-1 font-bold">
+<span class="w-2 h-2 rounded-full bg-primary animate-ping"></span>
+<span>In Transit</span>
+</div>
+<span class="font-body-md text-body-md font-semibold text-on-surface">₹450.00</span>
+</div>
+</div>
+</div>
+
+<!-- History Card 2 (Delivered) -->
+<div class="history-item-card bg-surface rounded-xl p-stack-md flex flex-col md:flex-row shadow-[0px_4px_20px_rgba(0,0,0,0.05)] hover:shadow-[0px_8px_30px_rgba(0,102,255,0.08)] transition-all border border-transparent cursor-pointer group" data-status="DELIVERED" data-tracking-id="TRK-60912" data-search="TRK-60912 124 Maple Street Apt 4B Jaipur Uber Direct Delivered">
+<div class="flex items-start md:items-center justify-between w-full">
+<div class="flex items-center space-x-stack-md">
+<div class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center flex-shrink-0 relative overflow-hidden">
+<img class="w-8 h-8 object-contain" data-alt="Uber Direct" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYAQ9aSqwa-XMGtXzOUqUAsQqCSs_obgXAe7mLh9mhAXassnu6VGp2vt_NOQSqt4TP7kNwFW_CVo9s9AKlZKtZWi8M2B1uH1lzX4IBMtN0M5C8DgsAy9AwvZJWeI5slO7FbXzfkfASWEU5KiP1GT4CvdxzRCd5JrvSNwutgbpvZ8_thcv0PpAHRF_aA7etonssvasIJxnAIh002Uz-gZQcG7Z6YqyYg6PNHA4E4yRmklN9KG2wCRMg"/>
+</div>
+<div>
+<div class="flex items-center gap-2">
+  <h4 class="font-body-md text-body-md font-semibold text-on-surface group-hover:text-primary transition-colors">124 Maple Street, Apt 4B</h4>
+  <span class="text-on-surface-variant text-[10px] font-semibold bg-surface-variant px-1.5 py-0.5 rounded">TRK-60912</span>
+</div>
 <div class="flex items-center space-x-2 mt-1">
 <span class="font-label-sm text-label-sm text-on-surface-variant">Oct 24, 2:30 PM</span>
 <span class="w-1 h-1 rounded-full bg-outline-variant"></span>
@@ -180,9 +223,8 @@
 </div>
 </div>
 </div>
-<!-- Right: Status & Price -->
 <div class="flex flex-col items-end">
-<div class="bg-[#e6f4ea] text-[#137333] font-label-sm text-label-sm px-3 py-1 rounded-full flex items-center space-x-1 mb-1">
+<div class="bg-[#e6f4ea] text-[#137333] font-label-sm text-label-sm px-3 py-1 rounded-full flex items-center space-x-1 mb-1 font-semibold">
 <span class="material-symbols-outlined text-[14px]" data-icon="check_circle" data-weight="fill" style="font-variation-settings: 'FILL' 1;">check_circle</span>
 <span>Delivered</span>
 </div>
@@ -190,15 +232,19 @@
 </div>
 </div>
 </div>
-<!-- History Card 2 -->
-<div class="bg-surface rounded-xl p-stack-md flex flex-col md:flex-row shadow-[0px_4px_20px_rgba(0,0,0,0.05)] hover:shadow-[0px_8px_30px_rgba(0,102,255,0.08)] transition-all border border-transparent cursor-pointer group">
+
+<!-- History Card 3 (Delivered) -->
+<div class="history-item-card bg-surface rounded-xl p-stack-md flex flex-col md:flex-row shadow-[0px_4px_20px_rgba(0,0,0,0.05)] hover:shadow-[0px_8px_30px_rgba(0,102,255,0.08)] transition-all border border-transparent cursor-pointer group" data-status="DELIVERED" data-tracking-id="TRK-74911" data-search="TRK-74911 890 Tech Blvd Suite 200 Sirsa CitySprint Delivered">
 <div class="flex items-start md:items-center justify-between w-full">
 <div class="flex items-center space-x-stack-md">
 <div class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center flex-shrink-0 relative overflow-hidden">
-<img class="w-8 h-8 object-contain" data-alt="A minimalist logo icon for a local courier service, featuring a simple stylized box or abstract speed lines in a vibrant blue color on a white background. Clean, flat design style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBHXHZfLMWyw3Re_BA2t9bbGCLvR7XTq8gY-b4LJ-fTye15E4BOJtBNro4_FVzl8bPKGKTSTsp0hBlqyJJgqzDG2MVBQcyfBptrdsVdnxRw7INFcOUnhuRJeOGXjRAQADDoGLJgCLbuoH8cW6q2k7NIuNHkhkylz0F8B0gwrRYlDlFCnW9pTkhvqjIb7jviRWO0Wo7_SKTcTOIhvqz-EqOxTtdaI27pW6SZAeqXpOaZzoR91wMZU6Bj"/>
+<img class="w-8 h-8 object-contain" data-alt="CitySprint" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBHXHZfLMWyw3Re_BA2t9bbGCLvR7XTq8gY-b4LJ-fTye15E4BOJtBNro4_FVzl8bPKGKTSTsp0hBlqyJJgqzDG2MVBQcyfBptrdsVdnxRw7INFcOUnhuRJeOGXjRAQADDoGLJgCLbuoH8cW6q2k7NIuNHkhkylz0F8B0gwrRYlDlFCnW9pTkhvqjIb7jviRWO0Wo7_SKTcTOIhvqz-EqOxTtdaI27pW6SZAeqXpOaZzoR91wMZU6Bj"/>
 </div>
 <div>
-<h4 class="font-body-md text-body-md font-semibold text-on-surface group-hover:text-primary transition-colors">890 Tech Blvd, Suite 200</h4>
+<div class="flex items-center gap-2">
+  <h4 class="font-body-md text-body-md font-semibold text-on-surface group-hover:text-primary transition-colors">890 Tech Blvd, Suite 200</h4>
+  <span class="text-on-surface-variant text-[10px] font-semibold bg-surface-variant px-1.5 py-0.5 rounded">TRK-74911</span>
+</div>
 <div class="flex items-center space-x-2 mt-1">
 <span class="font-label-sm text-label-sm text-on-surface-variant">Oct 21, 10:15 AM</span>
 <span class="w-1 h-1 rounded-full bg-outline-variant"></span>
@@ -207,7 +253,7 @@
 </div>
 </div>
 <div class="flex flex-col items-end">
-<div class="bg-[#e6f4ea] text-[#137333] font-label-sm text-label-sm px-3 py-1 rounded-full flex items-center space-x-1 mb-1">
+<div class="bg-[#e6f4ea] text-[#137333] font-label-sm text-label-sm px-3 py-1 rounded-full flex items-center space-x-1 mb-1 font-semibold">
 <span class="material-symbols-outlined text-[14px]" data-icon="check_circle" data-weight="fill" style="font-variation-settings: 'FILL' 1;">check_circle</span>
 <span>Delivered</span>
 </div>
@@ -215,21 +261,27 @@
 </div>
 </div>
 </div>
+
 </div>
 </div>
-<!-- Month Section -->
-<div class="mb-section-gap">
+
+<!-- Past Month Section -->
+<div class="history-month-section mb-section-gap">
 <h3 class="font-label-md text-label-md text-outline mb-stack-md uppercase tracking-wider pl-2">September 2023</h3>
 <div class="space-y-stack-md">
-<!-- History Card 3 -->
-<div class="bg-surface rounded-xl p-stack-md flex flex-col md:flex-row shadow-[0px_4px_20px_rgba(0,0,0,0.05)] hover:shadow-[0px_8px_30px_rgba(0,102,255,0.08)] transition-all border border-transparent cursor-pointer group">
+
+<!-- History Card 4 (Delivered) -->
+<div class="history-item-card bg-surface rounded-xl p-stack-md flex flex-col md:flex-row shadow-[0px_4px_20px_rgba(0,0,0,0.05)] hover:shadow-[0px_8px_30px_rgba(0,102,255,0.08)] transition-all border border-transparent cursor-pointer group" data-status="DELIVERED" data-tracking-id="TRK-45123" data-search="TRK-45123 45 West End Ave inDrive Delivered">
 <div class="flex items-start md:items-center justify-between w-full">
 <div class="flex items-center space-x-stack-md">
 <div class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center flex-shrink-0 relative overflow-hidden">
-<img class="w-8 h-8 object-contain" data-alt="A clean, minimalist logo for inDrive, featuring abstract green and black shapes on a white background. Modern, corporate transport aesthetic. Flat lighting, high resolution." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDrpKcQmpLjn_y-PaiKIsV-IM2nsejfBd4rKKjae-dWpXLA6QSup1NQmeAmlh2KiHiy6tONhRlelzktm30BKuWaNSJDLZdfDZodWG1OXoOJO85Jc-i143lE0QZARhgsU1q6jM4YEph1n-22sdr7XI-9iVgukoZzJ8K4tdDmyDZbQH-LaZF0maSNU-yvg3erXbIO87cGew0AVtR2zaVMmy37r9QJ7DK4qXiM2HvbOYXe3CTssarU8OcC"/>
+<img class="w-8 h-8 object-contain" data-alt="inDrive" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDrpKcQmpLjn_y-PaiKIsV-IM2nsejfBd4rKKjae-dWpXLA6QSup1NQmeAmlh2KiHiy6tONhRlelzktm30BKuWaNSJDLZdfDZodWG1OXoOJO85Jc-i143lE0QZARhgsU1q6jM4YEph1n-22sdr7XI-9iVgukoZzJ8K4tdDmyDZbQH-LaZF0maSNU-yvg3erXbIO87cGew0AVtR2zaVMmy37r9QJ7DK4qXiM2HvbOYXe3CTssarU8OcC"/>
 </div>
 <div>
-<h4 class="font-body-md text-body-md font-semibold text-on-surface group-hover:text-primary transition-colors">45 West End Ave</h4>
+<div class="flex items-center gap-2">
+  <h4 class="font-body-md text-body-md font-semibold text-on-surface group-hover:text-primary transition-colors">45 West End Ave</h4>
+  <span class="text-on-surface-variant text-[10px] font-semibold bg-surface-variant px-1.5 py-0.5 rounded">TRK-45123</span>
+</div>
 <div class="flex items-center space-x-2 mt-1">
 <span class="font-label-sm text-label-sm text-on-surface-variant">Sep 15, 6:45 PM</span>
 <span class="w-1 h-1 rounded-full bg-outline-variant"></span>
@@ -238,7 +290,7 @@
 </div>
 </div>
 <div class="flex flex-col items-end">
-<div class="bg-[#e6f4ea] text-[#137333] font-label-sm text-label-sm px-3 py-1 rounded-full flex items-center space-x-1 mb-1">
+<div class="bg-[#e6f4ea] text-[#137333] font-label-sm text-label-sm px-3 py-1 rounded-full flex items-center space-x-1 mb-1 font-semibold">
 <span class="material-symbols-outlined text-[14px]" data-icon="check_circle" data-weight="fill" style="font-variation-settings: 'FILL' 1;">check_circle</span>
 <span>Delivered</span>
 </div>
@@ -246,15 +298,19 @@
 </div>
 </div>
 </div>
-<!-- History Card 4 (Cancelled) -->
-<div class="bg-surface rounded-xl p-stack-md flex flex-col md:flex-row shadow-[0px_4px_20px_rgba(0,0,0,0.05)] hover:shadow-[0px_8px_30px_rgba(0,0,0,0.08)] transition-all border border-transparent cursor-pointer group opacity-75">
+
+<!-- History Card 5 (Cancelled) -->
+<div class="history-item-card bg-surface rounded-xl p-stack-md flex flex-col md:flex-row shadow-[0px_4px_20px_rgba(0,0,0,0.05)] hover:shadow-[0px_8px_30px_rgba(0,102,255,0.08)] transition-all border border-transparent cursor-pointer group opacity-75" data-status="CANCELLED" data-tracking-id="TRK-99012" data-search="TRK-99012 770 Pine Street FastTrack Cancelled">
 <div class="flex items-start md:items-center justify-between w-full">
 <div class="flex items-center space-x-stack-md">
 <div class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center flex-shrink-0 relative overflow-hidden grayscale">
-<img class="w-8 h-8 object-contain" data-alt="A minimal icon of a delivery van in soft gray tones on a white background. Simple geometry, flat design." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAtQwsSpM7sNDLyLziK6itj0ogVNcged_gHCVOkaVBd7Di_BpkYkpH-1NbPem08TwB2Hp8BJY3NWbV7Z6k55ptAtrAOFqtL-G6vP1laj_jkSj5VMy3wYtw4aKJWpMCHc5imFFHTU7DxcqvRdn8hT0FNTh0s0Ub4snOGP6rCcxH7uEfLb8fNEBITsj22axC7A_S7upDBQNGBPQZ5JN0MZp2C8MznM8o4hZ80TqG82CFTqCn7K4zWEn-0"/>
+<img class="w-8 h-8 object-contain" data-alt="FastTrack" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAtQwsSpM7sNDLyLziK6itj0ogVNcged_gHCVOkaVBd7Di_BpkYkpH-1NbPem08TwB2Hp8BJY3NWbV7Z6k55ptAtrAOFqtL-G6vP1laj_jkSj5VMy3wYtw4aKJWpMCHc5imFFHTU7DxcqvRdn8hT0FNTh0s0Ub4snOGP6rCcxH7uEfLb8fNEBITsj22axC7A_S7upDBQNGBPQZ5JN0MZp2C8MznM8o4hZ80TqG82CFTqCn7K4zWEn-0"/>
 </div>
 <div>
-<h4 class="font-body-md text-body-md font-semibold text-on-surface group-hover:text-primary transition-colors">770 Pine Street</h4>
+<div class="flex items-center gap-2">
+  <h4 class="font-body-md text-body-md font-semibold text-on-surface group-hover:text-primary transition-colors">770 Pine Street</h4>
+  <span class="text-on-surface-variant text-[10px] font-semibold bg-surface-variant px-1.5 py-0.5 rounded">TRK-99012</span>
+</div>
 <div class="flex items-center space-x-2 mt-1">
 <span class="font-label-sm text-label-sm text-on-surface-variant">Sep 02, 1:00 PM</span>
 <span class="w-1 h-1 rounded-full bg-outline-variant"></span>
@@ -263,7 +319,7 @@
 </div>
 </div>
 <div class="flex flex-col items-end">
-<div class="bg-surface-variant text-on-surface-variant font-label-sm text-label-sm px-3 py-1 rounded-full flex items-center space-x-1 mb-1">
+<div class="bg-surface-variant text-on-surface-variant font-label-sm text-label-sm px-3 py-1 rounded-full flex items-center space-x-1 mb-1 font-semibold">
 <span class="material-symbols-outlined text-[14px]" data-icon="cancel">cancel</span>
 <span>Cancelled</span>
 </div>
@@ -271,8 +327,10 @@
 </div>
 </div>
 </div>
+
 </div>
 </div>
+
 </main>
 <!-- BottomNavBar (Shared Component) -->
 <nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-base pb-safe h-16 bg-surface border-t border-outline-variant/20 rounded-t-xl shadow-[0px_-4px_20px_rgba(0,0,0,0.05)]">
@@ -294,20 +352,8 @@
 <span class="font-label-sm text-label-sm">Profile</span>
 </a>
 </nav>
-<!-- Simple fade in animation for list -->
-<style>
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        .animate-fade-in-up {
-            animation: fadeInUp 0.4s ease-out forwards;
-        }
-    </style>
+
+<!-- Scripts -->
+<script defer src="/js/common.js"></script>
+<script defer src="/js/history.js"></script>
 </body></html>
