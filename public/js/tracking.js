@@ -1,274 +1,355 @@
 /**
- * Transitly — Live Telematics & Parcel Tracking Controller
+ * Transitly — Live Journey Vehicle Simulation & Telematics Controller
  */
 
-document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', () => {
   let map = null;
   let busMarker = null;
-  let routeLine = null;
-  let currentStep = 1;
-  let refreshTimerInterval = null;
-  let refreshSecondsLeft = 30;
+  let routePolyline = null;
+  let pulseCircle = null;
+  let journeyInterval = null;
+  let isPaused = false;
+  let currentSegmentIndex = 0;
+  let currentSubStep = 0;
+  const SUB_STEPS_PER_SEGMENT = 12;
 
-  // Internal Validated Parcel Catalog
-  const parcelDatabase = {
+  // Rich Multi-Corridor Database
+  const routesData = {
     'TRK-88219': {
       trackingId: 'TRK-88219',
       busNumber: 'Fleet Bus #402 (HR-55-AB-1234)',
-      routeName: 'Delhi ➔ Chandigarh (GT Road)',
-      cargoBay: 'Bay B2 • QR Sealed',
-      parties: 'Aarav S. ➔ Rohan V.',
+      corridorName: 'Delhi ➔ Chandigarh Express (GT Road / NH-44)',
       eta: '14:30',
-      speed: '64 km/h',
-      statusTitle: 'In Transit via Fleet Bus #402',
-      handoffText: 'North ISBT Terminal to Rapido Rider',
-      distance: '2.4 km',
+      totalKm: 248,
+      origin: 'Delhi Kashmiri Gate ISBT',
+      destination: 'Chandigarh ISBT Sector 17',
+      nextHandoff: 'ISBT Sector 17 ➔ Rapido Delivery Partner',
       stops: [
-        [28.6675, 77.2285], // ISBT Kashmiri Gate
-        [28.9931, 77.0151], // Sonipat Bypass
-        [29.3909, 76.9635], // Panipat Toll
-        [29.6857, 76.9905], // Karnal Depot
-        [29.9695, 76.8783], // Kurukshetra Hub
-        [30.3782, 76.7767], // Ambala Cantt
-        [30.7410, 76.7790]  // ISBT Chandigarh Sector 17
+        { name: 'Kashmiri Gate ISBT, Delhi', coords: [28.6675, 77.2285], milestone: 'Departed Delhi Hub' },
+        { name: 'Sonipat Highway Junction', coords: [28.9931, 77.0151], milestone: 'Passing Sonipat Toll Plaza' },
+        { name: 'Panipat Elevated Highway', coords: [29.3909, 76.9635], milestone: 'Crossing Panipat Industrial Corridor' },
+        { name: 'Karnal Oasis Depot', coords: [29.6857, 76.9905], milestone: 'Passing Karnal Midpoint Hub' },
+        { name: 'Kurukshetra Pipli Junction', coords: [29.9695, 76.8783], milestone: 'Cruising Kurukshetra Sector 3' },
+        { name: 'Ambala Cantt Interchange', coords: [30.3782, 76.7767], milestone: 'Approaching Ambala Flyover' },
+        { name: 'Chandigarh Sector 17 ISBT', coords: [30.7410, 76.7790], milestone: 'Arrived at Destination Hub' }
       ]
     },
     'TRK-60912': {
       trackingId: 'TRK-60912',
       busNumber: 'Fleet Bus #108 (HR-66-XY-5678)',
-      routeName: 'Delhi ➔ Jaipur Highway',
-      cargoBay: 'Bay A1 • Tamper-Evident',
-      parties: 'Pooja K. ➔ Manish T.',
+      corridorName: 'Delhi ➔ Jaipur Superfast (NH-48)',
       eta: '16:45',
-      speed: '72 km/h',
-      statusTitle: 'In Transit via Fleet Bus #108',
-      handoffText: 'Dhaula Kuan Depot to Uber Rider',
-      distance: '18.2 km',
+      totalKm: 270,
+      origin: 'Dhaula Kuan Hub, Delhi',
+      destination: 'Sindhi Camp ISBT, Jaipur',
+      nextHandoff: 'Sindhi Camp ➔ Uber Direct Courier',
       stops: [
-        [28.5915, 77.1610], // Dhaula Kuan Delhi
-        [28.4595, 77.0266], // Gurgaon IFFCO Chowk
-        [28.2055, 76.8406], // Dharuhera
-        [28.0050, 76.5800], // Bawal Interchange
-        [27.7900, 76.3200], // Behror Midpoint
-        [27.3500, 75.9800], // Kotputli Hub
-        [26.9124, 75.7873]  // Sindhi Camp Jaipur
+        { name: 'Dhaula Kuan Terminal, Delhi', coords: [28.5915, 77.1610], milestone: 'Departed Dhaula Kuan Terminal' },
+        { name: 'Gurgaon IFFCO Chowk', coords: [28.4595, 77.0266], milestone: 'Cleared Gurgaon Cyber City Toll' },
+        { name: 'Dharuhera Industrial Toll', coords: [28.2055, 76.8406], milestone: 'Crossing Dharuhera Flyover' },
+        { name: 'Bawal Intercity Interchange', coords: [28.0050, 76.5800], milestone: 'Passing Bawal Express Node' },
+        { name: 'Behror Midway Oasis', coords: [27.7900, 76.3200], milestone: 'Cruising Behror Highway corridor' },
+        { name: 'Kotputli Express Bypass', coords: [27.3500, 75.9800], milestone: 'Passing Kotputli Junction' },
+        { name: 'Sindhi Camp ISBT, Jaipur', coords: [26.9124, 75.7873], milestone: 'Arrived at Jaipur Hub' }
       ]
     },
     'TRK-74911': {
       trackingId: 'TRK-74911',
       busNumber: 'Fleet Bus #515 (HR-26-CC-9012)',
-      routeName: 'Delhi ➔ Hisar ➔ Sirsa',
-      cargoBay: 'Bay C3 • Dual-OTP Sealed',
-      parties: 'Vikas N. ➔ Anjali D.',
+      corridorName: 'Delhi ➔ Rohtak ➔ Hisar ➔ Sirsa (NH-9)',
       eta: '18:15',
-      speed: '58 km/h',
-      statusTitle: 'In Transit via Fleet Bus #515',
-      handoffText: 'Bahadurgarh Hub to Door Delivery',
-      distance: '45.0 km',
+      totalKm: 255,
+      origin: 'Bahadurgarh Hub, Delhi NCR',
+      destination: 'Sirsa ISBT Terminal',
+      nextHandoff: 'Sirsa ISBT ➔ Local Courier Partner',
       stops: [
-        [28.6920, 76.9240], // Bahadurgarh
-        [28.8955, 76.6066], // Rohtak New Bus Stand
-        [29.0020, 76.2200], // Meham Bypass
-        [29.1492, 75.7217], // Hisar Military Cantt Hub
-        [29.5320, 75.0318]  // Sirsa ISBT
+        { name: 'Bahadurgarh Gate, Delhi NCR', coords: [28.6920, 76.9240], milestone: 'Departed Bahadurgarh Hub' },
+        { name: 'Rohtak New Bus Terminal', coords: [28.8955, 76.6066], milestone: 'Crossing Rohtak Bypass' },
+        { name: 'Meham Intercity Expressway', coords: [29.0020, 76.2200], milestone: 'Passing Meham Highway Oasis' },
+        { name: 'Hansi City Interchange', coords: [29.1000, 75.9600], milestone: 'Cruising Hansi Flyover' },
+        { name: 'Hisar Cantt Central Hub', coords: [29.1492, 75.7217], milestone: 'Cleared Hisar Transit Checkpoint' },
+        { name: 'Agroha Heritage Highway', coords: [29.3500, 75.6000], milestone: 'Approaching Agroha Toll' },
+        { name: 'Sirsa ISBT Bus Terminal', coords: [29.5320, 75.0318], milestone: 'Arrived at Sirsa Hub' }
       ]
     }
   };
 
-  // Dynamic on-demand Leaflet Loader
-  const loadLeaflet = () => {
-    return new Promise((resolve) => {
-      if (window.L) return resolve();
-
-      if (!document.getElementById('leaflet-css')) {
-        const link = document.createElement('link');
-        link.id = 'leaflet-css';
-        link.rel = 'stylesheet';
-        link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
-        document.head.appendChild(link);
-      }
-
-      const script = document.createElement('script');
-      script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
-      script.onload = () => resolve();
-      script.onerror = () => resolve();
-      document.body.appendChild(script);
-    });
+  /**
+   * Linear Coordinate Interpolation between two LatLngs
+   */
+  const interpolateCoord = (start, end, fraction) => {
+    return [
+      start[0] + (end[0] - start[0]) * fraction,
+      start[1] + (end[1] - start[1]) * fraction
+    ];
   };
 
-  const initMap = async () => {
-    if (!window.L || map) return;
-
-    const defaultParcel = parcelDatabase['TRK-88219'];
+  /**
+   * Initialize Leaflet Interactive Map
+   */
+  const initLeafletMap = (route) => {
     const mapElement = document.getElementById('liveTrackingMap');
-    if (!mapElement) return;
+    const staticFallback = document.getElementById('staticMapFallback');
+    if (!mapElement || !window.L) return;
 
-    map = L.map('liveTrackingMap', { zoomControl: false }).setView(defaultParcel.stops[1], 11);
+    if (staticFallback) staticFallback.style.display = 'none';
 
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-      maxZoom: 19,
-      attribution: '© OpenStreetMap, © CARTO'
-    }).addTo(map);
+    if (!map) {
+      map = L.map('liveTrackingMap', {
+        zoomControl: false,
+        attributionControl: false
+      }).setView(route.stops[0].coords, 10);
 
-    routeLine = L.polyline(defaultParcel.stops, {
-      color: '#0050cb',
-      weight: 5,
-      opacity: 0.8,
-      dashArray: '8, 8'
-    }).addTo(map);
+      // Clean Voyager map tiles
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+        maxZoom: 19
+      }).addTo(map);
+    }
 
-    const busIcon = L.divIcon({
+    // Render polyline route
+    const allCoords = route.stops.map(s => s.coords);
+    if (routePolyline) {
+      routePolyline.setLatLngs(allCoords);
+    } else {
+      routePolyline = L.polyline(allCoords, {
+        color: '#0050cb',
+        weight: 6,
+        opacity: 0.85,
+        dashArray: '10, 8',
+        lineCap: 'round'
+      }).addTo(map);
+    }
+
+    // Stop markers
+    route.stops.forEach((stop, index) => {
+      const isEndpoint = index === 0 || index === route.stops.length - 1;
+      const markerIcon = L.divIcon({
+        className: 'stop-pin',
+        html: `
+          <div class="flex items-center justify-center w-5 h-5 rounded-full ${isEndpoint ? 'bg-primary border-2 border-white shadow-md' : 'bg-white border-2 border-primary shadow-sm'}">
+            <span class="w-1.5 h-1.5 rounded-full ${isEndpoint ? 'bg-white' : 'bg-primary'}"></span>
+          </div>
+        `,
+        iconSize: [20, 20],
+        iconAnchor: [10, 10]
+      });
+      L.marker(stop.coords, { icon: markerIcon }).addTo(map).bindPopup(`<b>${stop.name}</b>`);
+    });
+
+    // Custom Bus Marker
+    const busDivIcon = L.divIcon({
       className: 'custom-bus-marker',
       html: `
-        <div class="relative flex items-center justify-center w-10 h-10">
-          <div class="absolute w-10 h-10 rounded-full bg-primary/20 animate-ping"></div>
-          <div class="w-8 h-8 rounded-full bg-primary border-2 border-white shadow-lg flex items-center justify-center text-white">
-            <span class="material-symbols-outlined text-sm fill">directions_bus</span>
+        <div class="relative flex items-center justify-center w-12 h-12">
+          <div class="absolute w-12 h-12 rounded-full bg-primary/25 animate-ping"></div>
+          <div class="w-9 h-9 rounded-full bg-primary border-2 border-white shadow-xl flex items-center justify-center text-white z-10 transition-transform duration-300">
+            <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">directions_bus</span>
           </div>
         </div>
       `,
-      iconSize: [40, 40],
-      iconAnchor: [20, 20]
+      iconSize: [48, 48],
+      iconAnchor: [24, 24]
     });
 
-    busMarker = L.marker(defaultParcel.stops[1], { icon: busIcon }).addTo(map);
-    map.fitBounds(routeLine.getBounds(), { padding: [40, 40] });
+    if (busMarker) {
+      busMarker.setLatLng(route.stops[0].coords);
+    } else {
+      busMarker = L.marker(route.stops[0].coords, { icon: busDivIcon, zIndexOffset: 1000 }).addTo(map);
+    }
 
-    setTimeout(() => {
-      if (map) map.invalidateSize();
-    }, 200);
-
-    window.addEventListener('resize', () => {
-      if (map) map.invalidateSize();
-    });
+    map.fitBounds(routePolyline.getBounds(), { padding: [50, 50] });
+    setTimeout(() => map && map.invalidateSize(), 300);
   };
 
-  const updateInsightsCard = (parcel) => {
-    const trackedIdDisplay = document.getElementById('trackedIdDisplay');
-    const insightBusName = document.getElementById('insightBusName');
-    const insightRouteName = document.getElementById('insightRouteName');
-    const insightCargoBay = document.getElementById('insightCargoBay');
-    const insightParties = document.getElementById('insightParties');
-    const insightSpeed = document.getElementById('insightSpeed');
+  /**
+   * Start Dynamic Live Journey Simulation for a given Route
+   */
+  const startLiveJourney = (route) => {
+    if (journeyInterval) clearInterval(journeyInterval);
+    isPaused = false;
+    currentSegmentIndex = 1;
+    currentSubStep = 0;
+
+    // Update UI Elements with Route Details
     const trackStatusTitle = document.getElementById('trackStatusTitle');
+    const trackedIdBadge = document.getElementById('trackedIdBadge');
+    const trackRouteSubtitle = document.getElementById('trackRouteSubtitle');
     const trackEta = document.getElementById('trackEta');
-    const trackHandoffText = document.getElementById('trackHandoffText');
-    const trackDistance = document.getElementById('trackDistance');
-    const timelineActiveStopTitle = document.getElementById('timelineActiveStopTitle');
-    const timelineActiveStopSub = document.getElementById('timelineActiveStopSub');
+    const trackNextHandoff = document.getElementById('trackNextHandoff');
+    const timelineLiveStopTitle = document.getElementById('timelineLiveStopTitle');
+    const timelineLiveStopSub = document.getElementById('timelineLiveStopSub');
+    const timelinePickupLoc = document.getElementById('timelinePickupLoc');
+    const timelineFinalTitle = document.getElementById('timelineFinalTitle');
+    const timelineFinalSub = document.getElementById('timelineFinalSub');
+    const hudJourneyState = document.getElementById('hudJourneyState');
+    const iconPlayPause = document.getElementById('iconPlayPause');
+    const textPlayPause = document.getElementById('textPlayPause');
 
-    if (trackedIdDisplay) trackedIdDisplay.innerText = parcel.trackingId;
-    if (insightBusName) insightBusName.innerText = parcel.busNumber;
-    if (insightRouteName) insightRouteName.innerText = parcel.routeName;
-    if (insightCargoBay) insightCargoBay.innerText = parcel.cargoBay;
-    if (insightParties) insightParties.innerText = parcel.parties;
-    if (insightSpeed) insightSpeed.innerText = `Speed: ${parcel.speed}`;
-    if (trackStatusTitle) trackStatusTitle.innerText = parcel.statusTitle;
-    if (trackEta) trackEta.innerText = parcel.eta;
-    if (trackHandoffText) trackHandoffText.innerText = parcel.handoffText;
-    if (trackDistance) trackDistance.innerText = parcel.distance;
-    if (timelineActiveStopTitle) timelineActiveStopTitle.innerText = `In Transit – ${parcel.busNumber.split(' ')[2] || 'Bus #402'}`;
-    if (timelineActiveStopSub) timelineActiveStopSub.innerText = `Currently on ${parcel.routeName}`;
-  };
+    if (trackStatusTitle) trackStatusTitle.innerText = `In Transit via ${route.busNumber.split('(')[0].trim()}`;
+    if (trackedIdBadge) trackedIdBadge.innerText = route.trackingId;
+    if (trackRouteSubtitle) {
+      const liveText = document.getElementById('trackLiveStatusText');
+      if (liveText) liveText.innerText = `${route.corridorName} • Moving on Highway`;
+    }
+    if (trackEta) trackEta.innerText = route.eta;
+    if (trackNextHandoff) trackNextHandoff.innerText = route.nextHandoff;
+    if (timelinePickupLoc) timelinePickupLoc.innerText = `${route.origin} • Driver Verified`;
+    if (timelineFinalTitle) timelineFinalTitle.innerText = `${route.destination} Handoff`;
+    if (timelineFinalSub) timelineFinalSub.innerText = `${route.nextHandoff}`;
+    if (hudJourneyState) hudJourneyState.innerText = 'GPS LIVE JOURNEY';
+    if (iconPlayPause) iconPlayPause.innerText = 'pause';
+    if (textPlayPause) textPlayPause.innerText = 'Pause';
 
-  const start30SecAutoRefresh = (parcel) => {
-    if (refreshTimerInterval) clearInterval(refreshTimerInterval);
-    refreshSecondsLeft = 30;
+    initLeafletMap(route);
 
-    const refreshSecSpan = document.getElementById('refreshCountdownSecs');
-    if (refreshSecSpan) refreshSecSpan.innerText = refreshSecondsLeft;
+    const totalStops = route.stops.length;
 
-    refreshTimerInterval = setInterval(async () => {
-      refreshSecondsLeft--;
-      if (refreshSecSpan) refreshSecSpan.innerText = refreshSecondsLeft;
+    // Live Tick Loop (Every 1.2 seconds)
+    journeyInterval = setInterval(() => {
+      if (isPaused) return;
 
-      if (refreshSecondsLeft <= 0) {
-        refreshSecondsLeft = 30;
-        if (refreshSecSpan) refreshSecSpan.innerText = refreshSecondsLeft;
+      const p1 = route.stops[currentSegmentIndex].coords;
+      const p2 = route.stops[Math.min(currentSegmentIndex + 1, totalStops - 1)].coords;
 
-        // Step bus position along route
-        currentStep = (currentStep + 1) % parcel.stops.length;
-        const nextCoord = parcel.stops[currentStep];
-        if (busMarker && map) {
-          busMarker.setLatLng(nextCoord);
-          map.panTo(nextCoord, { animate: true, duration: 1.5 });
+      currentSubStep++;
+      const fraction = currentSubStep / SUB_STEPS_PER_SEGMENT;
+      const currentPos = interpolateCoord(p1, p2, Math.min(fraction, 1));
+
+      // Move Bus Marker
+      if (busMarker) {
+        busMarker.setLatLng(currentPos);
+      }
+
+      // Smoothly pan map to follow vehicle
+      if (map && currentSubStep % 3 === 0) {
+        map.panTo(currentPos, { animate: true, duration: 1.0 });
+      }
+
+      // Calculate Telematics Metrics
+      const totalStepsOverall = (totalStops - 1) * SUB_STEPS_PER_SEGMENT;
+      const currentGlobalStep = currentSegmentIndex * SUB_STEPS_PER_SEGMENT + currentSubStep;
+      const progressRatio = Math.min(currentGlobalStep / totalStepsOverall, 0.96);
+      const progressPct = Math.round(25 + progressRatio * 70);
+
+      const remainingDistanceKm = Math.max(1.2, (route.totalKm * (1 - progressRatio))).toFixed(1);
+      const simulatedSpeed = (62 + Math.sin(currentGlobalStep) * 9).toFixed(0);
+
+      // Update Telematics HUD
+      const hudSpeed = document.getElementById('hudSpeed');
+      const hudCoords = document.getElementById('hudCoords');
+      const trackDistance = document.getElementById('trackDistance');
+      const trackProgressBar = document.getElementById('trackProgressBar');
+
+      if (hudSpeed) hudSpeed.innerText = `${simulatedSpeed} km/h`;
+      if (hudCoords) hudCoords.innerText = `${currentPos[0].toFixed(3)}° N, ${currentPos[1].toFixed(3)}° E`;
+      if (trackDistance) trackDistance.innerText = `${remainingDistanceKm} km`;
+      if (trackProgressBar) trackProgressBar.style.height = `${progressPct}%`;
+
+      // Update Active Milestone
+      const currentStopInfo = route.stops[currentSegmentIndex];
+      if (timelineLiveStopTitle) {
+        timelineLiveStopTitle.innerText = `In Transit — ${route.busNumber.split('(')[0].trim()}`;
+      }
+      if (timelineLiveStopSub) {
+        timelineLiveStopSub.innerText = `${currentStopInfo.milestone} • Speed: ${simulatedSpeed} km/h`;
+      }
+
+      // Advance to next route segment
+      if (currentSubStep >= SUB_STEPS_PER_SEGMENT) {
+        currentSubStep = 0;
+        currentSegmentIndex++;
+
+        // Loop back or conclude route
+        if (currentSegmentIndex >= totalStops - 1) {
+          currentSegmentIndex = 0;
         }
       }
-    }, 1000);
+    }, 1200);
   };
 
-  const searchByTrackingId = async (inputVal) => {
-    const rawId = inputVal.trim().toUpperCase();
-    const errorBox = document.getElementById('parcelSearchError');
-    const errorMsg = document.getElementById('parcelSearchErrorMsg');
+  /**
+   * Search / Submit Handler
+   */
+  const handleTrackingLookup = (idVal) => {
+    const cleanId = (idVal || '').trim().toUpperCase();
+    const route = routesData[cleanId] || {
+      trackingId: cleanId || 'TRK-CUSTOM',
+      busNumber: `Fleet Bus #${cleanId.slice(-3) || '402'} (HR-Intercity)`,
+      corridorName: `Custom Intercity Corridor (${cleanId})`,
+      eta: '15:10',
+      totalKm: 220,
+      origin: 'Delhi Central Logistics Hub',
+      destination: 'Regional Intercity Terminal',
+      nextHandoff: 'Destination Bus Bay ➔ Doorstep Agent',
+      stops: routesData['TRK-88219'].stops
+    };
 
-    let parcel = parcelDatabase[rawId];
+    const inputTrackingId = document.getElementById('inputTrackingId');
+    if (inputTrackingId) inputTrackingId.value = route.trackingId;
 
-    if (!parcel) {
-      try {
-        const res = await fetch(`${API_BASE}/api/v1/shipments/${rawId}`);
-        const data = await res.json();
-        if (data && data.data) {
-          parcel = {
-            trackingId: data.data.trackingId || rawId,
-            busNumber: 'Fleet Bus #402 (HR-55-AB-1234)',
-            routeName: 'Delhi ➔ Chandigarh (GT Road)',
-            cargoBay: 'Bay B2 • QR Sealed',
-            parties: `${data.data.sender?.name || 'Aarav S.'} ➔ ${data.data.recipient?.name || 'Rohan V.'}`,
-            eta: '14:30',
-            speed: '64 km/h',
-            statusTitle: `In Transit via Fleet Bus #402`,
-            handoffText: 'Destination Hub to Rapido Rider',
-            distance: '2.4 km',
-            stops: parcelDatabase['TRK-88219'].stops
-          };
-        }
-      } catch (err) {
-        // Fallback check
+    // Highlight active chip
+    document.querySelectorAll('.quick-id-chip').forEach(chip => {
+      if (chip.getAttribute('data-id') === route.trackingId) {
+        chip.className = 'quick-id-chip px-2.5 py-1 rounded-full bg-primary-container text-white font-bold shrink-0 transition-all active:scale-95';
+      } else {
+        chip.className = 'quick-id-chip px-2.5 py-1 rounded-full bg-surface-container-low text-on-surface-variant font-semibold hover:bg-surface-variant shrink-0 transition-all active:scale-95';
       }
-    }
+    });
 
-    if (!parcel) {
-      if (errorBox) errorBox.classList.remove('hidden');
-      if (errorMsg) errorMsg.innerText = `Parcel ID "${rawId}" not recognized. Please verify your receipt or contact WhatsApp support.`;
-      return;
-    }
-
-    if (errorBox) errorBox.classList.add('hidden');
-    updateInsightsCard(parcel);
-
-    if (map && routeLine && busMarker) {
-      currentStep = 1;
-      routeLine.setLatLngs(parcel.stops);
-      busMarker.setLatLng(parcel.stops[1]);
-      map.fitBounds(routeLine.getBounds(), { padding: [40, 40] });
-    }
-
-    start30SecAutoRefresh(parcel);
+    startLiveJourney(route);
   };
 
-  // Form submission search
-  const trackingForm = document.getElementById('trackingIdSearchForm');
-  const inputTrackingId = document.getElementById('inputTrackingId');
-
-  if (trackingForm) {
-    trackingForm.addEventListener('submit', (e) => {
+  // Form submission
+  const searchForm = document.getElementById('trackingIdSearchForm');
+  if (searchForm) {
+    searchForm.addEventListener('submit', (e) => {
       e.preventDefault();
-      if (inputTrackingId && inputTrackingId.value) {
-        searchByTrackingId(inputTrackingId.value);
+      const input = document.getElementById('inputTrackingId');
+      if (input && input.value) handleTrackingLookup(input.value);
+    });
+  }
+
+  // Quick ID Chips
+  document.querySelectorAll('.quick-id-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const id = chip.getAttribute('data-id');
+      handleTrackingLookup(id);
+    });
+  });
+
+  // Play / Pause Button
+  const btnPlayPause = document.getElementById('btnPlayPauseJourney');
+  if (btnPlayPause) {
+    btnPlayPause.addEventListener('click', () => {
+      isPaused = !isPaused;
+      const icon = document.getElementById('iconPlayPause');
+      const text = document.getElementById('textPlayPause');
+      const hudJourneyState = document.getElementById('hudJourneyState');
+
+      if (isPaused) {
+        if (icon) icon.innerText = 'play_arrow';
+        if (text) text.innerText = 'Resume';
+        if (hudJourneyState) hudJourneyState.innerText = 'JOURNEY PAUSED';
+      } else {
+        if (icon) icon.innerText = 'pause';
+        if (text) text.innerText = 'Pause';
+        if (hudJourneyState) hudJourneyState.innerText = 'GPS LIVE JOURNEY';
       }
     });
   }
 
-  // Initialize Map and check URL params
-  await initMap();
-
-  const urlParams = new URLSearchParams(window.location.search);
-  const paramId = urlParams.get('id');
-  if (paramId) {
-    if (inputTrackingId) inputTrackingId.value = paramId;
-    searchByTrackingId(paramId);
-  } else {
-    start30SecAutoRefresh(parcelDatabase['TRK-88219']);
+  // Restart Button
+  const btnRestart = document.getElementById('btnRestartJourney');
+  if (btnRestart) {
+    btnRestart.addEventListener('click', () => {
+      const input = document.getElementById('inputTrackingId');
+      const currentId = input ? input.value : 'TRK-88219';
+      handleTrackingLookup(currentId);
+    });
   }
+
+  // Auto-start on load from URL query or default TRK-88219
+  const urlParams = new URLSearchParams(window.location.search);
+  const initialId = urlParams.get('id') || 'TRK-88219';
+  handleTrackingLookup(initialId);
 });

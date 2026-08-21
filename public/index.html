@@ -128,13 +128,14 @@
 </head>
 <body class="bg-background text-on-surface font-body-md min-h-screen overflow-x-hidden relative selection:bg-primary-fixed selection:text-on-primary-fixed">
 <!-- Ambient Map Background (Fixed Behind Content) -->
-<div class="fixed top-0 left-0 w-full h-[486px] z-0" data-alt="A minimalist, light-mode 3d street map view of a city, rendered with soft pastel colors, emphasizing clean roads, subtle topography, and a modern airy UI background aesthetic." data-location="Chandigarh" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCKaaONLs8ZFEYkl9-pcv93l2AxSdoBCMty1uXuqPBGAcm-vhFHbLaFajnnDxD5Jwq-fw3xVcwtX3JtKzl7fbsMuUKlgXJYllNObokIOdN4dZhCMnuGgVBguCmB3npTgrQ45N86eWYhaIPMfFYnytiI9tJdN1BHXHSVkDC9vBDRNAFkQ3ZwsMrl6C1DhMGT32MwPxLoiBCzsasgJiuZYqUY2vKm3rOI9faoHPEVhiWrWbG0iS3yOFZM'); background-size: cover; background-position: center;">
-<!-- Pickup Point Pin -->
-<div class="absolute top-[35%] left-1/2 transform -translate-x-1/2 flex flex-col items-center drop-shadow-md">
-<div class="bg-[#128C55] text-white px-4 py-1.5 rounded-full text-label-md font-label-md mb-2 shadow-level-1">
-                Pickup Point
-            </div>
-<div class="w-8 h-8 bg-primary-container rounded-full flex items-center justify-center shadow-lg border-2 border-white">
+<div id="homeMapContainer" class="fixed top-0 left-0 w-full h-[486px] z-0" data-alt="A minimalist, light-mode 3d street map view of a city, rendered with soft pastel colors, emphasizing clean roads, subtle topography, and a modern airy UI background aesthetic." data-location="Chandigarh" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCKaaONLs8ZFEYkl9-pcv93l2AxSdoBCMty1uXuqPBGAcm-vhFHbLaFajnnDxD5Jwq-fw3xVcwtX3JtKzl7fbsMuUKlgXJYllNObokIOdN4dZhCMnuGgVBguCmB3npTgrQ45N86eWYhaIPMfFYnytiI9tJdN1BHXHSVkDC9vBDRNAFkQ3ZwsMrl6C1DhMGT32MwPxLoiBCzsasgJiuZYqUY2vKm3rOI9faoHPEVhiWrWbG0iS3yOFZM'); background-size: cover; background-position: center;">
+<!-- Pickup Point Pin with Live Geolocation -->
+<div id="liveLocationPinContainer" class="absolute top-[35%] left-1/2 transform -translate-x-1/2 flex flex-col items-center drop-shadow-md cursor-pointer transition-all duration-300 hover:scale-105" title="Click to refresh live GPS location">
+<div id="livePickupBadge" class="bg-[#128C55] text-white px-4 py-1.5 rounded-full text-label-md font-label-md mb-2 shadow-level-1 flex items-center gap-1.5 transition-all">
+  <span id="liveGpsDot" class="w-2 h-2 rounded-full bg-white animate-ping"></span>
+  <span id="liveLocationText">Detecting live location...</span>
+</div>
+<div class="w-8 h-8 bg-primary-container rounded-full flex items-center justify-center shadow-lg border-2 border-white animate-bounce">
 <span class="material-symbols-outlined text-white text-sm fill">person_pin_circle</span>
 </div>
 </div>
@@ -224,5 +225,8 @@
 <!-- Support for iOS safe area padding at the bottom -->
 <style>
         .pb-safe { padding-bottom: env(safe-area-inset-bottom, 12px); }
-    </style>
+</style>
+<!-- Modular Scripts -->
+<script defer src="/js/common.js"></script>
+<script defer src="/js/deliver.js"></script>
 </body></html>
