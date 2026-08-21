@@ -91,11 +91,10 @@ document.addEventListener('DOMContentLoaded', () => {
       attribution: '© Google Maps'
     }).addTo(homeMap);
 
-    // Google Maps Satellite / Hybrid Layer
-    googleSatelliteLayer = L.tileLayer('https://mt{s}.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}', {
-      subdomains: ['0', '1', '2', '3'],
-      maxZoom: 21,
-      attribution: '© Google Maps'
+    // High-Resolution Satellite Layer
+    googleSatelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+      maxZoom: 19,
+      attribution: '© Google Maps / World Imagery'
     });
 
     // Custom Live User Pickup Pin with Integrated Pulsing Badge
