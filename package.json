@@ -4,6 +4,7 @@
   "description": "Transitly is a JavaScript parcel-management platform concept that helps public transport operators sell unused cargo capacity for parcel delivery.",
   "main": "index.js",
   "scripts": {
+    "build": "npm run build:css:min",
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
     "build:css": "tailwindcss -i ./src/css/input.css -o ./public/css/style.css",
