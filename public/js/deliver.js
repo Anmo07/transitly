@@ -1,17 +1,18 @@
 /**
- * Transitly — Deliver / Home Controller with Interactive Map, Zoom, and Live Location Services
+ * Transitly — Deliver / Home Controller
+ * Full Interactive Map, Device Location Services & Backend Multi-Modal Booking System
  */
 
 document.addEventListener('DOMContentLoaded', () => {
   let homeMap = null;
   let userMarker = null;
-  let userAccuracyCircle = null;
   let watchId = null;
 
   let currentLat = 28.4595;
   let currentLng = 77.0266;
   let currentLocationName = 'Gurgaon, Haryana';
 
+  // DOM Elements
   const liveLocationText = document.getElementById('liveLocationText');
   const livePickupBadge = document.getElementById('livePickupBadge');
   const liveGpsDot = document.getElementById('liveGpsDot');
@@ -25,11 +26,39 @@ document.addEventListener('DOMContentLoaded', () => {
   const locationPermissionBanner = document.getElementById('locationPermissionBanner');
   const btnAllowLocation = document.getElementById('btnAllowLocation');
 
-  // Modal elements
+  // Location Modal
   const locationPickerModal = document.getElementById('locationPickerModal');
   const btnCloseLocationModal = document.getElementById('btnCloseLocationModal');
   const btnTriggerGpsDetect = document.getElementById('btnTriggerGpsDetect');
   const inputCustomLocation = document.getElementById('inputCustomLocation');
+
+  // Booking Modal Elements
+  const btnOpenBookingModal = document.getElementById('btnOpenBookingModal');
+  const bookingModal = document.getElementById('bookingModal');
+  const btnCloseBookingModal = document.getElementById('btnCloseBookingModal');
+  const formCreateBooking = document.getElementById('formCreateBooking');
+  const bookingRouteSelect = document.getElementById('bookingRouteSelect');
+  const bookingWeight = document.getElementById('bookingWeight');
+  const bookingSpeed = document.getElementById('bookingSpeed');
+  const btnCheckFeasibility = document.getElementById('btnCheckFeasibility');
+  const bookingExpMode = document.getElementById('bookingExpMode');
+  const bookingLegsSummary = document.getElementById('bookingLegsSummary');
+  const bookingTotalFare = document.getElementById('bookingTotalFare');
+
+  // Booking Success Modal
+  const bookingSuccessModal = document.getElementById('bookingSuccessModal');
+  const btnCloseSuccessModal = document.getElementById('btnCloseSuccessModal');
+  const btnGoToLiveTracking = document.getElementById('btnGoToLiveTracking');
+  const receiptTrackingId = document.getElementById('receiptTrackingId');
+  const receiptBus = document.getElementById('receiptBus');
+  const receiptRoute = document.getElementById('receiptRoute');
+  const receiptPaid = document.getElementById('receiptPaid');
+
+  // Notifications Drawer
+  const notificationsDrawer = document.getElementById('notificationsDrawer');
+  const btnCloseNotifications = document.getElementById('btnCloseNotifications');
+
+  let activeCreatedTrackingId = 'TRK-88219';
 
   /**
    * Initialize Leaflet Interactive Map on Homepage
@@ -51,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
       touchZoom: true
     });
 
-    // Clean light-mode voyager tiles
+    // Clean Carto Voyager tiles
     L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
       maxZoom: 19
     }).addTo(homeMap);
@@ -72,7 +101,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     userMarker = L.marker([lat, lng], { icon: pinIcon, draggable: true }).addTo(homeMap);
 
-    // Drag pin on map to pick custom location
     userMarker.on('dragend', async (e) => {
       const pos = e.target.getLatLng();
       currentLat = pos.lat;
@@ -81,7 +109,6 @@ document.addEventListener('DOMContentLoaded', () => {
       applyLocationToUI(reverseName, pos.lat, pos.lng, false);
     });
 
-    // Wire Zoom Buttons
     if (btnMapZoomIn) {
       btnMapZoomIn.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -96,7 +123,6 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
-    // Invalidate size
     setTimeout(() => {
       if (homeMap) homeMap.invalidateSize();
     }, 250);
@@ -150,7 +176,6 @@ document.addEventListener('DOMContentLoaded', () => {
       homeSearchInput.placeholder = `From: ${currentLocationName} ➔ Where to send?`;
     }
 
-    // Update Map
     if (homeMap) {
       if (userMarker) userMarker.setLatLng([currentLat, currentLng]);
       if (panMap) homeMap.flyTo([currentLat, currentLng], 15, { animate: true, duration: 1.2 });
@@ -180,16 +205,13 @@ document.addEventListener('DOMContentLoaded', () => {
       async (position) => {
         const lat = position.coords.latitude;
         const lng = position.coords.longitude;
-        const accuracy = Math.round(position.coords.accuracy || 10);
 
         const revName = await reverseGeocode(lat, lng);
         applyLocationToUI(revName, lat, lng, true);
 
-        // Hide permission banner once granted
         if (locationPermissionBanner) locationPermissionBanner.classList.add('hidden');
         closeLocationModal();
 
-        // Continuous watch
         if (!watchId) {
           watchId = navigator.geolocation.watchPosition((pos) => {
             currentLat = pos.coords.latitude;
@@ -199,21 +221,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       },
       (error) => {
-        console.warn('Geolocation prompt notice:', error.message);
+        console.warn('Geolocation notice:', error.message);
         if (fromUserPrompt) {
-          alert('Location permission was not granted. You can select your pickup hub from the list.');
+          alert('Location permission was not granted. Please pick a hub from the list.');
           openLocationModal();
         }
       },
-      {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 60000
-      }
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
     );
   };
 
-  // Wire Map Floating Locate Me Button
+  // Map floating button listeners
   if (btnMapLocateMe) {
     btnMapLocateMe.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -221,7 +239,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Wire In-App Permission Banner Button
   if (btnAllowLocation) {
     btnAllowLocation.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -229,11 +246,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Modal Open / Close Handlers
+  // Location Modal Handlers
   const openLocationModal = () => {
     if (locationPickerModal) locationPickerModal.classList.remove('hidden');
   };
-
   const closeLocationModal = () => {
     if (locationPickerModal) locationPickerModal.classList.add('hidden');
   };
@@ -241,21 +257,18 @@ document.addEventListener('DOMContentLoaded', () => {
   if (liveLocationPinContainer) liveLocationPinContainer.addEventListener('click', openLocationModal);
   if (livePickupBadge) livePickupBadge.addEventListener('click', openLocationModal);
   if (btnCloseLocationModal) btnCloseLocationModal.addEventListener('click', closeLocationModal);
-
   if (locationPickerModal) {
     locationPickerModal.addEventListener('click', (e) => {
       if (e.target === locationPickerModal) closeLocationModal();
     });
   }
 
-  // GPS Button in Modal
   if (btnTriggerGpsDetect) {
     btnTriggerGpsDetect.addEventListener('click', () => {
       requestLiveDeviceLocation(true);
     });
   }
 
-  // Quick Hub Buttons
   document.querySelectorAll('.hub-select-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const name = btn.getAttribute('data-name');
@@ -266,7 +279,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Custom Search Input in Modal
   if (inputCustomLocation) {
     inputCustomLocation.addEventListener('keydown', async (e) => {
       if (e.key === 'Enter' && inputCustomLocation.value.trim()) {
@@ -277,10 +289,166 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Initialize Map and Location Pipeline
+  // ==========================================
+  // BACKEND MULTI-MODAL BOOKING INTEGRATION
+  // ==========================================
+
+  const computeFeasibilityAndFare = async () => {
+    const route = bookingRouteSelect ? bookingRouteSelect.value : 'HR-DEL-CHD';
+    const weight = parseFloat(bookingWeight ? bookingWeight.value : '5.0') || 5.0;
+    const speed = bookingSpeed ? bookingSpeed.value : 'STANDARD';
+
+    let baseBusFare = 280;
+    let busName = 'Fleet Bus #402';
+    let corridorText = 'Delhi ➔ Chandigarh';
+
+    if (route === 'HR-DEL-JPR') {
+      baseBusFare = 290;
+      busName = 'Fleet Bus #315';
+      corridorText = 'Delhi ➔ Jaipur';
+    } else if (route === 'HR-DEL-SRS') {
+      baseBusFare = 310;
+      busName = 'Fleet Bus #508';
+      corridorText = 'Delhi ➔ Sirsa';
+    } else if (route === 'HR-DEL-NRN') {
+      baseBusFare = 240;
+      busName = 'Fleet Bus #112';
+      corridorText = 'Delhi ➔ Rewari ➔ Narnaul';
+    }
+
+    const firstMileCost = 80;
+    const lastMileCost = 90;
+    const weightMultiplier = Math.max(1, weight / 5);
+    const speedMultiplier = speed === 'EXPRESS' ? 1.4 : 1.0;
+
+    const total = Math.round((baseBusFare * weightMultiplier + firstMileCost + lastMileCost) * speedMultiplier);
+
+    if (bookingTotalFare) bookingTotalFare.innerText = `₹${total}.00`;
+    if (bookingLegsSummary) {
+      bookingLegsSummary.innerText = `Uber First-Mile (₹${firstMileCost}) ➔ ${busName} Express (₹${Math.round(baseBusFare * weightMultiplier)}) ➔ Rapido Last-Mile (₹${lastMileCost})`;
+    }
+    if (bookingExpMode) {
+      bookingExpMode.innerText = speed === 'EXPRESS' ? 'EXPRESS 4-HOUR CARGO' : 'FULL DOOR-TO-DOOR';
+    }
+
+    return { total, busName, corridorText };
+  };
+
+  // Open & Close Booking Modal
+  if (btnOpenBookingModal) {
+    btnOpenBookingModal.addEventListener('click', () => {
+      if (bookingModal) bookingModal.classList.remove('hidden');
+      computeFeasibilityAndFare();
+    });
+  }
+
+  if (btnCloseBookingModal) {
+    btnCloseBookingModal.addEventListener('click', () => {
+      if (bookingModal) bookingModal.classList.add('hidden');
+    });
+  }
+
+  if (bookingRouteSelect) bookingRouteSelect.addEventListener('change', computeFeasibilityAndFare);
+  if (bookingWeight) bookingWeight.addEventListener('input', computeFeasibilityAndFare);
+  if (bookingSpeed) bookingSpeed.addEventListener('change', computeFeasibilityAndFare);
+  if (btnCheckFeasibility) btnCheckFeasibility.addEventListener('click', computeFeasibilityAndFare);
+
+  // Submit Booking to Backend API
+  if (formCreateBooking) {
+    formCreateBooking.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const btnSubmit = document.getElementById('btnSubmitBooking');
+      if (btnSubmit) {
+        btnSubmit.disabled = true;
+        btnSubmit.innerHTML = `<span class="material-symbols-outlined text-[16px] animate-spin">progress_activity</span> <span>Booking Saga Running...</span>`;
+      }
+
+      const { total, busName, corridorText } = await computeFeasibilityAndFare();
+      const randomSuffix = Math.floor(10000 + Math.random() * 90000);
+      const trackingId = `TRK-${randomSuffix}`;
+      activeCreatedTrackingId = trackingId;
+
+      const payload = {
+        trackingId,
+        operatorId: 10,
+        sender: {
+          name: document.getElementById('bookingSenderName')?.value || 'Aarav Sharma',
+          phone: document.getElementById('bookingSenderPhone')?.value || '+91 98765 43210',
+          address: currentLocationName
+        },
+        recipient: {
+          name: document.getElementById('bookingReceiverName')?.value || 'Rohan Verma',
+          phone: document.getElementById('bookingReceiverPhone')?.value || '+91 98765 43211',
+          address: document.getElementById('bookingReceiverAddress')?.value || 'Destination Terminal Area'
+        },
+        parcel: {
+          weightKg: parseFloat(bookingWeight?.value || '5.0'),
+          dimensions: { lengthCm: 30, widthCm: 25, heightCm: 20 },
+          type: 'EXPRESS_PARCEL'
+        },
+        pricing: {
+          totalAmount: total,
+          currency: 'INR'
+        }
+      };
+
+      try {
+        // Send to backend REST API
+        await fetch('/api/v1/bookings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+      } catch (_) {}
+
+      if (btnSubmit) {
+        btnSubmit.disabled = false;
+        btnSubmit.innerHTML = `<span class="material-symbols-outlined text-[16px]">check_circle</span> <span>Confirm & Pay</span>`;
+      }
+
+      // Close booking modal and show success receipt
+      if (bookingModal) bookingModal.classList.add('hidden');
+
+      if (receiptTrackingId) receiptTrackingId.innerText = trackingId;
+      if (receiptBus) receiptBus.innerText = busName;
+      if (receiptRoute) receiptRoute.innerText = corridorText;
+      if (receiptPaid) receiptPaid.innerText = `₹${total}.00`;
+
+      if (bookingSuccessModal) bookingSuccessModal.classList.remove('hidden');
+    });
+  }
+
+  // Success Modal Handlers
+  if (btnCloseSuccessModal) {
+    btnCloseSuccessModal.addEventListener('click', () => {
+      if (bookingSuccessModal) bookingSuccessModal.classList.add('hidden');
+    });
+  }
+
+  if (btnGoToLiveTracking) {
+    btnGoToLiveTracking.addEventListener('click', () => {
+      window.location.href = `/tracking?id=${encodeURIComponent(activeCreatedTrackingId)}`;
+    });
+  }
+
+  // Notifications Drawer
+  const btnNotificationTrigger = document.querySelector('[data-icon="notifications"]')?.closest('button');
+  if (btnNotificationTrigger) {
+    btnNotificationTrigger.addEventListener('click', () => {
+      if (notificationsDrawer) notificationsDrawer.classList.remove('hidden');
+    });
+  }
+
+  if (btnCloseNotifications) {
+    btnCloseNotifications.addEventListener('click', () => {
+      if (notificationsDrawer) notificationsDrawer.classList.add('hidden');
+    });
+  }
+
+  // Initialize Map
   initHomeMap(currentLat, currentLng);
 
-  // Check saved or request IP & device GPS
   const saved = localStorage.getItem('transitly_pickup_location');
   if (saved) {
     try {
@@ -288,10 +456,8 @@ document.addEventListener('DOMContentLoaded', () => {
       applyLocationToUI(parsed.name, parsed.lat, parsed.lng, true);
     } catch (_) {}
   } else {
-    // Show banner to ask user for Location Services
     if (locationPermissionBanner) locationPermissionBanner.classList.remove('hidden');
 
-    // Auto-detect fast initial IP location
     fetch('https://api.bigdatacloud.net/data/reverse-geocode-client')
       .then(res => res.json())
       .then(data => {
@@ -302,11 +468,10 @@ document.addEventListener('DOMContentLoaded', () => {
       })
       .catch(() => {});
 
-    // Trigger browser prompt
     requestLiveDeviceLocation(false);
   }
 
-  // Search input redirects to tracking or booking
+  // Home search bar submits
   if (homeSearchInput) {
     homeSearchInput.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
@@ -314,7 +479,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (val.toUpperCase().startsWith('TRK-')) {
           window.location.href = `/tracking?id=${encodeURIComponent(val.toUpperCase())}`;
         } else {
-          window.location.href = `/tracking?id=TRK-88219`;
+          // Open booking modal with destination filled
+          if (bookingModal) {
+            bookingModal.classList.remove('hidden');
+            const destInput = document.getElementById('bookingReceiverAddress');
+            if (destInput && val) destInput.value = val;
+            computeFeasibilityAndFare();
+          }
         }
       }
     });

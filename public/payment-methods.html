@@ -141,77 +141,113 @@
 <main class="flex-1 px-container-margin py-stack-lg flex flex-col gap-section-gap pb-32">
 <!-- Saved Cards Section -->
 <section class="flex flex-col gap-stack-md">
-<h2 class="text-label-md font-label-md text-on-surface-variant uppercase tracking-wider">Saved Cards</h2>
-<div class="flex flex-col gap-stack-md">
-<!-- Primary Card (Active) -->
-<div class="glass-card active-card rounded-xl p-4 flex items-center justify-between cursor-pointer relative overflow-hidden transition-all duration-200">
-<div class="flex items-center gap-4 relative z-10">
-<div class="w-12 h-8 bg-[#1A1F36] rounded flex items-center justify-center shrink-0">
-<!-- Visa Logo Approximation -->
-<span class="text-white font-bold text-xs italic tracking-tighter">VISA</span>
+<div class="flex items-center justify-between">
+<h2 class="text-label-md font-label-md text-on-surface-variant uppercase tracking-wider">Credit &amp; Debit Cards</h2>
+<span class="text-label-sm font-label-sm text-outline">Encrypted &amp; Secure</span>
 </div>
-<div class="flex flex-col">
-<span class="text-body-md font-body-md text-on-surface font-semibold">•••• 4242</span>
-<span class="text-label-sm font-label-sm text-outline">Expires 12/25</span>
-</div>
-</div>
-<div class="flex items-center gap-3 relative z-10">
-<span class="px-2 py-1 bg-primary-fixed text-primary font-label-sm text-label-sm rounded-full">Default</span>
-<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
-</div>
-<!-- Subtle ambient glow for active state -->
-<div class="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent pointer-events-none"></div>
-</div>
-<!-- Secondary Card -->
-<div class="glass-card rounded-xl p-4 flex items-center justify-between cursor-pointer border border-transparent hover:border-outline-variant transition-all duration-200">
-<div class="flex items-center gap-4">
-<div class="w-12 h-8 bg-[#EB001B] relative rounded overflow-hidden shrink-0">
-<!-- Mastercard Logo Approximation -->
-<div class="absolute w-5 h-5 rounded-full bg-[#F79E1B] mix-blend-screen right-1 top-1.5"></div>
-<div class="absolute w-5 h-5 rounded-full bg-[#EB001B] left-1 top-1.5 z-10"></div>
-</div>
-<div class="flex flex-col">
-<span class="text-body-md font-body-md text-on-surface">•••• 8831</span>
-<span class="text-label-sm font-label-sm text-outline">Expires 08/24</span>
-</div>
-</div>
-<button aria-label="More options" class="w-8 h-8 flex items-center justify-center rounded-full text-outline hover:bg-surface-variant transition-colors" onclick="alert('Card Options')">
-<span class="material-symbols-outlined">more_vert</span>
-</button>
-</div>
+<div id="paymentCardsContainer" class="flex flex-col gap-stack-md">
+  <!-- Dynamic cards loaded via /api/v1/payment-methods -->
+  <div class="text-center py-4 text-xs text-on-surface-variant">Loading payment methods...</div>
 </div>
 </section>
+
 <!-- Digital Wallets Section -->
 <section class="flex flex-col gap-stack-md">
-<h2 class="text-label-md font-label-md text-on-surface-variant uppercase tracking-wider">Digital Wallets</h2>
-<div class="grid grid-cols-2 gap-gutter">
-<!-- Apple Pay -->
-<div class="glass-card rounded-xl p-4 flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-surface-container-lowest transition-colors border border-transparent hover:border-outline-variant" onclick="alert('Apple Pay Selected')">
-<div class="w-10 h-10 bg-black rounded-full flex items-center justify-center text-white mb-1">
-<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">file_download</span>
+<h2 class="text-label-md font-label-md text-on-surface-variant uppercase tracking-wider">Digital Wallets &amp; UPI</h2>
+<div class="grid grid-cols-2 gap-3">
+<!-- Google Pay / Apple Pay -->
+<div onclick="selectWallet('Google Pay')" class="glass-card rounded-xl p-4 flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-surface-container-lowest transition-colors border border-transparent hover:border-primary">
+<div class="w-10 h-10 bg-black rounded-full flex items-center justify-center text-white mb-1 shadow-sm">
+<span class="material-symbols-outlined text-lg">payments</span>
 </div>
-<span class="text-label-md font-label-md text-on-surface">Apple Pay</span>
+<span class="text-label-md font-label-md text-on-surface font-semibold">Google Pay</span>
 </div>
 <!-- UPI -->
-<div class="glass-card rounded-xl p-4 flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-surface-container-lowest transition-colors border border-transparent hover:border-outline-variant" onclick="alert('UPI Selected')">
-<div class="w-10 h-10 bg-white border border-outline-variant rounded-full flex items-center justify-center mb-1">
-<!-- UPI abstract icon -->
-<div class="flex items-center justify-center gap-0.5">
-<div class="w-2 h-2 rounded-full bg-orange-500"></div>
-<div class="w-2 h-2 rounded-full bg-green-500"></div>
+<div onclick="openAddPaymentModal('UPI')" class="glass-card rounded-xl p-4 flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-surface-container-lowest transition-colors border border-transparent hover:border-primary">
+<div class="w-10 h-10 bg-white border border-outline-variant rounded-full flex items-center justify-center mb-1 shadow-sm">
+<div class="flex items-center justify-center gap-1">
+<div class="w-2.5 h-2.5 rounded-full bg-orange-500"></div>
+<div class="w-2.5 h-2.5 rounded-full bg-green-500"></div>
 </div>
 </div>
-<span class="text-label-md font-label-md text-on-surface">UPI</span>
+<span class="text-label-md font-label-md text-on-surface font-semibold">Add UPI ID</span>
 </div>
 </div>
 </section>
-<!-- Add New Method CTA (Pinned to bottom visually, but in flow) -->
+
+<!-- Add New Method CTA -->
 <div class="mt-auto pt-section-gap">
-<button onclick="alert('Add Payment Method')" class="w-full h-14 bg-surface-container-lowest border-2 border-dashed border-outline-variant rounded-xl flex items-center justify-center gap-2 text-primary font-label-md text-label-md hover:bg-surface-container-low hover:border-primary transition-all duration-200">
+<button type="button" id="btnOpenAddPaymentModal" class="w-full h-14 bg-surface-container-lowest border-2 border-dashed border-outline-variant rounded-xl flex items-center justify-center gap-2 text-primary font-label-md text-label-md hover:bg-surface-container-low hover:border-primary transition-all duration-200 active:scale-98">
 <span class="material-symbols-outlined">add</span>
-                Add Payment Method
-            </button>
+    Add Payment Method
+</button>
 </div>
+
+<!-- Add Payment Modal -->
+<div id="paymentModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end md:items-center justify-center p-0 md:p-4">
+  <div class="bg-surface rounded-t-3xl md:rounded-3xl max-w-md w-full p-6 shadow-2xl border border-outline-variant/30 animate-slide-up">
+    <div class="flex items-center justify-between pb-3 border-b border-outline-variant/20 mb-4">
+      <div class="flex items-center gap-2">
+        <span class="material-symbols-outlined text-primary text-2xl">credit_card</span>
+        <h3 id="paymentModalTitle" class="text-headline-md font-headline-md text-on-surface font-bold">Add Payment Method</h3>
+      </div>
+      <button type="button" id="btnClosePaymentModal" class="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center hover:bg-surface-variant">
+        <span class="material-symbols-outlined text-lg">close</span>
+      </button>
+    </div>
+
+    <!-- Type Switcher -->
+    <div class="flex bg-surface-container-low p-1 rounded-xl mb-4 text-xs font-bold">
+      <button type="button" id="tabTypeCard" class="w-1/2 py-2 rounded-lg bg-surface text-primary shadow-xs">Card</button>
+      <button type="button" id="tabTypeUpi" class="w-1/2 py-2 rounded-lg text-on-surface-variant">UPI VPA</button>
+    </div>
+
+    <form id="formPaymentMethod" class="space-y-3 text-xs">
+      <input type="hidden" id="inputPaymentType" value="CARD">
+
+      <!-- Card Section -->
+      <div id="cardFieldsSection" class="space-y-3">
+        <div>
+          <label class="font-bold text-on-surface block mb-1">Cardholder Name</label>
+          <input type="text" id="inputCardName" placeholder="e.g. Alex Mitchell" class="w-full rounded-xl border border-outline-variant/50 p-2.5 bg-surface text-on-surface outline-none focus:ring-1 focus:ring-primary">
+        </div>
+        <div>
+          <label class="font-bold text-on-surface block mb-1">Card Number</label>
+          <input type="text" id="inputCardNumber" placeholder="4532 •••• •••• 8831" maxlength="19" class="w-full rounded-xl border border-outline-variant/50 p-2.5 bg-surface text-on-surface outline-none focus:ring-1 focus:ring-primary">
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="font-bold text-on-surface block mb-1">Expiry (MM/YY)</label>
+            <input type="text" id="inputCardExpiry" placeholder="12/26" maxlength="5" class="w-full rounded-xl border border-outline-variant/50 p-2.5 bg-surface text-on-surface outline-none focus:ring-1 focus:ring-primary">
+          </div>
+          <div>
+            <label class="font-bold text-on-surface block mb-1">CVV</label>
+            <input type="password" id="inputCardCvv" placeholder="•••" maxlength="4" class="w-full rounded-xl border border-outline-variant/50 p-2.5 bg-surface text-on-surface outline-none focus:ring-1 focus:ring-primary">
+          </div>
+        </div>
+      </div>
+
+      <!-- UPI Section -->
+      <div id="upiFieldsSection" class="hidden space-y-3">
+        <div>
+          <label class="font-bold text-on-surface block mb-1">Virtual Payment Address (UPI ID)</label>
+          <input type="text" id="inputUpiVpa" placeholder="username@okhdfcbank / mobile@paytm" class="w-full rounded-xl border border-outline-variant/50 p-2.5 bg-surface text-on-surface outline-none focus:ring-1 focus:ring-primary">
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 pt-1">
+        <input type="checkbox" id="inputPaymentDefault" class="rounded border-outline-variant text-primary focus:ring-primary">
+        <label for="inputPaymentDefault" class="text-on-surface font-semibold">Set as default payment method</label>
+      </div>
+
+      <div class="pt-3 flex gap-2">
+        <button type="button" id="btnCancelPaymentModal" class="w-1/2 py-2.5 rounded-xl border border-outline-variant/50 font-bold hover:bg-surface-variant">Cancel</button>
+        <button type="submit" id="btnSavePaymentSubmit" class="w-1/2 py-2.5 rounded-xl bg-primary text-on-primary font-bold shadow-md hover:bg-primary-container active:scale-95 transition-all">Save &amp; Link</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <!-- BottomNavBar (Shared Component) -->
 <nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-base pb-safe h-16 bg-surface border-t border-outline-variant/20 rounded-t-xl shadow-[0px_-4px_20px_rgba(0,0,0,0.05)]">
 <a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-variant transition-colors group rounded-xl" href="/">
@@ -232,4 +268,8 @@
 <span class="font-label-sm text-label-sm">Profile</span>
 </a>
 </nav>
+
+<!-- Scripts -->
+<script defer src="/js/common.js"></script>
+<script defer src="/js/payment-methods.js"></script>
 </body></html>

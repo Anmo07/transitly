@@ -139,16 +139,25 @@
 <div class="absolute -top-12 -right-12 w-32 h-32 bg-primary-fixed rounded-full mix-blend-multiply filter blur-2xl opacity-50"></div>
 <div class="absolute -bottom-12 -left-12 w-32 h-32 bg-surface-tint rounded-full mix-blend-multiply filter blur-2xl opacity-20"></div>
 <div class="relative w-24 h-24 mb-stack-md rounded-full shadow-[0px_4px_20px_rgba(0,0,0,0.05)] border-4 border-surface overflow-hidden bg-surface-container-high z-10">
-<img class="w-full h-full object-cover" data-alt="A highly detailed, professional headshot portrait of a modern urban commuter. The lighting is soft and flattering studio lighting, creating a bright, light-mode aesthetic. The subject is wearing stylish, contemporary casual clothing suitable for a logistics or transit service app. The background is a clean, minimal gradient of pale whites and soft blues, perfectly matching the Transitly app's airy, premium design system." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBzAACyzyleKmM4JQVt8Aa-jr70QVcpj9loY9wKp5o9O4E4p6Pw4_DrVmOHt4kkJfjfzprBQFcotrP67UIXwwodZ_N8y_NQMBXmYt1FUgmWEZU3RkLHv9mtX5_jewodrd3AC22FofPIl1pDv6bTKcqN63TR8-Ce6clfaRjIaxwp6CeKnOIoGAZdfBFJX_YfrWG4DCAk26zr7uiOS6j2JNkj4E16URTfm8orQCRZ5X_7hBMsGpV5UeKJ"/>
+<img class="w-full h-full object-cover" data-alt="Alex Mitchell profile" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBzAACyzyleKmM4JQVt8Aa-jr70QVcpj9loY9wKp5o9O4E4p6Pw4_DrVmOHt4kkJfjfzprBQFcotrP67UIXwwodZ_N8y_NQMBXmYt1FUgmWEZU3RkLHv9mtX5_jewodrd3AC22FofPIl1pDv6bTKcqN63TR8-Ce6clfaRjIaxwp6CeKnOIoGAZdfBFJX_YfrWG4DCAk26zr7uiOS6j2JNkj4E16URTfm8orQCRZ5X_7hBMsGpV5UeKJ"/>
 </div>
-<h2 class="font-headline-md text-headline-md text-on-surface z-10">Alex Mitchell</h2>
-<p class="font-body-md text-body-md text-on-surface-variant mb-stack-md z-10">alex.mitchell@example.com</p>
-<div class="flex items-center gap-1 bg-surface-container px-3 py-1.5 rounded-full z-10 shadow-sm">
-<span class="material-symbols-outlined fill text-[#F59E0B] text-[16px]">star</span>
-<span class="font-label-md text-label-md text-on-surface">4.9</span>
-<span class="font-label-sm text-label-sm text-outline ml-1">(124 trips)</span>
+<h2 id="profileUserName" class="font-headline-md text-headline-md text-on-surface z-10 font-bold">Alex Mitchell</h2>
+<p id="profileUserEmail" class="font-body-md text-body-md text-on-surface-variant mb-2 z-10">alex.mitchell@example.com</p>
+<p id="profileUserPhone" class="text-xs text-outline mb-stack-md z-10 font-semibold">+91 98765 43210</p>
+
+<div class="flex items-center gap-2 z-10">
+  <div class="flex items-center gap-1 bg-surface-container px-3 py-1.5 rounded-full shadow-sm">
+    <span class="material-symbols-outlined fill text-[#F59E0B] text-[16px]">star</span>
+    <span class="font-label-md text-label-md text-on-surface">4.9</span>
+    <span id="profileTripsCount" class="font-label-sm text-label-sm text-outline ml-1">(124 parcels)</span>
+  </div>
+  <button type="button" id="btnOpenEditProfileModal" class="flex items-center gap-1 bg-primary text-on-primary px-3 py-1.5 rounded-full text-xs font-bold shadow-sm hover:bg-primary-container active:scale-95 transition-all">
+    <span class="material-symbols-outlined text-[14px]">edit</span>
+    <span>Edit</span>
+  </button>
 </div>
 </section>
+
 <!-- Menu Options (Bento List) -->
 <section class="flex flex-col gap-stack-sm">
 <button onclick="window.location.href='/saved-addresses'" class="w-full bg-surface rounded-xl p-4 flex items-center justify-between shadow-[0px_4px_20px_rgba(0,0,0,0.02)] active:scale-[0.98] transition-transform group hover:bg-surface-container-lowest">
@@ -156,7 +165,7 @@
 <div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center text-primary-container group-hover:bg-primary-container group-hover:text-on-primary transition-colors">
 <span class="material-symbols-outlined" data-icon="location_on">location_on</span>
 </div>
-<span class="font-label-md text-label-md text-on-surface">Saved Addresses</span>
+<span class="font-label-md text-label-md text-on-surface font-semibold">Saved Addresses</span>
 </div>
 <span class="material-symbols-outlined text-outline-variant group-hover:text-primary transition-colors" data-icon="chevron_right">chevron_right</span>
 </button>
@@ -165,7 +174,7 @@
 <div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center text-primary-container group-hover:bg-primary-container group-hover:text-on-primary transition-colors">
 <span class="material-symbols-outlined" data-icon="payment">payment</span>
 </div>
-<span class="font-label-md text-label-md text-on-surface">Payment Methods</span>
+<span class="font-label-md text-label-md text-on-surface font-semibold">Payment Methods</span>
 </div>
 <span class="material-symbols-outlined text-outline-variant group-hover:text-primary transition-colors" data-icon="chevron_right">chevron_right</span>
 </button>
@@ -174,7 +183,7 @@
 <div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center text-primary-container group-hover:bg-primary-container group-hover:text-on-primary transition-colors">
 <span class="material-symbols-outlined" data-icon="support_agent">support_agent</span>
 </div>
-<span class="font-label-md text-label-md text-on-surface">Help &amp; Support</span>
+<span class="font-label-md text-label-md text-on-surface font-semibold">Help &amp; Support (Anmol)</span>
 </div>
 <span class="material-symbols-outlined text-outline-variant group-hover:text-primary transition-colors" data-icon="chevron_right">chevron_right</span>
 </button>
@@ -183,19 +192,55 @@
 <div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center text-primary-container group-hover:bg-primary-container group-hover:text-on-primary transition-colors">
 <span class="material-symbols-outlined" data-icon="settings">settings</span>
 </div>
-<span class="font-label-md text-label-md text-on-surface">Settings</span>
+<span class="font-label-md text-label-md text-on-surface font-semibold">Settings</span>
 </div>
 <span class="material-symbols-outlined text-outline-variant group-hover:text-primary transition-colors" data-icon="chevron_right">chevron_right</span>
 </button>
 </section>
+
 <!-- Logout Action -->
 <div class="mt-auto pt-section-gap pb-4 w-full">
-<button onclick="alert('Signed out successfully.')" class="w-full h-[56px] rounded-[16px] bg-[#F1F5F9] text-primary font-label-md text-label-md flex items-center justify-center gap-2 active:scale-95 transition-all shadow-sm hover:bg-surface-container-high">
+<button type="button" id="btnLogoutProfile" class="w-full h-[56px] rounded-[16px] bg-[#F1F5F9] text-primary font-label-md text-label-md font-bold flex items-center justify-center gap-2 active:scale-95 transition-all shadow-sm hover:bg-surface-container-high">
 <span class="material-symbols-outlined text-[20px]" data-icon="logout">logout</span>
-                Log Out
-            </button>
+    Log Out
+</button>
 </div>
 </main>
+
+<!-- Edit Profile Modal -->
+<div id="editProfileModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+  <div class="bg-surface rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-outline-variant/30 animate-slide-up">
+    <div class="flex justify-between items-center pb-3 border-b border-outline-variant/20 mb-4">
+      <h3 class="font-bold text-base text-on-surface">Edit Profile</h3>
+      <button type="button" id="btnCloseEditProfileModal" class="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center">
+        <span class="material-symbols-outlined text-base">close</span>
+      </button>
+    </div>
+
+    <form id="formEditProfile" class="space-y-3 text-xs">
+      <div>
+        <label class="font-bold text-on-surface block mb-1">Full Name</label>
+        <input type="text" id="inputProfileName" class="w-full rounded-xl border border-outline-variant/50 p-2.5 bg-surface text-on-surface outline-none focus:ring-1 focus:ring-primary" required>
+      </div>
+
+      <div>
+        <label class="font-bold text-on-surface block mb-1">Email Address</label>
+        <input type="email" id="inputProfileEmail" class="w-full rounded-xl border border-outline-variant/50 p-2.5 bg-surface text-on-surface outline-none focus:ring-1 focus:ring-primary" required>
+      </div>
+
+      <div>
+        <label class="font-bold text-on-surface block mb-1">Phone Number</label>
+        <input type="text" id="inputProfilePhone" class="w-full rounded-xl border border-outline-variant/50 p-2.5 bg-surface text-on-surface outline-none focus:ring-1 focus:ring-primary" required>
+      </div>
+
+      <div class="pt-3 flex gap-2">
+        <button type="button" id="btnCancelEditProfile" class="w-1/2 py-2.5 rounded-xl border border-outline-variant/50 font-bold hover:bg-surface-variant">Cancel</button>
+        <button type="submit" class="w-1/2 py-2.5 rounded-xl bg-primary text-on-primary font-bold shadow-md hover:bg-primary-container active:scale-95 transition-all">Save Changes</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <!-- BottomNavBar (Shared Component) -->
 <nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-base pb-safe h-16 bg-surface border-t border-outline-variant/20 rounded-t-xl shadow-[0px_-4px_20px_rgba(0,0,0,0.05)]">
 <a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-variant transition-colors group rounded-xl" href="/">
@@ -216,4 +261,8 @@
 <span class="font-label-sm text-label-sm">Profile</span>
 </a>
 </nav>
+
+<!-- Scripts -->
+<script defer src="/js/common.js"></script>
+<script defer src="/js/profile.js"></script>
 </body></html>

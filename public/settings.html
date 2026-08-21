@@ -173,7 +173,7 @@
 </div>
 <!-- Settings Section: Notifications -->
 <section class="flex flex-col gap-stack-md">
-<h2 class="text-label-md font-label-md text-primary uppercase tracking-wider pl-1">Notifications</h2>
+<h2 class="text-label-md font-label-md text-primary uppercase tracking-wider pl-1">Notifications &amp; Alerts</h2>
 <div class="bg-surface-container-lowest rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.05)] flex flex-col overflow-hidden">
 <!-- Push Notifications -->
 <div class="flex items-center justify-between p-4 border-b border-surface-variant">
@@ -183,35 +183,36 @@
 </div>
 <div class="flex flex-col">
 <span class="text-body-md font-body-md text-on-surface font-medium">Push Notifications</span>
-<span class="text-label-sm font-label-sm text-on-surface-variant">Ride updates and alerts</span>
+<span class="text-label-sm font-label-sm text-on-surface-variant">Live bus dispatch &amp; arrival pings</span>
 </div>
 </div>
-<div class="relative inline-block w-12 align-middle select-none transition duration-200 ease-in">
-<input checked="" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" id="push_toggle" name="toggle" type="checkbox"/>
-<label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer" for="push_toggle"></label>
+<div class="relative inline-block w-12 align-middle select-none">
+<input checked class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" id="togglePush" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-6 rounded-full bg-primary cursor-pointer" for="togglePush"></label>
 </div>
 </div>
-<!-- Email Updates -->
+<!-- SMS / WhatsApp Updates -->
 <div class="flex items-center justify-between p-4">
 <div class="flex items-center gap-stack-md">
 <div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-primary">
-<span class="material-symbols-outlined" data-icon="mail">mail</span>
+<span class="material-symbols-outlined" data-icon="mail">chat</span>
 </div>
 <div class="flex flex-col">
-<span class="text-body-md font-body-md text-on-surface font-medium">Email Updates</span>
-<span class="text-label-sm font-label-sm text-on-surface-variant">Promotions and news</span>
+<span class="text-body-md font-body-md text-on-surface font-medium">WhatsApp &amp; SMS Alerts</span>
+<span class="text-label-sm font-label-sm text-on-surface-variant">OTP delivery codes &amp; tracking links</span>
 </div>
 </div>
-<div class="relative inline-block w-12 align-middle select-none transition duration-200 ease-in">
-<input class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" id="email_toggle" name="toggle" type="checkbox"/>
-<label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer" for="email_toggle"></label>
+<div class="relative inline-block w-12 align-middle select-none">
+<input checked class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" id="toggleSms" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-6 rounded-full bg-primary cursor-pointer" for="toggleSms"></label>
 </div>
 </div>
 </div>
 </section>
+
 <!-- Settings Section: Privacy & Location -->
 <section class="flex flex-col gap-stack-md">
-<h2 class="text-label-md font-label-md text-primary uppercase tracking-wider pl-1">Privacy &amp; Location</h2>
+<h2 class="text-label-md font-label-md text-primary uppercase tracking-wider pl-1">Device &amp; Security</h2>
 <div class="bg-surface-container-lowest rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.05)] flex flex-col overflow-hidden">
 <!-- Location Services -->
 <div class="flex items-center justify-between p-4 border-b border-surface-variant">
@@ -220,61 +221,102 @@
 <span class="material-symbols-outlined" data-icon="location_on">location_on</span>
 </div>
 <div class="flex flex-col">
-<span class="text-body-md font-body-md text-on-surface font-medium">Location Services</span>
-<span class="text-label-sm font-label-sm text-on-surface-variant">Required for ride hailing</span>
+<span class="text-body-md font-body-md text-on-surface font-medium">Continuous GPS Location</span>
+<span class="text-label-sm font-label-sm text-on-surface-variant">Used for real-time corridor matching</span>
 </div>
 </div>
-<div class="relative inline-block w-12 align-middle select-none transition duration-200 ease-in">
-<input checked="" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" id="location_toggle" name="toggle" type="checkbox"/>
-<label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer" for="location_toggle"></label>
+<div class="relative inline-block w-12 align-middle select-none">
+<input checked class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" id="toggleLocation" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-6 rounded-full bg-primary cursor-pointer" for="toggleLocation"></label>
 </div>
 </div>
+
+<!-- Biometric Lock -->
+<div class="flex items-center justify-between p-4 border-b border-surface-variant">
+<div class="flex items-center gap-stack-md">
+<div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" data-icon="fingerprint">fingerprint</span>
+</div>
+<div class="flex flex-col">
+<span class="text-body-md font-body-md text-on-surface font-medium">Biometric App Lock</span>
+<span class="text-label-sm font-label-sm text-on-surface-variant">FaceID / TouchID for wallet payments</span>
+</div>
+</div>
+<div class="relative inline-block w-12 align-middle select-none">
+<input class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" id="toggleBiometrics" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer" for="toggleBiometrics"></label>
+</div>
+</div>
+
 <!-- Language -->
-<a class="flex items-center justify-between p-4 border-b border-surface-variant hover:bg-surface-container-low transition-colors group" href="#">
+<div id="btnLanguageSelector" class="flex items-center justify-between p-4 border-b border-surface-variant hover:bg-surface-container-low transition-colors group cursor-pointer">
 <div class="flex items-center gap-stack-md">
 <div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-primary group-hover:bg-white transition-colors">
 <span class="material-symbols-outlined" data-icon="language">language</span>
 </div>
-<span class="text-body-md font-body-md text-on-surface font-medium">Language</span>
+<span class="text-body-md font-body-md text-on-surface font-medium">App Language</span>
 </div>
 <div class="flex items-center gap-2">
-<span class="text-label-md font-label-md text-on-surface-variant">English (US)</span>
+<span id="labelCurrentLanguage" class="text-label-md font-label-md text-on-surface-variant font-semibold">English (IN)</span>
 <span class="material-symbols-outlined text-outline" data-icon="chevron_right">chevron_right</span>
 </div>
-</a>
-<!-- Privacy Policy -->
-<a class="flex items-center justify-between p-4 border-b border-surface-variant hover:bg-surface-container-low transition-colors group" href="#">
+</div>
+
+<!-- Help & Support -->
+<a href="/help-support" class="flex items-center justify-between p-4 hover:bg-surface-container-low transition-colors group">
 <div class="flex items-center gap-stack-md">
 <div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-primary group-hover:bg-white transition-colors">
-<span class="material-symbols-outlined" data-icon="policy">policy</span>
+<span class="material-symbols-outlined" data-icon="support_agent">support_agent</span>
 </div>
-<span class="text-body-md font-body-md text-on-surface font-medium">Privacy Policy</span>
-</div>
-<span class="material-symbols-outlined text-outline" data-icon="chevron_right">chevron_right</span>
-</a>
-<!-- Terms of Service -->
-<a class="flex items-center justify-between p-4 hover:bg-surface-container-low transition-colors group" href="#">
-<div class="flex items-center gap-stack-md">
-<div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-primary group-hover:bg-white transition-colors">
-<span class="material-symbols-outlined" data-icon="description">description</span>
-</div>
-<span class="text-body-md font-body-md text-on-surface font-medium">Terms of Service</span>
+<span class="text-body-md font-body-md text-on-surface font-medium">Help &amp; Support (Anmol)</span>
 </div>
 <span class="material-symbols-outlined text-outline" data-icon="chevron_right">chevron_right</span>
 </a>
 </div>
 </section>
+
 <!-- Account Actions -->
 <section class="flex flex-col gap-stack-md pt-4">
-<button onclick="alert('Signed out successfully.')" class="w-full bg-surface-container-low text-error hover:bg-error-container hover:text-on-error-container rounded-xl py-4 font-label-md text-label-md transition-colors flex items-center justify-center gap-2">
+<button type="button" id="btnSignOut" class="w-full bg-surface-container-low text-error hover:bg-error-container hover:text-on-error-container rounded-xl py-4 font-label-md text-label-md font-bold transition-colors flex items-center justify-center gap-2 active:scale-98">
 <span class="material-symbols-outlined" data-icon="logout">logout</span>
-                Sign Out
-            </button>
+    Sign Out
+</button>
 <div class="text-center mt-4">
-<span class="text-label-sm font-label-sm text-outline">Transitly v2.4.1</span>
+<span class="text-label-sm font-label-sm text-outline font-semibold">Transitly v2.4.1 • Multi-Modal Transit Engine</span>
 </div>
 </section>
 </main>
+
+<!-- Language Picker Modal -->
+<div id="languageModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+  <div class="bg-surface rounded-3xl max-w-sm w-full p-5 shadow-2xl border border-outline-variant/30 animate-slide-up">
+    <div class="flex justify-between items-center pb-3 border-b border-outline-variant/20 mb-3">
+      <h3 class="font-bold text-base text-on-surface">Select Language</h3>
+      <button type="button" id="btnCloseLanguageModal" class="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center">
+        <span class="material-symbols-outlined text-base">close</span>
+      </button>
+    </div>
+    <div class="space-y-2 text-xs font-semibold">
+      <button type="button" class="btn-lang-choice w-full p-3 rounded-xl bg-primary text-on-primary text-left flex justify-between" data-lang="English (IN)">
+        <span>English (India)</span>
+        <span class="material-symbols-outlined text-base">check</span>
+      </button>
+      <button type="button" class="btn-lang-choice w-full p-3 rounded-xl bg-surface-container-low text-on-surface text-left hover:bg-surface-variant flex justify-between" data-lang="Hindi (हिंदी)">
+        <span>Hindi (हिंदी)</span>
+      </button>
+      <button type="button" class="btn-lang-choice w-full p-3 rounded-xl bg-surface-container-low text-on-surface text-left hover:bg-surface-variant flex justify-between" data-lang="Punjabi (ਪੰਜਾਬੀ)">
+        <span>Punjabi (ਪੰਜਾਬੀ)</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Settings Feedback Toast -->
+<div id="settingsToast" class="hidden fixed bottom-20 left-1/2 transform -translate-x-1/2 z-50 bg-on-surface text-surface px-4 py-2 rounded-full text-xs font-bold shadow-xl animate-fade-in flex items-center gap-2">
+  <span class="material-symbols-outlined text-sm text-emerald-400">check_circle</span>
+  <span id="settingsToastText">Settings updated</span>
+</div>
+
 <!-- BottomNavBar (Shared Component) -->
 <nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-base pb-safe h-16 bg-surface border-t border-outline-variant/20 rounded-t-xl shadow-[0px_-4px_20px_rgba(0,0,0,0.05)]">
 <a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-variant transition-colors group rounded-xl" href="/">
@@ -295,4 +337,8 @@
 <span class="font-label-sm text-label-sm">Profile</span>
 </a>
 </nav>
+
+<!-- Scripts -->
+<script defer src="/js/common.js"></script>
+<script defer src="/js/settings.js"></script>
 </body></html>

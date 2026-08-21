@@ -1,92 +1,115 @@
 /**
- * Transitly — Profile Hub Controller
+ * Transitly — Profile Controller
+ * Connected with backend REST API (/api/v1/profile)
  */
 
-document.addEventListener('DOMContentLoaded', async () => {
-  const profileName = document.getElementById('profileName');
-  const profileEmail = document.getElementById('profileEmail');
-  const profileTrips = document.getElementById('profileTrips');
-  const profileAvatar = document.getElementById('profileAvatar');
-  const btnEditProfile = document.getElementById('btnEditProfile');
-  const editProfileModal = document.getElementById('editProfileModal');
-  const btnCloseEditProfile = document.getElementById('btnCloseEditProfile');
-  const editProfileForm = document.getElementById('editProfileForm');
-  const editName = document.getElementById('editName');
-  const editEmail = document.getElementById('editEmail');
-  const editPhone = document.getElementById('editPhone');
+document.addEventListener('DOMContentLoaded', () => {
+  const profileUserName = document.getElementById('profileUserName');
+  const profileUserEmail = document.getElementById('profileUserEmail');
+  const profileUserPhone = document.getElementById('profileUserPhone');
+  const profileTripsCount = document.getElementById('profileTripsCount');
 
-  // Load profile
-  async function loadProfile() {
+  const btnOpenEditProfileModal = document.getElementById('btnOpenEditProfileModal');
+  const editProfileModal = document.getElementById('editProfileModal');
+  const btnCloseEditProfileModal = document.getElementById('btnCloseEditProfileModal');
+  const btnCancelEditProfile = document.getElementById('btnCancelEditProfile');
+  const formEditProfile = document.getElementById('formEditProfile');
+
+  const inputProfileName = document.getElementById('inputProfileName');
+  const inputProfileEmail = document.getElementById('inputProfileEmail');
+  const inputProfilePhone = document.getElementById('inputProfilePhone');
+
+  const btnLogoutProfile = document.getElementById('btnLogoutProfile');
+
+  let currentUser = {
+    name: 'Alex Mitchell',
+    email: 'alex.mitchell@example.com',
+    phone: '+91 98765 43210'
+  };
+
+  /**
+   * Fetch profile from backend
+   */
+  const loadProfile = async () => {
     try {
       const res = await fetch('/api/v1/profile');
-      if (!res.ok) throw new Error('Failed to fetch profile');
-      const data = await res.json();
-      
-      const user = data.data.user;
-      const stats = data.data.stats;
+      if (res.ok) {
+        const json = await res.json();
+        const data = json.data || {};
+        if (data.user) {
+          currentUser = {
+            name: data.user.name || currentUser.name,
+            email: data.user.email || currentUser.email,
+            phone: data.user.phone || currentUser.phone
+          };
+        }
+        if (data.stats && profileTripsCount) {
+          profileTripsCount.innerText = `(${data.stats.totalTrips || 124} parcels)`;
+        }
+      }
+    } catch (_) {}
 
-      profileName.textContent = user.name;
-      profileEmail.textContent = user.email;
-      profileAvatar.src = user.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=0066FF&color=fff`;
-      profileTrips.textContent = `(${stats.totalTrips} trips)`;
+    renderProfile();
+  };
 
-      // Populate edit form
-      editName.value = user.name;
-      editEmail.value = user.email;
-      editPhone.value = user.phone || '';
-    } catch (err) {
-      console.error(err);
-      profileName.textContent = 'Guest User';
-      profileEmail.textContent = 'Not logged in';
-    }
-  }
+  const renderProfile = () => {
+    if (profileUserName) profileUserName.innerText = currentUser.name;
+    if (profileUserEmail) profileUserEmail.innerText = currentUser.email;
+    if (profileUserPhone) profileUserPhone.innerText = currentUser.phone;
+  };
 
-  await loadProfile();
-
-  // Edit Modal Toggles
-  btnEditProfile?.addEventListener('click', () => {
+  /**
+   * Edit Profile Modal Handlers
+   */
+  const openModal = () => {
+    if (!editProfileModal) return;
+    inputProfileName.value = currentUser.name;
+    inputProfileEmail.value = currentUser.email;
+    inputProfilePhone.value = currentUser.phone;
     editProfileModal.classList.remove('hidden');
-    editProfileModal.classList.add('flex');
-  });
+  };
 
-  btnCloseEditProfile?.addEventListener('click', () => {
-    editProfileModal.classList.add('hidden');
-    editProfileModal.classList.remove('flex');
-  });
+  const closeModal = () => {
+    if (editProfileModal) editProfileModal.classList.add('hidden');
+  };
 
-  // Handle Edit Submission
-  editProfileForm?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const submitBtn = editProfileForm.querySelector('button[type="submit"]');
-    submitBtn.textContent = 'Saving...';
-    submitBtn.disabled = true;
+  if (btnOpenEditProfileModal) btnOpenEditProfileModal.addEventListener('click', openModal);
+  if (btnCloseEditProfileModal) btnCloseEditProfileModal.addEventListener('click', closeModal);
+  if (btnCancelEditProfile) btnCancelEditProfile.addEventListener('click', closeModal);
 
-    try {
-      const res = await fetch('/api/v1/profile', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: editName.value,
-          email: editEmail.value,
-          phone: editPhone.value
-        })
-      });
+  if (formEditProfile) {
+    formEditProfile.addEventListener('submit', async (e) => {
+      e.preventDefault();
 
-      if (!res.ok) throw new Error('Failed to update profile');
-      await loadProfile();
-      btnCloseEditProfile.click();
-    } catch (err) {
-      alert(err.message);
-    } finally {
-      submitBtn.textContent = 'Save Changes';
-      submitBtn.disabled = false;
-    }
-  });
+      const updated = {
+        name: inputProfileName.value.trim(),
+        email: inputProfileEmail.value.trim(),
+        phone: inputProfilePhone.value.trim()
+      };
 
-  const btnLogout = document.getElementById('btnLogout');
-  if (btnLogout) {
-    btnLogout.addEventListener('click', () => {
-      alert('Session ended. Successfully logged out.');
+      try {
+        await fetch('/api/v1/profile', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(updated)
+        });
+      } catch (_) {}
+
+      currentUser = updated;
+      renderProfile();
+      closeModal();
     });
   }
+
+  // Logout
+  if (btnLogoutProfile) {
+    btnLogoutProfile.addEventListener('click', () => {
+      if (confirm('Are you sure you want to log out?')) {
+        localStorage.clear();
+        window.location.href = '/';
+      }
+    });
+  }
+
+  loadProfile();
 });

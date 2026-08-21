@@ -137,77 +137,70 @@
 </header>
 <!-- Main Content Canvas -->
 <main class="px-container-margin pt-stack-lg max-w-2xl mx-auto flex flex-col gap-stack-lg">
-<!-- Addresses List -->
-<div class="flex flex-col gap-stack-md">
-<!-- Address Card: Home -->
-<div class="bg-surface-container-lowest rounded-[16px] shadow-level-1 p-4 flex items-center justify-between group cursor-pointer hover:bg-surface-container-low transition-colors duration-200">
-<div class="flex items-center gap-4 flex-1">
-<div class="w-12 h-12 rounded-full bg-primary-fixed flex items-center justify-center text-primary flex-shrink-0">
-<span class="material-symbols-outlined icon-fill" data-icon="home" data-weight="fill">home</span>
-</div>
-<div class="flex flex-col">
-<span class="text-label-md font-label-md text-on-surface">Home</span>
-<span class="text-label-sm font-label-sm text-on-surface-variant mt-1 line-clamp-1">123 Elm Street, Springfield, IL 62701</span>
-</div>
-</div>
-<button aria-label="Edit Home Address" class="w-10 h-10 flex items-center justify-center rounded-full text-outline hover:text-primary hover:bg-surface-container transition-colors duration-150 ml-2">
-<span class="material-symbols-outlined text-[20px]" data-icon="edit">edit</span>
-</button>
-</div>
-<!-- Address Card: Work -->
-<div class="bg-surface-container-lowest rounded-[16px] shadow-level-1 p-4 flex items-center justify-between group cursor-pointer hover:bg-surface-container-low transition-colors duration-200">
-<div class="flex items-center gap-4 flex-1">
-<div class="w-12 h-12 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant flex-shrink-0">
-<span class="material-symbols-outlined icon-fill" data-icon="work" data-weight="fill">work</span>
-</div>
-<div class="flex flex-col">
-<span class="text-label-md font-label-md text-on-surface">Work</span>
-<span class="text-label-sm font-label-sm text-on-surface-variant mt-1 line-clamp-1">456 Corporate Blvd, Suite 200, Metropolis, NY 10001</span>
-</div>
-</div>
-<button aria-label="Edit Work Address" class="w-10 h-10 flex items-center justify-center rounded-full text-outline hover:text-primary hover:bg-surface-container transition-colors duration-150 ml-2">
-<span class="material-symbols-outlined text-[20px]" data-icon="edit">edit</span>
-</button>
-</div>
-<!-- Address Card: Frequent 1 -->
-<div class="bg-surface-container-lowest rounded-[16px] shadow-level-1 p-4 flex items-center justify-between group cursor-pointer hover:bg-surface-container-low transition-colors duration-200">
-<div class="flex items-center gap-4 flex-1">
-<div class="w-12 h-12 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant flex-shrink-0">
-<span class="material-symbols-outlined" data-icon="fitness_center">fitness_center</span>
-</div>
-<div class="flex flex-col">
-<span class="text-label-md font-label-md text-on-surface">Gym</span>
-<span class="text-label-sm font-label-sm text-on-surface-variant mt-1 line-clamp-1">789 Muscle Ave, Iron City, CA 90210</span>
-</div>
-</div>
-<button aria-label="Edit Gym Address" class="w-10 h-10 flex items-center justify-center rounded-full text-outline hover:text-primary hover:bg-surface-container transition-colors duration-150 ml-2">
-<span class="material-symbols-outlined text-[20px]" data-icon="edit">edit</span>
-</button>
-</div>
-<!-- Address Card: Frequent 2 -->
-<div class="bg-surface-container-lowest rounded-[16px] shadow-level-1 p-4 flex items-center justify-between group cursor-pointer hover:bg-surface-container-low transition-colors duration-200">
-<div class="flex items-center gap-4 flex-1">
-<div class="w-12 h-12 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant flex-shrink-0">
-<span class="material-symbols-outlined" data-icon="local_cafe">local_cafe</span>
-</div>
-<div class="flex flex-col">
-<span class="text-label-md font-label-md text-on-surface">Favorite Cafe</span>
-<span class="text-label-sm font-label-sm text-on-surface-variant mt-1 line-clamp-1">321 Bean Roasters Lane, Seattle, WA 98101</span>
-</div>
-</div>
-<button aria-label="Edit Cafe Address" class="w-10 h-10 flex items-center justify-center rounded-full text-outline hover:text-primary hover:bg-surface-container transition-colors duration-150 ml-2">
-<span class="material-symbols-outlined text-[20px]" data-icon="edit">edit</span>
-</button>
-</div>
+<!-- Addresses List Container (Populated via Backend API) -->
+<div id="addressesContainer" class="flex flex-col gap-stack-md">
+  <!-- Loading Skeleton / Seed Data -->
+  <div class="text-center py-6 text-xs text-on-surface-variant">Loading saved addresses from database...</div>
 </div>
 </main>
+
 <!-- Floating Action Area (Bottom) -->
 <div class="fixed bottom-20 left-0 w-full p-container-margin bg-gradient-to-t from-background via-background to-transparent z-30 pb-safe md:static md:bg-none md:mt-section-gap md:p-0 md:max-w-2xl md:mx-auto">
-<button onclick="alert('Add New Address Modal')" class="w-full h-[56px] bg-primary-container text-on-primary rounded-[16px] text-body-md font-body-md font-semibold shadow-level-2 hover:opacity-90 active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2">
+<button type="button" id="btnOpenAddAddressModal" class="w-full h-[56px] bg-primary text-on-primary rounded-[16px] text-body-md font-body-md font-semibold shadow-level-2 hover:bg-primary-container active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2">
 <span class="material-symbols-outlined text-[20px]" data-icon="add">add</span>
-            Add New Address
-        </button>
+    Add New Address
+</button>
 </div>
+
+<!-- Add / Edit Address Modal -->
+<div id="addressModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end md:items-center justify-center p-0 md:p-4">
+  <div class="bg-surface rounded-t-3xl md:rounded-3xl max-w-md w-full p-6 shadow-2xl border border-outline-variant/30 animate-slide-up">
+    <div class="flex items-center justify-between pb-3 border-b border-outline-variant/20 mb-4">
+      <div class="flex items-center gap-2">
+        <span class="material-symbols-outlined text-primary text-2xl">pin_drop</span>
+        <h3 id="addressModalTitle" class="text-headline-md font-headline-md text-on-surface font-bold">Add New Address</h3>
+      </div>
+      <button type="button" id="btnCloseAddressModal" class="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center hover:bg-surface-variant">
+        <span class="material-symbols-outlined text-lg">close</span>
+      </button>
+    </div>
+
+    <form id="formAddress" class="space-y-3 text-xs">
+      <input type="hidden" id="inputAddressId" value="">
+      <div>
+        <label class="font-bold text-on-surface block mb-1">Label (e.g. Home, Work, Warehouse)</label>
+        <input type="text" id="inputAddressLabel" placeholder="e.g. Home, Office, Branch" class="w-full rounded-xl border border-outline-variant/50 p-2.5 bg-surface text-on-surface outline-none focus:ring-1 focus:ring-primary focus:border-primary" required>
+      </div>
+
+      <div>
+        <label class="font-bold text-on-surface block mb-1">Street Address / Landmark</label>
+        <input type="text" id="inputAddressLine" placeholder="123 Elm Street, City, State" class="w-full rounded-xl border border-outline-variant/50 p-2.5 bg-surface text-on-surface outline-none focus:ring-1 focus:ring-primary focus:border-primary" required>
+      </div>
+
+      <div>
+        <label class="font-bold text-on-surface block mb-1">Icon Tag</label>
+        <select id="inputAddressTag" class="w-full rounded-xl border border-outline-variant/50 p-2.5 bg-surface text-on-surface font-semibold">
+          <option value="home">Home (House icon)</option>
+          <option value="work">Work (Building icon)</option>
+          <option value="fitness_center">Gym / Fitness</option>
+          <option value="local_cafe">Cafe / Hangout</option>
+          <option value="store">Warehouse / Shop</option>
+        </select>
+      </div>
+
+      <div class="flex items-center gap-2 pt-1">
+        <input type="checkbox" id="inputAddressDefault" class="rounded border-outline-variant text-primary focus:ring-primary">
+        <label for="inputAddressDefault" class="text-on-surface font-semibold">Set as primary default address</label>
+      </div>
+
+      <div class="pt-3 flex gap-2">
+        <button type="button" id="btnCancelAddressModal" class="w-1/2 py-2.5 rounded-xl border border-outline-variant/50 font-bold hover:bg-surface-variant">Cancel</button>
+        <button type="submit" id="btnSaveAddressSubmit" class="w-1/2 py-2.5 rounded-xl bg-primary text-on-primary font-bold shadow-md hover:bg-primary-container active:scale-95 transition-all">Save Address</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <!-- BottomNavBar (Shared Component) -->
 <nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-base pb-safe h-16 bg-surface border-t border-outline-variant/20 rounded-t-xl shadow-[0px_-4px_20px_rgba(0,0,0,0.05)]">
 <a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-variant transition-colors group rounded-xl" href="/">
@@ -228,4 +221,8 @@
 <span class="font-label-sm text-label-sm">Profile</span>
 </a>
 </nav>
+
+<!-- Scripts -->
+<script defer src="/js/common.js"></script>
+<script defer src="/js/saved-addresses.js"></script>
 </body></html>
