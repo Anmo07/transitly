@@ -140,20 +140,28 @@
 <div class="absolute -bottom-12 -left-12 w-32 h-32 bg-surface-tint rounded-full mix-blend-multiply filter blur-2xl opacity-20"></div>
 
 <!-- Interactive Profile Avatar with Upload Badge -->
-<div class="relative mb-stack-md z-10 group">
-  <div class="w-24 h-24 rounded-full shadow-[0px_4px_20px_rgba(0,0,0,0.08)] border-4 border-surface overflow-hidden bg-surface-container-high relative cursor-pointer group-hover:ring-4 group-hover:ring-primary/20 transition-all" id="avatarClickContainer" title="Click to upload profile picture">
+<div class="relative mb-2 z-10 group flex flex-col items-center">
+  <div class="w-24 h-24 rounded-full shadow-[0px_4px_20px_rgba(0,0,0,0.08)] border-4 border-surface overflow-hidden bg-surface-container-high relative cursor-pointer group-hover:ring-4 group-hover:ring-primary/30 transition-all" id="avatarClickContainer" title="Click to upload profile picture from device">
     <img id="profileAvatarImg" class="w-full h-full object-cover" data-alt="User profile photo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBzAACyzyleKmM4JQVt8Aa-jr70QVcpj9loY9wKp5o9O4E4p6Pw4_DrVmOHt4kkJfjfzprBQFcotrP67UIXwwodZ_N8y_NQMBXmYt1FUgmWEZU3RkLHv9mtX5_jewodrd3AC22FofPIl1pDv6bTKcqN63TR8-Ce6clfaRjIaxwp6CeKnOIoGAZdfBFJX_YfrWG4DCAk26zr7uiOS6j2JNkj4E16URTfm8orQCRZ5X_7hBMsGpV5UeKJ"/>
     <!-- Hover Overlay -->
-    <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
-      <span class="material-symbols-outlined text-xl">upload</span>
+    <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center text-white">
+      <span class="material-symbols-outlined text-2xl">add_a_photo</span>
+      <span class="text-[10px] font-bold mt-0.5">Upload</span>
     </div>
   </div>
   <!-- Floating Camera Button -->
-  <button type="button" id="btnUploadAvatar" class="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-primary text-on-primary shadow-lg border-2 border-surface flex items-center justify-center hover:bg-primary-container active:scale-90 transition-all" title="Upload Photo">
+  <button type="button" id="btnUploadAvatar" class="absolute bottom-6 right-[calc(50%-44px)] w-8 h-8 rounded-full bg-primary text-on-primary shadow-lg border-2 border-surface flex items-center justify-center hover:bg-primary-container active:scale-90 transition-all" title="Pick Image from Device">
     <span class="material-symbols-outlined text-[16px]">photo_camera</span>
   </button>
-  <!-- Hidden File Input -->
-  <input type="file" id="inputAvatarFile" accept="image/*" class="hidden" />
+  
+  <!-- Explicit Device Pick Button -->
+  <button type="button" id="btnPickPhotoDevice" class="mt-2 text-xs font-bold text-primary flex items-center gap-1.5 px-3 py-1 bg-primary-fixed/40 hover:bg-primary-fixed/70 rounded-full transition-all active:scale-95">
+    <span class="material-symbols-outlined text-[15px]">add_photo_alternate</span>
+    <span>Upload from Device</span>
+  </button>
+
+  <!-- Hidden File Input for Main Profile -->
+  <input type="file" id="inputAvatarFile" accept="image/png, image/jpeg, image/jpg, image/webp, image/gif, image/heic" class="hidden" />
 </div>
 
 <h2 id="profileUserName" class="font-headline-md text-headline-md text-on-surface z-10 font-bold">Alex Mitchell</h2>
@@ -233,17 +241,29 @@
     </div>
 
     <!-- Modal Avatar Change Area -->
-    <div class="flex items-center gap-3 p-3 bg-surface-container-low rounded-2xl mb-4 border border-outline-variant/20">
-      <div class="w-14 h-14 rounded-full overflow-hidden border-2 border-primary shadow-md shrink-0 bg-white">
-        <img id="editModalAvatarPreview" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBzAACyzyleKmM4JQVt8Aa-jr70QVcpj9loY9wKp5o9O4E4p6Pw4_DrVmOHt4kkJfjfzprBQFcotrP67UIXwwodZ_N8y_NQMBXmYt1FUgmWEZU3RkLHv9mtX5_jewodrd3AC22FofPIl1pDv6bTKcqN63TR8-Ce6clfaRjIaxwp6CeKnOIoGAZdfBFJX_YfrWG4DCAk26zr7uiOS6j2JNkj4E16URTfm8orQCRZ5X_7hBMsGpV5UeKJ" alt="Avatar preview">
+    <div id="modalDropZone" class="p-3.5 bg-surface-container-low rounded-2xl mb-4 border border-outline-variant/30 flex items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-14 h-14 rounded-full overflow-hidden border-2 border-primary shadow-md shrink-0 bg-white relative group/modalAvatar cursor-pointer" id="modalAvatarClickArea" title="Click to change photo">
+          <img id="editModalAvatarPreview" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBzAACyzyleKmM4JQVt8Aa-jr70QVcpj9loY9wKp5o9O4E4p6Pw4_DrVmOHt4kkJfjfzprBQFcotrP67UIXwwodZ_N8y_NQMBXmYt1FUgmWEZU3RkLHv9mtX5_jewodrd3AC22FofPIl1pDv6bTKcqN63TR8-Ce6clfaRjIaxwp6CeKnOIoGAZdfBFJX_YfrWG4DCAk26zr7uiOS6j2JNkj4E16URTfm8orQCRZ5X_7hBMsGpV5UeKJ" alt="Avatar preview">
+          <div class="absolute inset-0 bg-black/40 opacity-0 group-hover/modalAvatar:opacity-100 flex items-center justify-center text-white transition-opacity">
+            <span class="material-symbols-outlined text-base">photo_camera</span>
+          </div>
+        </div>
+        <div class="flex flex-col">
+          <span class="text-xs font-bold text-on-surface">Profile Picture</span>
+          <span class="text-[10px] text-outline">JPG, PNG, WebP up to 10MB</span>
+        </div>
       </div>
-      <div class="flex flex-col gap-1">
-        <span class="text-xs font-bold text-on-surface">Profile Picture</span>
-        <button type="button" id="btnModalUploadPhoto" class="px-3 py-1 bg-primary text-on-primary rounded-lg text-[11px] font-bold shadow-sm hover:bg-primary-container active:scale-95 transition-all flex items-center gap-1">
-          <span class="material-symbols-outlined text-[14px]">upload</span>
-          <span>Upload Photo</span>
+      <div class="flex items-center gap-1.5">
+        <button type="button" id="btnModalUploadPhoto" class="px-3 py-1.5 bg-primary text-on-primary rounded-xl text-xs font-bold shadow-sm hover:bg-primary-container active:scale-95 transition-all flex items-center gap-1">
+          <span class="material-symbols-outlined text-[15px]">file_upload</span>
+          <span>Browse</span>
+        </button>
+        <button type="button" id="btnRemoveAvatar" class="p-1.5 bg-surface hover:bg-red-50 text-red-500 rounded-xl text-xs font-bold border border-red-200 active:scale-95 transition-all" title="Remove custom photo">
+          <span class="material-symbols-outlined text-[15px]">delete</span>
         </button>
       </div>
+      <input type="file" id="inputModalAvatarFile" accept="image/png, image/jpeg, image/jpg, image/webp, image/gif, image/heic" class="hidden" />
     </div>
 
     <form id="formEditProfile" class="space-y-3 text-xs">
