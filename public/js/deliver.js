@@ -155,6 +155,20 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   /**
+   * Show feedback toast
+   */
+  const showLocationToast = (msg) => {
+    const locationToast = document.getElementById('locationToast');
+    const locationToastText = document.getElementById('locationToastText');
+    if (!locationToast || !locationToastText) return;
+    locationToastText.innerText = msg;
+    locationToast.classList.remove('hidden');
+    setTimeout(() => {
+      locationToast.classList.add('hidden');
+    }, 2800);
+  };
+
+  /**
    * Update UI with location
    */
   const applyLocationToUI = (name, lat, lng, panMap = true) => {
@@ -178,7 +192,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (homeMap) {
       if (userMarker) userMarker.setLatLng([currentLat, currentLng]);
-      if (panMap) homeMap.flyTo([currentLat, currentLng], 15, { animate: true, duration: 1.2 });
+      if (panMap) homeMap.flyTo([currentLat, currentLng], 14, { animate: true, duration: 1.2 });
     }
 
     localStorage.setItem('transitly_pickup_location', JSON.stringify({
@@ -190,45 +204,105 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   /**
-   * Request User Location Services
+   * Fallback IP Geolocation Resolver
    */
-  const requestLiveDeviceLocation = (fromUserPrompt = false) => {
-    if (!navigator.geolocation) {
-      alert('Geolocation is not supported by your device browser.');
-      return;
+  const resolveIpLocation = async () => {
+    try {
+      const res = await fetch('https://api.bigdatacloud.net/data/reverse-geocode-client');
+      if (res.ok) {
+        const data = await res.json();
+        const city = data.city || data.locality || data.principalSubdivision;
+        if (city && data.latitude && data.longitude) {
+          const formatted = `${city}, ${data.principalSubdivision || ''}`.replace(/,\s*$/, '');
+          applyLocationToUI(formatted, data.latitude, data.longitude, true);
+          return formatted;
+        }
+      }
+    } catch (_) {}
+
+    try {
+      const res2 = await fetch('https://ipapi.co/json/');
+      if (res2.ok) {
+        const d2 = await res2.json();
+        if (d2.city && d2.latitude && d2.longitude) {
+          const formatted2 = `${d2.city}, ${d2.region || ''}`.replace(/,\s*$/, '');
+          applyLocationToUI(formatted2, d2.latitude, d2.longitude, true);
+          return formatted2;
+        }
+      }
+    } catch (_) {}
+
+    return null;
+  };
+
+  /**
+   * Request User Location Services (Non-blocking & Robust)
+   */
+  const requestLiveDeviceLocation = async (fromUserPrompt = false) => {
+    const btnTrigger = document.getElementById('btnTriggerGpsDetect');
+    const originalBtnText = btnTrigger ? btnTrigger.innerHTML : '';
+
+    if (btnTrigger) {
+      btnTrigger.innerHTML = `
+        <span class="material-symbols-outlined text-xl animate-spin">refresh</span>
+        <span>Detecting Live GPS...</span>
+      `;
     }
 
-    if (liveLocationText) liveLocationText.innerText = 'Requesting GPS Location Services...';
+    if (liveLocationText) liveLocationText.innerText = 'Detecting Location...';
     if (liveGpsDot) liveGpsDot.className = 'w-2 h-2 rounded-full bg-yellow-300 animate-ping';
 
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        const lat = position.coords.latitude;
-        const lng = position.coords.longitude;
+    let resolved = false;
 
-        const revName = await reverseGeocode(lat, lng);
-        applyLocationToUI(revName, lat, lng, true);
+    // Helper to finish detection
+    const finalizeLocation = (cityName) => {
+      if (locationPermissionBanner) locationPermissionBanner.classList.add('hidden');
+      closeLocationModal();
+      if (btnTrigger) btnTrigger.innerHTML = originalBtnText;
+      showLocationToast(`📍 Pickup set to ${cityName || currentLocationName}`);
+    };
 
-        if (locationPermissionBanner) locationPermissionBanner.classList.add('hidden');
-        closeLocationModal();
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          resolved = true;
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+          const revName = await reverseGeocode(lat, lng);
+          applyLocationToUI(revName, lat, lng, true);
+          finalizeLocation(revName);
 
-        if (!watchId) {
-          watchId = navigator.geolocation.watchPosition((pos) => {
-            currentLat = pos.coords.latitude;
-            currentLng = pos.coords.longitude;
-            if (userMarker) userMarker.setLatLng([currentLat, currentLng]);
-          }, null, { enableHighAccuracy: true, maximumAge: 10000 });
-        }
-      },
-      (error) => {
-        console.warn('Geolocation notice:', error.message);
-        if (fromUserPrompt) {
-          alert('Location permission was not granted. Please pick a hub from the list.');
-          openLocationModal();
-        }
-      },
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
-    );
+          if (!watchId) {
+            watchId = navigator.geolocation.watchPosition((pos) => {
+              currentLat = pos.coords.latitude;
+              currentLng = pos.coords.longitude;
+              if (userMarker) userMarker.setLatLng([currentLat, currentLng]);
+            }, null, { enableHighAccuracy: true, maximumAge: 10000 });
+          }
+        },
+        async () => {
+          // If browser GPS is denied/unavailable, fallback smoothly to IP Geolocation without alert dialogs
+          if (!resolved) {
+            resolved = true;
+            const ipCity = await resolveIpLocation();
+            finalizeLocation(ipCity);
+          }
+        },
+        { enableHighAccuracy: true, timeout: 3500, maximumAge: 30000 }
+      );
+    } else {
+      const ipCity = await resolveIpLocation();
+      finalizeLocation(ipCity);
+    }
+
+    // Safety timeout in case callback hangs
+    setTimeout(async () => {
+      if (!resolved) {
+        resolved = true;
+        const ipCity = await resolveIpLocation();
+        finalizeLocation(ipCity);
+      }
+    }, 4000);
   };
 
   // Map floating button listeners
@@ -269,6 +343,29 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Live filtering in Location Modal
+  const inputCustomLocation = document.getElementById('inputCustomLocation');
+  if (inputCustomLocation) {
+    inputCustomLocation.addEventListener('input', () => {
+      const q = inputCustomLocation.value.toLowerCase().trim();
+      document.querySelectorAll('.hub-select-btn').forEach(btn => {
+        const text = (btn.getAttribute('data-name') || btn.innerText).toLowerCase();
+        btn.style.display = q === '' || text.includes(q) ? 'flex' : 'none';
+      });
+    });
+
+    inputCustomLocation.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        const val = inputCustomLocation.value.trim();
+        if (val) {
+          applyLocationToUI(val, currentLat, currentLng, true);
+          closeLocationModal();
+          showLocationToast(`📍 Pickup set to ${val}`);
+        }
+      }
+    });
+  }
+
   document.querySelectorAll('.hub-select-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const name = btn.getAttribute('data-name');
@@ -276,6 +373,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const lng = parseFloat(btn.getAttribute('data-lng'));
       applyLocationToUI(name, lat, lng, true);
       closeLocationModal();
+      showLocationToast(`📍 Pickup set to ${name.split(',')[0]}`);
     });
   });
 

@@ -314,11 +314,32 @@
         <span class="material-symbols-outlined text-primary text-base">castle</span>
         <span>Jaipur, Sindhi Camp</span>
       </button>
+      <button type="button" class="hub-select-btn p-3 rounded-xl bg-surface-container-low text-left hover:bg-surface-variant transition-colors flex items-center gap-2 text-xs font-semibold text-on-surface" data-name="Mohali Phase 7 / Sector 70, Punjab" data-lat="30.7046" data-lng="76.7179">
+        <span class="material-symbols-outlined text-primary text-base">location_city</span>
+        <span>Mohali / Chandigarh Hub</span>
+      </button>
       <button type="button" class="hub-select-btn p-3 rounded-xl bg-surface-container-low text-left hover:bg-surface-variant transition-colors flex items-center gap-2 text-xs font-semibold text-on-surface" data-name="Noida Sector 62, UP" data-lat="28.6280" data-lng="77.3649">
         <span class="material-symbols-outlined text-primary text-base">near_me</span>
         <span>Noida Electronic City</span>
       </button>
+      <button type="button" class="hub-select-btn p-3 rounded-xl bg-surface-container-low text-left hover:bg-surface-variant transition-colors flex items-center gap-2 text-xs font-semibold text-on-surface" data-name="Ludhiana ISBT, Punjab" data-lat="30.9010" data-lng="75.8573">
+        <span class="material-symbols-outlined text-primary text-base">directions_bus</span>
+        <span>Ludhiana ISBT</span>
+      </button>
+      <button type="button" class="hub-select-btn p-3 rounded-xl bg-surface-container-low text-left hover:bg-surface-variant transition-colors flex items-center gap-2 text-xs font-semibold text-on-surface" data-name="Rohtak New Bus Stand, Haryana" data-lat="28.8955" data-lng="76.6066">
+        <span class="material-symbols-outlined text-primary text-base">pin_drop</span>
+        <span>Rohtak Hub</span>
+      </button>
     </div>
+  </div>
+</div>
+
+<!-- Location Toast -->
+<div id="locationToast" class="hidden fixed top-20 left-1/2 transform -translate-x-1/2 z-50 bg-on-surface text-surface px-4 py-2.5 rounded-full text-xs font-bold shadow-2xl animate-fade-in flex items-center gap-2">
+  <span class="material-symbols-outlined text-sm text-emerald-400">check_circle</span>
+  <span id="locationToastText">Live GPS location resolved</span>
+</div>
+
 <!-- Multi-Modal Interactive Booking Modal -->
 <div id="bookingModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end md:items-center justify-center p-0 md:p-4">
   <div class="bg-surface rounded-t-3xl md:rounded-3xl max-w-xl w-full p-6 shadow-2xl border border-outline-variant/30 animate-slide-up max-h-[90vh] overflow-y-auto">
