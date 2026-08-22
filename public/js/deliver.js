@@ -391,7 +391,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Live filtering in Location Modal
-  const inputCustomLocation = document.getElementById('inputCustomLocation');
   if (inputCustomLocation) {
     inputCustomLocation.addEventListener('input', () => {
       const q = inputCustomLocation.value.toLowerCase().trim();
@@ -423,16 +422,6 @@ document.addEventListener('DOMContentLoaded', () => {
       showLocationToast(`📍 Pickup set to ${name.split(',')[0]}`);
     });
   });
-
-  if (inputCustomLocation) {
-    inputCustomLocation.addEventListener('keydown', async (e) => {
-      if (e.key === 'Enter' && inputCustomLocation.value.trim()) {
-        const val = inputCustomLocation.value.trim();
-        applyLocationToUI(val, null, null, false);
-        closeLocationModal();
-      }
-    });
-  }
 
   // ==========================================
   // BACKEND MULTI-MODAL BOOKING INTEGRATION
