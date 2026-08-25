@@ -1,0 +1,45 @@
+# Dependencies
+node_modules
+npm-debug.log*
+
+# Git
+.git
+.gitignore
+
+# IDE & Editor
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Tests (not needed in production image)
+tests/
+
+# Documentation source (not needed at runtime)
+*.md
+!README.md
+
+# Development config
+.env
+.env.local
+.env.*.local
+nodemon.json
+
+# Agent / AI tooling
+.agents/
+.gemini/
+
+# Temp
+tmp/
+temp/
+scratch/

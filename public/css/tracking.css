@@ -1,0 +1,32 @@
+/* ==========================================================================
+   Transitly — Live Telematics & Tracking Stylesheet
+   ========================================================================== */
+
+#liveTrackingMap {
+  min-height: 280px;
+  width: 100%;
+}
+
+.leaflet-container {
+  font-family: inherit !important;
+  z-index: 1;
+}
+
+@keyframes radar-pulse-anim {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(0.8);
+    opacity: 0.8;
+  }
+}
+
+.radar-pulse {
+  animation: radar-pulse-anim 2s infinite ease-in-out;
+}

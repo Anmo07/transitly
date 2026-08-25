@@ -1,0 +1,118 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Safari & WebKit Compatibility Normalization */
+html, body {
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+  min-height: 100dvh;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #faf8ff;
+  color: #191b24;
+}
+
+.pb-safe {
+  padding-bottom: max(env(safe-area-inset-bottom, 16px), 16px);
+}
+.pt-safe {
+  padding-top: max(env(safe-area-inset-top, 0px), 0px);
+}
+
+/* Force strict tab visibility logic for instant zero-latency view switching */
+.tab-view {
+  display: none !important;
+}
+.tab-view.active {
+  display: block !important;
+}
+.tab-view.active.flex-tab {
+  display: flex !important;
+}
+
+/* Glassmorphism with full Safari -webkit- prefix */
+.glass-card {
+  background: rgba(255, 255, 255, 0.88);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+}
+.active-card {
+  box-shadow: 0px 8px 30px rgba(0, 102, 255, 0.12);
+  border: 2px solid #0050cb !important;
+}
+
+/* Custom Toggle Switch styling from Stitch */
+.toggle-checkbox:checked {
+  right: 0;
+  border-color: #0066ff;
+}
+.toggle-checkbox:checked + .toggle-label {
+  background-color: #0066ff;
+}
+.toggle-checkbox {
+  right: 0;
+  z-index: 1;
+  border-color: #e2e8f0;
+  transition: all 0.3s;
+}
+.toggle-label {
+  width: 3rem;
+  height: 1.5rem;
+  background-color: #e2e8f0;
+  border-radius: 9999px;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.toggle-label::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 1.25rem;
+  height: 1.25rem;
+  background-color: white;
+  border-radius: 50%;
+  transition: all 0.3s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+.toggle-checkbox:checked + .toggle-label::after {
+  transform: translateX(1.5rem);
+}
+
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  line-height: 1;
+  display: inline-block;
+}
+.material-symbols-outlined.fill,
+.material-symbols-outlined[data-weight="fill"],
+.icon-fill {
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+/* Smooth Leaflet integration */
+.leaflet-container {
+  font-family: inherit !important;
+  z-index: 1;
+}
+
+/* Custom radar pulse animation */
+@keyframes radar-pulse-anim {
+  0% { transform: scale(0.8); opacity: 0.8; }
+  50% { transform: scale(1.6); opacity: 0; }
+  100% { transform: scale(0.8); opacity: 0.8; }
+}
+
+/* Modal Display */
+#bookingModal.hidden { display: none !important; }
+#bookingModal.flex { display: flex !important; }
+
+::-webkit-scrollbar { display: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }

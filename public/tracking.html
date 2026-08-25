@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Live Intercity Bus Tracking - Transitly</title>
+    <!-- Google Fonts & Material Symbols -->
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+    <link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    
+    <!-- Compiled Tailwind CSS & Configuration -->
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0050cb",
+                        "primary-container": "#0066ff",
+                        "on-primary": "#ffffff",
+                        "on-primary-container": "#ffffff",
+                        "secondary": "#535f70",
+                        "secondary-container": "#d7e3f7",
+                        "on-secondary": "#ffffff",
+                        "on-secondary-container": "#101c2b",
+                        "surface": "#f8f9fa",
+                        "surface-variant": "#e1e2ec",
+                        "on-surface": "#191c20",
+                        "on-surface-variant": "#44474f",
+                        "outline": "#74777f",
+                        "outline-variant": "#c4c7d0",
+                        "background": "#f8f9fa",
+                        "on-background": "#191c20",
+                        "error": "#ba1a1a",
+                        "on-error": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "on-error-container": "#410002"
+                    },
+                    spacing: {
+                        "container-margin": "16px",
+                        "stack-sm": "8px",
+                        "stack-md": "12px",
+                        "stack-lg": "16px",
+                        "section-gap": "24px"
+                    },
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        "body-md": ['"Plus Jakarta Sans"', 'sans-serif'],
+                        "label-sm": ['"Plus Jakarta Sans"', 'sans-serif'],
+                        "label-md": ['"Plus Jakarta Sans"', 'sans-serif'],
+                        "headline-md": ['"Plus Jakarta Sans"', 'sans-serif'],
+                        "headline-lg-mobile": ['"Plus Jakarta Sans"', 'sans-serif'],
+                        "display": ['"Plus Jakarta Sans"', 'sans-serif']
+                    },
+                    fontSize: {
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "700" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "label-sm": ["11px", { "lineHeight": "16px", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }],
+                        "display": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined[data-weight="fill"], .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        .map-bg {
+            background-color: #e5e5e5;
+            background-image: radial-gradient(#d4d4d4 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+        .animate-slide-up {
+            animation: slideUp 0.4s ease-out forwards;
+        }
+        .custom-bus-marker {
+            background: transparent;
+            border: none;
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md h-screen overflow-hidden flex flex-col relative">
+<!-- TopAppBar -->
+<header class="bg-surface dark:bg-on-surface shadow-sm fixed top-0 w-full z-50">
+<div class="flex justify-between items-center px-container-margin h-14 w-full">
+<a href="/" aria-label="Menu" class="text-on-surface-variant dark:text-outline-variant hover:opacity-80 transition-opacity active:scale-95 flex items-center justify-center w-10 h-10 rounded-full">
+<span class="material-symbols-outlined text-2xl">local_shipping</span>
+</a>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary dark:text-primary-fixed">Transitly</h1>
+<button aria-label="Notifications" class="text-on-surface-variant dark:text-outline-variant hover:opacity-80 transition-opacity active:scale-95 flex items-center justify-center w-10 h-10 rounded-full" onclick="alert('Live vehicle GPS telematics online.')">
+<span class="material-symbols-outlined text-2xl">notifications</span>
+</button>
+</div>
+</header>
+
+<!-- Graceful Out-of-Service / Invalid Bus Floating Pop-up Bar -->
+<div id="busNotAvailableAlert" class="hidden fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-md bg-amber-600/95 backdrop-blur-md text-white px-4 py-3 rounded-2xl shadow-2xl border border-white/20 flex items-center justify-between gap-3 animate-slide-down transition-all duration-300">
+  <div class="flex items-center gap-2.5 flex-1">
+    <span class="material-symbols-outlined text-[24px] text-amber-100 shrink-0">minor_crash</span>
+    <div>
+      <p class="font-bold text-xs leading-tight" id="busAlertTitle">Bus Not Available in Service</p>
+      <p class="text-[11px] text-amber-100 mt-0.5 leading-snug" id="busAlertMessage">This bus/vehicle is not in service.<br> Apologies for the inconveniences.</p>
+    </div>
+  </div>
+  <button type="button" id="btnCloseBusAlert" class="w-7 h-7 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center text-white shrink-0 active:scale-90 transition-transform">
+    <span class="material-symbols-outlined text-[16px]">close</span>
+  </button>
+</div>
+
+<!-- Floating Bus Number Plate Identification & Tracking Search Bar -->
+<div class="fixed top-16 left-0 w-full z-40 px-container-margin pointer-events-none">
+  <div class="max-w-md mx-auto pointer-events-auto bg-surface/95 backdrop-blur-md border border-outline-variant/30 rounded-2xl p-2.5 shadow-lg flex flex-col gap-2">
+    <form id="busPlateSearchForm" class="flex items-center gap-2">
+      <div class="flex items-center flex-1 bg-surface-container-low rounded-xl px-3 py-2 border border-outline-variant/20 focus-within:border-primary">
+        <span class="material-symbols-outlined text-primary text-[20px] mr-2">directions_bus</span>
+        <input type="text" id="inputBusPlate" value="HR-68-A-1001" placeholder="Enter Bus Number Plate (e.g. HR-68-A-1001)" class="w-full bg-transparent text-body-md font-bold text-on-surface outline-none placeholder:text-on-surface-variant/60 text-xs border-none p-0 focus:ring-0 uppercase">
+      </div>
+      <button type="submit" id="btnTrackBusSubmit" class="bg-primary text-on-primary px-4 py-2.5 rounded-xl text-xs font-bold shadow-md hover:bg-primary-container active:scale-95 transition-all flex items-center gap-1.5 shrink-0">
+        <span class="material-symbols-outlined text-[18px]">search</span>
+        <span>Track Bus</span>
+      </button>
+    </form>
+    <!-- Quick Select Registered Bus Chips -->
+    <div class="flex items-center gap-1.5 overflow-x-auto pb-0.5 no-scrollbar text-[11px]">
+      <span class="text-on-surface-variant font-medium shrink-0">Active Buses:</span>
+      <button type="button" class="quick-bus-chip px-2.5 py-1 rounded-full bg-primary-container text-white font-bold shrink-0 transition-all active:scale-95" data-bus="HR-68-A-1001">🚌 HR-68-A-1001 (Delhi➔Chd)</button>
+      <button type="button" class="quick-bus-chip px-2.5 py-1 rounded-full bg-surface-container-low text-on-surface-variant font-semibold hover:bg-surface-variant shrink-0 transition-all active:scale-95" data-bus="HR-68-A-1002">🚌 HR-68-A-1002 (Delhi➔Sirsa)</button>
+      <button type="button" class="quick-bus-chip px-2.5 py-1 rounded-full bg-surface-container-low text-on-surface-variant font-semibold hover:bg-surface-variant shrink-0 transition-all active:scale-95" data-bus="DL-01-AB-1234">🚌 DL-01-AB-1234 (Delhi➔Jaipur)</button>
+      <button type="button" class="quick-bus-chip px-2.5 py-1 rounded-full bg-surface-container-low text-on-surface-variant font-semibold hover:bg-surface-variant shrink-0 transition-all active:scale-95" data-bus="DL-01-CD-5678">🚌 DL-01-CD-5678 (Airport)</button>
+    </div>
+  </div>
+</div>
+
+<!-- Main Content Area (Map Canvas) -->
+<main class="flex-grow relative map-bg pt-14 pb-16 md:pb-0 z-0 h-full w-full">
+  <!-- Interactive Leaflet Map Container -->
+  <div id="liveTrackingMap" class="absolute inset-0 w-full h-full z-0"></div>
+
+  <!-- Fallback Static Map Graphic (Displays while Leaflet loads) -->
+  <div id="staticMapFallback" class="absolute inset-0 w-full h-full z-0 pointer-events-none" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDVcZGP-nxpBEjrhNE0DfC_ZFkeDxkeeOM9vt73SLH0UyN1MWSW682pyR6fIXZBzD-6galIFLYeoffTtip8TIO7xlMVY--IAQG3YVe2kNwaAHj3DVVRhZybFxb3HMSJn8G5bzg0--whj6ZGsOdQW9Vz1loth7VSMuvLbZTC9Aj1ugO_fTlH-RVmt7lrntXi-e4xx7TRyl5OVlL7b2x9N8o33uSVTqT2Gj5ZscmpDftdSv7ZEszJP47M'); background-size: cover; background-position: center;"></div>
+
+  <!-- Floating Map Controls: Zoom & Re-Center on Bus -->
+  <div class="absolute top-36 left-4 z-20 flex flex-col gap-2 pointer-events-auto">
+    <button type="button" id="btnTrackZoomIn" class="w-9 h-9 rounded-xl bg-surface/95 backdrop-blur-md shadow-md border border-outline-variant/30 flex items-center justify-center text-on-surface hover:bg-surface-variant transition-all active:scale-95" title="Zoom In">
+      <span class="material-symbols-outlined text-[18px]">add</span>
+    </button>
+    <button type="button" id="btnTrackZoomOut" class="w-9 h-9 rounded-xl bg-surface/95 backdrop-blur-md shadow-md border border-outline-variant/30 flex items-center justify-center text-on-surface hover:bg-surface-variant transition-all active:scale-95" title="Zoom Out">
+      <span class="material-symbols-outlined text-[18px]">remove</span>
+    </button>
+    <button type="button" id="btnCenterBus" class="w-9 h-9 rounded-xl bg-surface/95 backdrop-blur-md shadow-md border border-outline-variant/30 flex items-center justify-center text-primary hover:bg-primary-container hover:text-on-primary transition-all active:scale-95" title="Center on Vehicle">
+      <span class="material-symbols-outlined text-[18px]">directions_bus</span>
+    </button>
+  </div>
+
+  <!-- Telematics Floating HUD (Real PostgreSQL Vehicle Telemetry) -->
+  <div id="telematicsHud" class="absolute top-36 right-4 z-20 bg-surface/95 backdrop-blur-md rounded-2xl p-3 shadow-lg border border-outline-variant/30 flex flex-col items-end gap-1 pointer-events-auto">
+    <div class="flex items-center gap-1.5 text-emerald-700 font-bold text-xs">
+      <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+      <span id="hudJourneyState">ACTIVE IN SERVICE</span>
+    </div>
+    <div class="text-[14px] font-extrabold text-primary" id="hudBusPlate">HR-68-A-1001</div>
+    <div class="text-[11px] font-semibold text-on-surface" id="hudSpeed">68 km/h • Highway</div>
+    <div class="text-[10px] text-on-surface-variant font-medium" id="hudCoords">29.685° N, 76.990° E</div>
+  </div>
+<!-- Slide-up Bottom Sheet (Live Tracking Details with Android-style gesture bar) -->
+<div id="busDetailsWrapper" class="fixed bottom-16 left-0 w-full z-40 flex flex-col pointer-events-none md:pointer-events-auto transition-transform duration-300 ease-out">
+<!-- Container -->
+<div id="busDetailsBottomSheet" class="bg-surface/98 backdrop-blur-md rounded-t-[28px] shadow-[0px_-8px_30px_rgba(0,0,0,0.12)] px-container-margin pt-2 pb-6 pointer-events-auto max-w-2xl mx-auto w-full md:rounded-t-3xl md:border md:border-outline-variant/20 max-h-[50vh] overflow-y-auto transition-all duration-300 ease-in-out border-t border-outline-variant/30 select-none">
+<!-- Gesture Handle Bar (Android Style Swipe Down / Click to Shorten) -->
+<div id="bottomSheetHandleBar" class="w-full py-1 flex flex-col items-center justify-center cursor-pointer group active:scale-95 transition-all touch-none mb-1">
+  <div class="w-14 h-1.5 bg-outline-variant/60 group-hover:bg-primary rounded-full transition-colors"></div>
+  <div class="flex items-center gap-1 text-[11px] font-semibold text-on-surface-variant/70 mt-1">
+    <span id="sheetChevronIcon" class="material-symbols-outlined text-[16px] transition-transform duration-300">keyboard_arrow_down</span>
+    <span id="sheetActionHint" class="text-[10px] tracking-wider uppercase">Swipe down to view full map</span>
+  </div>
+</div>
+
+<!-- Status Header (Always visible even when collapsed) -->
+<div id="bottomSheetHeader" class="flex justify-between items-start mb-2 cursor-pointer">
+<div>
+<div class="flex items-center gap-2">
+  <h2 id="trackStatusTitle" class="font-headline-md text-headline-md text-on-surface mb-0 font-bold">Haryana Roadways • HR-68-A-1001</h2>
+  <span id="trackedBusBadge" class="bg-primary-container/20 text-primary text-[11px] font-bold px-2 py-0.5 rounded-full">IN SERVICE</span>
+</div>
+<p id="trackRouteSubtitle" class="font-body-md text-body-md text-on-surface-variant flex items-center gap-1.5 mt-0.5">
+<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+<span id="trackLiveStatusText">Delhi Kashmiri Gate ISBT ➔ Chandigarh Sector 17</span>
+</p>
+</div>
+<div class="text-right shrink-0">
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-0.5">Est. Arrival</p>
+<p id="trackEta" class="font-headline-md text-headline-md text-primary font-extrabold">14:30</p>
+</div>
+</div>
+
+<!-- Expandable Details Section (Collapses to give 100% map view) -->
+<div id="sheetExpandableContent" class="space-y-stack-md transition-all duration-300">
+  <!-- Operator & Capacity Information Card -->
+  <div class="bg-surface-container-low rounded-xl p-3.5 border border-outline-variant/30 flex items-center justify-between gap-3">
+  <div class="flex items-center gap-3">
+    <div class="bg-primary-container/20 text-primary w-10 h-10 rounded-full flex items-center justify-center shrink-0">
+      <span class="material-symbols-outlined text-primary text-[22px]">directions_bus</span>
+    </div>
+    <div>
+      <p class="font-label-sm text-label-sm text-on-surface-variant" id="trackOperatorName">Haryana Roadways (State Transport)</p>
+      <p id="trackNextHandoff" class="font-label-md text-label-md text-on-surface font-bold">Cargo Bay Available: 420 kg / 500 kg</p>
+    </div>
+  </div>
+  <div class="shrink-0 text-right">
+    <span id="badgeActiveShipment" class="bg-emerald-100 text-emerald-800 text-[10px] font-extrabold px-2 py-1 rounded-md">LIVE TELEMETRY</span>
+  </div>
+  </div>
+
+  <!-- Timeline Stops on Route -->
+  <div class="relative pl-6 space-y-5" id="stopsTimelineContainer">
+  <!-- Vertical Line -->
+  <div class="absolute left-[11px] top-2 bottom-4 w-1 bg-outline-variant/30 rounded-full">
+  <!-- Progress Fill -->
+  <div id="trackProgressBar" class="absolute top-0 w-full bg-primary rounded-full transition-all duration-500" style="height: 50%;"></div>
+  </div>
+
+<!-- Event 1: Picked Up (Completed) -->
+<div class="relative">
+<div class="absolute -left-6 w-4 h-4 rounded-full bg-emerald-600 border-2 border-surface shadow-sm z-10 top-1"></div>
+<div class="flex justify-between items-start">
+<div>
+<p class="font-label-md text-label-md text-on-surface font-semibold">Package Picked Up (Doorstep)</p>
+<p id="timelinePickupLoc" class="font-label-sm text-label-sm text-on-surface-variant mt-0.5">Origin Facility • Uber Direct Rider</p>
+</div>
+<p class="font-label-sm text-label-sm text-on-surface-variant">09:15 AM</p>
+</div>
+</div>
+
+<!-- Event 2: At Bus Station (Completed) -->
+<div class="relative">
+<div class="absolute -left-6 w-4 h-4 rounded-full bg-emerald-600 border-2 border-surface shadow-sm z-10 top-1"></div>
+<div class="flex justify-between items-start">
+<div>
+<p class="font-label-md text-label-md text-on-surface font-semibold">Loaded in Bus Cargo Bay</p>
+<p id="timelineBayLoc" class="font-label-sm text-label-sm text-on-surface-variant mt-0.5">ISBT Departure Hub • QR Seal Verified</p>
+</div>
+<p class="font-label-sm text-label-sm text-on-surface-variant">11:00 AM</p>
+</div>
+</div>
+
+<!-- Event 3: In Transit (Current) -->
+<div class="relative">
+<div class="absolute -left-[26px] w-5 h-5 rounded-full bg-surface border-2 border-primary flex items-center justify-center z-10 top-0.5 shadow-[0px_4px_10px_rgba(0,102,255,0.2)]">
+<div class="w-2.5 h-2.5 rounded-full bg-primary animate-ping"></div>
+</div>
+<div class="flex justify-between items-start">
+<div>
+<p id="timelineLiveStopTitle" class="font-label-md text-label-md text-primary font-bold">In Transit — Fleet Bus #402</p>
+<p id="timelineLiveStopSub" class="font-label-sm text-label-sm text-on-surface-variant mt-0.5">Cruising GT Road Highway (Panipat ➔ Karnal)</p>
+</div>
+<p class="font-label-sm text-label-sm text-primary font-bold">Live</p>
+</div>
+</div>
+
+<!-- Event 4: Pending -->
+<div class="relative opacity-60">
+<div id="timelineFinalDot" class="absolute -left-6 w-4 h-4 rounded-full bg-outline-variant border-2 border-surface shadow-sm z-10 top-1"></div>
+<div class="flex justify-between items-start">
+<div>
+<p id="timelineFinalTitle" class="font-label-md text-label-md text-on-surface font-semibold">Destination Handoff & Door Delivery</p>
+<p id="timelineFinalSub" class="font-label-sm text-label-sm text-on-surface-variant mt-0.5">ISBT Sector 17 ➔ Rapido Last-Mile Agent</p>
+</div>
+<p id="timelineFinalEta" class="font-label-sm text-label-sm text-on-surface-variant font-semibold">Est. 14:30</p>
+</div>
+</div>
+</div>
+
+<!-- Action Area -->
+<div class="mt-stack-md pt-3 border-t border-outline-variant/20 flex gap-3">
+<button onclick="window.location.href='/help-support'" class="flex-1 bg-surface-variant text-on-surface-variant font-label-md text-label-md font-semibold h-12 rounded-xl flex items-center justify-center gap-2 hover:bg-outline-variant/20 transition-colors">
+<span class="material-symbols-outlined text-lg">support_agent</span>
+                    Support
+                </button>
+<button type="button" id="btnShareLiveTracking" class="flex-1 bg-primary text-on-primary font-label-md text-label-md font-semibold h-12 rounded-xl flex items-center justify-center gap-2 shadow-md hover:bg-primary-container active:scale-95 transition-all">
+<span class="material-symbols-outlined text-lg">share_location</span>
+                    Share Tracking
+                </button>
+</div>
+</div> <!-- End #sheetExpandableContent -->
+</div> <!-- End #busDetailsBottomSheet -->
+</div> <!-- End #busDetailsWrapper -->
+
+<!-- Google Maps Permission & Live Location Sharing Modal (Android App Style) -->
+<div id="modalGoogleMapsPermission" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+  <div class="bg-surface rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-outline-variant/30 animate-slide-up select-none">
+    <!-- Header with Google Maps Navigation Icon -->
+    <div class="flex items-center gap-3 mb-4">
+      <div class="w-12 h-12 rounded-2xl bg-primary-container/20 text-primary flex items-center justify-center shrink-0 border border-primary/30 shadow-sm">
+        <span class="material-symbols-outlined text-[28px] text-primary">near_me</span>
+      </div>
+      <div>
+        <h3 class="font-headline-md text-headline-md text-on-surface font-bold">Open in Google Maps?</h3>
+        <p class="text-[11px] text-on-surface-variant">Live Route & Vehicle Telematics</p>
+      </div>
+    </div>
+
+    <!-- Body Information -->
+    <div class="bg-surface-container-low rounded-2xl p-3.5 border border-outline-variant/30 space-y-2 mb-5 text-xs text-on-surface">
+      <p class="font-semibold text-on-surface flex items-center gap-1.5">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span id="shareModalBusTitle">Haryana Roadways • HR-68-A-1001</span>
+      </p>
+      <div class="text-[11px] text-on-surface-variant space-y-1">
+        <p>• <b>Corridor:</b> <span id="shareModalCorridor">Delhi ➔ Chandigarh</span></p>
+        <p>• <b>Current GPS:</b> <span id="shareModalCoords">29.685° N, 76.990° E</span></p>
+        <p>• <b>Speed:</b> <span id="shareModalSpeed">68 km/h • En-route</span></p>
+      </div>
+      <p class="text-[11px] text-primary font-medium pt-1 border-t border-outline-variant/20">
+        This link will open Google Maps on the receiver's device with the live highway route and vehicle waypoint.
+      </p>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="flex flex-col gap-2.5">
+      <!-- 1. Open Google Maps CTA -->
+      <button type="button" id="btnConfirmOpenGoogleMaps" class="w-full h-12 bg-primary text-on-primary rounded-xl font-bold text-xs flex items-center justify-center gap-2 shadow-md hover:bg-primary-container active:scale-98 transition-all">
+        <span class="material-symbols-outlined text-[20px]">map</span>
+        <span>Open in Google Maps App</span>
+      </button>
+
+      <!-- 2. Share on WhatsApp Live Location -->
+      <button type="button" id="btnShareWhatsAppLive" class="w-full h-11 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-xs flex items-center justify-center gap-2 shadow-sm active:scale-98 transition-all">
+        <span class="material-symbols-outlined text-[18px]">chat</span>
+        <span>Share via WhatsApp Live</span>
+      </button>
+
+      <!-- 3. Cancel / Dismiss -->
+      <button type="button" id="btnCancelGoogleMaps" class="w-full h-10 bg-surface border border-outline-variant/30 text-on-surface-variant hover:bg-surface-variant rounded-xl font-semibold text-xs transition-colors">
+        Cancel
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- BottomNavBar (Shared Component) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-base pb-safe h-16 bg-surface border-t border-outline-variant/20 rounded-t-xl shadow-[0px_-4px_20px_rgba(0,0,0,0.05)]">
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-variant transition-colors group rounded-xl" href="/">
+<span class="material-symbols-outlined mb-1 group-active:scale-90 transition-transform duration-200 text-[24px]" data-icon="local_shipping">local_shipping</span>
+<span class="font-label-sm text-label-sm" data-i18n="nav_deliver">Deliver</span>
+</a>
+<!-- Active Tab: Tracking -->
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-xl px-4 py-1 group" href="/tracking">
+<span class="material-symbols-outlined mb-1 group-active:scale-90 transition-transform duration-200 text-[24px] fill" data-icon="distance">distance</span>
+<span class="font-label-sm text-label-sm" data-i18n="nav_tracking">Tracking</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-variant transition-colors group rounded-xl" href="/history">
+<span class="material-symbols-outlined mb-1 group-active:scale-90 transition-transform duration-200 text-[24px]" data-icon="history">history</span>
+<span class="font-label-sm text-label-sm" data-i18n="nav_history">History</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-variant transition-colors group rounded-xl" href="/profile">
+<span class="material-symbols-outlined mb-1 group-active:scale-90 transition-transform duration-200 text-[24px]" data-icon="person">person</span>
+<span class="font-label-sm text-label-sm" data-i18n="nav_profile">Profile</span>
+</a>
+</nav>
+
+<!-- Scripts -->
+<script src="/js/i18n.js?v=20260824_v2"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script defer src="/js/common.js?v=20260824_v2"></script>
+<script defer src="/js/tracking.js?v=20260824_v2"></script>
+</body></html>

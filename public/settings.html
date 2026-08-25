@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Settings - Transitly</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-container-highest": "#e1e2ee",
+                        "surface": "#faf8ff",
+                        "surface-bright": "#faf8ff",
+                        "outline-variant": "#c2c6d8",
+                        "surface-dim": "#d8d9e6",
+                        "inverse-surface": "#2e303a",
+                        "tertiary-container": "#cc4204",
+                        "surface-tint": "#0054d6",
+                        "primary-container": "#0066ff",
+                        "on-primary-fixed-variant": "#003fa4",
+                        "secondary-fixed-dim": "#c4c7c9",
+                        "on-error": "#ffffff",
+                        "on-secondary-fixed": "#191c1e",
+                        "error-container": "#ffdad6",
+                        "on-primary": "#ffffff",
+                        "outline": "#727687",
+                        "surface-container-high": "#e6e7f4",
+                        "on-tertiary-fixed": "#390c00",
+                        "on-surface-variant": "#424656",
+                        "on-primary-container": "#f8f7ff",
+                        "on-error-container": "#93000a",
+                        "on-secondary": "#ffffff",
+                        "on-background": "#191b24",
+                        "inverse-on-surface": "#eff0fd",
+                        "on-secondary-container": "#626567",
+                        "on-surface": "#191b24",
+                        "on-tertiary": "#ffffff",
+                        "surface-container": "#ecedfa",
+                        "on-tertiary-fixed-variant": "#832600",
+                        "primary-fixed": "#dae1ff",
+                        "on-secondary-fixed-variant": "#444749",
+                        "error": "#ba1a1a",
+                        "primary": "#0050cb",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-fixed-dim": "#b3c5ff",
+                        "inverse-primary": "#b3c5ff",
+                        "secondary-fixed": "#e0e3e5",
+                        "surface-container-low": "#f2f3ff",
+                        "tertiary-fixed": "#ffdbd0",
+                        "tertiary-fixed-dim": "#ffb59d",
+                        "surface-variant": "#e1e2ee",
+                        "background": "#faf8ff",
+                        "on-primary-fixed": "#001849",
+                        "on-tertiary-container": "#fff6f4",
+                        "tertiary": "#a33200",
+                        "secondary": "#5c5f61",
+                        "secondary-container": "#e0e3e5"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    spacing: {
+                        "base": "8px",
+                        "stack-sm": "4px",
+                        "container-margin": "20px",
+                        "section-gap": "40px",
+                        "stack-md": "12px",
+                        "stack-lg": "24px",
+                        "gutter": "16px"
+                    },
+                    fontFamily: {
+                        "label-sm": ["Plus Jakarta Sans"],
+                        "display": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "label-md": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "body-md": ["Plus Jakarta Sans"]
+                    },
+                    fontSize: {
+                        "label-sm": ["12px", { lineHeight: "16px", fontWeight: "500" }],
+                        "display": ["40px", { lineHeight: "48px", letterSpacing: "-0.02em", fontWeight: "700" }],
+                        "headline-md": ["20px", { lineHeight: "28px", fontWeight: "600" }],
+                        "body-lg": ["18px", { lineHeight: "28px", fontWeight: "400" }],
+                        "headline-lg-mobile": ["24px", { lineHeight: "32px", fontWeight: "700" }],
+                        "label-md": ["14px", { lineHeight: "20px", letterSpacing: "0.01em", fontWeight: "600" }],
+                        "headline-lg": ["32px", { lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "700" }],
+                        "body-md": ["16px", { lineHeight: "24px", fontWeight: "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        /* Custom Toggle Switch styling to match brand */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #0066ff;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #0066ff;
+        }
+        .toggle-checkbox {
+            right: 0;
+            z-index: 1;
+            border-color: #e2e8f0;
+            transition: all 0.3s;
+        }
+        .toggle-label {
+            width: 3rem;
+            height: 1.5rem;
+            background-color: #e2e8f0;
+            border-radius: 9999px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .toggle-label::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 1.25rem;
+            height: 1.25rem;
+            background-color: white;
+            border-radius: 50%;
+            transition: all 0.3s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .toggle-checkbox:checked + .toggle-label::after {
+            transform: translateX(1.5rem);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen flex flex-col font-body-md antialiased pb-safe">
+<!-- TopAppBar -->
+<header class="flex justify-between items-center px-container-margin w-full h-16 bg-background dark:bg-on-surface docked full-width top-0 z-40 sticky">
+<a href="/profile" class="flex items-center gap-stack-md cursor-pointer hover:bg-surface-container-low dark:hover:bg-inverse-surface p-2 rounded-full transition-colors duration-150">
+<span class="material-symbols-outlined text-primary dark:text-primary-fixed-dim" data-icon="menu">menu</span>
+</a>
+<div class="text-headline-md font-headline-md font-bold text-primary dark:text-primary-fixed-dim flex-1 text-center">
+            Transitly
+        </div>
+<a href="/profile" class="flex items-center cursor-pointer hover:bg-surface-container-low dark:hover:bg-inverse-surface p-1 rounded-full transition-colors duration-150">
+<img alt="User profile picture" class="w-8 h-8 rounded-full object-cover" data-alt="A small, circular profile picture of a young professional woman smiling warmly against a soft, bright white background. The lighting is studio-quality and even, highlighting a friendly, approachable mood. The image fits the modern, clean aesthetic of a minimalist ride-hailing app, with subtle tones of blue in her attire." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDLN48DrAjYT_qN8qO59A-FJKKbQgyyG7WRz4xpYZy0EVOcqZqx8F7tHUTkuB324clCGABjLOt0veg09cZN1rbyt9Jl17RJykjWcKlV91ddB2rlo6sgcO4eoxgAw4AUH1U02wOk9r-QIyY8Grz3qjO48ETeN0tOaR4kTUDu1h63eExtZcCZs77llAfmhDMEIFE3c2jLH8loP92FENdfclpaKQKIFt_4B7VKMgJTxU5nKLcEFZ3YsxaJ"/>
+</a>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 px-container-margin py-stack-lg flex flex-col gap-section-gap max-w-2xl mx-auto w-full pb-32">
+<!-- Page Header -->
+<div class="flex flex-col gap-stack-sm">
+<h1 class="text-headline-lg-mobile font-headline-lg-mobile text-on-surface" data-i18n="settings_heading">Settings</h1>
+<p class="text-body-md font-body-md text-on-surface-variant" data-i18n="settings_subtitle">Manage your preferences and account settings.</p>
+</div>
+<!-- Settings Section: Notifications -->
+<section class="flex flex-col gap-stack-md">
+<h2 class="text-label-md font-label-md text-primary uppercase tracking-wider pl-1" data-i18n="settings_notif_section">Notifications &amp; Alerts</h2>
+<div class="bg-surface-container-lowest rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.05)] flex flex-col overflow-hidden">
+<!-- Push Notifications -->
+<div class="flex items-center justify-between p-4 border-b border-surface-variant">
+<div class="flex items-center gap-stack-md">
+<div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</div>
+<div class="flex flex-col">
+<span class="text-body-md font-body-md text-on-surface font-medium" data-i18n="settings_push">Push Notifications</span>
+<span class="text-label-sm font-label-sm text-on-surface-variant" data-i18n="settings_push_sub">Live bus dispatch &amp; arrival pings</span>
+</div>
+</div>
+<div class="relative inline-block w-12 align-middle select-none">
+<input checked class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" id="togglePush" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-6 rounded-full bg-primary cursor-pointer" for="togglePush"></label>
+</div>
+</div>
+<!-- SMS / WhatsApp Updates -->
+<div class="flex items-center justify-between p-4">
+<div class="flex items-center gap-stack-md">
+<div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" data-icon="chat">chat</span>
+</div>
+<div class="flex flex-col">
+<span class="text-body-md font-body-md text-on-surface font-medium" data-i18n="settings_sms">WhatsApp &amp; SMS Alerts</span>
+<span class="text-label-sm font-label-sm text-on-surface-variant" data-i18n="settings_sms_sub">OTP delivery codes &amp; tracking links</span>
+</div>
+</div>
+<div class="relative inline-block w-12 align-middle select-none">
+<input checked class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" id="toggleSms" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-6 rounded-full bg-primary cursor-pointer" for="toggleSms"></label>
+</div>
+</div>
+</div>
+</section>
+
+<!-- Settings Section: Privacy & Location -->
+<section class="flex flex-col gap-stack-md">
+<h2 class="text-label-md font-label-md text-primary uppercase tracking-wider pl-1" data-i18n="settings_device_section">Device &amp; Security</h2>
+<div class="bg-surface-container-lowest rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.05)] flex flex-col overflow-hidden">
+<!-- Location Services -->
+<div class="flex items-center justify-between p-4 border-b border-surface-variant">
+<div class="flex items-center gap-stack-md">
+<div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" data-icon="location_on">location_on</span>
+</div>
+<div class="flex flex-col">
+<span class="text-body-md font-body-md text-on-surface font-medium" data-i18n="settings_gps">Continuous GPS Location</span>
+<span class="text-label-sm font-label-sm text-on-surface-variant" data-i18n="settings_gps_sub">Used for real-time corridor matching</span>
+</div>
+</div>
+<div class="relative inline-block w-12 align-middle select-none">
+<input checked class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" id="toggleLocation" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-6 rounded-full bg-primary cursor-pointer" for="toggleLocation"></label>
+</div>
+</div>
+
+<!-- Biometric Lock -->
+<div class="flex items-center justify-between p-4 border-b border-surface-variant">
+<div class="flex items-center gap-stack-md">
+<div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" data-icon="fingerprint">fingerprint</span>
+</div>
+<div class="flex flex-col">
+<span class="text-body-md font-body-md text-on-surface font-medium" data-i18n="settings_biometrics">Biometric App Lock</span>
+<span class="text-label-sm font-label-sm text-on-surface-variant" data-i18n="settings_biometrics_sub">FaceID / TouchID for wallet payments</span>
+</div>
+</div>
+<div class="relative inline-block w-12 align-middle select-none">
+<input class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" id="toggleBiometrics" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer" for="toggleBiometrics"></label>
+</div>
+</div>
+
+<!-- Language -->
+<div id="btnLanguageSelector" class="flex items-center justify-between p-4 border-b border-surface-variant hover:bg-surface-container-low transition-colors group cursor-pointer">
+<div class="flex items-center gap-stack-md">
+<div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-primary group-hover:bg-white transition-colors">
+<span class="material-symbols-outlined" data-icon="language">language</span>
+</div>
+<span class="text-body-md font-body-md text-on-surface font-medium" data-i18n="settings_lang">App Language</span>
+</div>
+<div class="flex items-center gap-2">
+<span id="labelCurrentLanguage" class="text-label-md font-label-md text-on-surface-variant font-semibold">English (IN)</span>
+<span class="material-symbols-outlined text-outline" data-icon="chevron_right">chevron_right</span>
+</div>
+</div>
+
+<!-- Help & Support -->
+<a href="/help-support" class="flex items-center justify-between p-4 hover:bg-surface-container-low transition-colors group">
+<div class="flex items-center gap-stack-md">
+<div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-primary group-hover:bg-white transition-colors">
+<span class="material-symbols-outlined" data-icon="support_agent">support_agent</span>
+</div>
+<span class="text-body-md font-body-md text-on-surface font-medium" data-i18n="settings_help">Help &amp; Support (Anmol)</span>
+</div>
+<span class="material-symbols-outlined text-outline" data-icon="chevron_right">chevron_right</span>
+</a>
+</div>
+</section>
+
+<!-- Account Actions -->
+<section class="flex flex-col gap-stack-md pt-4">
+<button type="button" id="btnSignOut" class="w-full bg-surface-container-low text-error hover:bg-error-container hover:text-on-error-container rounded-xl py-4 font-label-md text-label-md font-bold transition-colors flex items-center justify-center gap-2 active:scale-98">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span data-i18n="settings_signout">Sign Out</span>
+</button>
+<div class="text-center mt-4">
+<span class="text-label-sm font-label-sm text-outline font-semibold" data-i18n="settings_version">Transitly v2.4.1 • Multi-Modal Transit Engine</span>
+</div>
+</section>
+</main>
+
+<!-- Language Picker Modal -->
+<div id="languageModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+  <div class="bg-surface rounded-3xl max-w-sm w-full p-5 shadow-2xl border border-outline-variant/30 animate-slide-up">
+    <div class="flex justify-between items-center pb-3 border-b border-outline-variant/20 mb-3">
+      <h3 class="font-bold text-base text-on-surface" data-i18n="settings_modal_select_lang">Select Language</h3>
+      <button type="button" id="btnCloseLanguageModal" class="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center hover:bg-surface-variant transition-colors">
+        <span class="material-symbols-outlined text-base">close</span>
+      </button>
+    </div>
+    <div class="space-y-2 text-xs font-semibold" id="languageChoicesList">
+      <button type="button" class="btn-lang-choice w-full p-3 rounded-xl bg-primary text-on-primary text-left flex justify-between items-center transition-all" data-lang-code="en" data-lang="English (IN)">
+        <div class="flex items-center gap-2">
+          <span class="text-base">🇮🇳</span>
+          <div>
+            <span class="block font-bold">English (India)</span>
+            <span class="text-[10px] opacity-80">Default • Regional English</span>
+          </div>
+        </div>
+        <span class="material-symbols-outlined text-base lang-check-icon">check</span>
+      </button>
+      <button type="button" class="btn-lang-choice w-full p-3 rounded-xl bg-surface-container-low text-on-surface text-left hover:bg-surface-variant flex justify-between items-center transition-all" data-lang-code="hi" data-lang="Hindi (हिंदी)">
+        <div class="flex items-center gap-2">
+          <span class="text-base">🇮🇳</span>
+          <div>
+            <span class="block font-bold">हिन्दी (Hindi)</span>
+            <span class="text-[10px] text-on-surface-variant">उत्तर भारत इंटरसिटी भाषा</span>
+          </div>
+        </div>
+        <span class="material-symbols-outlined text-base lang-check-icon hidden">check</span>
+      </button>
+      <button type="button" class="btn-lang-choice w-full p-3 rounded-xl bg-surface-container-low text-on-surface text-left hover:bg-surface-variant flex justify-between items-center transition-all" data-lang-code="pa" data-lang="Punjabi (ਪੰਜਾਬੀ)">
+        <div class="flex items-center gap-2">
+          <span class="text-base">🇮🇳</span>
+          <div>
+            <span class="block font-bold">ਪੰਜਾਬੀ (Punjabi)</span>
+            <span class="text-[10px] text-on-surface-variant">ਪੰਜਾਬ ਅਤੇ ਚੰਡੀਗੜ੍ਹ ਖੇਤਰੀ ਭਾਸ਼ਾ</span>
+          </div>
+        </div>
+        <span class="material-symbols-outlined text-base lang-check-icon hidden">check</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Settings Feedback Toast -->
+<div id="settingsToast" class="hidden fixed bottom-20 left-1/2 transform -translate-x-1/2 z-50 bg-on-surface text-surface px-4 py-2 rounded-full text-xs font-bold shadow-xl animate-fade-in flex items-center gap-2">
+  <span class="material-symbols-outlined text-sm text-emerald-400">check_circle</span>
+  <span id="settingsToastText">Settings updated</span>
+</div>
+
+<!-- BottomNavBar (Shared Component) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-base pb-safe h-16 bg-surface border-t border-outline-variant/20 rounded-t-xl shadow-[0px_-4px_20px_rgba(0,0,0,0.05)]">
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-variant transition-colors group rounded-xl" href="/">
+<span class="material-symbols-outlined mb-1 group-active:scale-90 transition-transform duration-200 text-[24px]" data-icon="local_shipping">local_shipping</span>
+<span class="font-label-sm text-label-sm" data-i18n="nav_deliver">Deliver</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-variant transition-colors group rounded-xl" href="/tracking">
+<span class="material-symbols-outlined mb-1 group-active:scale-90 transition-transform duration-200 text-[24px]" data-icon="distance">distance</span>
+<span class="font-label-sm text-label-sm" data-i18n="nav_tracking">Tracking</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-variant transition-colors group rounded-xl" href="/history">
+<span class="material-symbols-outlined mb-1 group-active:scale-90 transition-transform duration-200 text-[24px]" data-icon="history">history</span>
+<span class="font-label-sm text-label-sm" data-i18n="nav_history">History</span>
+</a>
+<!-- Active State for Profile/Settings -->
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-xl px-4 py-1 group" href="/profile">
+<span class="material-symbols-outlined mb-1 group-active:scale-90 transition-transform duration-200 text-[24px] fill" data-icon="person">person</span>
+<span class="font-label-sm text-label-sm" data-i18n="nav_profile">Profile</span>
+</a>
+</nav>
+
+<!-- Scripts -->
+<script src="/js/i18n.js?v=20260824_v2"></script>
+<script defer src="/js/common.js?v=20260824_v2"></script>
+<script defer src="/js/settings.js?v=20260824_v2"></script>
+</body></html>

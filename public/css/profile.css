@@ -1,0 +1,15 @@
+/* ==========================================================================
+   Transitly — Profile Hub Stylesheet
+   ========================================================================== */
+
+.profile-option-btn {
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.profile-option-btn:hover {
+  background-color: #f2f3ff;
+}
+
+.profile-option-btn:active {
+  transform: scale(0.98);
+}

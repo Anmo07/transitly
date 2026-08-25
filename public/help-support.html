@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Transitly - Help &amp; Support</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-tertiary-fixed": "#390c00",
+                        "inverse-surface": "#2e303a",
+                        "error": "#ba1a1a",
+                        "surface-container-high": "#e6e7f4",
+                        "primary-fixed-dim": "#b3c5ff",
+                        "on-tertiary": "#ffffff",
+                        "outline-variant": "#c2c6d8",
+                        "surface-dim": "#d8d9e6",
+                        "tertiary-fixed-dim": "#ffb59d",
+                        "on-secondary-fixed": "#191c1e",
+                        "secondary": "#5c5f61",
+                        "on-secondary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "tertiary-container": "#cc4204",
+                        "on-primary-fixed-variant": "#003fa4",
+                        "tertiary-fixed": "#ffdbd0",
+                        "primary-container": "#0066ff",
+                        "surface-tint": "#0054d6",
+                        "inverse-primary": "#b3c5ff",
+                        "on-primary-fixed": "#001849",
+                        "on-surface": "#191b24",
+                        "on-secondary-fixed-variant": "#444749",
+                        "surface": "#faf8ff",
+                        "primary-fixed": "#dae1ff",
+                        "surface-container-highest": "#e1e2ee",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container": "#ecedfa",
+                        "surface-variant": "#e1e2ee",
+                        "on-tertiary-fixed-variant": "#832600",
+                        "error-container": "#ffdad6",
+                        "on-background": "#191b24",
+                        "on-error": "#ffffff",
+                        "secondary-fixed": "#e0e3e5",
+                        "primary": "#0050cb",
+                        "secondary-fixed-dim": "#c4c7c9",
+                        "on-tertiary-container": "#fff6f4",
+                        "background": "#faf8ff",
+                        "outline": "#727687",
+                        "on-primary": "#ffffff",
+                        "on-surface-variant": "#424656",
+                        "surface-container-low": "#f2f3ff",
+                        "tertiary": "#a33200",
+                        "on-primary-container": "#f8f7ff",
+                        "secondary-container": "#e0e3e5",
+                        "on-secondary-container": "#626567",
+                        "surface-bright": "#faf8ff",
+                        "inverse-on-surface": "#eff0fd"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    spacing: {
+                        "stack-sm": "4px",
+                        "base": "8px",
+                        "stack-md": "12px",
+                        "gutter": "16px",
+                        "container-margin": "20px",
+                        "stack-lg": "24px",
+                        "section-gap": "40px"
+                    },
+                    fontFamily: {
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "display": ["Plus Jakarta Sans"],
+                        "label-md": ["Plus Jakarta Sans"],
+                        "label-sm": ["Plus Jakarta Sans"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "body-md": ["Plus Jakarta Sans"]
+                    },
+                    fontSize: {
+                        "body-lg": ["18px", { lineHeight: "28px", fontWeight: "400" }],
+                        "headline-lg": ["32px", { lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "700" }],
+                        "headline-md": ["20px", { lineHeight: "28px", fontWeight: "600" }],
+                        "display": ["40px", { lineHeight: "48px", letterSpacing: "-0.02em", fontWeight: "700" }],
+                        "label-md": ["14px", { lineHeight: "20px", letterSpacing: "0.01em", fontWeight: "600" }],
+                        "label-sm": ["12px", { lineHeight: "16px", fontWeight: "500" }],
+                        "headline-lg-mobile": ["24px", { lineHeight: "32px", fontWeight: "700" }],
+                        "body-md": ["16px", { lineHeight: "24px", fontWeight: "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined[data-weight="fill"] {
+            font-variation-settings: 'FILL' 1;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface font-body-md antialiased h-full flex flex-col md:bg-surface-container-lowest">
+<!-- TopAppBar -->
+<header class="bg-background dark:bg-on-surface flex justify-between items-center px-container-margin w-full h-16 docked full-width top-0 z-40 sticky shadow-sm md:shadow-none transition-shadow duration-300" id="top-app-bar">
+<div class="flex items-center gap-4 cursor-pointer hover:bg-surface-container-low dark:hover:bg-inverse-surface rounded-full p-2 transition-colors">
+<a href="/profile"><span class="material-symbols-outlined text-primary dark:text-primary-fixed-dim" data-icon="menu">menu</span></a>
+<span class="text-headline-md font-headline-md font-bold text-primary dark:text-primary-fixed-dim">Transitly</span>
+</div>
+<a href="/profile" class="w-8 h-8 rounded-full overflow-hidden bg-surface-container-high flex items-center justify-center cursor-pointer hover:bg-surface-container-low dark:hover:bg-inverse-surface transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant text-[20px]" data-icon="person">person</span>
+</a>
+</header>
+<main class="flex-1 overflow-y-auto px-container-margin pb-32 md:pb-12 pt-section-gap max-w-4xl mx-auto w-full">
+<!-- Header Section -->
+<div class="text-center mb-section-gap">
+<h1 class="text-headline-lg-mobile md:text-headline-lg font-headline-lg-mobile md:font-headline-lg text-on-surface mb-stack-md">How can we help you?</h1>
+<p class="text-body-md font-body-md text-on-surface-variant max-w-lg mx-auto">Search our knowledge base or browse common topics below to find answers quickly.</p>
+<!-- Search Bar -->
+<div class="mt-stack-lg relative max-w-xl mx-auto group">
+<div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-outline-variant group-focus-within:text-primary transition-colors" data-icon="search">search</span>
+</div>
+<input id="helpSearchInput" class="w-full pl-12 pr-4 py-4 rounded-xl border border-outline-variant bg-surface-container-lowest focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-all duration-300 text-body-md font-body-md placeholder:text-on-surface-variant/50 shadow-sm hover:shadow-md focus:shadow-md" placeholder="Search for 'missing parcel', 'tracking', 'refund'..." type="text"/>
+</div>
+</div>
+<!-- Bento Grid Topics -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-stack-lg mb-section-gap">
+<!-- Topic Card 1 -->
+<div onclick="window.location.href='/tracking'" class="bg-surface-container-lowest rounded-xl p-stack-lg shadow-[0px_4px_20px_rgba(0,0,0,0.05)] hover:shadow-[0px_8px_30px_rgba(0,102,255,0.08)] transition-all duration-300 cursor-pointer border border-transparent hover:border-primary/20 group flex flex-col h-full">
+<div class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center mb-stack-md group-hover:bg-primary/10 transition-colors">
+<span class="material-symbols-outlined text-primary" data-icon="local_shipping" data-weight="fill">local_shipping</span>
+</div>
+<h3 class="text-headline-md font-headline-md text-on-surface mb-stack-sm">Tracking Issues</h3>
+<p class="text-body-md font-body-md text-on-surface-variant flex-1">Where is my parcel? Delivery delays and tracking updates.</p>
+<div class="mt-stack-md flex items-center text-primary text-label-md font-label-md group-hover:underline">
+                    View articles <span class="material-symbols-outlined text-[16px] ml-1" data-icon="arrow_forward">arrow_forward</span>
+</div>
+</div>
+<!-- Topic Card 2 -->
+<div onclick="window.location.href='/payment-methods'" class="bg-surface-container-lowest rounded-xl p-stack-lg shadow-[0px_4px_20px_rgba(0,0,0,0.05)] hover:shadow-[0px_8px_30px_rgba(0,102,255,0.08)] transition-all duration-300 cursor-pointer border border-transparent hover:border-primary/20 group flex flex-col h-full">
+<div class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center mb-stack-md group-hover:bg-primary/10 transition-colors">
+<span class="material-symbols-outlined text-primary" data-icon="payments" data-weight="fill">payments</span>
+</div>
+<h3 class="text-headline-md font-headline-md text-on-surface mb-stack-sm">Payment Queries</h3>
+<p class="text-body-md font-body-md text-on-surface-variant flex-1">Invoices, refunds, promo codes, and billing issues.</p>
+<div class="mt-stack-md flex items-center text-primary text-label-md font-label-md group-hover:underline">
+                    View articles <span class="material-symbols-outlined text-[16px] ml-1" data-icon="arrow_forward">arrow_forward</span>
+</div>
+</div>
+<!-- Topic Card 3 -->
+<div onclick="alert('Claims: File an instant claim for compensation.')" class="bg-surface-container-lowest rounded-xl p-stack-lg shadow-[0px_4px_20px_rgba(0,0,0,0.05)] hover:shadow-[0px_8px_30px_rgba(0,102,255,0.08)] transition-all duration-300 cursor-pointer border border-transparent hover:border-primary/20 group flex flex-col h-full lg:row-span-2 lg:col-span-1 bg-gradient-to-br from-surface-container-lowest to-surface-container-low">
+<div class="w-12 h-12 rounded-full bg-error-container/50 flex items-center justify-center mb-stack-md group-hover:bg-error-container transition-colors">
+<span class="material-symbols-outlined text-error" data-icon="broken_image" data-weight="fill">broken_image</span>
+</div>
+<h3 class="text-headline-md font-headline-md text-on-surface mb-stack-sm">Damaged or Lost</h3>
+<p class="text-body-md font-body-md text-on-surface-variant flex-1">Report a damaged package, missing items, or initiate a claim.</p>
+<div class="mt-stack-md flex flex-col gap-2">
+<button class="w-full bg-surface text-on-surface border border-outline-variant py-2 rounded-lg text-label-md font-label-md hover:bg-surface-container-highest transition-colors flex items-center justify-center gap-2">
+                         File a Claim <span class="material-symbols-outlined text-[16px]" data-icon="assignment">assignment</span>
+</button>
+<div class="flex items-center justify-center text-primary text-label-md font-label-md group-hover:underline mt-2">
+                        View articles <span class="material-symbols-outlined text-[16px] ml-1" data-icon="arrow_forward">arrow_forward</span>
+</div>
+</div>
+</div>
+<!-- Topic Card 4 -->
+<div onclick="window.location.href='/settings'" class="bg-surface-container-lowest rounded-xl p-stack-lg shadow-[0px_4px_20px_rgba(0,0,0,0.05)] hover:shadow-[0px_8px_30px_rgba(0,102,255,0.08)] transition-all duration-300 cursor-pointer border border-transparent hover:border-primary/20 group flex flex-col h-full">
+<div class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center mb-stack-md group-hover:bg-primary/10 transition-colors">
+<span class="material-symbols-outlined text-primary" data-icon="person" data-weight="fill">person</span>
+</div>
+<h3 class="text-headline-md font-headline-md text-on-surface mb-stack-sm">Account Settings</h3>
+<p class="text-body-md font-body-md text-on-surface-variant flex-1">Update profile, change password, and manage notifications.</p>
+<div class="mt-stack-md flex items-center text-primary text-label-md font-label-md group-hover:underline">
+                    View articles <span class="material-symbols-outlined text-[16px] ml-1" data-icon="arrow_forward">arrow_forward</span>
+</div>
+</div>
+<!-- Topic Card 5 -->
+<div onclick="window.location.href='/services'" class="bg-surface-container-lowest rounded-xl p-stack-lg shadow-[0px_4px_20px_rgba(0,0,0,0.05)] hover:shadow-[0px_8px_30px_rgba(0,102,255,0.08)] transition-all duration-300 cursor-pointer border border-transparent hover:border-primary/20 group flex flex-col h-full">
+<div class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center mb-stack-md group-hover:bg-primary/10 transition-colors">
+<span class="material-symbols-outlined text-primary" data-icon="directions_car" data-weight="fill">directions_car</span>
+</div>
+<h3 class="text-headline-md font-headline-md text-on-surface mb-stack-sm">Ride Experience</h3>
+<p class="text-body-md font-body-md text-on-surface-variant flex-1">Driver feedback, safety concerns, and lost items in rides.</p>
+<div class="mt-stack-md flex items-center text-primary text-label-md font-label-md group-hover:underline">
+                    View articles <span class="material-symbols-outlined text-[16px] ml-1" data-icon="arrow_forward">arrow_forward</span>
+</div>
+</div>
+</div>
+<!-- Contact Support Prominent Card -->
+<div class="bg-primary-container rounded-2xl p-stack-lg md:p-section-gap relative overflow-hidden shadow-[0px_8px_30px_rgba(0,102,255,0.15)] flex flex-col md:flex-row items-center justify-between gap-stack-lg">
+<!-- Decorative Background Pattern -->
+<div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 24px 24px;"></div>
+<div class="relative z-10 text-center md:text-left flex-1">
+<h2 class="text-headline-lg-mobile md:text-headline-lg font-headline-lg-mobile md:font-headline-lg text-on-primary mb-stack-sm">Still need help?</h2>
+<p class="text-body-lg font-body-lg text-primary-fixed mb-0">Chat directly with Support Lead <span class="text-white font-bold">Anmol</span> (+91 7988342544) available 24/7 on WhatsApp.</p>
+</div>
+<div class="relative z-10 w-full md:w-auto flex flex-col sm:flex-row gap-stack-md">
+<button type="button" id="btnOpenTicketModal" class="bg-primary-fixed text-primary px-6 py-4 rounded-xl font-bold text-xs hover:bg-white transition-colors shadow-sm flex items-center justify-center gap-2 h-[56px]">
+  <span class="material-symbols-outlined">confirmation_number</span>
+  <span>Open Ticket</span>
+</button>
+<a href="https://wa.me/917988342544?text=Hi%20Anmol%2C%20I%20need%20help%20with%20my%20Transitly%20parcel%20booking" target="_blank" id="btnHelpChatSupport" class="bg-surface-container-lowest text-primary px-8 py-4 rounded-xl font-label-md text-label-md hover:bg-surface-container-low transition-colors shadow-sm flex items-center justify-center gap-2 h-[56px]">
+<span class="material-symbols-outlined" data-icon="chat">chat</span>
+  Chat with Anmol
+</a>
+</div>
+</div>
+</main>
+
+<!-- Support Ticket Submission Modal -->
+<div id="ticketModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+  <div class="bg-surface rounded-3xl max-w-md w-full p-6 shadow-2xl border border-outline-variant/30 animate-slide-up">
+    <div class="flex justify-between items-center pb-3 border-b border-outline-variant/20 mb-4">
+      <div class="flex items-center gap-2">
+        <span class="material-symbols-outlined text-primary text-2xl">support_agent</span>
+        <h3 class="font-bold text-base text-on-surface">Submit Support Ticket</h3>
+      </div>
+      <button type="button" id="btnCloseTicketModal" class="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center hover:bg-surface-variant">
+        <span class="material-symbols-outlined text-base">close</span>
+      </button>
+    </div>
+
+    <form id="formSupportTicket" class="space-y-3 text-xs">
+      <div>
+        <label class="font-bold text-on-surface block mb-1">Issue Category</label>
+        <select id="inputTicketCategory" class="w-full rounded-xl border border-outline-variant/50 p-2.5 bg-surface text-on-surface font-semibold">
+          <option value="TRACKING_DELAY">Bus Transit Delay / Missing Live Telemetry</option>
+          <option value="DAMAGED_CARGO">Damaged Cargo / Bay Seal Tampering</option>
+          <option value="OTP_ISSUE">Driver / Recipient OTP Verification Issue</option>
+          <option value="REFUND_BILLING">Fare / Payment Dispute</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="font-bold text-on-surface block mb-1">Related Tracking Number (Optional)</label>
+        <input type="text" id="inputTicketTrackingId" placeholder="e.g. TRK-88219" class="w-full rounded-xl border border-outline-variant/50 p-2.5 bg-surface text-on-surface outline-none focus:ring-1 focus:ring-primary">
+      </div>
+
+      <div>
+        <label class="font-bold text-on-surface block mb-1">Detailed Description</label>
+        <textarea id="inputTicketDescription" rows="3" placeholder="Please describe the issue in detail..." class="w-full rounded-xl border border-outline-variant/50 p-2.5 bg-surface text-on-surface outline-none focus:ring-1 focus:ring-primary" required></textarea>
+      </div>
+
+      <div class="pt-3 flex gap-2">
+        <button type="button" id="btnCancelTicketModal" class="w-1/2 py-2.5 rounded-xl border border-outline-variant/50 font-bold hover:bg-surface-variant">Cancel</button>
+        <button type="submit" class="w-1/2 py-2.5 rounded-xl bg-primary text-on-primary font-bold shadow-md hover:bg-primary-container active:scale-95 transition-all">Submit Ticket</button>
+      </div>
+    </form>
+  </div>
+</div>
+<!-- BottomNavBar (Mobile Only) -->
+<!-- BottomNavBar (Shared Component) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-base pb-safe h-16 bg-surface border-t border-outline-variant/20 rounded-t-xl shadow-[0px_-4px_20px_rgba(0,0,0,0.05)]">
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-variant transition-colors group rounded-xl" href="/">
+<span class="material-symbols-outlined mb-1 group-active:scale-90 transition-transform duration-200 text-[24px]" data-icon="local_shipping">local_shipping</span>
+<span class="font-label-sm text-label-sm" data-i18n="nav_deliver">Deliver</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-variant transition-colors group rounded-xl" href="/tracking">
+<span class="material-symbols-outlined mb-1 group-active:scale-90 transition-transform duration-200 text-[24px]" data-icon="distance">distance</span>
+<span class="font-label-sm text-label-sm" data-i18n="nav_tracking">Tracking</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-variant transition-colors group rounded-xl" href="/history">
+<span class="material-symbols-outlined mb-1 group-active:scale-90 transition-transform duration-200 text-[24px]" data-icon="history">history</span>
+<span class="font-label-sm text-label-sm" data-i18n="nav_history">History</span>
+</a>
+<!-- Active State for Profile -->
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-xl px-4 py-1 group" href="/profile">
+<span class="material-symbols-outlined mb-1 group-active:scale-90 transition-transform duration-200 text-[24px] fill" data-icon="person">person</span>
+<span class="font-label-sm text-label-sm" data-i18n="nav_profile">Profile</span>
+</a>
+</nav>
+<!-- Floating Action Button (Chat) -->
+<a href="https://wa.me/917988342544?text=Hi%20Anmol%2C%20I%20need%20help%20with%20my%20Transitly%20parcel%20booking" target="_blank" id="btnFloatingWhatsAppHelp" aria-label="Chat with Anmol on WhatsApp" class="fixed bottom-24 right-4 w-14 h-14 bg-primary-container text-on-primary rounded-full shadow-[0px_8px_30px_rgba(0,102,255,0.3)] flex items-center justify-center z-40 hover:scale-105 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[28px]" data-icon="chat" data-weight="fill">chat</span>
+</a>
+<!-- Scripts -->
+<script src="/js/i18n.js?v=20260824_v2"></script>
+<script defer src="/js/common.js?v=20260824_v2"></script>
+<script defer src="/js/help-support.js?v=20260824_v2"></script>
+<script>
+    // Simple scroll effect for top app bar shadow
+    const topAppBar = document.getElementById('top-app-bar');
+    if (topAppBar) {
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 10) {
+                topAppBar.classList.add('shadow-md');
+                topAppBar.classList.remove('shadow-sm');
+            } else {
+                topAppBar.classList.add('shadow-sm');
+                topAppBar.classList.remove('shadow-md');
+            }
+        });
+    }
+</script>
+</body></html>

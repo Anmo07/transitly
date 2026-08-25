@@ -1,0 +1,13 @@
+/* ==========================================================================
+   Transitly — Help & Support Stylesheet
+   ========================================================================== */
+
+.faq-card {
+  transition: all 0.2s ease;
+}
+
+.faq-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(0, 80, 203, 0.3);
+  box-shadow: 0px 8px 30px rgba(0, 102, 255, 0.08);
+}

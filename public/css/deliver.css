@@ -1,0 +1,19 @@
+/* ==========================================================================
+   Transitly — Deliver (Home) Stylesheet
+   ========================================================================== */
+
+.deliver-hero-banner {
+  background-size: cover;
+  background-position: center;
+  border-bottom-left-radius: 24px;
+  border-bottom-right-radius: 24px;
+}
+
+.corridor-card {
+  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.corridor-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(0, 80, 203, 0.4);
+}

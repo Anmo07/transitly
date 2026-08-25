@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Transitly - Payment Methods</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              colors: {
+                "inverse-surface": "#2e303a",
+                "on-tertiary-fixed-variant": "#832600",
+                "secondary-fixed-dim": "#c4c7c9",
+                "on-tertiary": "#ffffff",
+                "surface-dim": "#d8d9e6",
+                "on-primary": "#ffffff",
+                "on-surface": "#191b24",
+                "secondary-fixed": "#e0e3e5",
+                "surface-tint": "#0054d6",
+                "primary-fixed-dim": "#b3c5ff",
+                "on-error-container": "#93000a",
+                "on-secondary-fixed": "#191c1e",
+                "secondary-container": "#e0e3e5",
+                "surface": "#faf8ff",
+                "tertiary-container": "#cc4204",
+                "secondary": "#5c5f61",
+                "on-tertiary-fixed": "#390c00",
+                "on-primary-container": "#f8f7ff",
+                "tertiary-fixed": "#ffdbd0",
+                "surface-container": "#ecedfa",
+                "surface-variant": "#e1e2ee",
+                "primary-fixed": "#dae1ff",
+                "surface-container-low": "#f2f3ff",
+                "on-error": "#ffffff",
+                "error": "#ba1a1a",
+                "surface-container-high": "#e6e7f4",
+                "background": "#faf8ff",
+                "error-container": "#ffdad6",
+                "primary": "#0050cb",
+                "on-primary-fixed": "#001849",
+                "on-secondary-container": "#626567",
+                "primary-container": "#0066ff",
+                "on-secondary": "#ffffff",
+                "inverse-on-surface": "#eff0fd",
+                "on-primary-fixed-variant": "#003fa4",
+                "on-background": "#191b24",
+                "outline-variant": "#c2c6d8",
+                "tertiary": "#a33200",
+                "tertiary-fixed-dim": "#ffb59d",
+                "on-surface-variant": "#424656",
+                "surface-container-lowest": "#ffffff",
+                "outline": "#727687",
+                "inverse-primary": "#b3c5ff",
+                "on-secondary-fixed-variant": "#444749",
+                "surface-bright": "#faf8ff",
+                "surface-container-highest": "#e1e2ee",
+                "on-tertiary-container": "#fff6f4"
+              },
+              borderRadius: {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+              },
+              spacing: {
+                "stack-md": "12px",
+                "gutter": "16px",
+                "stack-sm": "4px",
+                "stack-lg": "24px",
+                "section-gap": "40px",
+                "base": "8px",
+                "container-margin": "20px"
+              },
+              fontFamily: {
+                "label-sm": ["Plus Jakarta Sans"],
+                "display": ["Plus Jakarta Sans"],
+                "headline-md": ["Plus Jakarta Sans"],
+                "label-md": ["Plus Jakarta Sans"],
+                "body-lg": ["Plus Jakarta Sans"],
+                "body-md": ["Plus Jakarta Sans"],
+                "headline-lg": ["Plus Jakarta Sans"],
+                "headline-lg-mobile": ["Plus Jakarta Sans"]
+              },
+              fontSize: {
+                "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+                "display": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }],
+                "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "700" }]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        body {
+            -webkit-tap-highlight-color: transparent;
+            background-color: theme('colors.background');
+            color: theme('colors.on-background');
+        }
+        
+        .pb-safe {
+            padding-bottom: env(safe-area-inset-bottom, 20px);
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.05);
+        }
+        
+        .active-card {
+            box-shadow: 0px 8px 30px rgba(0, 102, 255, 0.08);
+            border: 2px solid theme('colors.primary');
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<body class="bg-background text-on-background min-h-screen flex flex-col relative antialiased pb-24">
+<!-- TopAppBar Header Component (Semantic Navigation Suppressed, Task-Focused Screen) -->
+<header class="flex justify-between items-center px-container-margin w-full h-16 bg-background sticky top-0 z-40">
+<button onclick="window.location.href='/profile'" aria-label="Go back" class="w-10 h-10 flex items-center justify-center rounded-full bg-surface-container-lowest shadow-sm text-on-surface hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">arrow_back</span>
+</button>
+<h1 class="text-headline-md font-headline-md font-bold text-on-surface">Payment Methods</h1>
+<div class="w-10 h-10"></div> <!-- Balancer for centering -->
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 px-container-margin py-stack-lg flex flex-col gap-section-gap pb-32">
+<!-- Saved Cards Section -->
+<section class="flex flex-col gap-stack-md">
+<div class="flex items-center justify-between">
+<h2 class="text-label-md font-label-md text-on-surface-variant uppercase tracking-wider">Credit &amp; Debit Cards</h2>
+<span class="text-label-sm font-label-sm text-outline">Encrypted &amp; Secure</span>
+</div>
+<div id="paymentCardsContainer" class="flex flex-col gap-stack-md">
+  <!-- Dynamic cards loaded via /api/v1/payment-methods -->
+  <div class="text-center py-4 text-xs text-on-surface-variant">Loading payment methods...</div>
+</div>
+</section>
+
+<!-- Digital Wallets Section -->
+<section class="flex flex-col gap-stack-md">
+<h2 class="text-label-md font-label-md text-on-surface-variant uppercase tracking-wider">Digital Wallets &amp; UPI</h2>
+<div class="grid grid-cols-2 gap-3">
+<!-- Google Pay / Apple Pay -->
+<div onclick="selectWallet('Google Pay')" class="glass-card rounded-xl p-4 flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-surface-container-lowest transition-colors border border-transparent hover:border-primary">
+<div class="w-10 h-10 bg-black rounded-full flex items-center justify-center text-white mb-1 shadow-sm">
+<span class="material-symbols-outlined text-lg">payments</span>
+</div>
+<span class="text-label-md font-label-md text-on-surface font-semibold">Google Pay</span>
+</div>
+<!-- UPI -->
+<div onclick="openAddPaymentModal('UPI')" class="glass-card rounded-xl p-4 flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-surface-container-lowest transition-colors border border-transparent hover:border-primary">
+<div class="w-10 h-10 bg-white border border-outline-variant rounded-full flex items-center justify-center mb-1 shadow-sm">
+<div class="flex items-center justify-center gap-1">
+<div class="w-2.5 h-2.5 rounded-full bg-orange-500"></div>
+<div class="w-2.5 h-2.5 rounded-full bg-green-500"></div>
+</div>
+</div>
+<span class="text-label-md font-label-md text-on-surface font-semibold">Add UPI ID</span>
+</div>
+</div>
+</section>
+
+<!-- Add New Method CTA -->
+<div class="mt-auto pt-section-gap">
+<button type="button" id="btnOpenAddPaymentModal" class="w-full h-14 bg-surface-container-lowest border-2 border-dashed border-outline-variant rounded-xl flex items-center justify-center gap-2 text-primary font-label-md text-label-md hover:bg-surface-container-low hover:border-primary transition-all duration-200 active:scale-98">
+<span class="material-symbols-outlined">add</span>
+    Add Payment Method
+</button>
+</div>
+
+<!-- Add Payment Modal -->
+<div id="paymentModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end md:items-center justify-center p-0 md:p-4">
+  <div class="bg-surface rounded-t-3xl md:rounded-3xl max-w-md w-full p-6 shadow-2xl border border-outline-variant/30 animate-slide-up">
+    <div class="flex items-center justify-between pb-3 border-b border-outline-variant/20 mb-4">
+      <div class="flex items-center gap-2">
+        <span class="material-symbols-outlined text-primary text-2xl">credit_card</span>
+        <h3 id="paymentModalTitle" class="text-headline-md font-headline-md text-on-surface font-bold">Add Payment Method</h3>
+      </div>
+      <button type="button" id="btnClosePaymentModal" class="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center hover:bg-surface-variant">
+        <span class="material-symbols-outlined text-lg">close</span>
+      </button>
+    </div>
+
+    <!-- Type Switcher -->
+    <div class="flex bg-surface-container-low p-1 rounded-xl mb-4 text-xs font-bold">
+      <button type="button" id="tabTypeCard" class="w-1/2 py-2 rounded-lg bg-surface text-primary shadow-xs">Card</button>
+      <button type="button" id="tabTypeUpi" class="w-1/2 py-2 rounded-lg text-on-surface-variant">UPI VPA</button>
+    </div>
+
+    <form id="formPaymentMethod" class="space-y-3 text-xs">
+      <input type="hidden" id="inputPaymentType" value="CARD">
+
+      <!-- Card Section -->
+      <div id="cardFieldsSection" class="space-y-3">
+        <div>
+          <label class="font-bold text-on-surface block mb-1">Cardholder Name</label>
+          <input type="text" id="inputCardName" placeholder="e.g. Alex Mitchell" class="w-full rounded-xl border border-outline-variant/50 p-2.5 bg-surface text-on-surface outline-none focus:ring-1 focus:ring-primary">
+        </div>
+        <div>
+          <label class="font-bold text-on-surface block mb-1">Card Number</label>
+          <input type="text" id="inputCardNumber" placeholder="4532 •••• •••• 8831" maxlength="19" class="w-full rounded-xl border border-outline-variant/50 p-2.5 bg-surface text-on-surface outline-none focus:ring-1 focus:ring-primary">
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="font-bold text-on-surface block mb-1">Expiry (MM/YY)</label>
+            <input type="text" id="inputCardExpiry" placeholder="12/26" maxlength="5" class="w-full rounded-xl border border-outline-variant/50 p-2.5 bg-surface text-on-surface outline-none focus:ring-1 focus:ring-primary">
+          </div>
+          <div>
+            <label class="font-bold text-on-surface block mb-1">CVV</label>
+            <input type="password" id="inputCardCvv" placeholder="•••" maxlength="4" class="w-full rounded-xl border border-outline-variant/50 p-2.5 bg-surface text-on-surface outline-none focus:ring-1 focus:ring-primary">
+          </div>
+        </div>
+      </div>
+
+      <!-- UPI Section -->
+      <div id="upiFieldsSection" class="hidden space-y-3">
+        <div>
+          <label class="font-bold text-on-surface block mb-1">Virtual Payment Address (UPI ID)</label>
+          <input type="text" id="inputUpiVpa" placeholder="username@okhdfcbank / mobile@paytm" class="w-full rounded-xl border border-outline-variant/50 p-2.5 bg-surface text-on-surface outline-none focus:ring-1 focus:ring-primary">
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 pt-1">
+        <input type="checkbox" id="inputPaymentDefault" class="rounded border-outline-variant text-primary focus:ring-primary">
+        <label for="inputPaymentDefault" class="text-on-surface font-semibold">Set as default payment method</label>
+      </div>
+
+      <div class="pt-3 flex gap-2">
+        <button type="button" id="btnCancelPaymentModal" class="w-1/2 py-2.5 rounded-xl border border-outline-variant/50 font-bold hover:bg-surface-variant">Cancel</button>
+        <button type="submit" id="btnSavePaymentSubmit" class="w-1/2 py-2.5 rounded-xl bg-primary text-on-primary font-bold shadow-md hover:bg-primary-container active:scale-95 transition-all">Save &amp; Link</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- BottomNavBar (Shared Component) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-base pb-safe h-16 bg-surface border-t border-outline-variant/20 rounded-t-xl shadow-[0px_-4px_20px_rgba(0,0,0,0.05)]">
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-variant transition-colors group rounded-xl" href="/">
+<span class="material-symbols-outlined mb-1 group-active:scale-90 transition-transform duration-200 text-[24px]" data-icon="local_shipping">local_shipping</span>
+<span class="font-label-sm text-label-sm" data-i18n="nav_deliver">Deliver</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-variant transition-colors group rounded-xl" href="/tracking">
+<span class="material-symbols-outlined mb-1 group-active:scale-90 transition-transform duration-200 text-[24px]" data-icon="distance">distance</span>
+<span class="font-label-sm text-label-sm" data-i18n="nav_tracking">Tracking</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-variant transition-colors group rounded-xl" href="/history">
+<span class="material-symbols-outlined mb-1 group-active:scale-90 transition-transform duration-200 text-[24px]" data-icon="history">history</span>
+<span class="font-label-sm text-label-sm" data-i18n="nav_history">History</span>
+</a>
+<!-- Active State for Profile -->
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-xl px-4 py-1 group" href="/profile">
+<span class="material-symbols-outlined mb-1 group-active:scale-90 transition-transform duration-200 text-[24px] fill" data-icon="person">person</span>
+<span class="font-label-sm text-label-sm" data-i18n="nav_profile">Profile</span>
+</a>
+</nav>
+
+<!-- Scripts -->
+<script src="/js/i18n.js?v=20260824_v2"></script>
+<script defer src="/js/common.js?v=20260824_v2"></script>
+<script defer src="/js/payment-methods.js?v=20260824_v2"></script>
+</body></html>
