@@ -109,6 +109,8 @@ const initializeDatabase = async () => {
       );
 
       CREATE INDEX IF NOT EXISTS idx_saved_addresses_user ON saved_addresses(user_id);
+      ALTER TABLE saved_addresses ADD COLUMN IF NOT EXISTS latitude DOUBLE PRECISION;
+      ALTER TABLE saved_addresses ADD COLUMN IF NOT EXISTS longitude DOUBLE PRECISION;
 
       -- 1c. Customer Payment Methods
       CREATE TABLE IF NOT EXISTS payment_methods (
@@ -332,6 +334,20 @@ const initializeDatabase = async () => {
     `;
 
     await targetPool.query(ddl);
+    
+    // Safety migrations for existing database instances
+    try {
+      await targetPool.query(`
+        ALTER TABLE route_transactions ALTER COLUMN origin_geom DROP NOT NULL;
+        ALTER TABLE route_transactions ALTER COLUMN destination_geom DROP NOT NULL;
+        ALTER TABLE route_stops ALTER COLUMN geom DROP NOT NULL;
+        ALTER TABLE shipment_legs ALTER COLUMN pickup_geom DROP NOT NULL;
+        ALTER TABLE shipment_legs ALTER COLUMN dropoff_geom DROP NOT NULL;
+        ALTER TABLE custody_handoffs ALTER COLUMN location_geom DROP NOT NULL;
+        ALTER TABLE proof_of_delivery ALTER COLUMN location_geom DROP NOT NULL;
+      `);
+    } catch (_) {}
+
     console.log('✔ Master Relational DDL applied successfully (16 tables created).');
 
     // 4. Seed Data

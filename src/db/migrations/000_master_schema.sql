@@ -35,6 +35,8 @@ CREATE TABLE IF NOT EXISTS saved_addresses (
     address_line TEXT NOT NULL,
     tag VARCHAR(50) DEFAULT 'home',
     is_default BOOLEAN DEFAULT FALSE,
+    latitude DOUBLE PRECISION,
+    longitude DOUBLE PRECISION,
     geom GEOMETRY(Point, 4326),
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
@@ -100,9 +102,9 @@ CREATE TABLE IF NOT EXISTS route_transactions (
     version INT NOT NULL DEFAULT 1,
     operator_id BIGINT NOT NULL REFERENCES users(id),
     origin_terminal VARCHAR(255) NOT NULL,
-    origin_geom GEOMETRY(Point, 4326) NOT NULL,
+    origin_geom GEOMETRY(Point, 4326),
     destination_terminal VARCHAR(255) NOT NULL,
-    destination_geom GEOMETRY(Point, 4326) NOT NULL,
+    destination_geom GEOMETRY(Point, 4326),
     effective_from TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     effective_to TIMESTAMPTZ,
     is_latest BOOLEAN DEFAULT TRUE,
@@ -124,7 +126,7 @@ CREATE TABLE IF NOT EXISTS route_stops (
     stop_name VARCHAR(255) NOT NULL,
     latitude DOUBLE PRECISION NOT NULL,
     longitude DOUBLE PRECISION NOT NULL,
-    geom GEOMETRY(Point, 4326) NOT NULL,
+    geom GEOMETRY(Point, 4326),
     sequence_order INT NOT NULL,
     estimated_stop_offset_minutes INT DEFAULT 0,
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
@@ -216,9 +218,9 @@ CREATE TABLE IF NOT EXISTS shipment_legs (
     status VARCHAR(50) NOT NULL DEFAULT 'PENDING' CHECK (status IN ('PENDING', 'QUOTED', 'DISPATCHED', 'COLLECTED', 'IN_TRANSIT', 'COMPLETED', 'EXCEPTION', 'CANCELLED')),
     
     pickup_address TEXT NOT NULL,
-    pickup_geom GEOMETRY(Point, 4326) NOT NULL,
+    pickup_geom GEOMETRY(Point, 4326),
     dropoff_address TEXT NOT NULL,
-    dropoff_geom GEOMETRY(Point, 4326) NOT NULL,
+    dropoff_geom GEOMETRY(Point, 4326),
     
     price NUMERIC(10, 2) DEFAULT 0.0,
     estimated_arrival TIMESTAMPTZ,
@@ -244,7 +246,7 @@ CREATE TABLE IF NOT EXISTS custody_handoffs (
     qr_seal_code VARCHAR(100) NOT NULL,
     seal_status VARCHAR(50) NOT NULL DEFAULT 'INTACT' CHECK (seal_status IN ('INTACT', 'DAMAGED', 'TAMPERED', 'REPLACED')),
     handoff_type VARCHAR(50) NOT NULL,
-    location_geom GEOMETRY(Point, 4326) NOT NULL,
+    location_geom GEOMETRY(Point, 4326),
     is_within_geofence BOOLEAN NOT NULL DEFAULT TRUE,
     distance_meters NUMERIC(8, 2),
     signature_url TEXT,
@@ -270,7 +272,7 @@ CREATE TABLE IF NOT EXISTS proof_of_delivery (
     qr_seal_code VARCHAR(100) NOT NULL,
     signature_url TEXT,
     photo_url TEXT,
-    location_geom GEOMETRY(Point, 4326) NOT NULL,
+    location_geom GEOMETRY(Point, 4326),
     geofence_validated BOOLEAN DEFAULT TRUE,
     delivered_by_user_id BIGINT REFERENCES users(id),
     delivered_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
