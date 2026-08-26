@@ -13,7 +13,7 @@ RUN npm ci --omit=dev --ignore-scripts && npm cache clean --force
 
 # ---- Stage 2: Production Image ----
 FROM node:22-alpine AS runner
-LABEL maintainer="Anmo07 <anmol@transitly.dev>"
+LABEL maintainer="Anmo07 <anmolrajotiya@gmail.com>"
 LABEL org.opencontainers.image.title="Transitly"
 LABEL org.opencontainers.image.description="Bus-to-Door Intercity Parcel Logistics Platform"
 
