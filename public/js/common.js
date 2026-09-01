@@ -265,42 +265,55 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   /**
-   * Update the Notification Bell Icons and Badges on Any Page
+   * Update the Notification Bell Icons and Badges Dynamically on Any Page
    */
   const refreshBellBadges = () => {
     const unreadCount = getUnreadCount();
-    const bellButtons = document.querySelectorAll('[aria-label="Notifications"], button:has([data-icon="notifications"]), button:has(.material-symbols-outlined:contains("notifications"))');
+    
+    // Select all potential bell buttons or links across all pages
+    const targets = new Set([
+      ...document.querySelectorAll('a[href="/notifications"]'),
+      ...document.querySelectorAll('.header-notification-btn'),
+      ...document.querySelectorAll('[aria-label="Notifications"]'),
+      ...document.querySelectorAll('#btnNotifications'),
+      ...document.querySelectorAll('.notification-bell-btn')
+    ]);
 
-    document.querySelectorAll('header button, header a').forEach(btn => {
-      const icon = btn.querySelector('.material-symbols-outlined');
-      const isBell = icon && (icon.textContent.trim() === 'notifications' || icon.getAttribute('data-icon') === 'notifications');
-      const isAria = btn.getAttribute('aria-label') === 'Notifications';
+    // Also look for any button/link containing a notifications icon
+    document.querySelectorAll('header button, header a').forEach(el => {
+      const icon = el.querySelector('.material-symbols-outlined');
+      if (icon && (icon.textContent.trim() === 'notifications' || icon.getAttribute('data-icon') === 'notifications')) {
+        targets.add(el);
+      }
+    });
 
-      if (isBell || isAria) {
-        // Ensure relative container
-        btn.classList.add('relative');
-        btn.removeAttribute('onclick');
+    targets.forEach(btn => {
+      btn.classList.add('relative');
+      btn.removeAttribute('onclick');
 
-        // Clicking bell navigates to notifications page
+      // Ensure click navigates to notifications
+      if (btn.tagName.toLowerCase() !== 'a' || btn.getAttribute('href') !== '/notifications') {
         btn.onclick = (e) => {
           e.preventDefault();
           window.location.href = '/notifications';
         };
+      }
 
-        // Remove old badge if exists
-        const oldBadge = btn.querySelector('.global-notif-badge');
-        if (oldBadge) oldBadge.remove();
+      // Remove old badge if exists
+      const oldBadge = btn.querySelector('.global-notif-badge');
+      if (oldBadge) oldBadge.remove();
 
-        // Inject unread badge if unreadCount > 0
-        if (unreadCount > 0) {
-          const badgeEl = document.createElement('span');
-          badgeEl.className = 'global-notif-badge absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] bg-rose-600 text-white text-[10px] font-extrabold px-1 rounded-full flex items-center justify-center shadow-md animate-bounce pointer-events-none';
-          badgeEl.textContent = unreadCount > 9 ? '9+' : unreadCount;
-          btn.appendChild(badgeEl);
-        }
+      // Inject unread badge if unreadCount > 0
+      if (unreadCount > 0) {
+        const badgeEl = document.createElement('span');
+        badgeEl.className = 'global-notif-badge absolute -top-1 -right-1 min-w-[19px] h-[19px] px-1 bg-gradient-to-r from-red-500 to-rose-600 text-white text-[10px] font-black rounded-full flex items-center justify-center shadow-md ring-2 ring-white z-20 pointer-events-none transition-transform duration-200 animate-pulse';
+        badgeEl.textContent = unreadCount > 9 ? '9+' : unreadCount;
+        btn.appendChild(badgeEl);
       }
     });
   };
+
+  window.refreshTransitlyBellBadges = refreshBellBadges;
 
   /**
    * Floating Toast Banner for Real-Time Incoming Notifications
@@ -431,7 +444,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // Initialize Global Bell Badges on Page Load
   refreshBellBadges();
 
-  // Listen to cross-tab / local storage updates
+  // Listen to custom updates and cross-tab storage updates
+  window.addEventListener('transitly:notifications_updated', refreshBellBadges);
+  window.addEventListener('transitly:new_notification', refreshBellBadges);
+
   window.addEventListener('storage', (e) => {
     if (e.key === 'transitly_notifications_store') {
       refreshBellBadges();

@@ -108,6 +108,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const saveNotifications = (list) => {
     localStorage.setItem('transitly_notifications_store', JSON.stringify(list));
     updateCounters(list);
+    if (typeof window.refreshTransitlyBellBadges === 'function') {
+      window.refreshTransitlyBellBadges();
+    }
+    window.dispatchEvent(new CustomEvent('transitly:notifications_updated', { detail: list }));
   };
 
   /**
@@ -396,15 +400,24 @@ document.addEventListener('DOMContentLoaded', () => {
     renderFeed();
   };
 
-  if (btnSimulateAlert) {
-    btnSimulateAlert.addEventListener('click', triggerSimulatedLiveAlert);
-  }
-
   // Listen for real-time live events from common.js streamer
   window.addEventListener('transitly:new_notification', () => {
     updateCounters();
     renderFeed();
   });
+
+  // Cross-tab sync
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'transitly_notifications_store') {
+      updateCounters();
+      renderFeed();
+    }
+  });
+
+  // Auto-refresh relative timestamps ("2 mins ago") every 30 seconds
+  setInterval(() => {
+    renderFeed();
+  }, 30000);
 
   // Initialize
   updateCounters();
