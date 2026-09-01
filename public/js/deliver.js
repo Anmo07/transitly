@@ -486,55 +486,71 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   // -------------------------------------------------------------
-  // Search Panel Autocomplete & Real-Time Typing Listeners
+  // Search Panel Suggestions & Non-Intrusive Typing Listeners
   // -------------------------------------------------------------
 
   let debounceTimerFrom = null;
   let debounceTimerTo = null;
 
   const renderSuggestions = (container, inputElement, isFrom = true) => {
-    const query = inputElement.value.toLowerCase().trim();
-    if (!query) {
-      container.classList.add('hidden');
-      return;
-    }
+    const rawVal = inputElement.value || '';
+    const query = rawVal.toLowerCase().trim();
 
-    const matches = POPULAR_HUBS.filter(h => h.name.toLowerCase().includes(query));
+    // If empty query, show popular hubs
+    const matches = query
+      ? POPULAR_HUBS.filter(h => h.name.toLowerCase().includes(query))
+      : POPULAR_HUBS.slice(0, 6);
 
     if (matches.length === 0) {
       container.innerHTML = `
-        <div class="p-3 text-on-surface-variant text-center flex items-center justify-center gap-1.5 cursor-pointer hover:bg-surface-variant transition-colors" id="btnGeocodeLivePrompt">
-          <span class="material-symbols-outlined text-primary text-sm">search</span>
-          <span>Search location "<b>${inputElement.value}</b>" on map</span>
+        <div class="p-3 text-on-surface-variant text-center flex items-center justify-between gap-2 text-xs">
+          <span>No direct transit hub match</span>
+          <button type="button" class="btn-lookup-address text-primary font-bold hover:underline flex items-center gap-1">
+            <span class="material-symbols-outlined text-[15px]">pin_drop</span>
+            <span>Locate on Map</span>
+          </button>
         </div>
       `;
       container.classList.remove('hidden');
 
-      const btnGeocode = document.getElementById('btnGeocodeLivePrompt');
-      if (btnGeocode) {
-        btnGeocode.addEventListener('click', async () => {
+      const btnLookup = container.querySelector('.btn-lookup-address');
+      if (btnLookup) {
+        btnLookup.addEventListener('click', async () => {
           container.classList.add('hidden');
           const geo = await forwardGeocode(inputElement.value);
           if (geo) {
             if (isFrom) applyFromLocation(geo.name, geo.lat, geo.lng);
             else applyToLocation(geo.name, geo.lat, geo.lng);
-            showLocationToast(`Resolved: ${geo.name}`);
+            showLocationToast(`Resolved: ${geo.name.split(',')[0]}`);
           }
         });
       }
       return;
     }
 
-    let html = '';
+    let html = `
+      <div class="px-3 py-2 text-[10px] font-bold text-on-surface-variant/70 uppercase tracking-wider bg-surface-container-low/50 flex items-center justify-between">
+        <span>${isFrom ? 'Suggested Pickup Hubs' : 'Suggested Destination Hubs'}</span>
+        <span class="text-[9px] text-primary font-semibold">Tap to select</span>
+      </div>
+    `;
+
     matches.forEach(item => {
-      const icon = item.type === 'bus_stand' ? 'directions_bus' : 'location_city';
+      const isBusStand = item.type === 'bus_stand';
+      const icon = isBusStand ? 'directions_bus' : 'location_city';
+      const badge = isBusStand ? 'Bus Stand' : 'Transit Hub';
+      const badgeColor = isBusStand ? 'bg-primary/10 text-primary' : 'bg-secondary/10 text-secondary';
+
       html += `
-        <div class="suggestion-item p-2.5 flex items-center gap-2.5 hover:bg-surface-variant cursor-pointer transition-colors" data-name="${item.name}" data-lat="${item.lat}" data-lng="${item.lng}">
-          <span class="material-symbols-outlined text-primary text-[18px] shrink-0">${icon}</span>
-          <div class="min-w-0 flex-1">
-            <p class="font-bold text-on-surface text-xs truncate">${item.name.split(',')[0]}</p>
-            <p class="text-[10px] text-on-surface-variant truncate">${item.name}</p>
+        <div class="suggestion-item px-3 py-2.5 flex items-center justify-between gap-2 hover:bg-surface-variant/80 cursor-pointer transition-all active:scale-[0.99]" data-name="${item.name}" data-lat="${item.lat}" data-lng="${item.lng}">
+          <div class="flex items-center gap-2.5 min-w-0 flex-1">
+            <span class="material-symbols-outlined text-primary text-[18px] shrink-0">${icon}</span>
+            <div class="min-w-0 flex-1">
+              <p class="font-bold text-on-surface text-xs truncate">${item.name.split(',')[0]}</p>
+              <p class="text-[10px] text-on-surface-variant truncate">${item.name}</p>
+            </div>
           </div>
+          <span class="text-[9px] font-bold px-2 py-0.5 rounded-full ${badgeColor} shrink-0">${badge}</span>
         </div>
       `;
     });
@@ -543,7 +559,9 @@ document.addEventListener('DOMContentLoaded', () => {
     container.classList.remove('hidden');
 
     container.querySelectorAll('.suggestion-item').forEach(el => {
-      el.addEventListener('click', () => {
+      el.addEventListener('mousedown', (e) => {
+        // Use mousedown so it triggers before blur
+        e.preventDefault();
         const name = el.getAttribute('data-name');
         const lat = parseFloat(el.getAttribute('data-lat'));
         const lng = parseFloat(el.getAttribute('data-lng'));
@@ -565,25 +583,28 @@ document.addEventListener('DOMContentLoaded', () => {
     inputSearchFrom.addEventListener('focus', () => {
       activeTarget = 'from';
       if (btnClearFrom) btnClearFrom.classList.toggle('hidden', !inputSearchFrom.value);
+      renderSuggestions(dropdownSuggestionsFrom, inputSearchFrom, true);
     });
 
     inputSearchFrom.addEventListener('input', () => {
       if (btnClearFrom) btnClearFrom.classList.toggle('hidden', !inputSearchFrom.value);
+      fromLocation.name = inputSearchFrom.value; // Store typed value without altering input or map until chosen
       clearTimeout(debounceTimerFrom);
-      debounceTimerFrom = setTimeout(async () => {
+      debounceTimerFrom = setTimeout(() => {
         renderSuggestions(dropdownSuggestionsFrom, inputSearchFrom, true);
-        const geo = await forwardGeocode(inputSearchFrom.value);
-        if (geo) {
-          applyFromLocation(geo.name, geo.lat, geo.lng, false);
-        }
-      }, 350);
+      }, 150);
     });
 
     inputSearchFrom.addEventListener('keydown', async (e) => {
       if (e.key === 'Enter') {
         dropdownSuggestionsFrom.classList.add('hidden');
         const geo = await forwardGeocode(inputSearchFrom.value);
-        if (geo) applyFromLocation(geo.name, geo.lat, geo.lng);
+        if (geo) {
+          applyFromLocation(geo.name, geo.lat, geo.lng);
+          showLocationToast(`Resolved: ${geo.name.split(',')[0]}`);
+        }
+      } else if (e.key === 'Escape') {
+        dropdownSuggestionsFrom.classList.add('hidden');
       }
     });
   }
@@ -593,25 +614,28 @@ document.addEventListener('DOMContentLoaded', () => {
     inputSearchTo.addEventListener('focus', () => {
       activeTarget = 'to';
       if (btnClearTo) btnClearTo.classList.toggle('hidden', !inputSearchTo.value);
+      renderSuggestions(dropdownSuggestionsTo, inputSearchTo, false);
     });
 
     inputSearchTo.addEventListener('input', () => {
       if (btnClearTo) btnClearTo.classList.toggle('hidden', !inputSearchTo.value);
+      toLocation.name = inputSearchTo.value; // Store typed value without altering input or map until chosen
       clearTimeout(debounceTimerTo);
-      debounceTimerTo = setTimeout(async () => {
+      debounceTimerTo = setTimeout(() => {
         renderSuggestions(dropdownSuggestionsTo, inputSearchTo, false);
-        const geo = await forwardGeocode(inputSearchTo.value);
-        if (geo) {
-          applyToLocation(geo.name, geo.lat, geo.lng, false);
-        }
-      }, 350);
+      }, 150);
     });
 
     inputSearchTo.addEventListener('keydown', async (e) => {
       if (e.key === 'Enter') {
         dropdownSuggestionsTo.classList.add('hidden');
         const geo = await forwardGeocode(inputSearchTo.value);
-        if (geo) applyToLocation(geo.name, geo.lat, geo.lng);
+        if (geo) {
+          applyToLocation(geo.name, geo.lat, geo.lng);
+          showLocationToast(`Resolved: ${geo.name.split(',')[0]}`);
+        }
+      } else if (e.key === 'Escape') {
+        dropdownSuggestionsTo.classList.add('hidden');
       }
     });
   }

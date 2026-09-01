@@ -71,6 +71,7 @@ app.get('/saved-addresses', (req, res) => res.sendFile(path.join(publicDir, 'sav
 app.get('/payment-methods', (req, res) => res.sendFile(path.join(publicDir, 'payment-methods.html')));
 app.get('/settings', (req, res) => res.sendFile(path.join(publicDir, 'settings.html')));
 app.get('/help-support', (req, res) => res.sendFile(path.join(publicDir, 'help-support.html')));
+app.get('/notifications', (req, res) => res.sendFile(path.join(publicDir, 'notifications.html')));
 
 // Fallback to index.html
 app.use((req, res) => {
