@@ -1,417 +1,546 @@
 <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+  <title>Transitly — Intercity Bus Cargo & Doorstep Delivery</title>
+  
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link href="https://fonts.googleapis.com" rel="preconnect"/>
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  
+  <!-- Material Symbols Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+  <link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  
+  <!-- Tailwind CSS with custom config -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "on-surface": "#13161c",
+            "on-surface-variant": "#434753",
+            "outline": "#717684",
+            "outline-variant": "#cbd0df",
+            "surface-container-high": "#e5e8f2",
+            "background": "#f6f8fc",
+            "surface-container-lowest": "#ffffff",
+            "surface-container-low": "#f0f3fa",
+            "surface-container": "#e8ecf5",
+            "surface": "#ffffff",
+            "primary": "#0050cb",
+            "primary-container": "#0066ff",
+            "primary-dark": "#003ba0",
+            "on-primary": "#ffffff",
+            "secondary": "#535965",
+            "secondary-container": "#e2e6f0",
+            "error": "#ba1a1a",
+            "error-container": "#ffdad6",
+            "emerald-brand": "#0d8a50"
+          },
+          fontFamily: {
+            sans: ["Plus Jakarta Sans", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "sans-serif"]
+          },
+          boxShadow: {
+            'card-sm': '0 2px 8px -2px rgba(0, 0, 0, 0.05), 0 1px 4px -1px rgba(0, 0, 0, 0.03)',
+            'card-md': '0 8px 24px -4px rgba(15, 23, 42, 0.08), 0 2px 8px -2px rgba(15, 23, 42, 0.04)',
+            'card-lg': '0 16px 40px -8px rgba(15, 23, 42, 0.12), 0 4px 12px -2px rgba(15, 23, 42, 0.06)',
+            'glow-primary': '0 8px 24px -4px rgba(0, 80, 203, 0.35)',
+            'glow-emerald': '0 8px 24px -4px rgba(13, 138, 80, 0.35)'
+          }
+        }
+      }
+    }
+  </script>
 
-<html lang="en"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Transitly - Parcel Delivery</title>
-<!-- Google Fonts: Plus Jakarta Sans -->
-<link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
-<!-- Material Symbols -->
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<!-- Tailwind CSS with custom config -->
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    "colors": {
-                        "on-surface": "#191b24",
-                        "on-error-container": "#93000a",
-                        "on-secondary-fixed": "#191c1e",
-                        "outline": "#727687",
-                        "outline-variant": "#c2c6d8",
-                        "secondary-fixed-dim": "#c4c7c9",
-                        "inverse-on-surface": "#eff0fd",
-                        "surface-container-high": "#e6e7f4",
-                        "background": "#faf8ff",
-                        "inverse-surface": "#2e303a",
-                        "surface-variant": "#e1e2ee",
-                        "on-surface-variant": "#424656",
-                        "on-error": "#ffffff",
-                        "on-primary": "#ffffff",
-                        "tertiary-container": "#cc4204",
-                        "on-primary-fixed": "#001849",
-                        "on-tertiary": "#ffffff",
-                        "error-container": "#ffdad6",
-                        "primary-fixed-dim": "#b3c5ff",
-                        "primary-container": "#0066ff",
-                        "on-tertiary-fixed-variant": "#832600",
-                        "secondary": "#5c5f61",
-                        "surface-container-highest": "#e1e2ee",
-                        "surface-tint": "#0054d6",
-                        "on-primary-fixed-variant": "#003fa4",
-                        "surface-bright": "#faf8ff",
-                        "tertiary-fixed-dim": "#ffb59d",
-                        "surface-container-lowest": "#ffffff",
-                        "inverse-primary": "#b3c5ff",
-                        "on-tertiary-container": "#fff6f4",
-                        "on-tertiary-fixed": "#390c00",
-                        "secondary-container": "#e0e3e5",
-                        "on-background": "#191b24",
-                        "primary": "#0050cb",
-                        "secondary-fixed": "#e0e3e5",
-                        "surface-dim": "#d8d9e6",
-                        "surface-container-low": "#f2f3ff",
-                        "on-secondary": "#ffffff",
-                        "surface": "#faf8ff",
-                        "error": "#ba1a1a",
-                        "on-primary-container": "#f8f7ff",
-                        "surface-container": "#ecedfa",
-                        "tertiary-fixed": "#ffdbd0",
-                        "on-secondary-container": "#626567",
-                        "primary-fixed": "#dae1ff",
-                        "tertiary": "#a33200",
-                        "on-secondary-fixed-variant": "#444749"
-                    },
-                    "borderRadius": {
-                        "DEFAULT": "0.25rem",
-                        "lg": "0.5rem",
-                        "xl": "0.75rem",
-                        "full": "9999px"
-                    },
-                    "spacing": {
-                        "stack-lg": "24px",
-                        "stack-md": "12px",
-                        "stack-sm": "4px",
-                        "gutter": "16px",
-                        "section-gap": "40px",
-                        "container-margin": "20px",
-                        "base": "8px"
-                    },
-                    "fontFamily": {
-                        "body-md": ["Plus Jakarta Sans"],
-                        "headline-md": ["Plus Jakarta Sans"],
-                        "headline-lg": ["Plus Jakarta Sans"],
-                        "label-sm": ["Plus Jakarta Sans"],
-                        "body-lg": ["Plus Jakarta Sans"],
-                        "headline-lg-mobile": ["Plus Jakarta Sans"],
-                        "display": ["Plus Jakarta Sans"],
-                        "label-md": ["Plus Jakarta Sans"]
-                    },
-                    "fontSize": {
-                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
-                        "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
-                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
-                        "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
-                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
-                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "700" }],
-                        "display": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
-                        "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }]
-                    },
-                    boxShadow: {
-                        'level-1': '0px 4px 20px rgba(0, 0, 0, 0.05)',
-                        'level-2': '0px 8px 30px rgba(0, 102, 255, 0.08)',
-                    }
-                }
-            }
-        }
-    </script>
-    <!-- Google Fonts & Material Symbols -->
-    <link href="https://fonts.googleapis.com" rel="preconnect"/>
-    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
-    <link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-
-    <style>
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
-        .material-symbols-outlined.fill {
-            font-variation-settings: 'FILL' 1;
-        }
-        ::-webkit-scrollbar { display: none; }
-        body { min-height: max(884px, 100dvh); }
-        .custom-pickup-pin { background: transparent; border: none; }
-        #homeInteractiveMap { width: 100% !important; height: 100% !important; }
-        .leaflet-container { width: 100% !important; height: 100% !important; background: #e5e3df; }
-    </style>
+  <style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      line-height: 1;
+      display: inline-block;
+    }
+    .material-symbols-outlined.fill {
+      font-variation-settings: 'FILL' 1;
+    }
+    ::-webkit-scrollbar { display: none; }
+    body { min-height: 100dvh; background-color: #f6f8fc; }
+    .custom-pickup-pin, .custom-dropoff-pin { background: transparent; border: none; }
+    #homeInteractiveMap { width: 100% !important; height: 100% !important; }
+    .leaflet-container { width: 100% !important; height: 100% !important; background: #e5e3df; font-family: inherit !important; }
+    
+    /* Smooth Pulse Animation */
+    @keyframes pulse-ring {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 80, 203, 0.4); }
+      70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(0, 80, 203, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 80, 203, 0); }
+    }
+    .pulse-effect { animation: pulse-ring 2.5s infinite cubic-bezier(0.4, 0, 0.6, 1); }
+  </style>
 </head>
-<body class="bg-background text-on-surface font-body-md min-h-screen overflow-x-hidden relative selection:bg-primary-fixed selection:text-on-primary-fixed">
-<!-- Interactive Map Section (Fixed Behind Content) -->
-<div id="homeMapContainer" class="fixed top-0 left-0 w-full h-[486px] z-0 overflow-hidden">
+
+<body class="bg-background text-on-surface font-sans min-h-screen overflow-x-hidden relative selection:bg-primary selection:text-white">
+
+<!-- ========================================================================= -->
+<!-- Interactive Map Section (Fixed Top Layer)                                 -->
+<!-- ========================================================================= -->
+<div id="homeMapContainer" class="fixed top-0 left-0 w-full h-[470px] z-0 overflow-hidden">
   <!-- Interactive Leaflet Canvas -->
   <div id="homeInteractiveMap" class="absolute inset-0 w-full h-full z-0"></div>
 
-  <!-- Fallback Static Map Graphic (displays before tiles load) -->
+  <!-- Fallback Static Map Graphic -->
   <div id="homeStaticFallback" class="absolute inset-0 w-full h-full z-0 pointer-events-none" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCKaaONLs8ZFEYkl9-pcv93l2AxSdoBCMty1uXuqPBGAcm-vhFHbLaFajnnDxD5Jwq-fw3xVcwtX3JtKzl7fbsMuUKlgXJYllNObokIOdN4dZhCMnuGgVBguCmB3npTgrQ45N86eWYhaIPMfFYnytiI9tJdN1BHXHSVkDC9vBDRNAFkQ3ZwsMrl6C1DhMGT32MwPxLoiBCzsasgJiuZYqUY2vKm3rOI9faoHPEVhiWrWbG0iS3yOFZM'); background-size: cover; background-position: center;"></div>
 
-  <!-- Live Location Permission Banner (Prompting User) -->
-  <div id="locationPermissionBanner" class="absolute top-4 left-4 right-16 z-20 max-w-sm bg-surface/95 backdrop-blur-md p-3 rounded-2xl shadow-lg border border-primary/30 flex items-center justify-between gap-2.5 animate-slide-up pointer-events-auto">
+  <!-- Subtle Top Gradient Scrim -->
+  <div class="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-slate-900/30 to-transparent pointer-events-none z-10"></div>
+
+  <!-- Live Location Permission Banner -->
+  <div id="locationPermissionBanner" class="absolute top-4 left-4 right-16 z-20 max-w-sm bg-white/95 backdrop-blur-xl p-3 rounded-2xl shadow-card-lg border border-slate-200/80 flex items-center justify-between gap-3 animate-slide-up pointer-events-auto transition-all">
     <div class="flex items-center gap-2.5 overflow-hidden">
-      <div class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
-        <span class="material-symbols-outlined text-lg animate-pulse">location_on</span>
+      <div class="w-9 h-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+        <span class="material-symbols-outlined text-[20px] animate-pulse">my_location</span>
       </div>
       <div class="truncate">
-        <h4 class="text-xs font-bold text-on-surface truncate" data-i18n="deliver_use_gps">Use Live GPS Location</h4>
-        <p class="text-[10px] text-on-surface-variant leading-tight truncate" data-i18n="deliver_tap_for_rates">Tap allow for automatic bus hub rates</p>
+        <h4 class="text-xs font-bold text-slate-900 truncate" data-i18n="deliver_use_gps">Use Live GPS Location</h4>
+        <p class="text-[11px] text-slate-500 leading-tight truncate" data-i18n="deliver_tap_for_rates">Auto-detect nearest bus cargo terminal</p>
       </div>
     </div>
-    <button type="button" id="btnAllowLocation" class="bg-primary text-on-primary px-3 py-1.5 rounded-xl text-xs font-bold shadow-sm hover:bg-primary-container active:scale-95 transition-all shrink-0" data-i18n="deliver_allow_gps">
-      Allow GPS
+    <button type="button" id="btnAllowLocation" class="bg-primary hover:bg-primary-dark text-white px-3.5 py-2 rounded-xl text-xs font-bold shadow-sm active:scale-95 transition-all shrink-0 flex items-center gap-1" data-i18n="deliver_allow_gps">
+      <span>Allow</span>
+      <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
     </button>
   </div>
 
-  <!-- Floating Map Navigation & Google Maps Layer Controls -->
+  <!-- Floating Map Controls -->
   <div class="absolute top-4 right-4 z-20 flex flex-col gap-2 pointer-events-auto">
-    <!-- Locate Me / Live GPS -->
-    <button type="button" id="btnMapLocateMe" class="w-10 h-10 rounded-xl bg-surface/95 backdrop-blur-md shadow-md border border-outline-variant/30 flex items-center justify-center text-primary hover:bg-primary-container hover:text-on-primary transition-all active:scale-95" title="Locate My Live GPS">
+    <button type="button" id="btnMapLocateMe" class="w-10 h-10 rounded-2xl bg-white/95 backdrop-blur-xl shadow-card-md border border-slate-200/80 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all active:scale-90" title="Locate My Live GPS">
       <span class="material-symbols-outlined text-[20px]">my_location</span>
     </button>
-    <!-- Google Maps Map / Satellite Toggle -->
-    <button type="button" id="btnToggleMapLayer" class="w-10 h-10 rounded-xl bg-surface/95 backdrop-blur-md shadow-md border border-outline-variant/30 flex items-center justify-center text-on-surface hover:bg-surface-variant transition-all active:scale-95" title="Switch Google Maps Style (Satellite / Streets)">
+    <button type="button" id="btnToggleMapLayer" class="w-10 h-10 rounded-2xl bg-white/95 backdrop-blur-xl shadow-card-md border border-slate-200/80 flex items-center justify-center text-slate-700 hover:bg-slate-100 transition-all active:scale-90" title="Toggle Satellite / Streets Layer">
       <span class="material-symbols-outlined text-[20px]">layers</span>
     </button>
-    <!-- Zoom In -->
-    <button type="button" id="btnMapZoomIn" class="w-10 h-10 rounded-xl bg-surface/95 backdrop-blur-md shadow-md border border-outline-variant/30 flex items-center justify-center text-on-surface hover:bg-surface-variant transition-all active:scale-95" title="Zoom In">
-      <span class="material-symbols-outlined text-[20px]">add</span>
-    </button>
-    <!-- Zoom Out -->
-    <button type="button" id="btnMapZoomOut" class="w-10 h-10 rounded-xl bg-surface/95 backdrop-blur-md shadow-md border border-outline-variant/30 flex items-center justify-center text-on-surface hover:bg-surface-variant transition-all active:scale-95" title="Zoom Out">
-      <span class="material-symbols-outlined text-[20px]">remove</span>
-    </button>
+    <div class="flex flex-col rounded-2xl bg-white/95 backdrop-blur-xl shadow-card-md border border-slate-200/80 overflow-hidden divide-y divide-slate-100">
+      <button type="button" id="btnMapZoomIn" class="w-10 h-9 flex items-center justify-center text-slate-700 hover:bg-slate-100 transition-all active:scale-90" title="Zoom In">
+        <span class="material-symbols-outlined text-[18px]">add</span>
+      </button>
+      <button type="button" id="btnMapZoomOut" class="w-10 h-9 flex items-center justify-center text-slate-700 hover:bg-slate-100 transition-all active:scale-90" title="Zoom Out">
+        <span class="material-symbols-outlined text-[18px]">remove</span>
+      </button>
+    </div>
   </div>
 
-  <!-- Google Maps Official Brand Badge -->
-  <div class="absolute bottom-28 left-4 z-10 pointer-events-none flex items-center gap-1 px-2.5 py-1 rounded-md bg-white/80 backdrop-blur-sm shadow-sm border border-black/5 text-[11px] font-bold text-gray-700">
+  <!-- Google Maps Engine Badge -->
+  <div class="absolute bottom-24 left-4 z-10 pointer-events-none flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/90 backdrop-blur-md shadow-card-sm border border-slate-200/60 text-[11px] font-bold text-slate-700">
     <img src="https://upload.wikimedia.org/wikipedia/commons/a/aa/Google_Maps_icon_%282020%29.svg" alt="Google Maps" class="w-3.5 h-3.5 object-contain">
     <span>Google Maps Engine</span>
   </div>
 </div>
-<!-- Main Content Bottom Sheet -->
-<div class="relative z-10 mt-[397px] bg-surface-container-lowest rounded-t-[24px] pb-[100px] shadow-level-2 min-h-[530px]">
-<!-- Drag Handle Indicator -->
-<div class="w-full flex justify-center pt-3 pb-2">
-<div class="w-12 h-1.5 bg-outline-variant rounded-full opacity-50"></div>
-</div>
-<!-- Dedicated From: / To: Intercity Route Search Panel -->
-<div class="px-container-margin mt-2">
-  <div class="bg-surface-container-low border border-outline-variant/30 rounded-2xl p-3 shadow-level-1 flex flex-col gap-2 relative">
+
+<!-- ========================================================================= -->
+<!-- Main Content Bottom Sheet & Dashboard Card                               -->
+<!-- ========================================================================= -->
+<div class="relative z-10 mt-[380px] bg-white rounded-t-[32px] pb-[110px] shadow-card-lg min-h-[580px] border-t border-slate-200/60">
+  
+  <!-- Drag Handle Indicator -->
+  <div class="w-full flex justify-center pt-3 pb-1">
+    <div class="w-10 h-1.5 bg-slate-300 rounded-full opacity-60"></div>
+  </div>
+
+  <!-- ======================================================================= -->
+  <!-- Top Intercity Route Search Console                                      -->
+  <!-- ======================================================================= -->
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 mt-2">
+    <div class="bg-gradient-to-b from-slate-50 to-slate-100/70 border border-slate-200/90 rounded-3xl p-4 sm:p-5 shadow-card-md relative">
+      
+      <!-- Card Header: Corridor Status -->
+      <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-200/60 text-xs">
+        <div class="flex items-center gap-2">
+          <span class="flex h-2.5 w-2.5 relative">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+          </span>
+          <span class="font-bold text-slate-800 text-[12px]">Direct Intercity Bus Corridor</span>
+        </div>
+        <span class="text-[11px] font-semibold text-primary bg-primary/10 px-2.5 py-0.5 rounded-full flex items-center gap-1">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span>Intercity Cargo Fleet Live</span>
+        </span>
+      </div>
+
+      <!-- Route Inputs Grid -->
+      <div class="flex flex-col gap-2.5 relative">
+        
+        <!-- From: (Pickup Origin) -->
+        <div class="relative">
+          <div class="flex items-center bg-white rounded-2xl px-3.5 py-3 border border-slate-200 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 shadow-sm transition-all">
+            <div class="w-7 h-7 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mr-2.5 shrink-0 border border-emerald-200">
+              <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">trip_origin</span>
+            </div>
+            <div class="flex flex-col flex-1 min-w-0">
+              <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider leading-none mb-1">From (Origin Hub)</span>
+              <input id="inputSearchFrom" type="text" value="Mohali, Punjab" placeholder="Enter pickup city, terminal, or address..." class="w-full bg-transparent outline-none font-bold text-slate-900 placeholder:text-slate-400 border-none p-0 focus:ring-0 text-sm truncate">
+            </div>
+            <button type="button" id="btnClearFrom" class="hidden text-slate-400 hover:text-slate-700 p-1.5 rounded-full text-xs">
+              <span class="material-symbols-outlined text-[16px]">close</span>
+            </button>
+            <button type="button" id="btnGpsFrom" class="text-primary hover:bg-primary/10 p-2 rounded-xl text-xs font-bold flex items-center gap-1 shrink-0 ml-1 transition-colors" title="Use Live GPS">
+              <span class="material-symbols-outlined text-[18px]">my_location</span>
+            </button>
+          </div>
+          <!-- From Autocomplete Dropdown -->
+          <div id="dropdownSuggestionsFrom" class="hidden absolute top-full left-0 right-0 mt-1.5 bg-white/98 backdrop-blur-xl rounded-2xl shadow-2xl border border-slate-200 z-50 max-h-56 overflow-y-auto divide-y divide-slate-100 text-xs"></div>
+        </div>
+
+        <!-- Swap Route Button (Floating on Connector) -->
+        <div class="flex items-center justify-between px-3 -my-1 relative z-10">
+          <div class="flex items-center gap-1.5 text-[11px] text-slate-400">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+            <span class="w-8 h-[2px] bg-slate-300 border-dashed border-t border-slate-400"></span>
+            <span class="material-symbols-outlined text-[14px] text-slate-400">directions_bus</span>
+            <span class="w-8 h-[2px] bg-slate-300 border-dashed border-t border-slate-400"></span>
+            <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+          </div>
+          <button type="button" id="btnSwapRoute" class="w-8 h-8 rounded-full bg-white text-primary hover:bg-primary hover:text-white flex items-center justify-center shadow-card-sm border border-slate-200 active:scale-90 transition-all" title="Swap Origin & Destination">
+            <span class="material-symbols-outlined text-[16px]">swap_vert</span>
+          </button>
+        </div>
+
+        <!-- To: (Dropoff Destination) -->
+        <div class="relative">
+          <div class="flex items-center bg-white rounded-2xl px-3.5 py-3 border border-slate-200 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 shadow-sm transition-all">
+            <div class="w-7 h-7 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center mr-2.5 shrink-0 border border-rose-200">
+              <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">location_on</span>
+            </div>
+            <div class="flex flex-col flex-1 min-w-0">
+              <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider leading-none mb-1">To (Destination Terminal)</span>
+              <input id="inputSearchTo" type="text" value="ISBT Sector 17, Chandigarh" placeholder="Where to send? (e.g. Kashmiri Gate, Delhi)" class="w-full bg-transparent outline-none font-bold text-slate-900 placeholder:text-slate-400 border-none p-0 focus:ring-0 text-sm truncate">
+            </div>
+            <button type="button" id="btnClearTo" class="hidden text-slate-400 hover:text-slate-700 p-1.5 rounded-full text-xs">
+              <span class="material-symbols-outlined text-[16px]">close</span>
+            </button>
+            <button type="button" id="btnPickOnMapTo" class="text-rose-600 hover:bg-rose-50 p-2 rounded-xl text-xs font-bold flex items-center gap-1 shrink-0 ml-1 transition-colors" title="Pick Destination on Map">
+              <span class="material-symbols-outlined text-[18px]">pin_drop</span>
+            </button>
+          </div>
+          <!-- To Autocomplete Dropdown -->
+          <div id="dropdownSuggestionsTo" class="hidden absolute top-full left-0 right-0 mt-1.5 bg-white/98 backdrop-blur-xl rounded-2xl shadow-2xl border border-slate-200 z-50 max-h-56 overflow-y-auto divide-y divide-slate-100 text-xs"></div>
+        </div>
+
+      </div>
+
+      <!-- Quick Popular Corridors Pills -->
+      <div class="mt-3.5 pt-3 border-t border-slate-200/60 flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5">
+        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider shrink-0">Popular:</span>
+        <button type="button" onclick="document.getElementById('inputSearchFrom').value='ISBT Kashmiri Gate, New Delhi'; document.getElementById('inputSearchTo').value='ISBT Sector 17, Chandigarh'; document.getElementById('inputSearchTo').dispatchEvent(new Event('change'));" class="px-3 py-1 rounded-full bg-white hover:bg-primary/10 border border-slate-200 text-slate-700 hover:text-primary text-[11px] font-bold shrink-0 transition-colors flex items-center gap-1">
+          <span>Delhi</span>
+          <span class="material-symbols-outlined text-[11px]">arrow_forward</span>
+          <span>Chandigarh</span>
+        </button>
+        <button type="button" onclick="document.getElementById('inputSearchFrom').value='Dhaula Kuan, New Delhi'; document.getElementById('inputSearchTo').value='Sindhi Camp, Jaipur'; document.getElementById('inputSearchTo').dispatchEvent(new Event('change'));" class="px-3 py-1 rounded-full bg-white hover:bg-primary/10 border border-slate-200 text-slate-700 hover:text-primary text-[11px] font-bold shrink-0 transition-colors flex items-center gap-1">
+          <span>Delhi</span>
+          <span class="material-symbols-outlined text-[11px]">arrow_forward</span>
+          <span>Jaipur</span>
+        </button>
+        <button type="button" onclick="document.getElementById('inputSearchFrom').value='Mohali, Punjab'; document.getElementById('inputSearchTo').value='Rohtak Bus Stand, Haryana'; document.getElementById('inputSearchTo').dispatchEvent(new Event('change'));" class="px-3 py-1 rounded-full bg-white hover:bg-primary/10 border border-slate-200 text-slate-700 hover:text-primary text-[11px] font-bold shrink-0 transition-colors flex items-center gap-1">
+          <span>Mohali</span>
+          <span class="material-symbols-outlined text-[11px]">arrow_forward</span>
+          <span>Rohtak</span>
+        </button>
+      </div>
+
+      <!-- Hint & Proceed Direct Bar -->
+      <div class="mt-3 flex items-center justify-between text-xs text-slate-500 pt-1">
+        <span class="flex items-center gap-1.5 text-[11px]">
+          <span class="material-symbols-outlined text-[15px] text-primary">touch_app</span>
+          <span>Tap or drag map pins to adjust coordinates</span>
+        </span>
+        <button type="button" id="btnProceedBookingDirect" class="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-xl font-bold text-xs shadow-glow-primary active:scale-95 transition-all flex items-center gap-1">
+          <span>Proceed</span>
+          <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ======================================================================= -->
+  <!-- Main Services & Hero Bento Grid                                         -->
+  <!-- ======================================================================= -->
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 mt-6">
     
-    <!-- From: (Pickup Origin) -->
-    <div class="relative">
-      <div class="flex items-center bg-surface rounded-xl px-3 py-2.5 border border-outline-variant/30 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all">
-        <span class="material-symbols-outlined text-emerald-600 text-[20px] mr-2 shrink-0" style="font-variation-settings: 'FILL' 1;">trip_origin</span>
-        <div class="flex flex-col flex-1 min-w-0">
-          <span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider leading-none mb-0.5">From (Pickup)</span>
-          <input id="inputSearchFrom" type="text" value="Mohali, Punjab" placeholder="Enter pickup city, hub, or address..." class="w-full bg-transparent outline-none text-body-md font-semibold text-on-surface placeholder:text-on-surface-variant/60 border-none p-0 focus:ring-0 text-xs sm:text-sm truncate">
-        </div>
-        <button type="button" id="btnClearFrom" class="hidden text-on-surface-variant hover:text-on-surface p-1 rounded-full text-xs">
-          <span class="material-symbols-outlined text-[16px]">close</span>
-        </button>
-        <button type="button" id="btnGpsFrom" class="text-primary hover:bg-primary/10 p-1.5 rounded-lg text-xs font-bold flex items-center gap-1 shrink-0 ml-1" title="Use Live GPS">
-          <span class="material-symbols-outlined text-[18px]">my_location</span>
-        </button>
+    <!-- Section Heading -->
+    <div class="flex items-center justify-between mb-3">
+      <div>
+        <h2 class="text-lg sm:text-xl font-extrabold text-slate-900 tracking-tight" data-i18n="deliver_services_heading">
+          Fast Intercity Delivery
+        </h2>
+        <p class="text-xs text-slate-500">Same-day public bus cargo with last-mile doorstep pickup & drop</p>
       </div>
-      <!-- From Autocomplete Dropdown -->
-      <div id="dropdownSuggestionsFrom" class="hidden absolute top-full left-0 right-0 mt-1.5 bg-surface/98 backdrop-blur-xl rounded-2xl shadow-2xl border border-outline-variant/40 z-50 max-h-56 overflow-y-auto divide-y divide-outline-variant/10 text-xs"></div>
-    </div>
-
-    <!-- Swap Button & Route Indicator -->
-    <div class="flex items-center justify-between px-3 -my-1">
-      <div class="flex items-center gap-1.5 text-[11px] text-on-surface-variant font-medium">
-        <span class="w-1.5 h-1.5 rounded-full bg-outline-variant"></span>
-        <span class="w-1.5 h-1.5 rounded-full bg-outline-variant"></span>
-        <span class="w-1.5 h-1.5 rounded-full bg-outline-variant"></span>
-        <span class="text-[10px] text-primary font-bold ml-1">Direct Bus Cargo Corridor</span>
-      </div>
-      <button type="button" id="btnSwapRoute" class="w-7 h-7 rounded-full bg-surface-container-high text-primary hover:bg-primary hover:text-on-primary flex items-center justify-center shadow-sm border border-outline-variant/30 active:scale-90 transition-all" title="Swap Origin & Destination">
-        <span class="material-symbols-outlined text-[16px]">swap_vert</span>
-      </button>
-    </div>
-
-    <!-- To: (Dropoff Destination) -->
-    <div class="relative">
-      <div class="flex items-center bg-surface rounded-xl px-3 py-2.5 border border-outline-variant/30 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all">
-        <span class="material-symbols-outlined text-rose-600 text-[20px] mr-2 shrink-0" style="font-variation-settings: 'FILL' 1;">location_on</span>
-        <div class="flex flex-col flex-1 min-w-0">
-          <span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider leading-none mb-0.5">To (Destination)</span>
-          <input id="inputSearchTo" type="text" value="ISBT Sector 17, Chandigarh" placeholder="Where to send? (e.g. Kashmiri Gate, Delhi)" class="w-full bg-transparent outline-none text-body-md font-semibold text-on-surface placeholder:text-on-surface-variant/60 border-none p-0 focus:ring-0 text-xs sm:text-sm truncate">
-        </div>
-        <button type="button" id="btnClearTo" class="hidden text-on-surface-variant hover:text-on-surface p-1 rounded-full text-xs">
-          <span class="material-symbols-outlined text-[16px]">close</span>
-        </button>
-        <button type="button" id="btnPickOnMapTo" class="text-rose-600 hover:bg-rose-50 p-1.5 rounded-lg text-xs font-bold flex items-center gap-1 shrink-0 ml-1" title="Pick Destination on Map">
-          <span class="material-symbols-outlined text-[18px]">pin_drop</span>
-        </button>
-      </div>
-      <!-- To Autocomplete Dropdown -->
-      <div id="dropdownSuggestionsTo" class="hidden absolute top-full left-0 right-0 mt-1.5 bg-surface/98 backdrop-blur-xl rounded-2xl shadow-2xl border border-outline-variant/40 z-50 max-h-56 overflow-y-auto divide-y divide-outline-variant/10 text-xs"></div>
-    </div>
-
-    <!-- Live Map Interaction Hint Bar -->
-    <div class="flex items-center justify-between pt-1 px-1 text-[11px] text-on-surface-variant">
-      <span class="flex items-center gap-1">
-        <span class="material-symbols-outlined text-[14px] text-primary">touch_app</span>
-        <span>Drag pins or tap map to set location</span>
+      <span class="text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full flex items-center gap-1">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span>Active Corridors</span>
       </span>
-      <button type="button" id="btnProceedBookingDirect" class="text-primary font-bold hover:underline flex items-center gap-0.5 text-xs active:scale-95 transition-transform">
-        <span>Proceed</span>
-        <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
-      </button>
+    </div>
+
+    <!-- Hero Card: Send Parcel Anywhere -->
+    <div class="bg-gradient-to-br from-[#003ba0] via-[#0050cb] to-[#0066ff] text-white rounded-3xl p-6 sm:p-7 shadow-glow-primary relative overflow-hidden mb-6">
+      
+      <!-- Background Ambient Glow -->
+      <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="absolute top-0 right-0 w-96 h-96 bg-gradient-to-b from-white/15 to-transparent rounded-full blur-2xl pointer-events-none"></div>
+
+      <div class="relative z-10 max-w-sm sm:max-w-md">
+        <!-- Pill Badge -->
+        <div class="inline-flex items-center gap-1.5 bg-white/15 backdrop-blur-md px-3 py-1 rounded-full text-[11px] font-bold tracking-wide uppercase mb-3 border border-white/20">
+          <span class="material-symbols-outlined text-[13px] text-amber-300">bolt</span>
+          <span data-i18n="deliver_hero_subtitle">Bus-to-Door Logistics</span>
+        </div>
+
+        <h3 class="text-2xl sm:text-3xl font-extrabold tracking-tight leading-tight mb-2" data-i18n="deliver_hero_title">
+          Send Parcel Anywhere
+        </h3>
+        
+        <p class="text-xs sm:text-sm text-blue-100 font-medium leading-relaxed mb-5">
+          Guaranteed same-day delivery via state road transports, sealed with tamper-proof QR security.
+        </p>
+
+        <!-- Feature Chips -->
+        <div class="flex flex-wrap items-center gap-2 mb-5 text-[11px] font-semibold text-white/90">
+          <span class="flex items-center gap-1 bg-black/20 backdrop-blur-sm px-2.5 py-1 rounded-lg">
+            <span class="material-symbols-outlined text-[13px] text-emerald-400">verified</span>
+            <span>QR GPS Sealed</span>
+          </span>
+          <span class="flex items-center gap-1 bg-black/20 backdrop-blur-sm px-2.5 py-1 rounded-lg">
+            <span class="material-symbols-outlined text-[13px] text-amber-300">speed</span>
+            <span>4-Hour Transit</span>
+          </span>
+          <span class="flex items-center gap-1 bg-black/20 backdrop-blur-sm px-2.5 py-1 rounded-lg">
+            <span class="material-symbols-outlined text-[13px] text-sky-300">payments</span>
+            <span>From ₹149</span>
+          </span>
+        </div>
+
+        <!-- CTA Button -->
+        <button type="button" id="btnOpenBookingModal" class="bg-white hover:bg-slate-50 text-primary px-6 py-3 rounded-2xl font-extrabold text-xs sm:text-sm shadow-card-lg active:scale-95 transition-all flex items-center gap-2 group">
+          <span class="material-symbols-outlined text-[20px] text-primary group-hover:scale-110 transition-transform">add_box</span>
+          <span data-i18n="deliver_book_now">Book Intercity Cargo</span>
+          <span class="material-symbols-outlined text-[16px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+        </button>
+      </div>
+
+      <!-- 3D Parcel Graphic -->
+      <img class="absolute -bottom-6 -right-6 w-[55%] sm:w-[45%] max-w-[260px] object-contain drop-shadow-2xl pointer-events-none transform rotate-3" data-alt="3D cardboard delivery parcel with blue security seal" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBllnUBLVKZ98CzNmZspoH0Mt_Pp_NEIXDbDxk1AvdzSgjZc_BBdOornwzGX9DgEwS9hA0K8pdfphcf7L2RHk1i-eijrkKYD1gxp7OTaUr5CztdkJjxLsHAniOGnQFl4NwxJwKrt1fJYBz9W9FgYxf-Yk-xhct1ypeebZCYqTdiXkIxvHJFMsQm5MslhTbwHFDXLbTeSXmzw_Q6o-OHXOxwsgJCNczNR3Rs6ToO86AVqoaqQ7N0G12f"/>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- Logistics Multi-Modal Flow Architecture ("How It Works")              -->
+    <!-- ===================================================================== -->
+    <div class="mb-6">
+      <div class="flex items-center justify-between mb-3 px-1">
+        <h3 class="text-xs font-extrabold text-slate-400 uppercase tracking-wider" data-i18n="deliver_how_it_works">
+          Multi-Modal Architecture
+        </h3>
+        <span class="text-[11px] font-bold text-slate-500">End-to-End Orchestration</span>
+      </div>
+
+      <div class="bg-white rounded-3xl p-5 sm:p-6 shadow-card-md border border-slate-200/80">
+        
+        <!-- 3-Stage Timeline Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-2 relative">
+          
+          <!-- Stage 1: First-Mile -->
+          <div class="flex sm:flex-col items-center sm:text-center gap-3 sm:gap-2 p-3 rounded-2xl bg-slate-50 border border-slate-100">
+            <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 shadow-sm">
+              <span class="material-symbols-outlined text-[24px]">motorcycle</span>
+            </div>
+            <div>
+              <span class="text-[10px] font-bold text-emerald-700 uppercase tracking-wide">1. First-Mile Pickup</span>
+              <h4 class="text-xs font-extrabold text-slate-900 mt-0.5">Doorstep to Hub</h4>
+              <p class="text-[11px] text-slate-500 leading-tight mt-0.5">Uber / inDrive / Rapido courier brings parcel to bus stand</p>
+            </div>
+          </div>
+
+          <!-- Stage 2: Bus Corridor -->
+          <div class="flex sm:flex-col items-center sm:text-center gap-3 sm:gap-2 p-3 rounded-2xl bg-blue-50/70 border border-blue-100">
+            <div class="w-12 h-12 rounded-2xl bg-primary text-white flex items-center justify-center shrink-0 shadow-glow-primary">
+              <span class="material-symbols-outlined text-[24px]">directions_bus</span>
+            </div>
+            <div>
+              <span class="text-[10px] font-bold text-primary uppercase tracking-wide">2. Express Bus Cargo</span>
+              <h4 class="text-xs font-extrabold text-slate-900 mt-0.5" data-i18n="deliver_public_bus">High-Speed Corridor</h4>
+              <p class="text-[11px] text-slate-500 leading-tight mt-0.5">State Express Bus with locked QR underbelly cargo bay</p>
+            </div>
+          </div>
+
+          <!-- Stage 3: Last-Mile -->
+          <div class="flex sm:flex-col items-center sm:text-center gap-3 sm:gap-2 p-3 rounded-2xl bg-slate-50 border border-slate-100">
+            <div class="w-12 h-12 rounded-2xl bg-purple-100 text-purple-700 flex items-center justify-center shrink-0 shadow-sm">
+              <span class="material-symbols-outlined text-[24px]">two_wheeler</span>
+            </div>
+            <div>
+              <span class="text-[10px] font-bold text-purple-700 uppercase tracking-wide">3. Last-Mile Drop</span>
+              <h4 class="text-xs font-extrabold text-slate-900 mt-0.5" data-i18n="deliver_doorstep">Hub to Doorstep</h4>
+              <p class="text-[11px] text-slate-500 leading-tight mt-0.5">Local verified rider delivers to recipient with OTP check</p>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Integration Partners Footer with Official Brand Logos -->
+        <div class="mt-5 pt-4 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+          <span class="font-bold text-slate-500 text-[11px] uppercase tracking-wider">Official Logistics Partners:</span>
+          
+          <div class="flex items-center gap-2.5 flex-wrap">
+            
+            <!-- Uber Direct Official Logo Badge -->
+            <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-black text-white shadow-sm border border-black/10 hover:scale-105 transition-transform" title="Uber Direct Dispatch">
+              <svg class="h-3 w-auto fill-current" viewBox="0 0 500 170" xmlns="http://www.w3.org/2000/svg">
+                <path d="M60.1 27.2v70.2c0 23.3 15.6 37.3 36.9 37.3s36.9-14 36.9-37.3V27.2h26.4v70.2c0 38.3-26.4 60.1-63.3 60.1s-63.3-21.8-63.3-60.1V27.2h26.4zm164.7 42.6v5.8c7.4-8.7 18.2-14 33-14 26.8 0 46.7 20.2 46.7 48.7s-19.8 48.7-46.7 48.7c-14.9 0-25.6-5.4-33-14v13.6h-25.2V27.2h25.2v42.6zm26.8 66.5c14.5 0 24.8-11.2 24.8-25.2s-10.3-25.2-24.8-25.2-24.8 11.2-24.8 25.2 10.3 25.2 24.8 25.2zm119-33.5c1.2-15.3 11.6-23.1 24.4-23.1 12.8 0 22.7 7.9 24 23.1h-48.4zm48.8 16.5c-1.7 15.7-13.6 23.6-26.4 23.6-14 0-23.6-7.4-26-21.5h78.5c.4-3.3.8-6.6.8-9.9 0-29.3-18.6-49.2-49.2-49.2-29.3 0-50.4 20.7-50.4 49.2 0 28.5 20.7 49.2 53.3 49.2 24.8 0 42.6-12.8 48.3-33.1l-28.9-1.9zm84.7-48.8v16.1c-13.6 0-21.5 8.7-21.5 24.4v40.1h-25.2V63.6h25.2v14.5c6.6-9.9 14.5-14.5 21.5-14.5z"/>
+              </svg>
+              <span class="text-[10px] font-black tracking-wider text-slate-300 uppercase pl-1.5 border-l border-white/20">Direct</span>
+            </div>
+
+            <!-- InDrive Official Logo Badge -->
+            <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#0f1015] text-white shadow-sm border border-slate-800 hover:scale-105 transition-transform" title="inDrive Cargo">
+              <span class="w-2.5 h-2.5 rounded-full bg-[#99FF00] inline-block shadow-[0_0_8px_#99FF00]"></span>
+              <span class="text-[12px] font-black tracking-tight text-white font-sans flex items-center">in<span class="text-[#99FF00]">Drive</span><span class="text-[9px] font-bold text-slate-400 ml-1 uppercase">Cargo</span></span>
+            </div>
+
+            <!-- Rapido Official Logo Badge -->
+            <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#FFDC00] text-slate-900 shadow-sm border border-yellow-400 hover:scale-105 transition-transform" title="Rapido Bike Delivery">
+              <svg class="h-3 w-auto fill-slate-900" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M19 7a1 1 0 0 0-1-1h-8a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V7z"/>
+                <circle cx="6" cy="17" r="2.5"/>
+                <circle cx="18" cy="17" r="2.5"/>
+              </svg>
+              <span class="text-[12px] font-black tracking-tight text-slate-900 font-sans">rapido</span>
+            </div>
+
+            <!-- Intercity Bus Partner Badge -->
+            <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 text-primary shadow-sm border border-blue-200/80 hover:scale-105 transition-transform" title="State Intercity Bus Network">
+              <span class="material-symbols-outlined text-[15px] text-primary">directions_bus</span>
+              <span class="text-[11px] font-extrabold tracking-tight">Intercity Express</span>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
     </div>
 
   </div>
 </div>
-<!-- Section Title -->
-<h2 class="text-headline-md font-headline-md px-container-margin mt-stack-lg mb-stack-md text-on-surface" data-i18n="deliver_services_heading">
-    Fast Intercity Delivery
-</h2>
-<!-- Bento Grid Layout for Services -->
-<div class="px-container-margin">
-<!-- Parcel Card (Hero) -->
-<div class="bg-surface-container-low rounded-[16px] p-6 flex flex-col md:flex-row justify-between relative overflow-hidden shadow-level-1 hover:border hover:border-primary-container/30 transition-colors mb-stack-md h-[200px] md:h-[240px]">
-<div class="relative z-10 w-full md:w-1/2 flex flex-col justify-center">
-<p class="text-label-md font-label-md text-on-surface-variant font-normal mb-2" data-i18n="deliver_hero_subtitle">Bus-to-Door Logistics</p>
-<h3 class="text-headline-lg-mobile md:text-headline-lg font-headline-lg-mobile md:font-headline-lg text-on-surface font-semibold leading-tight" data-i18n="deliver_hero_title">Send Parcel Anywhere</h3>
-<button type="button" id="btnOpenBookingModal" class="mt-4 bg-primary text-on-primary px-6 py-2.5 rounded-full text-label-md font-label-md w-max shadow-md hover:bg-primary-container active:scale-95 transition-all flex items-center gap-2">
-  <span class="material-symbols-outlined text-[18px]">add_box</span>
-  <span data-i18n="deliver_book_now">Book Now</span>
-</button>
-</div>
-<img class="absolute bottom-[-15%] right-[-5%] w-[80%] md:w-[50%] max-w-[300px] object-contain pointer-events-none" data-alt="A high-quality 3D minimalist illustration of a brown cardboard delivery parcel tied with string, placed on a clean white surface with soft diffused lighting, accented with vibrant blue brand elements, modern consumer logistics aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBllnUBLVKZ98CzNmZspoH0Mt_Pp_NEIXDbDxk1AvdzSgjZc_BBdOornwzGX9DgEwS9hA0K8pdfphcf7L2RHk1i-eijrkKYD1gxp7OTaUr5CztdkJjxLsHAniOGnQFl4NwxJwKrt1fJYBz9W9FgYxf-Yk-xhct1ypeebZCYqTdiXkIxvHJFMsQm5MslhTbwHFDXLbTeSXmzw_Q6o-OHXOxwsgJCNczNR3Rs6ToO86AVqoaqQ7N0G12f"/>
-</div>
-<!-- Logistics Flow Section -->
-<h3 class="text-label-md font-label-md text-on-surface-variant uppercase tracking-wider mb-stack-sm px-1" data-i18n="deliver_how_it_works">How it works</h3>
-<div class="bg-surface-container rounded-[16px] p-5 shadow-sm border border-outline-variant/20">
-<div class="flex items-center justify-between">
-<!-- Step 1: Bus -->
-<div class="flex flex-col items-center w-1/3">
-<div class="w-12 h-12 bg-primary-fixed rounded-full flex items-center justify-center mb-2 shadow-sm text-on-primary-fixed">
-<span class="material-symbols-outlined text-[24px]">directions_bus</span>
-</div>
-<p class="text-label-sm font-label-sm text-center text-on-surface leading-tight" data-i18n="deliver_public_bus">Public Bus Transport</p>
-</div>
-<!-- Arrow -->
-<div class="flex-1 flex justify-center px-2">
-<div class="w-full h-[2px] bg-outline-variant/50 relative">
-<div class="absolute right-[-2px] top-1/2 transform -translate-y-1/2 w-0 h-0 border-y-[4px] border-y-transparent border-l-[6px] border-l-outline-variant/50"></div>
-</div>
-</div>
-<!-- Step 2: Last Mile Partners -->
-<div class="flex flex-col items-center w-1/3">
-<div class="w-12 h-12 bg-secondary-fixed rounded-full flex items-center justify-center mb-2 shadow-sm text-on-secondary-fixed">
-<span class="material-symbols-outlined text-[24px]">two_wheeler</span>
-</div>
-<p class="text-label-sm font-label-sm text-center text-on-surface leading-tight" data-i18n="deliver_doorstep">Door-to-Door Partners</p>
-</div>
-</div>
-<div class="mt-4 pt-3 border-t border-outline-variant/20 text-center">
-<p class="text-[11px] font-label-sm text-on-surface-variant">Powered by trusted partners: inDrive, Rapido, Uber</p>
-</div>
-</div>
-</div>
-</div>
-<!-- BottomNavBar (Shared Component) -->
-<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-base pb-safe h-16 bg-surface border-t border-outline-variant/20 rounded-t-xl shadow-[0px_-4px_20px_rgba(0,0,0,0.05)]">
-<!-- Active Tab: Deliver -->
-<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-xl px-4 py-1 group" href="/">
-<span class="material-symbols-outlined mb-1 group-active:scale-90 transition-transform duration-200 text-[24px] fill" data-icon="local_shipping">local_shipping</span>
-<span class="font-label-sm text-label-sm" data-i18n="nav_deliver">Deliver</span>
-</a>
-<!-- Inactive Tab: Tracking -->
-<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-variant transition-colors group rounded-xl" href="/tracking">
-<span class="material-symbols-outlined mb-1 group-active:scale-90 transition-transform duration-200 text-[24px]" data-icon="distance">distance</span>
-<span class="font-label-sm text-label-sm" data-i18n="nav_tracking">Tracking</span>
-</a>
-<!-- Inactive Tab: History -->
-<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-variant transition-colors group rounded-xl" href="/history">
-<span class="material-symbols-outlined mb-1 group-active:scale-90 transition-transform duration-200 text-[24px]" data-icon="history">history</span>
-<span class="font-label-sm text-label-sm" data-i18n="nav_history">History</span>
-</a>
-<!-- Inactive Tab: Profile -->
-<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-variant transition-colors group rounded-xl" href="/profile">
-<span class="material-symbols-outlined mb-1 group-active:scale-90 transition-transform duration-200 text-[24px]" data-icon="person">person</span>
-<span class="font-label-sm text-label-sm" data-i18n="nav_profile">Profile</span>
-</a>
+
+<!-- ========================================================================= -->
+<!-- Bottom Navigation Bar (Modern Apple / Material 3 Floating Dock)          -->
+<!-- ========================================================================= -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-safe h-16 bg-white/95 backdrop-blur-2xl border-t border-slate-200/80 shadow-[0_-8px_30px_rgba(0,0,0,0.06)]">
+  
+  <!-- Active Tab: Deliver -->
+  <a class="flex flex-col items-center justify-center text-primary font-bold px-4 py-1 rounded-2xl bg-primary/10 transition-all group" href="/">
+    <span class="material-symbols-outlined mb-0.5 group-active:scale-90 transition-transform duration-200 text-[22px] fill" data-icon="local_shipping">local_shipping</span>
+    <span class="text-[11px] font-extrabold" data-i18n="nav_deliver">Deliver</span>
+  </a>
+
+  <!-- Inactive Tab: Tracking -->
+  <a class="flex flex-col items-center justify-center text-slate-500 hover:text-primary px-4 py-1 hover:bg-slate-100 rounded-2xl transition-colors group" href="/tracking">
+    <span class="material-symbols-outlined mb-0.5 group-active:scale-90 transition-transform duration-200 text-[22px]" data-icon="distance">distance</span>
+    <span class="text-[11px] font-semibold" data-i18n="nav_tracking">Tracking</span>
+  </a>
+
+  <!-- Inactive Tab: History -->
+  <a class="flex flex-col items-center justify-center text-slate-500 hover:text-primary px-4 py-1 hover:bg-slate-100 rounded-2xl transition-colors group" href="/history">
+    <span class="material-symbols-outlined mb-0.5 group-active:scale-90 transition-transform duration-200 text-[22px]" data-icon="history">history</span>
+    <span class="text-[11px] font-semibold" data-i18n="nav_history">History</span>
+  </a>
+
+  <!-- Inactive Tab: Profile -->
+  <a class="flex flex-col items-center justify-center text-slate-500 hover:text-primary px-4 py-1 hover:bg-slate-100 rounded-2xl transition-colors group" href="/profile">
+    <span class="material-symbols-outlined mb-0.5 group-active:scale-90 transition-transform duration-200 text-[22px]" data-icon="person">person</span>
+    <span class="text-[11px] font-semibold" data-i18n="nav_profile">Profile</span>
+  </a>
 </nav>
-<!-- Location Selector Modal -->
-<div id="locationPickerModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end md:items-center justify-center p-0 md:p-4">
-  <div class="bg-surface rounded-t-3xl md:rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-outline-variant/30 animate-slide-up max-h-[85vh] overflow-y-auto">
-    <div class="flex items-center justify-between pb-4 border-b border-outline-variant/20 mb-4">
-      <div class="flex items-center gap-2">
-        <span class="material-symbols-outlined text-primary text-2xl">location_on</span>
-        <h3 class="text-headline-md font-headline-md text-on-surface font-bold">Select Pickup Location</h3>
+
+<!-- ========================================================================= -->
+<!-- Location Selector Modal                                                   -->
+<!-- ========================================================================= -->
+<div id="locationPickerModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-md flex items-end md:items-center justify-center p-0 md:p-4">
+  <div class="bg-white rounded-t-3xl md:rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 animate-slide-up max-h-[85vh] overflow-y-auto">
+    <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-4">
+      <div class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+          <span class="material-symbols-outlined text-[20px]">location_on</span>
+        </div>
+        <h3 class="text-base font-extrabold text-slate-900">Select Transit Hub</h3>
       </div>
-      <button type="button" id="btnCloseLocationModal" class="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface hover:bg-surface-variant transition-colors">
+      <button type="button" id="btnCloseLocationModal" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200 transition-colors">
         <span class="material-symbols-outlined text-lg">close</span>
       </button>
     </div>
 
     <!-- Auto Detect Live GPS Button -->
-    <button type="button" id="btnTriggerGpsDetect" class="w-full py-3.5 px-4 rounded-2xl bg-primary-container text-on-primary font-bold text-sm shadow-md hover:opacity-95 active:scale-98 transition-all flex items-center justify-center gap-2 mb-4">
-      <span class="material-symbols-outlined text-xl animate-pulse">my_location</span>
+    <button type="button" id="btnTriggerGpsDetect" class="w-full py-3.5 px-4 rounded-2xl bg-primary text-white font-bold text-xs shadow-glow-primary hover:bg-primary-dark active:scale-98 transition-all flex items-center justify-center gap-2 mb-4">
+      <span class="material-symbols-outlined text-lg animate-pulse">my_location</span>
       <span>Detect My Live GPS Location</span>
     </button>
 
     <!-- Custom Search Input -->
     <div class="relative mb-4">
-      <span class="material-symbols-outlined absolute left-3 top-3 text-on-surface-variant">search</span>
-      <input type="text" id="inputCustomLocation" placeholder="Type city, street, or sector name..." class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-outline-variant/50 bg-surface-container-lowest text-on-surface text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+      <span class="material-symbols-outlined absolute left-3.5 top-3 text-slate-400 text-lg">search</span>
+      <input type="text" id="inputCustomLocation" placeholder="Search city, sector, or bus stand..." class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 text-xs font-semibold focus:border-primary focus:ring-1 focus:ring-primary outline-none">
     </div>
 
-    <!-- Quick Transit Hubs -->
-    <h4 class="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Popular Intercity Hubs</h4>
+    <!-- Quick Transit Hubs Grid -->
+    <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2.5">Popular Intercity Hubs</h4>
     <div class="grid grid-cols-2 gap-2" id="popularHubsContainer">
-      <button type="button" class="hub-select-btn p-3 rounded-xl bg-surface-container-low text-left hover:bg-surface-variant transition-colors flex items-center gap-2 text-xs font-semibold text-on-surface" data-name="Gurgaon / Gurugram, Haryana" data-lat="28.4595" data-lng="77.0266">
+      <button type="button" class="hub-select-btn p-3 rounded-2xl bg-slate-50 hover:bg-primary/10 border border-slate-100 text-left transition-colors flex items-center gap-2.5 text-xs font-bold text-slate-800" data-name="Gurgaon / Gurugram, Haryana" data-lat="28.4595" data-lng="77.0266">
         <span class="material-symbols-outlined text-primary text-base">apartment</span>
-        <span>Gurgaon, Cyber City</span>
+        <span>Gurgaon Hub</span>
       </button>
-      <button type="button" class="hub-select-btn p-3 rounded-xl bg-surface-container-low text-left hover:bg-surface-variant transition-colors flex items-center gap-2 text-xs font-semibold text-on-surface" data-name="Kashmiri Gate ISBT, New Delhi" data-lat="28.6675" data-lng="77.2285">
+      <button type="button" class="hub-select-btn p-3 rounded-2xl bg-slate-50 hover:bg-primary/10 border border-slate-100 text-left transition-colors flex items-center gap-2.5 text-xs font-bold text-slate-800" data-name="Kashmiri Gate ISBT, New Delhi" data-lat="28.6675" data-lng="77.2285">
         <span class="material-symbols-outlined text-primary text-base">directions_bus</span>
-        <span>Delhi, Kashmiri Gate</span>
+        <span>Delhi ISBT</span>
       </button>
-      <button type="button" class="hub-select-btn p-3 rounded-xl bg-surface-container-low text-left hover:bg-surface-variant transition-colors flex items-center gap-2 text-xs font-semibold text-on-surface" data-name="Sector 17 ISBT, Chandigarh" data-lat="30.7410" data-lng="76.7790">
+      <button type="button" class="hub-select-btn p-3 rounded-2xl bg-slate-50 hover:bg-primary/10 border border-slate-100 text-left transition-colors flex items-center gap-2.5 text-xs font-bold text-slate-800" data-name="Sector 17 ISBT, Chandigarh" data-lat="30.7410" data-lng="76.7790">
         <span class="material-symbols-outlined text-primary text-base">pin_drop</span>
-        <span>Chandigarh, Sector 17</span>
+        <span>Chandigarh ISBT</span>
       </button>
-      <button type="button" class="hub-select-btn p-3 rounded-xl bg-surface-container-low text-left hover:bg-surface-variant transition-colors flex items-center gap-2 text-xs font-semibold text-on-surface" data-name="Panipat Bus Stand, Haryana" data-lat="29.3909" data-lng="76.9635">
+      <button type="button" class="hub-select-btn p-3 rounded-2xl bg-slate-50 hover:bg-primary/10 border border-slate-100 text-left transition-colors flex items-center gap-2.5 text-xs font-bold text-slate-800" data-name="Panipat Bus Stand, Haryana" data-lat="29.3909" data-lng="76.9635">
         <span class="material-symbols-outlined text-primary text-base">store</span>
         <span>Panipat GT Road</span>
       </button>
-      <button type="button" class="hub-select-btn p-3 rounded-xl bg-surface-container-low text-left hover:bg-surface-variant transition-colors flex items-center gap-2 text-xs font-semibold text-on-surface" data-name="Sindhi Camp, Jaipur, Rajasthan" data-lat="26.9124" data-lng="75.7873">
+      <button type="button" class="hub-select-btn p-3 rounded-2xl bg-slate-50 hover:bg-primary/10 border border-slate-100 text-left transition-colors flex items-center gap-2.5 text-xs font-bold text-slate-800" data-name="Sindhi Camp, Jaipur, Rajasthan" data-lat="26.9124" data-lng="75.7873">
         <span class="material-symbols-outlined text-primary text-base">castle</span>
-        <span>Jaipur, Sindhi Camp</span>
+        <span>Jaipur Sindhi Camp</span>
       </button>
-      <button type="button" class="hub-select-btn p-3 rounded-xl bg-surface-container-low text-left hover:bg-surface-variant transition-colors flex items-center gap-2 text-xs font-semibold text-on-surface" data-name="Mohali Phase 7 / Sector 70, Punjab" data-lat="30.7046" data-lng="76.7179">
+      <button type="button" class="hub-select-btn p-3 rounded-2xl bg-slate-50 hover:bg-primary/10 border border-slate-100 text-left transition-colors flex items-center gap-2.5 text-xs font-bold text-slate-800" data-name="Mohali Phase 7 / Sector 70, Punjab" data-lat="30.7046" data-lng="76.7179">
         <span class="material-symbols-outlined text-primary text-base">location_city</span>
-        <span>Mohali / Chandigarh Hub</span>
-      </button>
-      <button type="button" class="hub-select-btn p-3 rounded-xl bg-surface-container-low text-left hover:bg-surface-variant transition-colors flex items-center gap-2 text-xs font-semibold text-on-surface" data-name="Noida Sector 62, UP" data-lat="28.6280" data-lng="77.3649">
-        <span class="material-symbols-outlined text-primary text-base">near_me</span>
-        <span>Noida Electronic City</span>
-      </button>
-      <button type="button" class="hub-select-btn p-3 rounded-xl bg-surface-container-low text-left hover:bg-surface-variant transition-colors flex items-center gap-2 text-xs font-semibold text-on-surface" data-name="Ludhiana ISBT, Punjab" data-lat="30.9010" data-lng="75.8573">
-        <span class="material-symbols-outlined text-primary text-base">directions_bus</span>
-        <span>Ludhiana ISBT</span>
-      </button>
-      <button type="button" class="hub-select-btn p-3 rounded-xl bg-surface-container-low text-left hover:bg-surface-variant transition-colors flex items-center gap-2 text-xs font-semibold text-on-surface" data-name="Rohtak New Bus Stand, Haryana" data-lat="28.8955" data-lng="76.6066">
-        <span class="material-symbols-outlined text-primary text-base">pin_drop</span>
-        <span>Rohtak Hub</span>
+        <span>Mohali Hub</span>
       </button>
     </div>
   </div>
 </div>
 
-<!-- Location Toast -->
-<div id="locationToast" class="hidden fixed top-20 left-1/2 transform -translate-x-1/2 z-50 bg-on-surface text-surface px-4 py-2.5 rounded-full text-xs font-bold shadow-2xl animate-fade-in flex items-center gap-2">
-  <span class="material-symbols-outlined text-sm text-emerald-400">check_circle</span>
-  <span id="locationToastText">Live GPS location resolved</span>
-</div>
-
-<!-- Multi-Modal Interactive Booking Modal -->
-<div id="bookingModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end md:items-center justify-center p-0 md:p-4">
-  <div class="bg-surface rounded-t-3xl md:rounded-3xl max-w-xl w-full p-6 shadow-2xl border border-outline-variant/30 animate-slide-up max-h-[90vh] overflow-y-auto">
-    <div class="flex items-center justify-between pb-3 border-b border-outline-variant/20 mb-4">
-      <div class="flex items-center gap-2">
-        <span class="material-symbols-outlined text-primary text-2xl">local_shipping</span>
-        <h3 class="text-headline-md font-headline-md text-on-surface font-bold">Book Intercity Parcel</h3>
+<!-- ========================================================================= -->
+<!-- Multi-Modal Interactive Booking Modal                                     -->
+<!-- ========================================================================= -->
+<div id="bookingModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-md flex items-end md:items-center justify-center p-0 md:p-4">
+  <div class="bg-white rounded-t-3xl md:rounded-3xl max-w-xl w-full p-6 shadow-2xl border border-slate-200 animate-slide-up max-h-[90vh] overflow-y-auto">
+    
+    <div class="flex items-center justify-between pb-3.5 border-b border-slate-100 mb-4">
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-2xl bg-primary text-white flex items-center justify-center shadow-glow-primary">
+          <span class="material-symbols-outlined text-[20px]">local_shipping</span>
+        </div>
+        <div>
+          <h3 class="text-base font-extrabold text-slate-900">Book Intercity Cargo</h3>
+          <p class="text-[11px] text-slate-500">Same-Day Bus Cargo + First/Last Mile Hub Delivery</p>
+        </div>
       </div>
-      <button type="button" id="btnCloseBookingModal" class="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface hover:bg-surface-variant transition-colors">
+      <button type="button" id="btnCloseBookingModal" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200 transition-colors">
         <span class="material-symbols-outlined text-lg">close</span>
       </button>
     </div>
@@ -419,8 +548,8 @@
     <form id="formCreateBooking" class="space-y-4 text-xs">
       <!-- Route Selection -->
       <div>
-        <label class="font-bold text-on-surface block mb-1">1. Select Intercity Bus Corridor</label>
-        <select id="bookingRouteSelect" class="w-full rounded-xl border border-outline-variant/50 bg-surface-container-lowest p-3 text-xs font-semibold text-on-surface focus:ring-1 focus:ring-primary focus:border-primary outline-none">
+        <label class="font-bold text-slate-900 block mb-1.5">1. Intercity Bus Corridor</label>
+        <select id="bookingRouteSelect" class="w-full rounded-2xl border border-slate-200 bg-slate-50 p-3 text-xs font-bold text-slate-900 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none">
           <option value="HR-DEL-CHD" selected>Delhi (Kashmiri Gate) ➔ Chandigarh (Sector 17) [GT Road]</option>
           <option value="HR-DEL-JPR">Delhi (Dhaula Kuan) ➔ Jaipur (Sindhi Camp) [NH-48]</option>
           <option value="HR-DEL-SRS">Delhi (Tikri) ➔ Rohtak ➔ Hisar ➔ Sirsa [NH-9]</option>
@@ -430,48 +559,48 @@
       </div>
 
       <!-- Sender Info -->
-      <div class="bg-surface-container-low/60 rounded-xl p-3 border border-outline-variant/20 space-y-2">
-        <span class="font-bold text-primary block">2. Pickup Details (Origin)</span>
-        <div class="grid grid-cols-2 gap-2">
+      <div class="bg-slate-50 rounded-2xl p-3.5 border border-slate-200/80 space-y-2.5">
+        <span class="font-extrabold text-primary block">2. Pickup Details (Origin)</span>
+        <div class="grid grid-cols-2 gap-2.5">
           <div>
-            <label class="font-semibold block mb-0.5 text-on-surface-variant">Sender Name</label>
-            <input type="text" id="bookingSenderName" value="Aarav Sharma" class="w-full rounded-lg border border-outline-variant/40 p-2 text-xs bg-surface" required>
+            <label class="font-semibold block mb-1 text-slate-600">Sender Name</label>
+            <input type="text" id="bookingSenderName" value="Aarav Sharma" class="w-full rounded-xl border border-slate-200 p-2.5 text-xs bg-white font-semibold" required>
           </div>
           <div>
-            <label class="font-semibold block mb-0.5 text-on-surface-variant">Sender Phone</label>
-            <input type="text" id="bookingSenderPhone" value="+91 98765 43210" class="w-full rounded-lg border border-outline-variant/40 p-2 text-xs bg-surface" required>
+            <label class="font-semibold block mb-1 text-slate-600">Sender Phone</label>
+            <input type="text" id="bookingSenderPhone" value="+91 98765 43210" class="w-full rounded-xl border border-slate-200 p-2.5 text-xs bg-white font-semibold" required>
           </div>
         </div>
       </div>
 
       <!-- Recipient Info -->
-      <div class="bg-surface-container-low/60 rounded-xl p-3 border border-outline-variant/20 space-y-2">
-        <span class="font-bold text-primary block">3. Delivery Details (Recipient)</span>
+      <div class="bg-slate-50 rounded-2xl p-3.5 border border-slate-200/80 space-y-2.5">
+        <span class="font-extrabold text-primary block">3. Delivery Details (Recipient)</span>
         <div>
-          <label class="font-semibold block mb-0.5 text-on-surface-variant">Delivery Address / Destination</label>
-          <input type="text" id="bookingReceiverAddress" value="Sector 17 Bus Terminal Area, Chandigarh" class="w-full rounded-lg border border-outline-variant/40 p-2 text-xs bg-surface" required>
+          <label class="font-semibold block mb-1 text-slate-600">Delivery Address / Destination</label>
+          <input type="text" id="bookingReceiverAddress" value="Sector 17 Bus Terminal Area, Chandigarh" class="w-full rounded-xl border border-slate-200 p-2.5 text-xs bg-white font-semibold" required>
         </div>
-        <div class="grid grid-cols-2 gap-2">
+        <div class="grid grid-cols-2 gap-2.5">
           <div>
-            <label class="font-semibold block mb-0.5 text-on-surface-variant">Recipient Name</label>
-            <input type="text" id="bookingReceiverName" value="Rohan Verma" class="w-full rounded-lg border border-outline-variant/40 p-2 text-xs bg-surface" required>
+            <label class="font-semibold block mb-1 text-slate-600">Recipient Name</label>
+            <input type="text" id="bookingReceiverName" value="Rohan Verma" class="w-full rounded-xl border border-slate-200 p-2.5 text-xs bg-white font-semibold" required>
           </div>
           <div>
-            <label class="font-semibold block mb-0.5 text-on-surface-variant">Recipient Phone</label>
-            <input type="text" id="bookingReceiverPhone" value="+91 98765 43211" class="w-full rounded-lg border border-outline-variant/40 p-2 text-xs bg-surface" required>
+            <label class="font-semibold block mb-1 text-slate-600">Recipient Phone</label>
+            <input type="text" id="bookingReceiverPhone" value="+91 98765 43211" class="w-full rounded-xl border border-slate-200 p-2.5 text-xs bg-white font-semibold" required>
           </div>
         </div>
       </div>
 
       <!-- Parcel Specs & Weight -->
-      <div class="grid grid-cols-2 gap-2">
+      <div class="grid grid-cols-2 gap-2.5">
         <div>
-          <label class="font-bold block mb-1">Weight (kg)</label>
-          <input type="number" id="bookingWeight" value="5.0" step="0.5" min="0.5" max="50" class="w-full rounded-xl border border-outline-variant/50 p-2.5 text-xs bg-surface" required>
+          <label class="font-bold text-slate-900 block mb-1">Weight (kg)</label>
+          <input type="number" id="bookingWeight" value="5.0" step="0.5" min="0.5" max="50" class="w-full rounded-2xl border border-slate-200 p-3 text-xs bg-slate-50 font-bold" required>
         </div>
         <div>
-          <label class="font-bold block mb-1">Delivery Speed</label>
-          <select id="bookingSpeed" class="w-full rounded-xl border border-outline-variant/50 p-2.5 text-xs bg-surface font-semibold">
+          <label class="font-bold text-slate-900 block mb-1">Delivery Speed</label>
+          <select id="bookingSpeed" class="w-full rounded-2xl border border-slate-200 p-3 text-xs bg-slate-50 font-bold">
             <option value="STANDARD">Standard Intercity (Same-Day)</option>
             <option value="EXPRESS">Express Priority (4-Hour Cargo)</option>
           </select>
@@ -479,25 +608,25 @@
       </div>
 
       <!-- Live Multi-Modal Cost Calculation Box -->
-      <div id="bookingFareBox" class="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-950 text-xs shadow-sm">
+      <div id="bookingFareBox" class="p-4 rounded-2xl bg-emerald-50/80 border border-emerald-200 text-emerald-950 text-xs shadow-sm">
         <div class="flex justify-between font-bold">
           <span>Multi-Modal Routing:</span>
           <span class="text-emerald-700 font-extrabold" id="bookingExpMode">FULL DOOR-TO-DOOR</span>
         </div>
-        <p class="mt-1 text-emerald-800 text-[11px]" id="bookingLegsSummary">Uber First-Mile ➔ Haryana Roadways Bus #402 ➔ Rapido Last-Mile</p>
-        <div class="mt-2 pt-2 border-t border-emerald-200/80 flex justify-between items-center font-extrabold text-sm">
+        <p class="mt-1 text-emerald-800 text-[11px]" id="bookingLegsSummary">Uber Direct First-Mile ➔ Intercity Express Bus #402 ➔ Rapido Last-Mile</p>
+        <div class="mt-2.5 pt-2.5 border-t border-emerald-200 flex justify-between items-center font-extrabold text-sm">
           <span>Total Fare (incl. GPS sealing):</span>
-          <span class="text-primary text-base" id="bookingTotalFare">₹450.00</span>
+          <span class="text-primary text-base font-extrabold" id="bookingTotalFare">₹450.00</span>
         </div>
       </div>
 
       <!-- Action Buttons -->
-      <div class="pt-2 flex gap-2">
-        <button type="button" id="btnCheckFeasibility" class="w-1/2 py-3 rounded-xl border border-primary text-primary font-bold text-xs hover:bg-primary/10 transition-colors flex items-center justify-center gap-1">
+      <div class="pt-2 flex gap-2.5">
+        <button type="button" id="btnCheckFeasibility" class="w-1/2 py-3 rounded-2xl border border-primary text-primary font-bold text-xs hover:bg-primary/10 transition-colors flex items-center justify-center gap-1">
           <span class="material-symbols-outlined text-[16px]">calculate</span>
           <span>Refresh Quote</span>
         </button>
-        <button type="submit" id="btnSubmitBooking" class="w-1/2 py-3 rounded-xl bg-primary text-on-primary font-bold text-xs shadow-md hover:bg-primary-container active:scale-95 transition-all flex items-center justify-center gap-1">
+        <button type="submit" id="btnSubmitBooking" class="w-1/2 py-3 rounded-2xl bg-primary text-white font-extrabold text-xs shadow-glow-primary hover:bg-primary-dark active:scale-95 transition-all flex items-center justify-center gap-1">
           <span class="material-symbols-outlined text-[16px]">check_circle</span>
           <span>Confirm & Pay</span>
         </button>
@@ -506,40 +635,42 @@
   </div>
 </div>
 
-<!-- Booking Confirmation Receipt Modal -->
-<div id="bookingSuccessModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-  <div class="bg-surface rounded-3xl max-w-md w-full p-6 shadow-2xl border border-outline-variant/30 text-center animate-slide-up">
-    <div class="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto mb-3">
-      <span class="material-symbols-outlined text-3xl">verified</span>
+<!-- ========================================================================= -->
+<!-- Booking Confirmation Receipt Modal                                       -->
+<!-- ========================================================================= -->
+<div id="bookingSuccessModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-md flex items-center justify-center p-4">
+  <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 text-center animate-slide-up">
+    <div class="w-16 h-16 rounded-3xl bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto mb-3 shadow-glow-emerald">
+      <span class="material-symbols-outlined text-3xl font-bold">verified</span>
     </div>
-    <h3 class="text-headline-md font-headline-md text-on-surface font-bold">Booking Confirmed!</h3>
-    <p class="text-xs text-on-surface-variant mt-1">Your intercity bus parcel booking has been recorded in database.</p>
+    <h3 class="text-lg font-extrabold text-slate-900">Booking Confirmed!</h3>
+    <p class="text-xs text-slate-500 mt-1">Your intercity bus parcel booking has been recorded in database.</p>
 
     <!-- Receipt Card -->
-    <div class="bg-surface-container-low rounded-2xl p-4 my-4 text-left border border-outline-variant/30 text-xs space-y-2">
-      <div class="flex justify-between items-center pb-2 border-b border-outline-variant/20">
-        <span class="text-on-surface-variant font-medium">Tracking Number:</span>
+    <div class="bg-slate-50 rounded-2xl p-4 my-4 text-left border border-slate-200/80 text-xs space-y-2">
+      <div class="flex justify-between items-center pb-2 border-b border-slate-200">
+        <span class="text-slate-500 font-semibold">Tracking Number:</span>
         <span class="text-primary font-extrabold text-sm" id="receiptTrackingId">TRK-88219</span>
       </div>
       <div class="flex justify-between">
-        <span class="text-on-surface-variant">Assigned Vehicle:</span>
-        <span class="font-bold text-on-surface" id="receiptBus">Fleet Bus #402</span>
+        <span class="text-slate-500">Assigned Fleet:</span>
+        <span class="font-bold text-slate-800" id="receiptBus">Intercity Express Bus #402</span>
       </div>
       <div class="flex justify-between">
-        <span class="text-on-surface-variant">Route:</span>
-        <span class="font-bold text-on-surface" id="receiptRoute">Delhi ➔ Chandigarh</span>
+        <span class="text-slate-500">Route Corridor:</span>
+        <span class="font-bold text-slate-800" id="receiptRoute">Delhi ➔ Chandigarh</span>
       </div>
-      <div class="flex justify-between">
-        <span class="text-on-surface-variant">Total Paid:</span>
-        <span class="font-extrabold text-emerald-700" id="receiptPaid">₹450.00</span>
+      <div class="flex justify-between pt-1">
+        <span class="text-slate-500">Total Paid:</span>
+        <span class="font-extrabold text-emerald-700 text-sm" id="receiptPaid">₹450.00</span>
       </div>
     </div>
 
-    <div class="flex gap-2">
-      <button type="button" id="btnCloseSuccessModal" class="w-1/2 py-3 rounded-xl bg-surface border border-outline-variant/30 font-bold text-xs text-on-surface hover:bg-surface-variant transition-colors">
+    <div class="flex gap-2.5">
+      <button type="button" id="btnCloseSuccessModal" class="w-1/2 py-3 rounded-2xl bg-slate-100 font-bold text-xs text-slate-700 hover:bg-slate-200 transition-colors">
         Close
       </button>
-      <button type="button" id="btnGoToLiveTracking" class="w-1/2 py-3 rounded-xl bg-primary text-on-primary font-bold text-xs shadow-md hover:bg-primary-container active:scale-95 transition-all flex items-center justify-center gap-1">
+      <button type="button" id="btnGoToLiveTracking" class="w-1/2 py-3 rounded-2xl bg-primary text-white font-extrabold text-xs shadow-glow-primary hover:bg-primary-dark active:scale-95 transition-all flex items-center justify-center gap-1">
         <span class="material-symbols-outlined text-[16px]">distance</span>
         <span>Track Live ➔</span>
       </button>
@@ -547,62 +678,69 @@
   </div>
 </div>
 
-<!-- Notifications Drawer -->
+<!-- ========================================================================= -->
+<!-- Notifications Drawer                                                      -->
+<!-- ========================================================================= -->
 <div id="notificationsDrawer" class="hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex justify-end">
-  <div class="bg-surface w-full max-w-sm h-full p-5 shadow-2xl flex flex-col justify-between animate-slide-left">
+  <div class="bg-white w-full max-w-sm h-full p-5 shadow-2xl flex flex-col justify-between animate-slide-left">
     <div>
-      <div class="flex items-center justify-between pb-3 border-b border-outline-variant/20 mb-4">
+      <div class="flex items-center justify-between pb-3.5 border-b border-slate-100 mb-4">
         <div class="flex items-center gap-2">
           <span class="material-symbols-outlined text-primary text-2xl">notifications_active</span>
-          <h3 class="font-bold text-base text-on-surface">Live Fleet Alerts</h3>
+          <h3 class="font-extrabold text-base text-slate-900">Live Fleet Alerts</h3>
         </div>
-        <button type="button" id="btnCloseNotifications" class="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center hover:bg-surface-variant">
+        <button type="button" id="btnCloseNotifications" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center hover:bg-slate-200">
           <span class="material-symbols-outlined text-base">close</span>
         </button>
       </div>
 
       <!-- Alerts List -->
       <div class="space-y-3">
-        <div class="bg-surface-container-low rounded-xl p-3 border border-outline-variant/20 flex gap-3 items-start">
+        <div class="bg-slate-50 rounded-2xl p-3.5 border border-slate-100 flex gap-3 items-start">
           <span class="material-symbols-outlined text-primary text-xl">directions_bus</span>
           <div>
-            <p class="text-xs font-bold text-on-surface">Fleet Bus #402 in Transit</p>
-            <p class="text-[11px] text-on-surface-variant">Cruising near Panipat Toll Plaza. ETA 14:30 on schedule.</p>
-            <span class="text-[10px] text-outline">2 mins ago</span>
+            <p class="text-xs font-bold text-slate-900">Intercity Express #402 in Transit</p>
+            <p class="text-[11px] text-slate-500">Cruising near Panipat Toll Plaza. ETA 14:30 on schedule.</p>
+            <span class="text-[10px] text-slate-400 font-medium">2 mins ago</span>
           </div>
         </div>
 
-        <div class="bg-surface-container-low rounded-xl p-3 border border-outline-variant/20 flex gap-3 items-start">
+        <div class="bg-slate-50 rounded-2xl p-3.5 border border-slate-100 flex gap-3 items-start">
           <span class="material-symbols-outlined text-emerald-600 text-xl">qr_code_2</span>
           <div>
-            <p class="text-xs font-bold text-on-surface">QR Bay Seal Verified</p>
-            <p class="text-[11px] text-on-surface-variant">Parcel TRK-88219 locked into Bay B2 at ISBT Terminal.</p>
-            <span class="text-[10px] text-outline">18 mins ago</span>
+            <p class="text-xs font-bold text-slate-900">QR Bay Seal Verified</p>
+            <p class="text-[11px] text-slate-500">Parcel TRK-88219 locked into Bay B2 at ISBT Terminal.</p>
+            <span class="text-[10px] text-slate-400 font-medium">18 mins ago</span>
           </div>
         </div>
 
-        <div class="bg-surface-container-low rounded-xl p-3 border border-outline-variant/20 flex gap-3 items-start">
-          <span class="material-symbols-outlined text-secondary text-xl">two_wheeler</span>
+        <div class="bg-slate-50 rounded-2xl p-3.5 border border-slate-100 flex gap-3 items-start">
+          <span class="material-symbols-outlined text-slate-600 text-xl">two_wheeler</span>
           <div>
-            <p class="text-xs font-bold text-on-surface">First-Mile Pickup Assigned</p>
-            <p class="text-[11px] text-on-surface-variant">Uber Direct courier picked up package from Connaught Place.</p>
-            <span class="text-[10px] text-outline">45 mins ago</span>
+            <p class="text-xs font-bold text-slate-900">First-Mile Pickup Assigned</p>
+            <p class="text-[11px] text-slate-500">Uber Direct courier picked up package from Connaught Place.</p>
+            <span class="text-[10px] text-slate-400 font-medium">45 mins ago</span>
           </div>
         </div>
       </div>
     </div>
 
-    <button type="button" onclick="alert('All notifications marked as read.'); document.getElementById('notificationsDrawer').classList.add('hidden');" class="w-full py-2.5 rounded-xl border border-outline-variant text-xs font-bold text-on-surface-variant hover:bg-surface-variant">
+    <button type="button" onclick="alert('All notifications marked as read.'); document.getElementById('notificationsDrawer').classList.add('hidden');" class="w-full py-3 rounded-2xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-100">
       Mark All as Read
     </button>
   </div>
 </div>
-<style>
-        .pb-safe { padding-bottom: env(safe-area-inset-bottom, 12px); }
-</style>
+
+<!-- Location Toast -->
+<div id="locationToast" class="hidden fixed top-20 left-1/2 transform -translate-x-1/2 z-50 bg-slate-900 text-white px-4 py-2.5 rounded-full text-xs font-bold shadow-2xl animate-fade-in flex items-center gap-2">
+  <span class="material-symbols-outlined text-sm text-emerald-400">check_circle</span>
+  <span id="locationToastText">Live GPS location resolved</span>
+</div>
+
 <!-- Modular Scripts -->
 <script src="/js/i18n.js?v=20260824_v2"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script defer src="/js/common.js?v=20260824_v2"></script>
 <script defer src="/js/deliver.js?v=20260824_v2"></script>
-</body></html>
+</body>
+</html>
