@@ -4,11 +4,18 @@ const { pool } = require('../../config/postgres');
 const { getIo } = require('../../websockets/socket');
 
 const AUTH_SECRET = process.env.AUTH_SECRET || 'transitly_super_secure_jwt_secret_dev_key_12345';
-const VALID_PASSWORDS = new Set([
-  process.env.ADMIN_PASSWORD || 'admin@transitly2026',
-  'transitly2026',
-  'admin1234'
-]);
+
+/**
+ * Secure Timing-Safe Master Password Verifier
+ * Prevents timing attacks and enforces single configured admin credential.
+ */
+const verifyAdminPassword = (inputPassword) => {
+  if (!inputPassword || typeof inputPassword !== 'string') return false;
+  const configuredPassword = process.env.ADMIN_PASSWORD || 'admin@transitlyproject';
+  const inputHash = crypto.createHash('sha256').update(inputPassword.trim()).digest();
+  const expectedHash = crypto.createHash('sha256').update(configuredPassword.trim()).digest();
+  return crypto.timingSafeEqual(inputHash, expectedHash);
+};
 
 class AdminController {
   /**
@@ -39,8 +46,8 @@ class AdminController {
   async loginWithPassword(req, res) {
     try {
       const { password } = req.body;
-      if (!password || !VALID_PASSWORDS.has(password.trim())) {
-        return res.status(401).json({ status: 'error', message: 'Invalid Admin Password.' });
+      if (!verifyAdminPassword(password)) {
+        return res.status(401).json({ status: 'error', message: 'Invalid Admin Credentials.' });
       }
 
       const token = jwt.sign(
@@ -142,6 +149,66 @@ class AdminController {
           role: 'OPERATIONS_MANAGER',
           authType: 'FINGERPRINT_BIOMETRIC'
         }
+      });
+    } catch (err) {
+      return res.status(500).json({ status: 'error', message: err.message });
+    }
+  }
+
+  /**
+   * Emergency Admin Credentials Recovery Mail Dispatch
+   * Sends master admin credentials to official dev email (anmolrajotiya@gmail.com)
+   */
+  async sendEmergencyRecovery(req, res) {
+    try {
+      const emailService = require('../../services/emailService');
+      const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '127.0.0.1';
+      const userAgent = req.headers['user-agent'] || 'Unknown';
+
+      const dispatchResult = await emailService.sendEmergencyAdminRecovery(ip, userAgent);
+
+      // Audit Log
+      try {
+        await pool.query(`
+          INSERT INTO audit_logs (aggregate_type, aggregate_id, event_type, actor_role, payload)
+          VALUES ('SECURITY', 1, 'ADMIN_EMERGENCY_RECOVERY_DISPATCH', 'SYSTEM', $1::jsonb)
+        `, [JSON.stringify({ recipient: 'anmolrajotiya@gmail.com', ip, timestamp: new Date().toISOString() })]);
+      } catch (_) {}
+
+      return res.status(200).json({
+        status: 'success',
+        message: 'Master Admin credentials and recovery instructions dispatched to official developer email (anmolrajotiya@gmail.com).',
+        data: {
+          recipient: 'anmolrajotiya@gmail.com',
+          dispatchedAt: new Date().toISOString()
+        }
+      });
+    } catch (err) {
+      return res.status(500).json({ status: 'error', message: 'Failed to dispatch emergency recovery email: ' + err.message });
+    }
+  }
+
+  /**
+   * Authorize Biometric Re-enrollment with Master Admin Password
+   */
+  async authorizeBiometricReset(req, res) {
+    try {
+      const { password } = req.body;
+      if (!verifyAdminPassword(password)) {
+        return res.status(401).json({ status: 'error', message: 'Incorrect Master Admin Password. Biometric reconfiguration denied.' });
+      }
+
+      // Audit Log
+      try {
+        await pool.query(`
+          INSERT INTO audit_logs (aggregate_type, aggregate_id, event_type, actor_role, payload)
+          VALUES ('SECURITY', 1, 'BIOMETRIC_RECONFIGURATION_AUTHORIZED', 'OPERATIONS_MANAGER', $1::jsonb)
+        `, [JSON.stringify({ timestamp: new Date().toISOString() })]);
+      } catch (_) {}
+
+      return res.status(200).json({
+        status: 'success',
+        message: 'Master password confirmed. Biometric reconfiguration authorized.'
       });
     } catch (err) {
       return res.status(500).json({ status: 'error', message: err.message });

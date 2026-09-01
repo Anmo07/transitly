@@ -19,6 +19,8 @@ router.post('/admin/auth/password', (req, res) => adminController.loginWithPassw
 router.get('/admin/auth/biometric/challenge', (req, res) => adminController.getBiometricChallenge(req, res));
 router.post('/admin/auth/biometric/verify', (req, res) => adminController.verifyBiometric(req, res));
 router.get('/admin/auth/session', (req, res) => adminController.checkSession(req, res));
+router.post('/admin/auth/recovery', (req, res) => adminController.sendEmergencyRecovery(req, res));
+router.post('/admin/auth/biometric/reset', (req, res, next) => adminController.requireAdminAuth(req, res, next), (req, res) => adminController.authorizeBiometricReset(req, res));
 
 router.get('/admin/stats', (req, res) => adminController.getStats(req, res));
 router.get('/admin/fleet', (req, res) => adminController.getFleet(req, res));

@@ -12,8 +12,9 @@ let mockResPassword = {
   json(data) { this.jsonPayload = data; return this; }
 };
 
-// Valid password test
-adminController.loginWithPassword({ body: { password: 'transitly2026' } }, mockResPassword).then(() => {
+// Valid password test (single master password: admin@transitlyproject)
+const validAdminPassword = process.env.ADMIN_PASSWORD || 'admin@transitlyproject';
+adminController.loginWithPassword({ body: { password: validAdminPassword } }, mockResPassword).then(() => {
   assert.strictEqual(mockResPassword.statusCode, 200, 'Valid password should return 200');
   assert.ok(mockResPassword.jsonPayload.token, 'Token should be present in response');
   assert.strictEqual(mockResPassword.jsonPayload.admin.authType, 'PASSWORD');
@@ -24,7 +25,7 @@ adminController.loginWithPassword({ body: { password: 'transitly2026' } }, mockR
   assert.strictEqual(decoded.role, 'OPERATIONS_MANAGER', 'Admin role should be OPERATIONS_MANAGER');
   console.log('✔ Admin JWT claim and cryptographic payload verified.');
 
-  // 2. Invalid password rejection
+  // 2. Invalid password rejection (including rejection of legacy demo passwords)
   let mockResInvalid = {
     statusCode: 200,
     jsonPayload: null,
@@ -32,9 +33,9 @@ adminController.loginWithPassword({ body: { password: 'transitly2026' } }, mockR
     json(data) { this.jsonPayload = data; return this; }
   };
 
-  adminController.loginWithPassword({ body: { password: 'wrong_password_123' } }, mockResInvalid).then(() => {
-    assert.strictEqual(mockResInvalid.statusCode, 401, 'Invalid password should return 401 Unauthorized');
-    console.log('✔ Invalid admin password rejection verified.');
+  adminController.loginWithPassword({ body: { password: 'transitly2026' } }, mockResInvalid).then(() => {
+    assert.strictEqual(mockResInvalid.statusCode, 401, 'Legacy or invalid password should return 401 Unauthorized');
+    console.log('✔ Invalid and legacy admin password rejection verified.');
 
     // 3. Biometric Challenge & Verification Test
     let mockResBioChallenge = {
@@ -88,7 +89,43 @@ adminController.loginWithPassword({ body: { password: 'transitly2026' } }, mockR
         assert.strictEqual(mockResBlocked.statusCode, 401, 'Unauthenticated request should be blocked');
         console.log('✔ Unauthenticated admin access rejection verified.');
 
-        console.log('\nAll Admin Command Center Security & Biometric Auth tests passed successfully!\n');
+        // 5. Test Emergency Dev Mail Recovery Dispatch
+        let mockResRecovery = {
+          statusCode: 200,
+          jsonPayload: null,
+          status(code) { this.statusCode = code; return this; },
+          json(data) { this.jsonPayload = data; return this; }
+        };
+        adminController.sendEmergencyRecovery({ headers: {}, socket: { remoteAddress: '127.0.0.1' } }, mockResRecovery).then(() => {
+          assert.strictEqual(mockResRecovery.statusCode, 200);
+          assert.strictEqual(mockResRecovery.jsonPayload.data.recipient, 'anmolrajotiya@gmail.com');
+          console.log('✔ Emergency Dev Mail password recovery dispatch to anmolrajotiya@gmail.com verified.');
+
+          // 6. Test Biometric Reset Authorization with Master Password
+          let mockResBioResetAuth = {
+            statusCode: 200,
+            jsonPayload: null,
+            status(code) { this.statusCode = code; return this; },
+            json(data) { this.jsonPayload = data; return this; }
+          };
+          adminController.authorizeBiometricReset({ body: { password: validAdminPassword } }, mockResBioResetAuth).then(() => {
+            assert.strictEqual(mockResBioResetAuth.statusCode, 200);
+            console.log('✔ Biometric reconfiguration authorization with master password verified.');
+
+            let mockResBioResetFail = {
+              statusCode: 200,
+              jsonPayload: null,
+              status(code) { this.statusCode = code; return this; },
+              json(data) { this.jsonPayload = data; return this; }
+            };
+            adminController.authorizeBiometricReset({ body: { password: 'wrong_password' } }, mockResBioResetFail).then(() => {
+              assert.strictEqual(mockResBioResetFail.statusCode, 401);
+              console.log('✔ Unauthorized biometric reconfiguration rejection verified.');
+
+              console.log('\nAll Admin Command Center Security & Biometric Auth tests passed successfully!\n');
+            });
+          });
+        });
       });
     });
   });

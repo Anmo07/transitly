@@ -155,8 +155,8 @@
         <div class="w-14 h-14 rounded-full bg-primary text-white flex items-center justify-center biometric-scan-ring shadow-md">
           <span class="material-symbols-outlined text-[30px]" style="font-variation-settings: 'FILL' 1;">fingerprint</span>
         </div>
-        <span class="font-label-md text-label-md text-primary font-bold">Touch Fingerprint Sensor</span>
-        <span class="text-[11px] text-on-surface-variant">Tap to authenticate with device biometrics</span>
+        <span id="fingerprint-btn-label" class="font-label-md text-label-md text-primary font-bold">Touch Fingerprint Sensor</span>
+        <span id="fingerprint-btn-sublabel" class="text-[11px] text-on-surface-variant">Tap to authenticate with macOS Touch ID</span>
       </button>
     </div>
 
@@ -189,13 +189,24 @@
       </button>
     </form>
 
+    <!-- Emergency Recovery Link -->
+    <div class="mt-4 flex justify-center">
+      <button id="btn-emergency-recovery" type="button" class="text-[11px] text-error hover:underline flex items-center gap-1 font-semibold transition-colors">
+        <span class="material-symbols-outlined text-[13px]">contact_support</span>
+        <span>Emergency Recovery: Send Password to Dev Mail</span>
+      </button>
+    </div>
+
     <!-- Bottom Note / Back Link -->
-    <div class="mt-6 pt-4 border-t border-outline-variant/20 w-full flex justify-between items-center text-xs">
+    <div class="mt-4 pt-4 border-t border-outline-variant/20 w-full flex justify-between items-center text-xs">
       <a href="/" class="text-on-surface-variant hover:text-primary flex items-center gap-1 font-medium transition-colors">
         <span class="material-symbols-outlined text-xs">arrow_back</span>
         <span>Exit to Deliver Hub</span>
       </a>
-      <span class="text-[10px] text-outline">Default: <code class="bg-surface-container px-1 py-0.5 rounded">transitly2026</code></span>
+      <span class="text-[10px] text-outline flex items-center gap-1 font-medium">
+        <span class="material-symbols-outlined text-[13px] text-emerald-600">verified_user</span>
+        <span>Restricted Access</span>
+      </span>
     </div>
 
   </div>
@@ -412,18 +423,24 @@
 <span class="material-symbols-outlined text-on-surface-variant">dns</span>
                     System Operations
                 </h2>
-<div class="grid grid-cols-2 gap-stack-md">
-<button id="btn-app-breakdowns" class="bg-surface-container-lowest custom-shadow-card rounded-xl p-stack-lg flex flex-col items-center justify-center gap-stack-md hover:custom-shadow-interactive hover:border-primary border-2 border-transparent transition-all group">
-<div class="w-12 h-12 rounded-full bg-surface-container-highest group-hover:bg-primary-container/10 flex items-center justify-center transition-colors">
+<div class="grid grid-cols-3 gap-stack-md">
+<button id="btn-app-breakdowns" class="bg-surface-container-lowest custom-shadow-card rounded-xl p-stack-md flex flex-col items-center justify-center gap-2 hover:custom-shadow-interactive hover:border-primary border-2 border-transparent transition-all group">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest group-hover:bg-primary-container/10 flex items-center justify-center transition-colors">
 <span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors font-variation-settings-'FILL' 1">bug_report</span>
 </div>
-<span class="font-label-md text-label-md text-on-surface text-center">App<br/>Breakdowns</span>
+<span class="font-label-sm text-label-sm text-on-surface text-center">App<br/>Breakdowns</span>
 </button>
-<button id="btn-system-health" class="bg-surface-container-lowest custom-shadow-card rounded-xl p-stack-lg flex flex-col items-center justify-center gap-stack-md hover:custom-shadow-interactive hover:border-primary border-2 border-transparent transition-all group">
-<div class="w-12 h-12 rounded-full bg-surface-container-highest group-hover:bg-primary-container/10 flex items-center justify-center transition-colors">
+<button id="btn-system-health" class="bg-surface-container-lowest custom-shadow-card rounded-xl p-stack-md flex flex-col items-center justify-center gap-2 hover:custom-shadow-interactive hover:border-primary border-2 border-transparent transition-all group">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest group-hover:bg-primary-container/10 flex items-center justify-center transition-colors">
 <span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors font-variation-settings-'FILL' 1">monitor_heart</span>
 </div>
-<span class="font-label-md text-label-md text-on-surface text-center">System<br/>Health</span>
+<span class="font-label-sm text-label-sm text-on-surface text-center">System<br/>Health</span>
+</button>
+<button id="btn-biometrics-settings" class="bg-surface-container-lowest custom-shadow-card rounded-xl p-stack-md flex flex-col items-center justify-center gap-2 hover:custom-shadow-interactive hover:border-primary border-2 border-transparent transition-all group">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest group-hover:bg-primary-container/10 flex items-center justify-center transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors font-variation-settings-'FILL' 1">fingerprint</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface text-center">Touch ID<br/>Settings</span>
 </button>
 </div>
 </div>
