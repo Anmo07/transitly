@@ -44,6 +44,38 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // -------------------------------------------------------------
+  // 1.1 Real-Time Profile Photo & User Custom Configuration Sync
+  // -------------------------------------------------------------
+  const syncGlobalProfileAvatar = (newAvatarUrl = null) => {
+    let avatar = newAvatarUrl || localStorage.getItem('transitly_user_avatar');
+    if (!avatar) {
+      // Check cookies as fallback
+      const match = document.cookie.match(/transitly_user_avatar=([^;]+)/);
+      if (match) avatar = decodeURIComponent(match[1]);
+    }
+
+    if (avatar) {
+      document.querySelectorAll('img[alt*="profile" i], img[data-alt*="profile" i], .user-avatar-header, .user-avatar-img, #profileAvatarImg, #headerAvatarImg').forEach(img => {
+        img.src = avatar;
+      });
+    }
+  };
+
+  syncGlobalProfileAvatar();
+
+  window.addEventListener('transitly:profile_updated', (e) => {
+    if (e.detail && e.detail.avatarUrl) {
+      syncGlobalProfileAvatar(e.detail.avatarUrl);
+    }
+  });
+
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'transitly_user_avatar') {
+      syncGlobalProfileAvatar(e.newValue);
+    }
+  });
+
+  // -------------------------------------------------------------
   // 2. Global Booking Modal Lifecycle (Shared across all pages)
   // -------------------------------------------------------------
   const bookingModal = document.getElementById('bookingModal');

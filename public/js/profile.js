@@ -132,6 +132,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
           currentUser.avatarUrl = optimizedDataUrl;
           localStorage.setItem('transitly_user_avatar', optimizedDataUrl);
+          document.cookie = `transitly_user_avatar=${encodeURIComponent(optimizedDataUrl)};path=/;max-age=31536000`;
+          window.dispatchEvent(new CustomEvent('transitly:profile_updated', { detail: currentUser }));
           renderProfile();
 
           // Sync with database
@@ -268,6 +270,15 @@ document.addEventListener('DOMContentLoaded', () => {
       currentUser.name = updated.name;
       currentUser.email = updated.email;
       currentUser.phone = updated.phone;
+      
+      try {
+        localStorage.setItem('transitly_user_profile', JSON.stringify(currentUser));
+        localStorage.setItem('transitly_user_avatar', currentUser.avatarUrl);
+        document.cookie = `transitly_user_avatar=${encodeURIComponent(currentUser.avatarUrl)};path=/;max-age=31536000`;
+      } catch (_) {}
+
+      window.dispatchEvent(new CustomEvent('transitly:profile_updated', { detail: currentUser }));
+
       renderProfile();
       closeModal();
       showToast('Profile details updated successfully!');
