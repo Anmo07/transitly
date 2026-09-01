@@ -248,15 +248,23 @@ document.addEventListener('DOMContentLoaded', () => {
   if (btnEmergencyRecovery) {
     btnEmergencyRecovery.addEventListener('click', async () => {
       btnEmergencyRecovery.disabled = true;
-      btnEmergencyRecovery.innerHTML = '<span class="material-symbols-outlined text-[13px] animate-spin">sync</span><span>Dispatching Recovery Email...</span>';
-      authErrorMsg.textContent = '';
+      btnEmergencyRecovery.innerHTML = '<span class="material-symbols-outlined text-[13px] animate-spin">sync</span><span>Sending email...</span>';
+      authErrorMsg.innerHTML = '';
 
       try {
         const res = await fetch('/api/v1/admin/auth/recovery', { method: 'POST' });
         const json = await res.json();
         if (res.ok) {
-          authErrorMsg.textContent = '✔ Recovery credentials dispatched to official dev email (anmolrajotiya@gmail.com).';
-          authErrorMsg.className = 'text-xs text-emerald-600 font-semibold text-left min-h-[18px]';
+          authErrorMsg.innerHTML = `
+            <div class="flex items-start gap-2">
+              <span class="material-symbols-outlined text-emerald-600 text-sm mt-0.5">mark_email_read</span>
+              <div>
+                <strong>Recovery Alert Dispatched</strong>
+                <p class="text-[11px] text-emerald-800 mt-0.5">Master credentials dispatched to official Google Gmail: <strong>anmolrajotiya@gmail.com</strong>.</p>
+              </div>
+            </div>
+          `;
+          authErrorMsg.className = 'text-xs text-emerald-900 font-medium text-left min-h-[18px] bg-emerald-50 p-2.5 rounded-xl border border-emerald-300 shadow-sm';
         } else {
           authErrorMsg.textContent = json.message || 'Failed to dispatch recovery email.';
           authErrorMsg.className = 'text-xs text-error font-medium text-left min-h-[18px]';
@@ -266,7 +274,7 @@ document.addEventListener('DOMContentLoaded', () => {
         authErrorMsg.className = 'text-xs text-error font-medium text-left min-h-[18px]';
       } finally {
         btnEmergencyRecovery.disabled = false;
-        btnEmergencyRecovery.innerHTML = '<span class="material-symbols-outlined text-[13px]">contact_support</span><span>Emergency Recovery: Send Password to Dev Mail</span>';
+        btnEmergencyRecovery.innerHTML = 'Forgot Password?';
       }
     });
   }

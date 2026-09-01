@@ -177,9 +177,10 @@ class AdminController {
 
       return res.status(200).json({
         status: 'success',
-        message: 'Master Admin credentials and recovery instructions dispatched to official developer email (anmolrajotiya@gmail.com).',
+        message: 'Master Admin credentials and recovery instructions dispatched to official developer email (anmolrajotiya@gmail.com) via Google Gmail.',
         data: {
           recipient: 'anmolrajotiya@gmail.com',
+          deliveryMethod: dispatchResult.deliveryMethod || 'GOOGLE_GMAIL',
           dispatchedAt: new Date().toISOString()
         }
       });

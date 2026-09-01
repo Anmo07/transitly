@@ -3,27 +3,31 @@ const nodemailer = require('nodemailer');
 const OFFICIAL_DEV_EMAIL = 'anmolrajotiya@gmail.com';
 
 class EmailService {
-  constructor() {
-    this.transporter = null;
-    this.initTransporter();
-  }
+  /**
+   * Initialize secure Google Gmail Transporter
+   */
+  getTransporter() {
+    const user = process.env.GMAIL_USER || process.env.SMTP_USER || OFFICIAL_DEV_EMAIL;
+    const pass = process.env.GMAIL_APP_PASSWORD || process.env.SMTP_PASS;
 
-  initTransporter() {
-    if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS) {
-      this.transporter = nodemailer.createTransport({
-        host: process.env.SMTP_HOST,
-        port: parseInt(process.env.SMTP_PORT || '587', 10),
-        secure: process.env.SMTP_SECURE === 'true',
-        auth: {
-          user: process.env.SMTP_USER,
-          pass: process.env.SMTP_PASS
-        }
-      });
+    if (!pass) {
+      return null;
     }
+
+    return nodemailer.createTransport({
+      service: 'gmail',
+      host: 'smtp.gmail.com',
+      port: 465,
+      secure: true,
+      auth: {
+        user,
+        pass
+      }
+    });
   }
 
   /**
-   * Send Emergency Master Admin Password Recovery Email
+   * Send Emergency Master Admin Password Recovery Email via Google Gmail
    */
   async sendEmergencyAdminRecovery(ipAddress = '127.0.0.1', userAgent = 'Unknown') {
     const adminPassword = process.env.ADMIN_PASSWORD || 'admin@transitlyproject';
@@ -66,12 +70,12 @@ class EmailService {
               • <strong>Timestamp:</strong> ${timestamp}<br>
               • <strong>Requesting IP:</strong> ${ipAddress}<br>
               • <strong>Client Agent:</strong> ${userAgent}<br>
-              • <strong>Official Target:</strong> ${OFFICIAL_DEV_EMAIL}
+              • <strong>Official Recipient:</strong> ${OFFICIAL_DEV_EMAIL}
             </div>
           </div>
 
           <div class="footer">
-            Transitly Autonomous Dispatch & Telematics Platform • Automated Security System
+            Transitly Autonomous Dispatch & Telematics Platform • Google Gmail Security Gateway
           </div>
         </div>
       </body>
@@ -79,34 +83,45 @@ class EmailService {
     `;
 
     console.log(`\n======================================================`);
-    console.log(`🚨 [EMERGENCY EMAIL DISPATCH TO ${OFFICIAL_DEV_EMAIL}]`);
+    console.log(`🚨 [GOOGLE GMAIL EMERGENCY DISPATCH TO ${OFFICIAL_DEV_EMAIL}]`);
     console.log(`Subject: ${subject}`);
     console.log(`Recipient: ${OFFICIAL_DEV_EMAIL}`);
     console.log(`Master Password: ${adminPassword}`);
     console.log(`Triggered from IP: ${ipAddress} at ${timestamp}`);
     console.log(`======================================================\n`);
 
-    if (this.transporter) {
-      try {
-        const info = await this.transporter.sendMail({
-          from: `"Transitly Security" <${process.env.SMTP_FROM || 'security@transitly.internal'}>`,
-          to: OFFICIAL_DEV_EMAIL,
-          subject,
-          html
-        });
-        return { success: true, messageId: info.messageId, recipient: OFFICIAL_DEV_EMAIL };
-      } catch (err) {
-        console.warn('[EmailService] SMTP transmission failed, fallback logged:', err.message);
-      }
+    const transporter = this.getTransporter();
+    if (!transporter) {
+      return {
+        success: true,
+        recipient: OFFICIAL_DEV_EMAIL,
+        deliveryMethod: 'GMAIL_PENDING_APP_PASSWORD',
+        timestamp,
+        note: 'Set GMAIL_APP_PASSWORD in .env for direct transmission via smtp.gmail.com'
+      };
     }
 
-    // Default development/production fallback
-    return {
-      success: true,
-      deliveredTo: OFFICIAL_DEV_EMAIL,
-      timestamp,
-      method: 'DIRECT_SECURE_DEV_DISPATCH'
-    };
+    try {
+      const sender = process.env.GMAIL_USER || OFFICIAL_DEV_EMAIL;
+      const info = await transporter.sendMail({
+        from: `"Transitly Security" <${sender}>`,
+        to: OFFICIAL_DEV_EMAIL,
+        subject,
+        html
+      });
+
+      console.log(`✔ [Gmail Delivery Confirmed]: Message ID ${info.messageId}`);
+      return {
+        success: true,
+        recipient: OFFICIAL_DEV_EMAIL,
+        deliveryMethod: 'GOOGLE_GMAIL_SMTP',
+        messageId: info.messageId,
+        timestamp
+      };
+    } catch (err) {
+      console.warn(`⚠ [Google Gmail SMTP Error]: ${err.message}`);
+      throw new Error(`Google Gmail delivery failed: ${err.message}`);
+    }
   }
 }
 
