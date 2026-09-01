@@ -9,11 +9,19 @@ const userController = require('../controllers/userController');
 const addressController = require('../controllers/addressController');
 const paymentController = require('../controllers/paymentController');
 const supportController = require('../controllers/supportController');
+const adminController = require('../controllers/adminController');
 const { pool } = require('../../config/postgres');
 
 const router = express.Router();
 
-// 0. User Profile & Settings
+// 0. Admin & Command Center
+router.get('/admin/stats', (req, res) => adminController.getStats(req, res));
+router.get('/admin/fleet', (req, res) => adminController.getFleet(req, res));
+router.get('/admin/health', (req, res) => adminController.getHealth(req, res));
+router.get('/admin/incidents', (req, res) => adminController.getIncidents(req, res));
+router.post('/admin/broadcast', (req, res) => adminController.sendBroadcast(req, res));
+
+// 0.1 User Profile & Settings
 router.get('/profile', (req, res) => userController.getProfile(req, res));
 router.put('/profile', (req, res) => userController.updateProfile(req, res));
 router.get('/settings', (req, res) => userController.getSettings(req, res));

@@ -180,6 +180,7 @@ ${colors.green}${colors.bright}════════════════�
   • Payment Methods:     ${colors.cyan}http://localhost:${PORT}/payment-methods${colors.reset}
   • Settings:            ${colors.cyan}http://localhost:${PORT}/settings${colors.reset}
   • Help & Support:      ${colors.cyan}http://localhost:${PORT}/help-support${colors.reset}
+  • Command Center:      ${colors.cyan}http://localhost:${PORT}/admin${colors.reset}
   • Swagger REST Docs:   ${colors.cyan}http://localhost:${PORT}/api-docs${colors.reset}
 
   ${colors.dim}Press Ctrl+C at any time to stop the server.${colors.reset}

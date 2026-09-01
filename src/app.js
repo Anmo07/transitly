@@ -72,6 +72,7 @@ app.get('/payment-methods', (req, res) => res.sendFile(path.join(publicDir, 'pay
 app.get('/settings', (req, res) => res.sendFile(path.join(publicDir, 'settings.html')));
 app.get('/help-support', (req, res) => res.sendFile(path.join(publicDir, 'help-support.html')));
 app.get('/notifications', (req, res) => res.sendFile(path.join(publicDir, 'notifications.html')));
+app.get('/admin', (req, res) => res.sendFile(path.join(publicDir, 'admin.html')));
 
 // Fallback to index.html
 app.use((req, res) => {
