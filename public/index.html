@@ -188,12 +188,74 @@
 <div class="w-full flex justify-center pt-3 pb-2">
 <div class="w-12 h-1.5 bg-outline-variant rounded-full opacity-50"></div>
 </div>
-<!-- Floating Search Bar -->
+<!-- Dedicated From: / To: Intercity Route Search Panel -->
 <div class="px-container-margin mt-2">
-<div class="flex items-center bg-surface-container-lowest border border-outline-variant/30 rounded-full py-3 px-5 shadow-level-1 hover:border-primary-container hover:shadow-level-2 transition-all duration-300">
-<span class="material-symbols-outlined text-on-surface-variant mr-3">search</span>
-<input id="homeSearchInput" class="w-full bg-transparent outline-none text-body-md font-body-md text-on-surface placeholder:text-on-surface-variant/70 border-none p-0 focus:ring-0" data-i18n-placeholder="deliver_search_placeholder" placeholder="From: Mohali, Punjab ➔ Where to send?" type="text"/>
-</div>
+  <div class="bg-surface-container-low border border-outline-variant/30 rounded-2xl p-3 shadow-level-1 flex flex-col gap-2 relative">
+    
+    <!-- From: (Pickup Origin) -->
+    <div class="relative">
+      <div class="flex items-center bg-surface rounded-xl px-3 py-2.5 border border-outline-variant/30 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all">
+        <span class="material-symbols-outlined text-emerald-600 text-[20px] mr-2 shrink-0" style="font-variation-settings: 'FILL' 1;">trip_origin</span>
+        <div class="flex flex-col flex-1 min-w-0">
+          <span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider leading-none mb-0.5">From (Pickup)</span>
+          <input id="inputSearchFrom" type="text" value="Mohali, Punjab" placeholder="Enter pickup city, hub, or address..." class="w-full bg-transparent outline-none text-body-md font-semibold text-on-surface placeholder:text-on-surface-variant/60 border-none p-0 focus:ring-0 text-xs sm:text-sm truncate">
+        </div>
+        <button type="button" id="btnClearFrom" class="hidden text-on-surface-variant hover:text-on-surface p-1 rounded-full text-xs">
+          <span class="material-symbols-outlined text-[16px]">close</span>
+        </button>
+        <button type="button" id="btnGpsFrom" class="text-primary hover:bg-primary/10 p-1.5 rounded-lg text-xs font-bold flex items-center gap-1 shrink-0 ml-1" title="Use Live GPS">
+          <span class="material-symbols-outlined text-[18px]">my_location</span>
+        </button>
+      </div>
+      <!-- From Autocomplete Dropdown -->
+      <div id="dropdownSuggestionsFrom" class="hidden absolute top-full left-0 right-0 mt-1 bg-surface rounded-xl shadow-2xl border border-outline-variant/40 z-30 max-h-48 overflow-y-auto divide-y divide-outline-variant/10 text-xs"></div>
+    </div>
+
+    <!-- Swap Button & Route Indicator -->
+    <div class="flex items-center justify-between px-3 -my-1">
+      <div class="flex items-center gap-1.5 text-[11px] text-on-surface-variant font-medium">
+        <span class="w-1.5 h-1.5 rounded-full bg-outline-variant"></span>
+        <span class="w-1.5 h-1.5 rounded-full bg-outline-variant"></span>
+        <span class="w-1.5 h-1.5 rounded-full bg-outline-variant"></span>
+        <span class="text-[10px] text-primary font-bold ml-1">Direct Bus Cargo Corridor</span>
+      </div>
+      <button type="button" id="btnSwapRoute" class="w-7 h-7 rounded-full bg-surface-container-high text-primary hover:bg-primary hover:text-on-primary flex items-center justify-center shadow-sm border border-outline-variant/30 active:scale-90 transition-all" title="Swap Origin & Destination">
+        <span class="material-symbols-outlined text-[16px]">swap_vert</span>
+      </button>
+    </div>
+
+    <!-- To: (Dropoff Destination) -->
+    <div class="relative">
+      <div class="flex items-center bg-surface rounded-xl px-3 py-2.5 border border-outline-variant/30 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all">
+        <span class="material-symbols-outlined text-rose-600 text-[20px] mr-2 shrink-0" style="font-variation-settings: 'FILL' 1;">location_on</span>
+        <div class="flex flex-col flex-1 min-w-0">
+          <span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider leading-none mb-0.5">To (Destination)</span>
+          <input id="inputSearchTo" type="text" value="ISBT Sector 17, Chandigarh" placeholder="Where to send? (e.g. Kashmiri Gate, Delhi)" class="w-full bg-transparent outline-none text-body-md font-semibold text-on-surface placeholder:text-on-surface-variant/60 border-none p-0 focus:ring-0 text-xs sm:text-sm truncate">
+        </div>
+        <button type="button" id="btnClearTo" class="hidden text-on-surface-variant hover:text-on-surface p-1 rounded-full text-xs">
+          <span class="material-symbols-outlined text-[16px]">close</span>
+        </button>
+        <button type="button" id="btnPickOnMapTo" class="text-rose-600 hover:bg-rose-50 p-1.5 rounded-lg text-xs font-bold flex items-center gap-1 shrink-0 ml-1" title="Pick Destination on Map">
+          <span class="material-symbols-outlined text-[18px]">pin_drop</span>
+        </button>
+      </div>
+      <!-- To Autocomplete Dropdown -->
+      <div id="dropdownSuggestionsTo" class="hidden absolute top-full left-0 right-0 mt-1 bg-surface rounded-xl shadow-2xl border border-outline-variant/40 z-30 max-h-48 overflow-y-auto divide-y divide-outline-variant/10 text-xs"></div>
+    </div>
+
+    <!-- Live Map Interaction Hint Bar -->
+    <div class="flex items-center justify-between pt-1 px-1 text-[11px] text-on-surface-variant">
+      <span class="flex items-center gap-1">
+        <span class="material-symbols-outlined text-[14px] text-primary">touch_app</span>
+        <span>Drag pins or tap map to set location</span>
+      </span>
+      <button type="button" id="btnProceedBookingDirect" class="text-primary font-bold hover:underline flex items-center gap-0.5 text-xs active:scale-95 transition-transform">
+        <span>Proceed</span>
+        <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+      </button>
+    </div>
+
+  </div>
 </div>
 <!-- Section Title -->
 <h2 class="text-headline-md font-headline-md px-container-margin mt-stack-lg mb-stack-md text-on-surface" data-i18n="deliver_services_heading">

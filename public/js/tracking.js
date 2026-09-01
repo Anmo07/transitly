@@ -450,29 +450,57 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const buildGoogleMapsUrl = (data) => {
     if (!data) return 'https://maps.google.com';
-    const lat = data.currentLocation.latitude;
-    const lng = data.currentLocation.longitude;
+    const lat = data.currentLocation ? data.currentLocation.latitude : 28.6675;
+    const lng = data.currentLocation ? data.currentLocation.longitude : 77.2285;
     const stops = data.stops || [];
 
-    const originStr = stops.length > 0 ? `${stops[0].coords[0]},${stops[0].coords[1]}` : `${lat},${lng}`;
-    const destStr = stops.length > 1 ? `${stops[stops.length - 1].coords[0]},${stops[stops.length - 1].coords[1]}` : `${lat + 0.5},${lng + 0.5}`;
-    const waypointStr = `${lat},${lng}`;
+    let originStr = '';
+    let destStr = '';
+    const waypointList = [];
 
-    return `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(originStr)}&destination=${encodeURIComponent(destStr)}&waypoints=${encodeURIComponent(waypointStr)}&travelmode=driving`;
+    if (stops.length >= 2) {
+      // Exact Origin Bus Stand (e.g. Kashmiri Gate ISBT, Delhi)
+      originStr = stops[0].name ? stops[0].name : `${stops[0].coords[0]},${stops[0].coords[1]}`;
+      // Exact Destination Bus Stand (e.g. ISBT Sector 17, Chandigarh)
+      destStr = stops[stops.length - 1].name ? stops[stops.length - 1].name : `${stops[stops.length - 1].coords[0]},${stops[stops.length - 1].coords[1]}`;
+
+      // 1. First Waypoint: Current Live Bus Telemetry GPS Position
+      waypointList.push(`${lat.toFixed(5)},${lng.toFixed(5)}`);
+
+      // 2. Intermediate Corridor Bus Stands
+      for (let i = 1; i < stops.length - 1; i++) {
+        if (stops[i].name) {
+          waypointList.push(stops[i].name);
+        } else if (stops[i].coords) {
+          waypointList.push(`${stops[i].coords[0]},${stops[i].coords[1]}`);
+        }
+      }
+    } else {
+      originStr = data.origin_terminal || `${lat},${lng}`;
+      destStr = data.destination_terminal || `${lat + 0.5},${lng + 0.5}`;
+      waypointList.push(`${lat.toFixed(5)},${lng.toFixed(5)}`);
+    }
+
+    // Google Maps API supports up to 8 waypoints separated by pipe '|'
+    const waypointsStr = waypointList.slice(0, 8).join('|');
+
+    return `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(originStr)}&destination=${encodeURIComponent(destStr)}&waypoints=${encodeURIComponent(waypointsStr)}&travelmode=driving`;
   };
 
   const buildWhatsAppShareText = (data) => {
     if (!data) return 'Live Bus Tracking';
     const gmapsUrl = buildGoogleMapsUrl(data);
     const webUrl = `${window.location.origin}/tracking?bus=${encodeURIComponent(data.busNumber)}`;
+    const originName = (data.stops && data.stops.length > 0) ? data.stops[0].name : (data.origin_terminal || 'Origin Hub');
+    const destName = (data.stops && data.stops.length > 1) ? data.stops[data.stops.length - 1].name : (data.destination_terminal || 'Destination Hub');
 
     return `🚨 *Transitly Live Bus Telematics*\n\n` +
       `🚌 *Bus:* ${data.operatorName} (${data.busNumber})\n` +
       `📍 *Live Location:* ${data.currentLocation.latitude.toFixed(4)}°N, ${data.currentLocation.longitude.toFixed(4)}°E\n` +
-      `⚡ *Speed:* ${data.currentLocation.speedKmh} km/h • On Highway\n` +
-      `🛣️ *Corridor:* ${data.corridorName}\n` +
+      `⚡ *Speed:* ${data.currentLocation.speedKmh} km/h • Highway Telemetry\n` +
+      `🛣️ *Corridor:* ${originName} ➔ ${destName}\n` +
       `⏱️ *ETA:* ${data.eta || 'Today by 14:30'}\n\n` +
-      `🗺️ *Open in Google Maps Native Route:*\n${gmapsUrl}\n\n` +
+      `🗺️ *Open in Google Maps Native Route (Bus Stand to Bus Stand):*\n${gmapsUrl}\n\n` +
       `📦 *Web App Live View:*\n${webUrl}`;
   };
 
