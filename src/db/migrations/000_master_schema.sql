@@ -1,6 +1,6 @@
 -- ==============================================================================
 -- Transitly Master Relational Schema (PostgreSQL 16 + PostGIS)
--- Fully compatible with DBeaver Spatial Viewer & OpenGIS Standards
+-- OpenGIS & OGC Spatial Standards Compliant
 -- ==============================================================================
 
 CREATE EXTENSION IF NOT EXISTS postgis;

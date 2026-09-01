@@ -22,7 +22,7 @@ Transitly is specified as a JavaScript (ES2022+) platform running on Node.js 20 
 | Area | Production choice |
 | --- | --- |
 | API and workers | Node.js JavaScript services, deployed as stateless containers |
-| Transactional data | Managed MongoDB with backups, point-in-time recovery, and replica sets |
+| Transactional & spatial data | Managed PostgreSQL (PostGIS) with backups, point-in-time recovery, and connection pooling |
 | Real-time state | Redis for caching, rate limits, locks, and tracking fan-out |
 | Event processing | Durable queue or event bus with retries and a dead-letter queue |
 | Delivery evidence | Private object storage with short-lived signed URLs |

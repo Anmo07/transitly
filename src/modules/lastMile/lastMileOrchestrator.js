@@ -105,7 +105,7 @@ class LastMileOrchestrator {
   }
 
   /**
-   * Creates the child shipment legs in MongoDB for an accepted multi-modal shipment.
+   * Creates the child shipment legs in PostgreSQL for an accepted multi-modal shipment.
    */
   async createShipmentLegs(parentShipment, feasibilityResult, originTerminal, destinationTerminal) {
     const legs = [];

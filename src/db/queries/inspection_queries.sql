@@ -1,6 +1,10 @@
 -- ============================================================================
--- Transitly — DBeaver & Antigravity SQL Execution & Spatial Inspection Scripts
+-- Transitly — Master PostgreSQL & PostGIS Terminal Inspection Scripts
 -- Database: transitly_telemetry | Host: localhost:5433 | User: postgres
+-- Run via terminal:
+--   docker exec -it transitly-postgis psql -U postgres -d transitly_telemetry -f /docker-entrypoint-initdb.d/../queries/inspection_queries.sql
+-- Or via npm:
+--   npm run db:inspect
 -- ============================================================================
 
 -- ----------------------------------------------------------------------------
@@ -14,8 +18,7 @@ FROM pg_stat_user_tables
 ORDER BY relname ASC;
 
 -- ----------------------------------------------------------------------------
--- 2. MASTER BUS ROUTES & GEOCODED STOPS (Spatial View)
--- (Click 'geom' and switch to Spatial (GIS) tab in DBeaver / Antigravity viewer)
+-- 2. MASTER BUS ROUTES & GEOCODED STOPS (Spatial Coordinates & Geometries)
 -- ----------------------------------------------------------------------------
 SELECT 
     r.logical_route_id,
@@ -26,7 +29,7 @@ SELECT
     s.stop_name,
     s.latitude,
     s.longitude,
-    s.geom
+    ST_AsText(s.geom) AS geom_wkt
 FROM route_transactions r
 JOIN route_stops s ON r.id = s.route_transaction_id
 WHERE r.is_latest = TRUE
@@ -47,8 +50,8 @@ SELECT
     l.pickup_address,
     l.dropoff_address,
     l.price AS leg_price,
-    l.pickup_geom,
-    l.dropoff_geom
+    ST_AsText(l.pickup_geom) AS pickup_geom_wkt,
+    ST_AsText(l.dropoff_geom) AS dropoff_geom_wkt
 FROM shipments s
 JOIN shipment_legs l ON s.id = l.shipment_id
 ORDER BY s.id, l.sequence_order ASC;
@@ -65,7 +68,7 @@ SELECT
     v.status,
     v.last_latitude,
     v.last_longitude,
-    v.geom
+    ST_AsText(v.geom) AS geom_wkt
 FROM vehicles v
 ORDER BY v.id ASC;
 
@@ -81,7 +84,7 @@ SELECT
     t.speed_kmh,
     t.heading,
     t.ping_timestamp,
-    t.geom
+    ST_AsText(t.geom) AS geom_wkt
 FROM vehicle_telemetry t
 ORDER BY t.ping_timestamp DESC
 LIMIT 50;
@@ -99,7 +102,7 @@ SELECT
     c.handoff_type,
     c.is_within_geofence,
     c.handoff_timestamp,
-    c.location_geom
+    ST_AsText(c.location_geom) AS location_geom_wkt
 FROM custody_handoffs c
 ORDER BY c.handoff_timestamp ASC;
 

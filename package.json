@@ -13,6 +13,8 @@
     "build:css:min": "tailwindcss -i ./src/css/input.css -o ./public/css/style.css --minify",
     "watch:css": "tailwindcss -i ./src/css/input.css -o ./public/css/style.css --watch",
     "db:init": "node src/db/initDb.js",
+    "db:inspect": "node src/db/viewDb.js",
+    "db:psql": "docker exec -it transitly-postgis psql -U postgres -d transitly_telemetry",
     "test": "node tests/security.test.js && node tests/architecture.test.js && node tests/lastMile.test.js && node tests/whatsapp.test.js && node tests/telemetry.test.js && node tests/schema.test.js && node tests/haryanaRoadways.test.js"
   },
   "keywords": [],

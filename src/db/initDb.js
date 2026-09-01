@@ -5,8 +5,8 @@ const { Pool } = require('pg');
 
 /**
  * Master PostgreSQL Database Initialization & Migration Runner
- * Seamlessly supports both PostGIS-enabled environments (e.g. Docker / Enterprise)
- * and native PostgreSQL (POINT/JSONB) for local DBeaver development.
+ * Seamlessly supports both PostGIS-enabled environments (Docker / Enterprise)
+ * and native PostgreSQL for local terminal and extension-based development.
  */
 const initializeDatabase = async () => {
   console.log('=== Transitly Master Database Initialization (PostgreSQL) ===\n');
@@ -438,11 +438,11 @@ const initializeDatabase = async () => {
 
     console.log('\n======================================================');
     console.log('🎉 PostgreSQL Database Migration & Seeding COMPLETED!');
-    console.log(`Connect via DBeaver:`);
-    console.log(`  • Host:     ${host}`);
-    console.log(`  • Port:     ${port}`);
-    console.log(`  • Database: ${targetDb}`);
-    console.log(`  • User:     ${user}`);
+    console.log(`Terminal CLI Connection (psql):`);
+    console.log(`  • Terminal Command:  docker exec -it transitly-postgis psql -U ${user} -d ${targetDb}`);
+    console.log(`  • Host & Port:       ${host}:${port}`);
+    console.log(`  • Database / User:   ${targetDb} / ${user}`);
+    console.log(`  • Run SQL script:    npm run db:inspect`);
     console.log('======================================================\n');
   } catch (err) {
     console.error('Database Initialization Failed:', err);
