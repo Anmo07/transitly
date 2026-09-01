@@ -14,12 +14,17 @@ const { pool } = require('../../config/postgres');
 
 const router = express.Router();
 
-// 0. Admin & Command Center
+// 0. Admin & Command Center Auth & Operations
+router.post('/admin/auth/password', (req, res) => adminController.loginWithPassword(req, res));
+router.get('/admin/auth/biometric/challenge', (req, res) => adminController.getBiometricChallenge(req, res));
+router.post('/admin/auth/biometric/verify', (req, res) => adminController.verifyBiometric(req, res));
+router.get('/admin/auth/session', (req, res) => adminController.checkSession(req, res));
+
 router.get('/admin/stats', (req, res) => adminController.getStats(req, res));
 router.get('/admin/fleet', (req, res) => adminController.getFleet(req, res));
 router.get('/admin/health', (req, res) => adminController.getHealth(req, res));
 router.get('/admin/incidents', (req, res) => adminController.getIncidents(req, res));
-router.post('/admin/broadcast', (req, res) => adminController.sendBroadcast(req, res));
+router.post('/admin/broadcast', (req, res, next) => adminController.requireAdminAuth(req, res, next), (req, res) => adminController.sendBroadcast(req, res));
 
 // 0.1 User Profile & Settings
 router.get('/profile', (req, res) => userController.getProfile(req, res));
