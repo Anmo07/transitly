@@ -7,7 +7,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const togglePush = document.getElementById('togglePush');
   const toggleSms = document.getElementById('toggleSms');
   const toggleLocation = document.getElementById('toggleLocation');
-  const toggleBiometrics = document.getElementById('toggleBiometrics');
   const btnSignOut = document.getElementById('btnSignOut');
 
   const btnLanguageSelector = document.getElementById('btnLanguageSelector');
@@ -73,7 +72,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (togglePush) togglePush.checked = s.pushNotifications !== false;
         if (toggleSms) toggleSms.checked = s.smsUpdates !== false;
         if (toggleLocation) toggleLocation.checked = s.locationServices !== false;
-        if (toggleBiometrics) toggleBiometrics.checked = !!s.biometrics;
       }
     } catch (_) {}
   };
@@ -109,12 +107,6 @@ document.addEventListener('DOMContentLoaded', () => {
   if (toggleLocation) {
     toggleLocation.addEventListener('change', () => {
       updateSetting('locationServices', toggleLocation.checked, 'GPS Tracking');
-    });
-  }
-
-  if (toggleBiometrics) {
-    toggleBiometrics.addEventListener('change', () => {
-      updateSetting('biometrics', toggleBiometrics.checked, 'Biometric Lock');
     });
   }
 
