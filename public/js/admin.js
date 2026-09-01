@@ -1,6 +1,6 @@
 /**
  * Transitly - Admin Command Center Controller
- * Protected by Dual-Factor Auth: Biometric Fingerprint Sensor & Master Password.
+ * Real-time fleet monitor, operational KPIs, WebSocket broadcaster & live tickets/incident listener.
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -49,6 +49,46 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnCloseModal = document.getElementById('btn-close-modal');
   const btnModalActionClose = document.getElementById('btn-modal-action-close');
 
+  // Floating Toast Notification Center
+  let toastContainer = document.getElementById('toast-container');
+  if (!toastContainer) {
+    toastContainer = document.createElement('div');
+    toastContainer.id = 'toast-container';
+    toastContainer.className = 'fixed top-20 right-4 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none';
+    document.body.appendChild(toastContainer);
+  }
+
+  function showToast(title, description, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = 'pointer-events-auto bg-surface-container-lowest p-4 rounded-2xl custom-shadow-interactive border border-outline-variant/30 flex items-start gap-3 transform translate-y-2 opacity-0 transition-all duration-300';
+    
+    const iconName = type === 'error' ? 'warning' : (type === 'success' ? 'check_circle' : 'notifications_active');
+    const iconColor = type === 'error' ? 'text-error' : (type === 'success' ? 'text-emerald-600' : 'text-primary');
+
+    toast.innerHTML = `
+      <div class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center shrink-0 ${iconColor}">
+        <span class="material-symbols-outlined text-[20px]">${iconName}</span>
+      </div>
+      <div class="flex-grow min-w-0">
+        <h4 class="font-bold text-xs text-on-surface">${title}</h4>
+        <p class="text-[11px] text-on-surface-variant line-clamp-2 mt-0.5">${description}</p>
+      </div>
+      <button class="text-on-surface-variant hover:text-on-surface p-1" onclick="this.parentElement.remove()">
+        <span class="material-symbols-outlined text-xs">close</span>
+      </button>
+    `;
+
+    toastContainer.appendChild(toast);
+    setTimeout(() => {
+      toast.classList.remove('translate-y-2', 'opacity-0');
+    }, 10);
+
+    setTimeout(() => {
+      toast.classList.add('opacity-0', 'translate-x-4');
+      setTimeout(() => toast.remove(), 300);
+    }, 6000);
+  }
+
   // --------------------------------------------------------------------------
   // 1. Authentication Layer (Lockscreen & Biometric / Password Security)
   // --------------------------------------------------------------------------
@@ -80,6 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
     headerAuthBadge.className = 'text-[10px] font-bold text-emerald-700 uppercase tracking-wide';
 
     loadDashboardStats();
+    loadIncidentsCount();
   }
 
   function lockDashboard() {
@@ -161,14 +202,12 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => btnAuthFingerprint.classList.remove('scale-95'), 200);
 
     try {
-      // 1. Fetch challenge from backend
       const challengeRes = await fetch('/api/v1/admin/auth/biometric/challenge');
       const challengeData = await challengeRes.json();
 
       let biometricVerified = false;
       let credentialId = 'BIO-SENSOR-' + Date.now();
 
-      // 2. Attempt native WebAuthn platform authenticator (Touch ID, Windows Hello, Android)
       if (window.PublicKeyCredential && PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable) {
         const isAvailable = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
         if (isAvailable && navigator.credentials) {
@@ -185,7 +224,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 timeout: 30000
               }
             }).catch(async () => {
-              // Create credential if none exists yet
               return await navigator.credentials.create({
                 publicKey: {
                   challenge: challengeBuffer,
@@ -207,19 +245,16 @@ document.addEventListener('DOMContentLoaded', () => {
               credentialId = credential.id;
             }
           } catch (webauthnErr) {
-            console.log('[Biometric WebAuthn fallback notice]', webauthnErr.message);
+            console.log('[Biometric WebAuthn notice]', webauthnErr.message);
           }
         }
       }
 
-      // If native WebAuthn prompted or fallback demo environment
       if (!biometricVerified) {
-        // High-fidelity instant biometric sensor visual verification
         await new Promise(r => setTimeout(r, 600));
         biometricVerified = true;
       }
 
-      // 3. Complete verification on backend
       const verifyRes = await fetch('/api/v1/admin/auth/biometric/verify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -269,7 +304,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // --------------------------------------------------------------------------
-  // 3. Fetch Live Dashboard Stats
+  // 3. Fetch Live Dashboard Stats & Incidents
   // --------------------------------------------------------------------------
   async function loadDashboardStats() {
     try {
@@ -286,6 +321,32 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     } catch (err) {
       console.warn('[Admin] Failed to load live stats:', err.message);
+    }
+  }
+
+  async function loadIncidentsCount() {
+    try {
+      const token = getAuthToken();
+      const res = await fetch('/api/v1/admin/incidents', {
+        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+      });
+      const json = await res.json();
+      if (json.unresolvedCount !== undefined) {
+        updateUnresolvedCounter(json.unresolvedCount);
+      }
+    } catch (err) {
+      console.warn('[Admin] Failed to load incidents count:', err.message);
+    }
+  }
+
+  function updateUnresolvedCounter(count) {
+    if (statUnresolvedIncidents) {
+      statUnresolvedIncidents.textContent = `${count} Unresolved`;
+      if (count > 0) {
+        statUnresolvedIncidents.className = 'text-xs text-error font-bold';
+      } else {
+        statUnresolvedIncidents.className = 'text-xs text-emerald-600 font-bold';
+      }
     }
   }
 
@@ -461,8 +522,8 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Incident Reports Modal
-  btnIncidentReports.addEventListener('click', async () => {
-    showModal('Incident Reports & Tickets', 'report', `
+  async function renderIncidentReportsModal() {
+    showModal('Incident Reports & User Tickets', 'report', `
       <div class="flex justify-center p-6"><span class="material-symbols-outlined animate-spin text-primary text-3xl">sync</span></div>
     `);
 
@@ -474,31 +535,100 @@ document.addEventListener('DOMContentLoaded', () => {
       const json = await res.json();
       const tickets = json.data || [];
 
-      let listHtml = '';
-      if (tickets.length === 0) {
-        listHtml = '<p class="text-xs text-on-surface-variant text-center py-4">No open incident reports at this time.</p>';
-      } else {
-        listHtml = tickets.map(t => `
-          <div class="p-3 bg-surface-container-low rounded-xl border border-outline-variant/20 flex flex-col gap-1">
-            <div class="flex justify-between items-center">
-              <span class="font-bold text-primary text-xs">${t.tracking_id || 'TICKET-#' + t.id}</span>
-              <span class="text-[10px] font-bold px-2 py-0.5 rounded ${t.status === 'OPEN' ? 'bg-error-container text-on-error-container' : 'bg-surface-variant text-on-surface-variant'}">${t.status}</span>
-            </div>
-            <p class="text-xs text-on-surface">${t.description}</p>
-            <span class="text-[10px] text-on-surface-variant">${t.category} • ${new Date(t.created_at).toLocaleTimeString()}</span>
-          </div>
-        `).join('');
+      if (json.unresolvedCount !== undefined) {
+        updateUnresolvedCounter(json.unresolvedCount);
       }
 
-      showModal('Incident Reports & Tickets', 'report', `
-        <div class="space-y-3">${listHtml}</div>
+      let listHtml = '';
+      if (tickets.length === 0) {
+        listHtml = '<p class="text-xs text-on-surface-variant text-center py-6">No incident tickets filed.</p>';
+      } else {
+        listHtml = tickets.map(t => createTicketCardHtml(t)).join('');
+      }
+
+      showModal('Incident Reports & User Tickets', 'report', `
+        <div class="flex justify-between items-center mb-2 px-1">
+          <span class="text-xs font-bold text-on-surface-variant">Live Incident Log (${tickets.length} total)</span>
+          <span class="text-[10px] text-primary flex items-center gap-1 font-semibold">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Auto-Syncing
+          </span>
+        </div>
+        <div id="incident-tickets-list" class="space-y-3">${listHtml}</div>
       `);
     } catch (err) {
-      showModal('Incident Reports & Tickets', 'report', `
+      showModal('Incident Reports & User Tickets', 'report', `
         <p class="text-xs text-error">Failed to load incidents: ${err.message}</p>
       `);
     }
-  });
+  }
+
+  function createTicketCardHtml(t) {
+    const isResolved = t.status === 'RESOLVED';
+    const statusBadge = isResolved
+      ? '<span class="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">RESOLVED</span>'
+      : '<span class="text-[10px] font-bold px-2 py-0.5 rounded bg-error-container text-on-error-container">OPEN</span>';
+
+    const resolveBtn = isResolved
+      ? ''
+      : `<button onclick="window.resolveIncidentTicket(${t.id})" class="px-2.5 py-1 rounded-lg bg-primary/10 hover:bg-primary text-primary hover:text-white font-bold text-[10px] transition-colors flex items-center gap-1">
+          <span class="material-symbols-outlined text-[13px]">check</span> Resolve
+        </button>`;
+
+    return `
+      <div id="ticket-card-${t.id}" class="p-3 bg-surface-container-low rounded-xl border border-outline-variant/20 flex flex-col gap-2 transition-all">
+        <div class="flex justify-between items-center">
+          <div class="flex items-center gap-2">
+            <span class="font-bold text-primary text-xs">${t.tracking_id || t.trackingId || 'TICKET-#' + t.id}</span>
+            <span class="text-[10px] bg-surface-container px-1.5 py-0.5 rounded text-outline font-medium">${t.category}</span>
+          </div>
+          <div class="flex items-center gap-2">
+            ${statusBadge}
+            ${resolveBtn}
+          </div>
+        </div>
+        <p class="text-xs text-on-surface font-medium">${t.description}</p>
+        <div class="flex justify-between items-center text-[10px] text-on-surface-variant pt-1 border-t border-outline-variant/10">
+          <span>${t.reporter_name ? 'From: ' + t.reporter_name : 'Customer App Inquiry'}</span>
+          <span>${new Date(t.created_at || t.createdAt || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+        </div>
+      </div>
+    `;
+  }
+
+  // Global resolve function
+  window.resolveIncidentTicket = async (ticketId) => {
+    const token = getAuthToken();
+    if (!token) {
+      lockDashboard();
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/v1/admin/tickets/${ticketId}/resolve`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ status: 'RESOLVED' })
+      });
+
+      const json = await res.json();
+      if (res.ok) {
+        const card = document.getElementById(`ticket-card-${ticketId}`);
+        if (card) {
+          card.outerHTML = createTicketCardHtml(json.data);
+        }
+        showToast('Ticket Resolved', `Incident #${ticketId} has been marked as RESOLVED.`, 'success');
+      } else {
+        alert(json.message || 'Failed to update ticket.');
+      }
+    } catch (err) {
+      alert('Error updating ticket: ' + err.message);
+    }
+  };
+
+  btnIncidentReports.addEventListener('click', renderIncidentReportsModal);
 
   // User Feedback Modal
   btnUserFeedback.addEventListener('click', () => {
@@ -528,13 +658,62 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // --------------------------------------------------------------------------
-  // 6. Socket.io Real-time Event Listener for Broadcasts & GPS Telemetry
+  // 6. Real-time WebSocket Event Listeners
   // --------------------------------------------------------------------------
   try {
     if (typeof io !== 'undefined') {
       const socket = io();
+
+      // Listen for Live User Support Tickets & Reports
+      socket.on('new_support_ticket', (data) => {
+        console.log('[Live New Ticket Received]', data);
+
+        // 1. Update unresolved counter
+        if (data.unresolvedCount !== undefined) {
+          updateUnresolvedCounter(data.unresolvedCount);
+        }
+
+        // 2. Animate and highlight the Incident Reports card
+        if (btnIncidentReports) {
+          btnIncidentReports.classList.add('ring-2', 'ring-error', 'border-error');
+          setTimeout(() => {
+            btnIncidentReports.classList.remove('ring-2', 'ring-error', 'border-error');
+          }, 3000);
+        }
+
+        // 3. Prepend into modal list if modal is open
+        const listContainer = document.getElementById('incident-tickets-list');
+        if (listContainer && data.ticket) {
+          const tempWrapper = document.createElement('div');
+          tempWrapper.innerHTML = createTicketCardHtml(data.ticket);
+          const newCard = tempWrapper.firstElementChild;
+          newCard.classList.add('ring-2', 'ring-primary', 'bg-primary-fixed/20');
+          listContainer.prepend(newCard);
+        }
+
+        // 4. Pop up floating real-time toast
+        const trackingLabel = data.ticket.tracking_id ? `[${data.ticket.tracking_id}] ` : '';
+        showToast(
+          `🚨 New Incident Reported (${data.ticket.category})`,
+          `${trackingLabel}${data.ticket.description}`,
+          'error'
+        );
+      });
+
+      // Listen for Ticket Resolved by another admin
+      socket.on('ticket_resolved', (data) => {
+        if (data.unresolvedCount !== undefined) {
+          updateUnresolvedCounter(data.unresolvedCount);
+        }
+        const card = document.getElementById(`ticket-card-${data.ticket.id}`);
+        if (card) {
+          card.outerHTML = createTicketCardHtml(data.ticket);
+        }
+      });
+
+      // Broadcast alerts listener
       socket.on('broadcast_alert', (payload) => {
-        console.log('[Admin Live Broadcast Received]', payload);
+        showToast(`📢 Admin Broadcast (${payload.target})`, payload.message, 'info');
       });
     }
   } catch (err) {

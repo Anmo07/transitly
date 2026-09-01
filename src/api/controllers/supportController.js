@@ -42,7 +42,33 @@ class SupportController {
         RETURNING id, user_id as "userId", category, tracking_id as "trackingId", description, status, created_at as "createdAt"
       `, [userId, category || 'GENERAL', trackingId || null, desc]);
 
-      return res.status(201).json({ status: 'success', data: insertRes.rows[0] });
+      const createdTicket = insertRes.rows[0];
+
+      // Emit real-time WebSocket event to connected Admin Command Centers
+      try {
+        const { getIo } = require('../../websockets/socket');
+        const io = getIo();
+
+        const countRes = await pool.query("SELECT COUNT(*) as count FROM support_tickets WHERE status = 'OPEN'");
+        const unresolvedCount = parseInt(countRes.rows[0]?.count || '1', 10);
+
+        io.emit('new_support_ticket', {
+          ticket: {
+            id: createdTicket.id,
+            category: createdTicket.category,
+            tracking_id: createdTicket.trackingId,
+            description: createdTicket.description,
+            status: createdTicket.status,
+            created_at: createdTicket.createdAt
+          },
+          unresolvedCount,
+          timestamp: new Date().toISOString()
+        });
+      } catch (wsErr) {
+        console.warn('[SupportController] WebSocket broadcast notice:', wsErr.message);
+      }
+
+      return res.status(201).json({ status: 'success', data: createdTicket });
     } catch (err) {
       return res.status(400).json({ status: 'error', message: err.message });
     }

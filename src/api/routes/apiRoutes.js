@@ -24,6 +24,7 @@ router.get('/admin/stats', (req, res) => adminController.getStats(req, res));
 router.get('/admin/fleet', (req, res) => adminController.getFleet(req, res));
 router.get('/admin/health', (req, res) => adminController.getHealth(req, res));
 router.get('/admin/incidents', (req, res) => adminController.getIncidents(req, res));
+router.patch('/admin/tickets/:id/resolve', (req, res, next) => adminController.requireAdminAuth(req, res, next), (req, res) => adminController.resolveTicket(req, res));
 router.post('/admin/broadcast', (req, res, next) => adminController.requireAdminAuth(req, res, next), (req, res) => adminController.sendBroadcast(req, res));
 
 // 0.1 User Profile & Settings
