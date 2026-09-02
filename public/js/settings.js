@@ -153,7 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (lang) localStorage.setItem('transitly_lang', lang);
         showToast('Signed out successfully.');
         setTimeout(() => {
-          window.location.href = '/';
+          window.location.href = '/login';
         }, 800);
       }
     });

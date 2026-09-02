@@ -29,6 +29,17 @@ router.get('/admin/incidents', (req, res) => adminController.getIncidents(req, r
 router.patch('/admin/tickets/:id/resolve', (req, res, next) => adminController.requireAdminAuth(req, res, next), (req, res) => adminController.resolveTicket(req, res));
 router.post('/admin/broadcast', (req, res, next) => adminController.requireAdminAuth(req, res, next), (req, res) => adminController.sendBroadcast(req, res));
 
+// 0.1 User Authentication & OTP Verification
+router.post('/auth/otp/send', (req, res) => userController.sendOtp(req, res));
+router.post('/auth/otp/verify', (req, res) => userController.verifyOtp(req, res));
+router.post('/auth/signup', (req, res) => userController.registerUser(req, res));
+router.post('/auth/register', (req, res) => userController.registerUser(req, res));
+router.get('/auth/google', (req, res) => userController.googleAuth(req, res));
+router.get('/auth/google/callback', (req, res) => userController.googleCallback(req, res));
+router.get('/auth/apple', (req, res) => userController.appleAuth(req, res));
+router.get('/auth/apple/callback', (req, res) => userController.appleCallback(req, res));
+router.post('/auth/apple/callback', (req, res) => userController.appleCallback(req, res));
+
 // 0.1 User Profile & Settings
 router.get('/profile', (req, res) => userController.getProfile(req, res));
 router.put('/profile', (req, res) => userController.updateProfile(req, res));

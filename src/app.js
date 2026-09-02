@@ -73,6 +73,8 @@ app.get('/robots.txt', (req, res) => {
 
 // Frontend Screen Routes
 app.get(['/', '/deliver'], (req, res) => res.sendFile(path.join(publicDir, 'index.html')));
+app.get(['/login', '/auth', '/signin', '/verify'], (req, res) => res.sendFile(path.join(publicDir, 'login.html')));
+app.get(['/signup', '/register', '/create-account'], (req, res) => res.sendFile(path.join(publicDir, 'signup.html')));
 app.get('/tracking', (req, res) => res.sendFile(path.join(publicDir, 'tracking.html')));
 app.get('/services', (req, res) => res.sendFile(path.join(publicDir, 'services.html')));
 app.get('/history', (req, res) => res.sendFile(path.join(publicDir, 'history.html')));

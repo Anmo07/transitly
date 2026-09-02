@@ -11,6 +11,22 @@
     <priority>1.0</priority>
   </url>
 
+  <!-- User Login & Verification -->
+  <url>
+    <loc>https://transitly.in/login</loc>
+    <lastmod>2026-09-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- User Account Creation & Sign Up -->
+  <url>
+    <loc>https://transitly.in/signup</loc>
+    <lastmod>2026-09-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
   <!-- Live Tracking -->
   <url>
     <loc>https://transitly.in/tracking</loc>

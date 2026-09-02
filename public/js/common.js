@@ -316,9 +316,29 @@ document.addEventListener('DOMContentLoaded', () => {
   window.refreshTransitlyBellBadges = refreshBellBadges;
 
   /**
+   * Helper: Check if current page is an Authentication / Verification Landing Page
+   */
+  const isAuthLandingPage = () => {
+    const current = window.location.pathname.toLowerCase();
+    return ['/login', '/signin', '/auth', '/verify', '/signup', '/register'].some(p => current.startsWith(p));
+  };
+
+  /**
+   * Helper: Check if user has completed login/verification phase
+   */
+  const isUserAuthenticated = () => {
+    return !!localStorage.getItem('transitly_auth_token');
+  };
+
+  /**
    * Floating Toast Banner for Real-Time Incoming Notifications
+   * Guarded: Notifications strictly appear ONLY after the user is past login and verification.
    */
   const showLiveToastAlert = (alertItem) => {
+    if (isAuthLandingPage() || !isUserAuthenticated()) {
+      return; // Do not display on login, signup, verification landing pages or for unauthenticated users
+    }
+
     // Remove existing toast if any
     const existing = document.getElementById('transitlyLiveToastAlert');
     if (existing) existing.remove();
@@ -418,6 +438,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let lastEventIndex = 0;
   const dispatchLiveRealtimeAlert = () => {
+    // Only stream alerts if user is logged in and not on authentication pages
+    if (isAuthLandingPage() || !isUserAuthenticated()) {
+      return;
+    }
+
     const template = LIVE_EVENT_TEMPLATES[lastEventIndex % LIVE_EVENT_TEMPLATES.length];
     lastEventIndex++;
 
@@ -441,24 +466,32 @@ document.addEventListener('DOMContentLoaded', () => {
     window.dispatchEvent(new CustomEvent('transitly:new_notification', { detail: newAlert }));
   };
 
-  // Initialize Global Bell Badges on Page Load
-  refreshBellBadges();
+  // Initialize Global Bell Badges on Page Load (hidden on auth landing pages)
+  if (!isAuthLandingPage()) {
+    refreshBellBadges();
+  }
 
   // Listen to custom updates and cross-tab storage updates
-  window.addEventListener('transitly:notifications_updated', refreshBellBadges);
-  window.addEventListener('transitly:new_notification', refreshBellBadges);
+  window.addEventListener('transitly:notifications_updated', () => {
+    if (!isAuthLandingPage()) refreshBellBadges();
+  });
+  window.addEventListener('transitly:new_notification', () => {
+    if (!isAuthLandingPage()) refreshBellBadges();
+  });
 
   window.addEventListener('storage', (e) => {
-    if (e.key === 'transitly_notifications_store') {
+    if (e.key === 'transitly_notifications_store' && !isAuthLandingPage()) {
       refreshBellBadges();
     }
   });
 
-  // Start Real-Time Simulation Interval (first event after 25s, then every 45s)
-  setTimeout(() => {
-    dispatchLiveRealtimeAlert();
-    setInterval(dispatchLiveRealtimeAlert, 45000);
-  }, 25000);
+  // Start Real-Time Simulation Interval strictly if authenticated and past login/verification
+  if (!isAuthLandingPage() && isUserAuthenticated()) {
+    setTimeout(() => {
+      dispatchLiveRealtimeAlert();
+      setInterval(dispatchLiveRealtimeAlert, 45000);
+    }, 25000);
+  }
 });
 
 // =============================================================
@@ -866,4 +899,22 @@ if (!window.openCookiePreferences && !document.querySelector('script[src*="cooki
   cookieScript.defer = true;
   document.head.appendChild(cookieScript);
 }
+
+// -------------------------------------------------------------
+// Global User Authentication State Helper
+// -------------------------------------------------------------
+window.TransitlyAuth = {
+  isLoggedIn: () => !!localStorage.getItem('transitly_auth_token'),
+  getUser: () => ({
+    name: localStorage.getItem('transitly_user_name') || 'Valued Customer',
+    email: localStorage.getItem('transitly_user_email') || 'alex@example.com',
+    phone: localStorage.getItem('transitly_user_phone') || '+91 98765 43210'
+  }),
+  logout: () => {
+    localStorage.removeItem('transitly_auth_token');
+    localStorage.removeItem('transitly_user_name');
+    window.location.href = '/login';
+  }
+};
+
 

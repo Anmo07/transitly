@@ -371,13 +371,13 @@ const initializeDatabase = async () => {
 
     const seedUsers = `
       INSERT INTO users (id, name, email, phone, role, avatar_url, preferences) VALUES
-      (1, 'Anmol', 'anmolrajotiy@gmail.com', '+91 7988342544', 'CUSTOMER', 'https://lh3.googleusercontent.com/aida-public/AB6AXuBzAACyzyleKmM4JQVt8Aa-jr70QVcpj9loY9wKp5o9O4E4p6Pw4_DrVmOHt4kkJfjfzprBQFcotrP67UIXwwodZ_N8y_NQMBXmYt1FUgmWEZU3RkLHv9mtX5_jewodrd3AC22FofPIl1pDv6bTKcqN63TR8-Ce6clfaRjIaxwp6CeKnOIoGAZdfBFJX_YfrWG4DCAk26zr7uiOS6j2JNkj4E16URTfm8orQCRZ5X_7hBMsGpV5UeKJ', '{"pushNotifications": true, "smsUpdates": true, "locationServices": true, "biometrics": false, "language": "English (US)"}'::jsonb),
-      (2, 'Delhi Transport Corporation', 'operator@dtc.delhi.gov.in', '+911123456789', 'OPERATOR', NULL, '{}'::jsonb),
-      (3, 'Aarav Sharma (Sender)', 'aarav.sharma@example.com', '+919876543210', 'CUSTOMER', NULL, '{}'::jsonb),
-      (4, 'Rohan Verma (Recipient)', 'rohan.verma@example.com', '+919876543211', 'CUSTOMER', NULL, '{}'::jsonb),
-      (5, 'Express Last-Mile Delivery Partners', 'partner@expresslogistics.in', '+919876543212', 'DELIVERY_PARTNER', NULL, '{}'::jsonb),
-      (6, 'Rajesh Kumar (Bus Captain)', 'rajesh.driver@dtc.in', '+919876543213', 'DRIVER', NULL, '{}'::jsonb),
-      (10, 'Haryana Roadways (State Transport)', 'contact@haryanaroadways.gov.in', '+911722704014', 'OPERATOR', NULL, '{}'::jsonb)
+      (1, 'Anmol', 'anmolrajotiy@gmail.com', '+917988342544', 'CUSTOMER', '', '{"pushNotifications": true, "emailUpdates": true, "locationServices": true, "biometrics": false, "language": "English (IN)"}'::jsonb),
+      (2, 'Delhi Transport Corporation', 'operator@dtc.delhi.gov.in', '+911123456789', 'OPERATOR', '', '{}'::jsonb),
+      (3, 'Aarav Sharma', 'aarav.sharma@transitly.in', '+919876543210', 'CUSTOMER', '', '{}'::jsonb),
+      (4, 'Rohan Verma', 'rohan.verma@transitly.in', '+919876543211', 'CUSTOMER', '', '{}'::jsonb),
+      (5, 'Express Last-Mile Delivery Partners', 'partner@expresslogistics.in', '+919876543212', 'DELIVERY_PARTNER', '', '{}'::jsonb),
+      (6, 'Rajesh Kumar', 'rajesh.driver@transitly.in', '+919876543213', 'DRIVER', '', '{}'::jsonb),
+      (10, 'Haryana Roadways', 'contact@haryanaroadways.gov.in', '+911722704014', 'OPERATOR', '', '{}'::jsonb)
       ON CONFLICT (id) DO UPDATE SET
         name = EXCLUDED.name,
         email = EXCLUDED.email,
