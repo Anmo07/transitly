@@ -350,6 +350,22 @@ const initializeDatabase = async () => {
 
     console.log('✔ Master Relational DDL applied successfully (16 tables created).');
 
+    // 3b. Apply DDD Schema Evolution (001_master_schema.sql)
+    if (hasPostgis) {
+      console.log(`\n3b. Applying DDD Schema Evolution (001_master_schema.sql)...`);
+      try {
+        const dddMigrationPath = path.join(__dirname, 'migrations', '001_master_schema.sql');
+        const dddMigrationSQL = fs.readFileSync(dddMigrationPath, 'utf-8');
+        await targetPool.query(dddMigrationSQL);
+        console.log('✔ DDD Schema Evolution applied (operators, terminals, provider_quotes, provider_dispatches, notifications, messaging_consents, audit_logs + column evolutions).');
+      } catch (err) {
+        console.warn('[DDD Migration Notice]', err.message);
+        console.log('ℹ DDD schema evolution partially applied or skipped. Core tables remain functional.');
+      }
+    } else {
+      console.log(`\n3b. Skipping DDD Schema Evolution (requires PostGIS).`);
+    }
+
     // 4. Seed Data
     console.log(`\n4. Seeding Initial Master Data...`);
 
