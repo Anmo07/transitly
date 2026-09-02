@@ -3,7 +3,23 @@
 <html class="light" lang="en"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
-<title>Settings - Transitly</title>
+<title>Settings — Transitly</title>
+<meta name="description" content="Manage your Transitly account settings, push alerts, language preferences, GPS tracking permissions, cookie choices, and legal privacy options."/>
+<link rel="canonical" href="https://transitly.in/settings" />
+<meta name="theme-color" content="#0050cb"/>
+
+<!-- Open Graph / Social Media -->
+<meta property="og:type" content="website"/>
+<meta property="og:url" content="https://transitly.in/settings"/>
+<meta property="og:title" content="Settings — Transitly Logistics"/>
+<meta property="og:description" content="Manage notification preferences, continuous GPS telematics, and privacy configurations."/>
+<meta property="og:site_name" content="Transitly"/>
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Settings — Transitly Logistics"/>
+<meta name="twitter:description" content="Manage notification preferences, continuous GPS telematics, and privacy configurations."/>
+
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
@@ -246,12 +262,56 @@
 </div>
 
 <!-- Help & Support -->
-<a href="/help-support" class="flex items-center justify-between p-4 hover:bg-surface-container-low transition-colors group">
+<a href="/help-support" class="flex items-center justify-between p-4 border-b border-surface-variant hover:bg-surface-container-low transition-colors group">
 <div class="flex items-center gap-stack-md">
 <div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-primary group-hover:bg-white transition-colors">
 <span class="material-symbols-outlined" data-icon="support_agent">support_agent</span>
 </div>
 <span class="text-body-md font-body-md text-on-surface font-medium" data-i18n="settings_help">Help &amp; Support</span>
+</div>
+<span class="material-symbols-outlined text-outline" data-icon="chevron_right">chevron_right</span>
+</a>
+
+<!-- FAQ Knowledge Base -->
+<a href="/faq" class="flex items-center justify-between p-4 border-b border-surface-variant hover:bg-surface-container-low transition-colors group">
+<div class="flex items-center gap-stack-md">
+<div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-primary group-hover:bg-white transition-colors">
+<span class="material-symbols-outlined" data-icon="quiz">quiz</span>
+</div>
+<span class="text-body-md font-body-md text-on-surface font-medium">Frequently Asked Questions (FAQ)</span>
+</div>
+<span class="material-symbols-outlined text-outline" data-icon="chevron_right">chevron_right</span>
+</a>
+
+<!-- Cookie Preferences -->
+<div onclick="if(window.openCookiePreferences) window.openCookiePreferences();" class="flex items-center justify-between p-4 border-b border-surface-variant hover:bg-surface-container-low transition-colors group cursor-pointer">
+<div class="flex items-center gap-stack-md">
+<div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-primary group-hover:bg-white transition-colors">
+<span class="material-symbols-outlined" data-icon="cookie">cookie</span>
+</div>
+<span class="text-body-md font-body-md text-on-surface font-medium">Cookie &amp; Telematics Preferences</span>
+</div>
+<span class="material-symbols-outlined text-outline" data-icon="chevron_right">chevron_right</span>
+</div>
+
+<!-- Privacy Policy -->
+<a href="/privacy-policy" class="flex items-center justify-between p-4 border-b border-surface-variant hover:bg-surface-container-low transition-colors group">
+<div class="flex items-center gap-stack-md">
+<div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-primary group-hover:bg-white transition-colors">
+<span class="material-symbols-outlined" data-icon="verified_user">verified_user</span>
+</div>
+<span class="text-body-md font-body-md text-on-surface font-medium">Privacy Policy</span>
+</div>
+<span class="material-symbols-outlined text-outline" data-icon="chevron_right">chevron_right</span>
+</a>
+
+<!-- Terms of Use -->
+<a href="/terms" class="flex items-center justify-between p-4 hover:bg-surface-container-low transition-colors group">
+<div class="flex items-center gap-stack-md">
+<div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-primary group-hover:bg-white transition-colors">
+<span class="material-symbols-outlined" data-icon="gavel">gavel</span>
+</div>
+<span class="text-body-md font-body-md text-on-surface font-medium">Terms and Conditions of Use</span>
 </div>
 <span class="material-symbols-outlined text-outline" data-icon="chevron_right">chevron_right</span>
 </a>

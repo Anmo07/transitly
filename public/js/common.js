@@ -857,3 +857,13 @@ window.generateTransitlyInvoice = (data = {}) => {
   document.body.removeChild(downloadLink);
 };
 
+// -------------------------------------------------------------
+// Auto-load Global Cookie Consent Banner Controller
+// -------------------------------------------------------------
+if (!window.openCookiePreferences && !document.querySelector('script[src*="cookie-consent.js"]')) {
+  const cookieScript = document.createElement('script');
+  cookieScript.src = '/js/cookie-consent.js?v=20260903';
+  cookieScript.defer = true;
+  document.head.appendChild(cookieScript);
+}
+

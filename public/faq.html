@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+  <title>Frequently Asked Questions (FAQ) — Transitly Logistics</title>
+  <meta name="description" content="Find answers to common questions about Transitly's intercity bus cargo delivery, live GPS tracking, pricing, doorstep pickup with Uber/Rapido, QR seals, and OTP verification.">
+  <link rel="canonical" href="https://transitly.in/faq" />
+  <meta name="theme-color" content="#0050cb">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://transitly.in/faq" />
+  <meta property="og:title" content="Frequently Asked Questions (FAQ) — Transitly Logistics" />
+  <meta property="og:description" content="Explore instant answers on bus parcel delivery, tracking, rates, and security." />
+  <meta property="og:site_name" content="Transitly" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Frequently Asked Questions (FAQ) — Transitly Logistics" />
+  <meta name="twitter:description" content="Explore instant answers on bus parcel delivery, tracking, rates, and security." />
+
+  <!-- JSON-LD Structured Data: Schema.org/FAQPage -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "How does Transitly intercity bus cargo delivery work?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Transitly pairs unused luggage and cargo bay capacity inside scheduled public and state roadways buses (like Haryana Roadways) with doorstep delivery riders (Uber Direct and Rapido). Your package travels via high-frequency express buses between ISBT depots and is delivered door-to-door or terminal-to-terminal in under 6 hours."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How much does it cost to send a parcel?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Bus cargo is up to 50% cheaper than traditional express couriers and air freight. Base terminal-to-terminal parcel rates start from just ₹60, while full door-to-door multi-modal shipments start at ₹120 depending on weight and highway corridor distance."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How do I track my parcel in real time?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Every booking generates a unique Tracking Number (e.g. TRK-88219). Enter this number on our Tracking page to see the exact real-time GPS location of the transit bus, telemetry speed, highway corridor progress, and estimated delivery time."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What is a cryptographic QR Bay Seal?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Transitly uses digital HMAC-SHA256 authenticated tamper-evident QR seals. The seal is verified when the parcel is handed to the bus driver, stowed in the cargo bay, and transferred at the destination hub. If a seal is broken or tampered with, an instant alert is triggered in our Command Center."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How does the recipient receive the parcel?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Delivery requires a secure dual-OTP confirmation. A confidential 6-digit OTP is sent via SMS and WhatsApp to the recipient's phone number. The delivery courier or terminal agent can only complete delivery after verifying this OTP."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What items are prohibited from shipping?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Prohibited items include explosives, fireworks, compressed gases, flammable liquids, toxic chemicals, illegal drugs, live animals, firearms, unpadded fragile goods, and cash. All packages are subject to inspection at ISBT bus depots."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I cancel my shipment and get a refund?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes. Shipments cancelled before a first-mile rider is dispatched receive a 100% refund. Once the package is stowed in an active bus cargo bay in transit, cancellations are no longer eligible for a refund."
+        }
+      }
+    ]
+  }
+  </script>
+
+  <!-- Fonts & Icons -->
+  <link href="https://fonts.googleapis.com" rel="preconnect"/>
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+
+  <!-- Tailwind CSS & Brand Styles -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "on-surface": "#13161c",
+            "on-surface-variant": "#434753",
+            "outline": "#717684",
+            "outline-variant": "#cbd0df",
+            "surface-container-high": "#e5e8f2",
+            "background": "#f6f8fc",
+            "surface-container-lowest": "#ffffff",
+            "surface-container-low": "#f0f3fa",
+            "surface-container": "#e8ecf5",
+            "surface": "#ffffff",
+            "primary": "#0050cb",
+            "primary-container": "#0066ff",
+            "primary-dark": "#003ba0",
+            "primary-fixed": "#dae1ff",
+            "on-primary": "#ffffff",
+            "secondary": "#535965",
+            "secondary-container": "#e2e6f0",
+            "error": "#ba1a1a",
+            "emerald-brand": "#0d8a50"
+          },
+          fontFamily: {
+            sans: ["Plus Jakarta Sans", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "sans-serif"]
+          },
+          boxShadow: {
+            'glow-primary': '0 8px 24px -4px rgba(0, 80, 203, 0.35)'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      line-height: 1;
+    }
+    .material-symbols-outlined.fill {
+      font-variation-settings: 'FILL' 1;
+    }
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease;
+      opacity: 0;
+    }
+    .faq-item.open .faq-answer {
+      max-height: 500px;
+      opacity: 1;
+    }
+    .faq-item.open .faq-toggle-icon {
+      transform: rotate(180deg);
+    }
+  </style>
+</head>
+
+<body class="bg-background text-on-surface font-sans min-h-screen flex flex-col selection:bg-primary selection:text-white">
+
+  <!-- ========================================================================= -->
+  <!-- Top Navigation Header                                                     -->
+  <!-- ========================================================================= -->
+  <header class="bg-white/95 backdrop-blur-md shadow-sm sticky top-0 left-0 right-0 w-full z-40 border-b border-slate-200">
+    <div class="flex justify-between items-center px-4 md:px-8 h-16 max-w-6xl mx-auto w-full">
+      <div class="flex items-center gap-3">
+        <a href="/" aria-label="Transitly Home" class="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center hover:bg-primary hover:text-white transition-all">
+          <span class="material-symbols-outlined text-2xl">local_shipping</span>
+        </a>
+        <a href="/" class="text-xl font-extrabold text-primary tracking-tight">
+          Transitly
+        </a>
+      </div>
+
+      <!-- Desktop Nav Tabs -->
+      <nav class="hidden md:flex items-center space-x-1" id="desktopNavTabs">
+        <a class="desktop-nav-btn px-3.5 py-1.5 rounded-full text-xs font-medium text-on-surface-variant hover:bg-surface-variant transition-all flex items-center gap-1.5" href="/">
+          <span class="material-symbols-outlined text-[18px]">local_shipping</span>
+          Deliver
+        </a>
+        <a class="desktop-nav-btn px-3.5 py-1.5 rounded-full text-xs font-medium text-on-surface-variant hover:bg-surface-variant transition-all flex items-center gap-1.5" href="/tracking">
+          <span class="material-symbols-outlined text-[18px]">distance</span>
+          Tracking
+        </a>
+        <a class="desktop-nav-btn px-3.5 py-1.5 rounded-full text-xs font-medium text-on-surface-variant hover:bg-surface-variant transition-all flex items-center gap-1.5" href="/services">
+          <span class="material-symbols-outlined text-[18px]">apps</span>
+          All Services
+        </a>
+        <a class="desktop-nav-btn px-3.5 py-1.5 rounded-full text-xs font-bold text-primary bg-primary-fixed/50 transition-all flex items-center gap-1.5 shadow-sm" href="/faq">
+          <span class="material-symbols-outlined text-[18px]">help_outline</span>
+          FAQ
+        </a>
+        <a class="desktop-nav-btn px-3.5 py-1.5 rounded-full text-xs font-medium text-on-surface-variant hover:bg-surface-variant transition-all flex items-center gap-1.5" href="/help-support">
+          <span class="material-symbols-outlined text-[18px]">support_agent</span>
+          Support
+        </a>
+      </nav>
+
+      <div class="flex items-center gap-2">
+        <a href="/" class="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary text-white text-xs font-bold shadow-sm hover:bg-primary-dark active:scale-95 transition-all">
+          <span class="material-symbols-outlined text-[16px]">add_box</span>
+          <span>Ship a Parcel</span>
+        </a>
+        <a href="/profile" aria-label="Profile" class="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-700 hover:bg-slate-200 transition-colors">
+          <span class="material-symbols-outlined text-xl">person</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========================================================================= -->
+  <!-- Main FAQ Canvas                                                           -->
+  <!-- ========================================================================= -->
+  <main class="flex-1 max-w-4xl mx-auto w-full px-4 sm:px-6 py-8 md:py-12">
+
+    <!-- Breadcrumb -->
+    <nav class="flex items-center gap-2 text-xs text-slate-500 mb-6 font-medium">
+      <a href="/" class="hover:text-primary transition-colors flex items-center gap-1">
+        <span class="material-symbols-outlined text-[15px]">home</span>
+        <span>Home</span>
+      </a>
+      <span class="text-slate-400">/</span>
+      <span class="text-slate-800 font-bold">Frequently Asked Questions</span>
+    </nav>
+
+    <!-- Header & Live Search Console -->
+    <div class="text-center mb-8">
+      <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold mb-3">
+        <span class="material-symbols-outlined text-sm">quiz</span>
+        <span>Instant Answers Knowledge Base</span>
+      </div>
+      <h1 class="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">How Can We Help You?</h1>
+      <p class="text-sm text-slate-500 mt-2 max-w-lg mx-auto">
+        Everything you need to know about intercity bus parcel booking, live GPS tracking, rate cards, and delivery handovers.
+      </p>
+
+      <!-- Interactive Instant Search Input -->
+      <div class="mt-6 max-w-xl mx-auto relative group">
+        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
+          <span class="material-symbols-outlined text-2xl">search</span>
+        </div>
+        <input type="text" id="faqSearchInput" placeholder="Search keywords like 'pricing', 'OTP', 'Uber', 'prohibited'..." class="w-full pl-12 pr-10 py-3.5 rounded-2xl border border-slate-300 bg-white text-sm font-semibold placeholder:text-slate-400 focus:border-primary focus:ring-2 focus:ring-primary/20 shadow-sm transition-all outline-none">
+        <button type="button" id="btnClearFaqSearch" class="hidden absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600">
+          <span class="material-symbols-outlined text-lg">close</span>
+        </button>
+      </div>
+
+      <!-- Quick Category Filter Pills -->
+      <div class="mt-4 flex items-center justify-center gap-2 overflow-x-auto py-1 no-scrollbar text-xs font-semibold" id="categoryFilterContainer">
+        <button type="button" class="faq-filter-btn px-3.5 py-1.5 rounded-full bg-primary text-white shadow-sm transition-all active:scale-95" data-category="all">All Topics</button>
+        <button type="button" class="faq-filter-btn px-3.5 py-1.5 rounded-full bg-white text-slate-600 border border-slate-200 hover:border-primary hover:text-primary transition-all active:scale-95" data-category="booking">Booking &amp; Rates</button>
+        <button type="button" class="faq-filter-btn px-3.5 py-1.5 rounded-full bg-white text-slate-600 border border-slate-200 hover:border-primary hover:text-primary transition-all active:scale-95" data-category="tracking">Tracking &amp; Fleet</button>
+        <button type="button" class="faq-filter-btn px-3.5 py-1.5 rounded-full bg-white text-slate-600 border border-slate-200 hover:border-primary hover:text-primary transition-all active:scale-95" data-category="security">Security &amp; Seals</button>
+        <button type="button" class="faq-filter-btn px-3.5 py-1.5 rounded-full bg-white text-slate-600 border border-slate-200 hover:border-primary hover:text-primary transition-all active:scale-95" data-category="delivery">Pickup &amp; Doorstep</button>
+        <button type="button" class="faq-filter-btn px-3.5 py-1.5 rounded-full bg-white text-slate-600 border border-slate-200 hover:border-primary hover:text-primary transition-all active:scale-95" data-category="refunds">Refunds &amp; Rules</button>
+      </div>
+    </div>
+
+    <!-- FAQ Accordion List -->
+    <div class="space-y-3" id="faqList">
+
+      <!-- Q1 -->
+      <div class="faq-item bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden transition-all duration-200 hover:border-primary/40" data-category="booking">
+        <button type="button" class="faq-question w-full p-4 sm:p-5 text-left flex justify-between items-center gap-4 focus:outline-none">
+          <span class="font-bold text-slate-900 text-sm sm:text-base flex items-center gap-2.5">
+            <span class="w-7 h-7 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+              <span class="material-symbols-outlined text-[16px]">local_shipping</span>
+            </span>
+            <span>How does Transitly's intercity bus cargo delivery work?</span>
+          </span>
+          <span class="material-symbols-outlined text-slate-400 faq-toggle-icon transition-transform duration-200 shrink-0">expand_more</span>
+        </button>
+        <div class="faq-answer px-4 sm:px-5 pb-5 text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-slate-100 pt-3">
+          <p>
+            Transitly monetizes scheduled public transport vehicle cargo holds (such as state roadways buses operating between Delhi, Haryana, Punjab, and Rajasthan). When you book, your shipment is paired with an upcoming departure on that highway corridor. Doorstep courier partners (Uber Direct, Rapido) collect the package from your door, transport it to the origin ISBT terminal, and upon arrival, another courier delivers it straight to the recipient's hands — all in under 6 hours.
+          </p>
+        </div>
+      </div>
+
+      <!-- Q2 -->
+      <div class="faq-item bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden transition-all duration-200 hover:border-primary/40" data-category="booking">
+        <button type="button" class="faq-question w-full p-4 sm:p-5 text-left flex justify-between items-center gap-4 focus:outline-none">
+          <span class="font-bold text-slate-900 text-sm sm:text-base flex items-center gap-2.5">
+            <span class="w-7 h-7 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+              <span class="material-symbols-outlined text-[16px]">currency_rupee</span>
+            </span>
+            <span>How much do I save compared to conventional couriers?</span>
+          </span>
+          <span class="material-symbols-outlined text-slate-400 faq-toggle-icon transition-transform duration-200 shrink-0">expand_more</span>
+        </button>
+        <div class="faq-answer px-4 sm:px-5 pb-5 text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-slate-100 pt-3">
+          <p>
+            Because buses are already running on fixed timetables with paid fuel, our network eliminates dedicated long-haul truck overhead. Fares start at just <strong>₹60 for terminal hub drops</strong> and from <strong>₹120 for full door-to-door multi-modal delivery</strong>. That represents up to 50% savings over conventional next-day air and express courier tariffs.
+          </p>
+        </div>
+      </div>
+
+      <!-- Q3 -->
+      <div class="faq-item bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden transition-all duration-200 hover:border-primary/40" data-category="tracking">
+        <button type="button" class="faq-question w-full p-4 sm:p-5 text-left flex justify-between items-center gap-4 focus:outline-none">
+          <span class="font-bold text-slate-900 text-sm sm:text-base flex items-center gap-2.5">
+            <span class="w-7 h-7 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+              <span class="material-symbols-outlined text-[16px]">distance</span>
+            </span>
+            <span>Can I watch the bus move on a live map?</span>
+          </span>
+          <span class="material-symbols-outlined text-slate-400 faq-toggle-icon transition-transform duration-200 shrink-0">expand_more</span>
+        </button>
+        <div class="faq-answer px-4 sm:px-5 pb-5 text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-slate-100 pt-3">
+          <p>
+            Yes! Our spatial telematics engine streams live GPS pings from the vehicle carrying your cargo. Go to the <a href="/tracking" class="text-primary font-bold hover:underline">Tracking Console</a> and enter your tracking code (e.g. TRK-88219). You will see the vehicle moving along the highway in real time, current highway speed, toll plaza checkpoints, and accurate live ETA down to the minute.
+          </p>
+        </div>
+      </div>
+
+      <!-- Q4 -->
+      <div class="faq-item bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden transition-all duration-200 hover:border-primary/40" data-category="security">
+        <button type="button" class="faq-question w-full p-4 sm:p-5 text-left flex justify-between items-center gap-4 focus:outline-none">
+          <span class="font-bold text-slate-900 text-sm sm:text-base flex items-center gap-2.5">
+            <span class="w-7 h-7 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+              <span class="material-symbols-outlined text-[16px]">qr_code_2</span>
+            </span>
+            <span>What is a Cryptographic QR Bay Seal?</span>
+          </span>
+          <span class="material-symbols-outlined text-slate-400 faq-toggle-icon transition-transform duration-200 shrink-0">expand_more</span>
+        </button>
+        <div class="faq-answer px-4 sm:px-5 pb-5 text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-slate-100 pt-3">
+          <p>
+            Unlike paper tags that can be peeled off or replaced, every Transitly booking generates an HMAC-SHA256 authenticated digital QR seal. The seal is scanned when loaded into the vehicle cargo bay, validated at intermediate stops, and rescanned before release. If any custody violation or seal tampering occurs, the package is immediately quarantined and our Operations Command Center is alerted.
+          </p>
+        </div>
+      </div>
+
+      <!-- Q5 -->
+      <div class="faq-item bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden transition-all duration-200 hover:border-primary/40" data-category="security">
+        <button type="button" class="faq-question w-full p-4 sm:p-5 text-left flex justify-between items-center gap-4 focus:outline-none">
+          <span class="font-bold text-slate-900 text-sm sm:text-base flex items-center gap-2.5">
+            <span class="w-7 h-7 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+              <span class="material-symbols-outlined text-[16px]">pin</span>
+            </span>
+            <span>How does the Dual-OTP verification work?</span>
+          </span>
+          <span class="material-symbols-outlined text-slate-400 faq-toggle-icon transition-transform duration-200 shrink-0">expand_more</span>
+        </button>
+        <div class="faq-answer px-4 sm:px-5 pb-5 text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-slate-100 pt-3">
+          <p>
+            Dual-OTP guarantees that only the verified consignee can receive the parcel. A secure 6-digit code is dispatched via SMS and WhatsApp to the recipient's phone upon dispatch. The delivery courier cannot complete the handover until the recipient provides this code, which is verified cryptographically against our server.
+          </p>
+        </div>
+      </div>
+
+      <!-- Q6 -->
+      <div class="faq-item bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden transition-all duration-200 hover:border-primary/40" data-category="delivery">
+        <button type="button" class="faq-question w-full p-4 sm:p-5 text-left flex justify-between items-center gap-4 focus:outline-none">
+          <span class="font-bold text-slate-900 text-sm sm:text-base flex items-center gap-2.5">
+            <span class="w-7 h-7 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+              <span class="material-symbols-outlined text-[16px]">two_wheeler</span>
+            </span>
+            <span>Do I have to go to the bus stand to drop off my parcel?</span>
+          </span>
+          <span class="material-symbols-outlined text-slate-400 faq-toggle-icon transition-transform duration-200 shrink-0">expand_more</span>
+        </button>
+        <div class="faq-answer px-4 sm:px-5 pb-5 text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-slate-100 pt-3">
+          <p>
+            Not unless you want to! With our <strong>Full Door-to-Door</strong> option, an on-demand courier partner (Uber Direct or Rapido) will pick up the parcel from your home or office address and transport it to the departure bus terminal. If you prefer to save money, you can also drop it off directly at any designated ISBT Transitly parcel counter.
+          </p>
+        </div>
+      </div>
+
+      <!-- Q7 -->
+      <div class="faq-item bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden transition-all duration-200 hover:border-primary/40" data-category="refunds">
+        <button type="button" class="faq-question w-full p-4 sm:p-5 text-left flex justify-between items-center gap-4 focus:outline-none">
+          <span class="font-bold text-slate-900 text-sm sm:text-base flex items-center gap-2.5">
+            <span class="w-7 h-7 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center shrink-0">
+              <span class="material-symbols-outlined text-[16px]">block</span>
+            </span>
+            <span>What items are strictly prohibited?</span>
+          </span>
+          <span class="material-symbols-outlined text-slate-400 faq-toggle-icon transition-transform duration-200 shrink-0">expand_more</span>
+        </button>
+        <div class="faq-answer px-4 sm:px-5 pb-5 text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-slate-100 pt-3">
+          <p>
+            Because cargo travels on passenger transit buses, passenger safety is paramount. Prohibited items include fireworks, flammable gases and liquids, hazardous chemicals, firearms, unauthorized narcotics, live animals, fragile raw perishables without cold packaging, and currency. Full details are outlined in our <a href="/terms#prohibited-items" class="text-primary font-bold hover:underline">Terms of Use</a>.
+          </p>
+        </div>
+      </div>
+
+      <!-- Q8 -->
+      <div class="faq-item bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden transition-all duration-200 hover:border-primary/40" data-category="refunds">
+        <button type="button" class="faq-question w-full p-4 sm:p-5 text-left flex justify-between items-center gap-4 focus:outline-none">
+          <span class="font-bold text-slate-900 text-sm sm:text-base flex items-center gap-2.5">
+            <span class="w-7 h-7 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+              <span class="material-symbols-outlined text-[16px]">undo</span>
+            </span>
+            <span>What is the cancellation and refund policy?</span>
+          </span>
+          <span class="material-symbols-outlined text-slate-400 faq-toggle-icon transition-transform duration-200 shrink-0">expand_more</span>
+        </button>
+        <div class="faq-answer px-4 sm:px-5 pb-5 text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-slate-100 pt-3">
+          <p>
+            You can cancel free of charge for a 100% full refund before a first-mile courier is dispatched. If cancelled after a courier has arrived at the sender location, a nominal ₹50 pickup fee is deducted. Once a bus has departed with your parcel in transit, cancellations can no longer be processed. Refunds are credited in 3–5 business days.
+          </p>
+        </div>
+      </div>
+
+      <!-- Q9 -->
+      <div class="faq-item bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden transition-all duration-200 hover:border-primary/40" data-category="booking">
+        <button type="button" class="faq-question w-full p-4 sm:p-5 text-left flex justify-between items-center gap-4 focus:outline-none">
+          <span class="font-bold text-slate-900 text-sm sm:text-base flex items-center gap-2.5">
+            <span class="w-7 h-7 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+              <span class="material-symbols-outlined text-[16px]">scale</span>
+            </span>
+            <span>What is the maximum parcel weight allowed?</span>
+          </span>
+          <span class="material-symbols-outlined text-slate-400 faq-toggle-icon transition-transform duration-200 shrink-0">expand_more</span>
+        </button>
+        <div class="faq-answer px-4 sm:px-5 pb-5 text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-slate-100 pt-3">
+          <p>
+            The standard weight limit for individual consignments on passenger buses is <strong>30 kg</strong>. For higher volume commercial freight or multi-box consignments, please contact our fleet operations team to book dedicated multi-bay cargo allocation.
+          </p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- No Search Results Fallback (Hidden by default) -->
+    <div id="noFaqResults" class="hidden text-center py-12 bg-white rounded-2xl border border-slate-200 mt-4 p-6">
+      <span class="material-symbols-outlined text-4xl text-slate-400 mb-2">search_off</span>
+      <h3 class="font-bold text-base text-slate-800">No questions matched your query</h3>
+      <p class="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
+        Try typing different keywords, or connect with our live dispatch desk directly on WhatsApp.
+      </p>
+      <button type="button" onclick="document.getElementById('faqSearchInput').value=''; document.getElementById('faqSearchInput').dispatchEvent(new Event('input'));" class="mt-4 px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-700 transition-colors">
+        Clear Search Filter
+      </button>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- Call To Action (High-Converting Conversion Banners)                       -->
+    <!-- ========================================================================= -->
+    <div class="mt-12 space-y-4">
+      <!-- Primary Action Card -->
+      <div class="bg-gradient-to-br from-primary to-primary-dark text-white rounded-3xl p-6 sm:p-8 shadow-glow-primary relative overflow-hidden flex flex-col sm:flex-row items-center justify-between gap-6">
+        <div class="relative z-10 text-center sm:text-left">
+          <span class="px-3 py-1 rounded-full bg-white/20 text-[11px] font-extrabold uppercase tracking-wider">Fastest Intercity Transit</span>
+          <h2 class="text-xl sm:text-2xl font-extrabold mt-2">Ready to Send a Parcel Across States?</h2>
+          <p class="text-xs sm:text-sm text-blue-100 mt-1 max-w-md">
+            Calculate instant rates and reserve bus cargo bay capacity in under 60 seconds.
+          </p>
+        </div>
+        <div class="relative z-10 shrink-0">
+          <a href="/" class="px-6 py-3.5 rounded-2xl bg-white text-primary hover:bg-slate-50 text-xs font-extrabold shadow-lg hover:scale-105 active:scale-95 transition-all flex items-center gap-2">
+            <span class="material-symbols-outlined text-[18px]">bolt</span>
+            <span>Book Instant Cargo Now</span>
+          </a>
+        </div>
+        <!-- Subtle Pattern -->
+        <div class="absolute -right-6 -bottom-6 opacity-10 pointer-events-none">
+          <span class="material-symbols-outlined text-[200px]">local_shipping</span>
+        </div>
+      </div>
+
+      <!-- Secondary Help Desk Card -->
+      <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="flex items-center gap-3.5">
+          <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-2xl">chat</span>
+          </div>
+          <div>
+            <h3 class="font-bold text-sm text-slate-900">Still have unanswered questions?</h3>
+            <p class="text-xs text-slate-500">Chat with our 24/7 human dispatch team on WhatsApp for live resolution.</p>
+          </div>
+        </div>
+        <a href="https://wa.me/917988342544?text=Hi%2C%20I%20have%20a%20question%20about%20Transitly%20cargo%20services" target="_blank" class="w-full sm:w-auto px-5 py-3 rounded-xl bg-[#25D366] hover:bg-[#20ba59] text-white text-xs font-bold shadow-sm hover:shadow-md transition-all flex items-center justify-center gap-2 shrink-0">
+          <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+          <span>Chat on WhatsApp</span>
+        </a>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ========================================================================= -->
+  <!-- Shared Footer                                                             -->
+  <!-- ========================================================================= -->
+  <footer class="bg-white border-t border-slate-200 mt-16 py-10 px-4">
+    <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 text-xs text-slate-500">
+      <div class="flex items-center gap-2">
+        <span class="material-symbols-outlined text-primary text-xl">local_shipping</span>
+        <span class="font-extrabold text-slate-800 text-sm">Transitly</span>
+        <span>— Intercity Public Bus Cargo Monetization Network</span>
+      </div>
+      <div class="flex flex-wrap items-center gap-4">
+        <a href="/" class="hover:text-primary transition-colors">Deliver</a>
+        <a href="/tracking" class="hover:text-primary transition-colors">Tracking</a>
+        <a href="/services" class="hover:text-primary transition-colors">Services</a>
+        <a href="/faq" class="text-primary font-bold">FAQ</a>
+        <a href="/privacy-policy" class="hover:text-primary transition-colors">Privacy Policy</a>
+        <a href="/terms" class="hover:text-primary transition-colors">Terms of Use</a>
+        <a href="/help-support" class="hover:text-primary transition-colors">Support</a>
+      </div>
+      <div>
+        <span>© 2026 Transitly Technologies. All rights reserved.</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="/js/i18n.js?v=20260903"></script>
+  <script defer src="/js/common.js?v=20260903"></script>
+  <script defer src="/js/cookie-consent.js?v=20260903"></script>
+  
+  <!-- Interactive Accordion & Search Logic -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const searchInput = document.getElementById('faqSearchInput');
+      const btnClear = document.getElementById('btnClearFaqSearch');
+      const faqItems = document.querySelectorAll('.faq-item');
+      const filterBtns = document.querySelectorAll('.faq-filter-btn');
+      const noResults = document.getElementById('noFaqResults');
+      let currentCategory = 'all';
+
+      // 1. Accordion Toggle
+      faqItems.forEach(item => {
+        const questionBtn = item.querySelector('.faq-question');
+        questionBtn.addEventListener('click', () => {
+          const isOpen = item.classList.contains('open');
+          // Close others
+          faqItems.forEach(other => {
+            if (other !== item) other.classList.remove('open');
+          });
+          if (!isOpen) {
+            item.classList.add('open');
+          } else {
+            item.classList.remove('open');
+          }
+        });
+      });
+
+      // Auto-open first item
+      if (faqItems.length > 0) {
+        faqItems[0].classList.add('open');
+      }
+
+      // 2. Filter & Search Function
+      const applyFilters = () => {
+        const query = searchInput.value.toLowerCase().trim();
+        let visibleCount = 0;
+
+        faqItems.forEach(item => {
+          const itemCat = item.getAttribute('data-category');
+          const text = item.textContent.toLowerCase();
+          const matchesCategory = currentCategory === 'all' || itemCat === currentCategory;
+          const matchesQuery = !query || text.includes(query);
+
+          if (matchesCategory && matchesQuery) {
+            item.classList.remove('hidden');
+            visibleCount++;
+          } else {
+            item.classList.add('hidden');
+            item.classList.remove('open');
+          }
+        });
+
+        if (visibleCount === 0) {
+          noResults.classList.remove('hidden');
+        } else {
+          noResults.classList.add('hidden');
+        }
+
+        if (query.length > 0) {
+          btnClear.classList.remove('hidden');
+        } else {
+          btnClear.classList.add('hidden');
+        }
+      };
+
+      searchInput.addEventListener('input', applyFilters);
+
+      btnClear.addEventListener('click', () => {
+        searchInput.value = '';
+        applyFilters();
+        searchInput.focus();
+      });
+
+      // 3. Category Filter Buttons
+      filterBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          filterBtns.forEach(b => {
+            b.className = 'faq-filter-btn px-3.5 py-1.5 rounded-full bg-white text-slate-600 border border-slate-200 hover:border-primary hover:text-primary transition-all active:scale-95';
+          });
+          btn.className = 'faq-filter-btn px-3.5 py-1.5 rounded-full bg-primary text-white shadow-sm transition-all active:scale-95';
+          currentCategory = btn.getAttribute('data-category');
+          applyFilters();
+        });
+      });
+    });
+  </script>
+</body>
+</html>
