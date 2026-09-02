@@ -21,6 +21,7 @@
 9. [Security, Cryptography & Chain of Custody](#9-security-cryptography--chain-of-custody)
 10. [Deployment, Infrastructure & Containerization](#10-deployment-infrastructure--containerization)
 11. [Quality Assurance & Verification Standards](#11-quality-assurance--verification-standards)
+12. [Master Knowledge Graph & Operations Matrix](#12-master-knowledge-graph--operations-matrix)
 
 ---
 
@@ -707,30 +708,37 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
 CMD ["node", "src/server.js"]
 ```
 
-### Docker Compose Service Topology
+### Docker Compose Service Topology (Pure PostgreSQL/PostGIS + Redis)
 
 ```yaml
 services:
   app:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: transitly-app
     ports: ["3000:3000"]
-    environment:
-      - PORT=3000
-      - MONGO_URI=mongodb://mongodb:27017/transitly
-      - REDIS_URL=redis://redis:6379
-      - POSTGRES_URL=postgresql://transitly:transitly_pass@postgis:5432/transitly_gis
-    depends_on: [mongodb, redis, postgis]
-
-  mongodb:
-    image: mongo:7.0
-    volumes: [mongo_data:/data/db]
+    env_file: [.env.docker]
+    depends_on:
+      redis:
+        condition: service_started
+      postgis:
+        condition: service_healthy
 
   redis:
-    image: redis:7-alpine
+    image: redis:7.2-alpine
+    container_name: transitly-redis
+    ports: ["6379:6379"]
     volumes: [redis_data:/data]
 
   postgis:
     image: postgis/postgis:16-3.4-alpine
+    container_name: transitly-postgis
+    environment:
+      POSTGRES_DB: transitly_telemetry
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespassword
+    ports: ["5433:5432"]
     volumes: [postgis_data:/var/lib/postgresql/data]
 ```
 
@@ -742,13 +750,257 @@ services:
 
 ```
 === Automated Test Suite Breakdown ===
-1. Security Utility Tests      : PASS (OTP crypto, QR Seal, Geofence boundary)
-2. Architecture & Domain Tests : PASS (OCC versioning, State Machine, Sagas)
-3. Last-Mile Orchestration     : PASS (Provider adapters, Feasibility matrix)
-4. WhatsApp Assistant & Bot    : PASS (Notification templates, Bot intents, Redaction)
-5. Telemetry Ingestion Engine  : PASS (Redis Fast Path, PostGIS bulk SQL, Streams)
-6. Master Database Schema      : PASS (12 SQL tables, PostGIS geometries, GIST indexes)
-7. Intercity Express Routes    : PASS (Corridors, Meta Webhook verification challenge)
+1. Security Utility Tests          : PASS (OTP crypto, QR Seal, Geofence boundary)
+2. Architecture & Domain Tests     : PASS (OCC versioning, State Machine, Sagas)
+3. Last-Mile Orchestration         : PASS (Provider adapters, Feasibility matrix)
+4. WhatsApp Assistant & Bot        : PASS (Notification templates, Bot intents, Redaction)
+5. Telemetry Ingestion Engine      : PASS (Redis Fast Path, PostGIS bulk SQL, Streams)
+6. Master Database Schema          : PASS (12 SQL tables, PostGIS geometries, GIST indexes)
+7. Intercity Express Corridors     : PASS (Corridors, Meta Webhook verification challenge)
+8. Admin Command Center Security   : PASS (Master password, WebAuthn Touch ID, Gmail recovery)
 ```
 
-All 7 test suites pass unconditionally in local, CI/CD, and containerized Docker environments.
+All 8 test suites pass unconditionally with 0 errors.
+
+---
+
+## 12. Master Knowledge Graph & Operations Matrix
+
+### 12.1 High-Level Master Architecture Graph
+
+```mermaid
+flowchart TD
+  subgraph Client ["Client Presentation Layer (Browser UI & WebAuthn)"]
+    UI_Deliver["/ (Delivery Hub)"]
+    UI_Tracking["/tracking (Live GPS Radar)"]
+    UI_History["/history (Shipment Ledger)"]
+    UI_Profile["/profile (User & Portal Hub)"]
+    UI_Admin["/admin (Command Center)"]
+  end
+
+  subgraph Gateway ["Express 4.21 API Gateway & Socket.io"]
+    AuthMW["requireAdminAuth JWT Middleware"]
+    RateLimiter["Redis In-Memory Rate Limiter"]
+    SocketServer["Socket.io WebSocket Server"]
+    APIRouter["API Routes Controller Layer"]
+  end
+
+  subgraph Services ["Application & Domain Services"]
+    SagaEngine["Multi-Modal Booking Saga Engine"]
+    PricingSvc["Dynamic Multi-Modal Pricing Service"]
+    LastMileOrch["Last-Mile Orchestrator (Uber, inDrive, Rapido)"]
+    WhatsAppSvc["WhatsApp Cloud API & Chatbot Engine"]
+    EmailSvc["Google Gmail SMTP Emergency Service"]
+    TelemetrySvc["Fast Path / Slow Path Telemetry Ingestion Engine"]
+    GeofenceSvc["PostGIS Geofence & QR Bay Security Service"]
+  end
+
+  subgraph Storage ["Durable & Ephemeral Storage Layer"]
+    Postgres[("PostgreSQL 16 + PostGIS 3.4
+    (Spatial Tables & GiST Indexing)")]
+    Redis[("Redis 7.2 Cache, Streams
+    & Geospatial Tracking Keys")]
+  end
+
+  subgraph External ["External Third-Party Gateways"]
+    Gmail["Google Gmail SMTP (smtp.gmail.com)"]
+    MetaWA["Meta WhatsApp Cloud Graph API"]
+    Maps["Google Maps Engine & Leaflet Tiles"]
+    UberAPI["Uber Direct API"]
+    InDriveAPI["inDrive Cargo Gateway"]
+  end
+
+  UI_Deliver --> APIRouter
+  UI_Tracking --> APIRouter
+  UI_History --> APIRouter
+  UI_Profile --> APIRouter
+  UI_Admin --> AuthMW --> APIRouter
+  UI_Tracking -.-> SocketServer
+  UI_Admin -.-> SocketServer
+
+  APIRouter --> SagaEngine
+  APIRouter --> PricingSvc
+  APIRouter --> LastMileOrch
+  APIRouter --> WhatsAppSvc
+  APIRouter --> EmailSvc
+  APIRouter --> TelemetrySvc
+  APIRouter --> GeofenceSvc
+
+  SagaEngine --> Postgres
+  TelemetrySvc --> Redis --> Postgres
+  LastMileOrch --> UberAPI
+  LastMileOrch --> InDriveAPI
+  EmailSvc --> Gmail
+  WhatsAppSvc --> MetaWA
+  UI_Deliver -.-> Maps
+```
+
+---
+
+### 12.2 End-to-End User Operation Knowledge Graph
+
+```mermaid
+graph LR
+  subgraph UserActions ["User Click Operations"]
+    A1["Tap 'Allow GPS'"]
+    A2["Type Pickup/Destination"]
+    A3["Click 'Swap Route'"]
+    A4["Click Corridor Chip"]
+    A5["Click 'Book Now' / 'Proceed'"]
+    A6["Click 'Confirm & Pay'"]
+    A7["Search Tracking ID"]
+    A8["Submit Support Ticket"]
+    A9["Enter Master Password"]
+    A10["Touch ID Sensor (FIDO2)"]
+    A11["Click 'Forgot Password?'"]
+    A12["Click 'Touch ID Settings'"]
+    A13["Click 'Resolve Incident'"]
+    A14["Broadcast Fleet Alert"]
+  end
+
+  subgraph Handlers ["Frontend Handler (JS)"]
+    H1["navigator.geolocation.getCurrentPosition()"]
+    H2["inputSearchFrom/To.addEventListener('input')"]
+    H3["btnSwapRoute.click -> swapLocations()"]
+    H4["setPredefinedCorridor()"]
+    H5["openBookingModal() -> fetchQuote()"]
+    H6["formCreateBooking.submit()"]
+    H7["loadTrackingData(id) -> socket.on()"]
+    H8["formSupportTicket.submit()"]
+    H9["authPasswordForm.submit()"]
+    H10["authenticateWithBiometrics()"]
+    H11["btnEmergencyRecovery.click()"]
+    H12["openBiometricReconfigModal()"]
+    H13["resolveTicket(ticketId)"]
+    H14["formBroadcastAlert.submit()"]
+  end
+
+  subgraph Endpoints ["API Gateway Route"]
+    E1["GET /api/v1/deliveries/reverse-geocode"]
+    E2["GET /api/v1/deliveries/suggestions"]
+    E5["POST /api/v1/deliveries/quotes"]
+    E6["POST /api/v1/deliveries"]
+    E7["GET /api/v1/tracking/:id"]
+    E8["POST /api/v1/support/tickets"]
+    E9["POST /api/v1/admin/auth/password"]
+    E10["GET/POST /api/v1/admin/auth/biometric/*"]
+    E11["POST /api/v1/admin/auth/recovery"]
+    E12["POST /api/v1/admin/auth/biometric/reset"]
+    E13["PATCH /api/v1/admin/tickets/:id/resolve"]
+    E14["POST /api/v1/admin/broadcast"]
+  end
+
+  subgraph BackendOps ["Backend Services & DB/Redis Actions"]
+    B5["DynamicPricingService.calculate()"]
+    B6["MultiModalSaga.create() -> INSERT parcels, parcel_legs"]
+    B7["SELECT parcels, trips, gps_telemetry_points (PostGIS)"]
+    B8["INSERT support_tickets -> WebSocket emit('new_support_ticket')"]
+    B9["crypto.timingSafeEqual(SHA256) -> JWT signed"]
+    B10["WebAuthn verifyRegistrationResponse / Signature Check"]
+    B11["EmailService.sendMail -> Google Gmail SMTP"]
+    B12["UPDATE admin credentials / biometric keys in DB"]
+    B13["UPDATE support_tickets SET status='RESOLVED' -> emit()"]
+    B14["INSERT audit_logs -> WebSocket broadcast('fleet_alert')"]
+  end
+
+  A1 --> H1 --> E1
+  A2 --> H2 --> E2
+  A3 --> H3
+  A4 --> H4
+  A5 --> H5 --> E5 --> B5
+  A6 --> H6 --> E6 --> B6
+  A7 --> H7 --> E7 --> B7
+  A8 --> H8 --> E8 --> B8
+  A9 --> H9 --> E9 --> B9
+  A10 --> H10 --> E10 --> B10
+  A11 --> H11 --> E11 --> B11
+  A12 --> H12 --> E12 --> B12
+  A13 --> H13 --> E13 --> B13
+  A14 --> H14 --> E14 --> B14
+```
+
+---
+
+### 12.3 Complete Operations Matrix (Click $\rightarrow$ API $\rightarrow$ Database)
+
+#### Page 1: Delivery Hub (`/`)
+
+| # | User Click / Action | DOM Element ID / Trigger | API Route Invoked | Backend Service | Database / Redis Operations |
+|---|---|---|---|---|---|
+| 1 | **Allow Live GPS** | `#btnAllowLocation` | Browser Geolocation API | Reverse Geocoding (`reverseGeocode`) | Resolves nearest lat/lng coordinates to human-readable address. |
+| 2 | **Locate Me Pin** | `#btnMapLocateMe` | Leaflet Map Pan | Geolocation Watcher | Centers interactive map on user pin with radar pulse animation. |
+| 3 | **Toggle Map Layers** | `#btnToggleMapLayer` | Leaflet Tile Toggle | Local Leaflet Canvas | Switches between Google Hybrid Satellite and Streets vectors. |
+| 4 | **Type Origin Address** | `#inputSearchFrom` | Local debounced search | Hub Matching Engine | Filters `POPULAR_HUBS` and populates `#dropdownSuggestionsFrom`. |
+| 5 | **Type Destination** | `#inputSearchTo` | Local debounced search | Hub Matching Engine | Filters destination terminals and updates `#dropdownSuggestionsTo`. |
+| 6 | **Swap Route** | `#btnSwapRoute` | In-memory State Swap | Route Inversion Handler | Inverts `fromLocation` $\leftrightarrow$ `toLocation` and redraws route polyline. |
+| 7 | **Quick Corridor Pill** | Popular Corridor Buttons | Input value dispatch | Fast Route Resolver | Populates Delhi $\rightarrow$ Chandigarh / Jaipur / Rohtak corridors in 1 click. |
+| 8 | **Proceed / Book Now** | `#btnOpenBookingModal` | `POST /api/v1/deliveries/quotes` | `DynamicPricingService` | Computes first-mile, intercity bus, and last-mile quotes based on weight. |
+| 9 | **Refresh Fare Quote** | `#btnCheckFeasibility` | `POST /api/v1/deliveries/quotes` | `LastMileOrchestrator` | Queries partner serviceability (`Uber`, `inDrive`, `Rapido`) & pricing matrix. |
+| 10 | **Confirm & Pay** | `#formCreateBooking` submit | `POST /api/v1/deliveries` | `MultiModalSagaEngine` | **PostgreSQL:** `INSERT INTO parcels`, `INSERT INTO parcel_legs`, `UPDATE bus_cargo_bays`. |
+| 11 | **View Live Tracking** | `#btnGoToLiveTracking` | `window.location.href` | Router redirect | Navigates to `/tracking?id=TRK-XXXXX`. |
+
+#### Page 2: Live Tracking Radar (`/tracking`)
+
+| # | User Click / Action | DOM Element ID / Trigger | API Route Invoked | Backend Service | Database / Redis Operations |
+|---|---|---|---|---|---|
+| 1 | **Search Tracking ID** | `#btnSearchTracking` | `GET /api/v1/tracking/:id` | `TrackingController.getTracking` | **PostgreSQL:** `SELECT p.*, l.* FROM parcels p JOIN parcel_legs l ON p.id=l.parcel_id`. |
+| 2 | **Bus Live GPS Telemetry** | Auto-connect on load | `GET /api/v1/tracking/bus/:busId` | `TelemetryService` | **Redis:** `GEOSEARCH tracking:positions` + **PostgreSQL:** `SELECT ST_AsGeoJSON(geom) FROM gps_telemetry_points`. |
+| 3 | **WebSocket GPS Push** | Socket connection | `socket.on('telemetry:bus_gps')` | `Socket.io Gateway` | Broadcasts live lat/long bus movement without polling. |
+| 4 | **Verify QR Bay Seal** | `#btnVerifySeal` | `POST /api/v1/tracking/geofence/check` | `GeofenceSecurityService` | **PostgreSQL:** `ST_Contains(geofences.geom, bus_point)` + `SELECT qr_seal_hash FROM bus_cargo_bays`. |
+
+#### Page 3: Shipment History (`/history`)
+
+| # | User Click / Action | DOM Element ID / Trigger | API Route Invoked | Backend Service | Database / Redis Operations |
+|---|---|---|---|---|---|
+| 1 | **Filter Tab (Active/All)** | `#tabFilterActive`, `#tabFilterAll` | In-memory DOM filter | `history.js` filter | Filters shipment cards by `IN_TRANSIT`, `DELIVERED`, `OUT_FOR_DELIVERY`. |
+| 2 | **View Shipment Details** | `#btnViewShipmentModal` | `GET /api/v1/deliveries/:id` | `DeliveryController.getDetails` | **PostgreSQL:** `SELECT * FROM parcels WHERE tracking_id=$1`. |
+| 3 | **Repeat / Re-order** | `#btnRepeatBooking` | Pre-fills `/` inputs | Router navigation | Transports origin/destination params to `/` booking modal. |
+
+#### Page 4: User Profile & Portal (`/profile`)
+
+| # | User Click / Action | DOM Element ID / Trigger | API Route Invoked | Backend Service | Database / Redis Operations |
+|---|---|---|---|---|---|
+| 1 | **Load Profile Info** | `DOMContentLoaded` | `GET /api/v1/profile` | `ProfileController.getProfile` | **PostgreSQL:** `SELECT * FROM users WHERE id=$1`. |
+| 2 | **Toggle Language** | `#btnToggleLang` (EN/HI) | `i18n.setLanguage('hi')` | Client-side i18n Engine | Switches UI strings instantly using `public/js/i18n.js`. |
+| 3 | **Submit Support Ticket** | `#formSupportTicket` | `POST /api/v1/support/tickets` | `SupportController.createTicket` | **PostgreSQL:** `INSERT INTO support_tickets` + **WebSocket:** `io.emit('new_support_ticket')` to Admin Console. |
+
+#### Page 5: Admin Command Center (`/admin`)
+
+| # | User Click / Action | DOM Element ID / Trigger | API Route Invoked | Backend Service | Database / Redis Operations |
+|---|---|---|---|---|---|
+| 1 | **Password Auth** | `#authPasswordForm` submit | `POST /api/v1/admin/auth/password` | `AdminController.verifyPassword` | Timing-safe SHA-256 validation $\rightarrow$ Issues 8-hour Admin JWT. **PostgreSQL:** `INSERT INTO audit_logs`. |
+| 2 | **Touch ID Login** | `#btn-auth-fingerprint` | `GET /api/v1/admin/auth/biometric/challenge` & `POST /.../verify` | FIDO2 / WebAuthn Service | Verifies hardware cryptographic signature from Secure Enclave. |
+| 3 | **Forgot Password?** | `#btn-emergency-recovery` | `POST /api/v1/admin/auth/recovery` | `EmailService.sendEmergencyAdminRecovery` | Transmits emergency password to **`anmolrajotiya@gmail.com`** via Google Gmail SMTP (`smtp.gmail.com:465`). **PostgreSQL:** `INSERT INTO audit_logs`. |
+| 4 | **Fetch Admin Stats** | Auto-fetch after unlock | `GET /api/v1/admin/stats` | `AdminController.getStats` | **PostgreSQL:** Aggregates active parcels, fleet status, and revenue totals. |
+| 5 | **Fetch Unresolved Incidents**| Auto-fetch after unlock | `GET /api/v1/admin/incidents` | `AdminController.getIncidents` | **PostgreSQL:** `SELECT * FROM support_tickets WHERE status != 'RESOLVED' ORDER BY created_at DESC`. |
+| 6 | **1-Click Resolve Ticket** | `#btn-resolve-ticket` | `PATCH /api/v1/admin/tickets/:id/resolve` | `AdminController.resolveTicket` | **PostgreSQL:** `UPDATE support_tickets SET status='RESOLVED' WHERE id=$1` + **WebSocket:** `io.emit('ticket_resolved')`. |
+| 7 | **Touch ID Settings** | `#btn-touchid-settings` | Opens password security modal | Internal Biometrics Guard | Forces master password confirmation before granting biometric re-enrollment. |
+| 8 | **Authorize Biometric Reset**| `#form-confirm-biometric-reset` | `POST /api/v1/admin/auth/biometric/reset` | `AdminController.authorizeBiometricReset` | Verifies master password $\rightarrow$ Calls `navigator.credentials.create` to register new hardware key. |
+| 9 | **Broadcast Fleet Alert** | `#btn-send-broadcast` | `POST /api/v1/admin/broadcast` | `AdminController.broadcast` | **WebSocket:** `io.emit('fleet_alert')` to all connected clients. **PostgreSQL:** `INSERT INTO audit_logs`. |
+| 10 | **Lock Command Center** | `#btn-lock-console` / Tab switch | `clearAuthSession()` | Client-side Session Guard | Clears in-memory JWT tokens and re-engages lockscreen gate. |
+
+---
+
+### 12.4 Telemetry Fast Path & Slow Path Pipeline
+
+```mermaid
+sequenceDiagram
+  autonumber
+  participant Bus as GPS Telematics / Driver App
+  participant API as POST /api/v1/telemetry/ingest
+  participant Redis as Redis 7.2 (Stream & GEO)
+  participant Worker as Telemetry Consumer Group
+  participant PostGIS as PostgreSQL 16 + PostGIS 3.4
+  participant Sockets as Socket.io Live Fleet Broadcast
+
+  Bus->>API: Ingest GPS Ping (bus_id, lat, lng, speed, heading)
+  API->>Redis: 1. GEOADD tracking:positions lng lat bus_id
+  API->>Redis: 2. XADD stream:telemetry:gps * payload
+  API->>Sockets: 3. PUBLISH socket.emit('telemetry:bus_gps')
+  API-->>Bus: 200 OK (Fast Path < 4ms)
+
+  Worker->>Redis: XREADGROUP GROUP cg:telemetry:durable
+  Worker->>PostGIS: Multi-row SQL: INSERT INTO gps_telemetry_points (geom=ST_SetSRID(ST_MakePoint(lng,lat),4326))
+  Worker->>Redis: XACK stream:telemetry:gps cg:telemetry:durable (Zero Data Loss)
+```
+
