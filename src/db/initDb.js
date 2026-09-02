@@ -450,7 +450,19 @@ const initializeDatabase = async () => {
     `;
 
     await targetPool.query(seedUsers);
-    console.log('✔ Master seed data loaded into PostgreSQL.');
+    
+    // Reset all primary key sequence IDs past seeded records
+    await targetPool.query(`
+      SELECT setval('users_id_seq', (SELECT COALESCE(MAX(id), 1) + 1 FROM users));
+      SELECT setval('vehicles_id_seq', (SELECT COALESCE(MAX(id), 1) + 1 FROM vehicles));
+      SELECT setval('route_transactions_id_seq', (SELECT COALESCE(MAX(id), 1) + 1 FROM route_transactions));
+      SELECT setval('capacity_slots_id_seq', (SELECT COALESCE(MAX(id), 1) + 1 FROM capacity_slots));
+      SELECT setval('shipments_id_seq', (SELECT COALESCE(MAX(id), 1) + 1 FROM shipments));
+      SELECT setval('shipment_legs_id_seq', (SELECT COALESCE(MAX(id), 1) + 1 FROM shipment_legs));
+      SELECT setval('saved_addresses_id_seq', (SELECT COALESCE(MAX(id), 1) + 1 FROM saved_addresses));
+      SELECT setval('payment_methods_id_seq', (SELECT COALESCE(MAX(id), 1) + 1 FROM payment_methods));
+    `);
+    console.log('✔ Master seed data loaded & sequences synchronized.');
 
     console.log('\n======================================================');
     console.log('🎉 PostgreSQL Database Migration & Seeding COMPLETED!');

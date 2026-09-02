@@ -101,10 +101,9 @@ graph TB
     TelemetrySvc["Telemetry Ingestion Engine"]
   end
 
-  subgraph Data_Storage ["Polyglot Storage & Cache Layer"]
-    MongoDB[("MongoDB 7.0 (Aggregate Store)")]
-    PostGIS[("PostgreSQL 16 + PostGIS 3.4 (Spatial)")]
-    Redis[("Redis 7 (Streams, GeoSearch, PubSub)")]
+  subgraph Data_Storage ["Unified Relational Spatial & Cache Storage Layer"]
+    PostgreSQL[("PostgreSQL 16 + PostGIS 3.4 (Master Relational & Spatial Store)")]
+    Redis[("Redis 7 (Fast Path Streams, GeoSearch, PubSub)")]
   end
 
   Client_Layer --> API_Gateway
@@ -114,24 +113,24 @@ graph TB
 
 ### Domain Module Boundaries
 
-1. **Bookings Domain (`src/modules/bookings`, `src/sagas`):** Manages aggregate transaction state, lifecycle transitions, and OCC version bumps.
-2. **Capacity Domain (`src/modules/capacity`, `src/models/CapacitySlot.js`):** Enforces atomic capacity reservation and release on vehicle schedules.
+1. **Bookings Domain (`src/modules/bookings`, `src/sagas`):** Manages aggregate transaction state, lifecycle transitions, and OCC version bumps in PostgreSQL.
+2. **Capacity Domain (`src/modules/capacity`, `src/models/CapacitySlot.js`):** Enforces atomic capacity reservation and release on vehicle schedules via PostgreSQL optimistic concurrency.
 3. **Pricing Domain (`src/modules/pricing`):** Calculates multi-modal dynamic fares factoring in weight, volumetric mass, route distance, and peak-hour surcharges.
-4. **Last-Mile Domain (`src/modules/lastMile`):** Evaluates sender-to-terminal and terminal-to-recipient feasibility across provider adapters (Uber Direct, Rapido, inDrive).
-5. **Tracking Domain (`src/modules/tracking`, `src/websockets`):** Ingests driver GPS pings into a sub-5ms Redis Fast Path and syncs persistent GIS spatial data into PostGIS slow path.
+4. **Last-Mile Domain (`src/modules/lastMile`):** Evaluates sender-to-terminal and terminal-to-recipient feasibility across provider adapters (Uber Direct, Rapido, inDrive) and persists quotes and dispatch webhooks.
+5. **Tracking Domain (`src/modules/tracking`, `src/websockets`):** Ingests driver GPS pings into a sub-5ms Redis Fast Path and syncs persistent GIS spatial data into the PostGIS slow path (`vehicle_telemetry`).
 6. **Custody & Evidence Domain (`src/utils/security.js`, `src/models/CustodyHandoff.js`, `src/models/ProofOfDelivery.js`):** HMAC-SHA256 QR seals, geofence boundary checks, and timing-safe 6-digit delivery OTP verification.
-7. **WhatsApp Assistant Domain (`src/modules/whatsapp`):** Handles Meta Cloud API webhooks, intent classification, consent verification, and privacy redaction.
-8. **Settlements Domain (`src/models/LedgerEntry.js`, `src/models/TransactionSnapshot.js`):** Posts double-entry financial ledger journal entries upon transaction closure.
+7. **WhatsApp Assistant Domain (`src/modules/whatsapp`):** Handles Meta Cloud API webhooks, intent classification, consent verification (`messaging_consents`), and outbound dispatch queue (`notifications`).
+8. **Settlements Domain (`src/models/LedgerEntry.js`, `src/models/TransactionSnapshot.js`):** Posts double-entry financial ledger journal entries (`ledger_entries`) and immutable SHA-256 archive snapshots (`transaction_snapshots`).
 
 ---
 
 ## 4. Complete Codebase Directory Structure
 
 ```
-Project - Alphaa IT/
+Transitly/
 ├── Dockerfile                           # Multi-stage production container build (deps -> runner)
-├── docker-compose.yml                   # 5-service stack (app, db-init, redis, postgis, mongodb)
-├── package.json                         # Node.js dependencies, test scripts, CSS build scripts
+├── docker-compose.yml                   # Container stack (app, db-init, redis, postgis)
+├── package.json                         # Node.js dependencies, 9 test suites, CSS build scripts
 ├── postcss.config.js                    # PostCSS pipeline for Tailwind CSS & Autoprefixer
 ├── tailwind.config.js                   # Google Stitch design tokens (colors, fonts, shadows)
 ├── PRD.md                               # Canonical Product Requirements Document
@@ -140,6 +139,7 @@ Project - Alphaa IT/
 ├── docs/                                # Technical & Architectural Documentation
 │   ├── PROJECT_DOCUMENTATION.md         # Master detailed project documentation (this document)
 │   ├── TRD.md                           # Technical Requirements Document
+│   ├── POSTGRES_TERMINAL_GUIDE.md       # Interactive PostgreSQL & PostGIS terminal guide
 │   └── stitch_design_prompts.md         # UI/UX design specifications & prompt catalog
 │
 ├── public/                              # Modular Static Frontend (9 Stitch Screens)
@@ -188,34 +188,37 @@ Project - Alphaa IT/
 │   │       └── apiRoutes.js             # Consolidated /api/v1 endpoints
 │   │
 │   ├── config/                          # Configuration Management
-│   │   ├── database.js                  # MongoDB Mongoose connection
-│   │   ├── redis.js                     # Redis client initialization
-│   │   └── postgis.js                   # PostgreSQL/PostGIS connection pool
+│   │   ├── postgres.js                  # PostgreSQL/PostGIS connection pool (pg.Pool)
+│   │   └── redis.js                     # Redis client initialization (ioredis)
 │   │
 │   ├── db/                              # Database Initialization & Migrations
-│   │   ├── initDb.js                    # PostGIS table creation & seed execution
+│   │   ├── initDb.js                    # Database initializer & automated migration runner
 │   │   ├── viewDb.js                    # CLI diagnostic database inspector
 │   │   ├── migrations/
-│   │   │   └── 001_master_schema.sql    # 12 Master SQL tables DDL (PostGIS)
+│   │   │   ├── 000_master_schema.sql    # Base relational DDL & initial table definitions
+│   │   │   └── 001_master_schema.sql    # DDD evolution: operators, terminals, quotes, consents, audit logs
+│   │   ├── queries/
+│   │   │   └── inspection_queries.sql   # Comprehensive PostgreSQL terminal query & diagnostic suite
 │   │   └── seeds/
-│   │       └── 001_master_seed.sql      # Seed data: corridors, depots, capacity slots
+│   │       ├── 001_seed_master_data.sql # Seed data: sample users, addresses, DTC vehicles & routes
+│   │       └── 002_haryana_roadways_routes.sql # Official Haryana Roadways 5 intercity corridors & stops
 │   │
 │   ├── events/                          # Event Contracts & Envelopes
 │   │   ├── contracts.js                 # Event schema definitions (v1)
 │   │   └── eventEnvelope.js             # Envelope generator & validation
 │   │
-│   ├── models/                          # Mongoose ODM Aggregate Schemas
-│   │   ├── Shipment.js                  # Master Shipment Aggregate Root (OCC)
+│   ├── models/                          # PostgreSQL Data Access Objects (DAOs)
+│   │   ├── Shipment.js                  # Master Shipment Aggregate Root (OCC + PostGIS)
 │   │   ├── ShipmentLeg.js               # Multi-modal child legs (Pickup, Transit, Delivery)
-│   │   ├── CapacitySlot.js              # Cargo capacity reservation model
-│   │   ├── RouteTransaction.js          # Route versioning & stop sequences
+│   │   ├── CapacitySlot.js              # Cargo capacity reservation model (Atomic OCC)
+│   │   ├── RouteTransaction.js          # Route versioning & corridor geometries
 │   │   ├── CustodyHandoff.js            # Immutable chain of custody records
 │   │   ├── ProofOfDelivery.js           # Digital POD evidence & OTP verification
 │   │   ├── TransactionSnapshot.js       # Closed transaction immutable archive
 │   │   ├── LedgerEntry.js               # Double-entry accounting journal
 │   │   ├── User.js                      # Multi-tenant user & identity model
 │   │   ├── Vehicle.js                   # Fleet bus registration & cargo specs
-│   │   ├── Address.js                   # User saved addresses
+│   │   ├── Address.js                   # User saved addresses with PostGIS Point
 │   │   ├── PaymentMethod.js             # User saved payment methods
 │   │   └── SupportTicket.js             # Support tickets & claims
 │   │
@@ -237,120 +240,173 @@ Project - Alphaa IT/
 │   └── websockets/                      # Real-time WebSocket Layer
 │       └── trackingSocket.js            # Live GPS broadcast via Redis pub/sub
 │
-└── tests/                               # Comprehensive Automated Test Suites
+└── tests/                               # Comprehensive Automated Test Suites (9 Master Suites)
     ├── security.test.js                 # OTP, QR Seal, and Geofence tests
     ├── architecture.test.js             # OCC, State Machine, and Saga tests
     ├── lastMile.test.js                 # Provider adapters & Feasibility Matrix tests
     ├── whatsapp.test.js                 # WhatsApp templates, bot intents, redaction
     ├── telemetry.test.js                # Fast Path, PostGIS bulk SQL, stream consumer
     ├── schema.test.js                   # PostGIS DDL, spatial columns, GIST indexing
-    └── haryanaRoadways.test.js          # Intercity Express routes & Meta Webhooks
+    ├── haryanaRoadways.test.js          # Intercity Express routes & Meta Webhooks
+    ├── adminAuth.test.js                # Admin Master Password & Biometric auth
+    └── databaseOperations.test.js       # 28-point end-to-end PostgreSQL + PostGIS operations suite
 ```
 
 ---
 
-## 5. Data Architecture & Master Schemas
+## 5. Data Architecture & Master Schemas (PostgreSQL 16 + PostGIS 3.4)
 
-### 1. Master Shipment Aggregate (`src/models/Shipment.js`)
+Transitly is architected on a **unified master relational and spatial database** powered by **PostgreSQL 16+** and **PostGIS 3.4+** (SRID 4326 - WGS 84). All transactions, multi-modal legs, telemetry streams, chain of custody logs, double-entry financial journals, and spatial geofences are natively persisted and indexed in PostgreSQL.
 
-```javascript
-const shipmentSchema = new mongoose.Schema({
-  trackingId: { type: String, required: true, unique: true, index: true },
-  operatorId: { type: String, required: true, index: true },
-  status: {
-    type: String,
-    enum: ['OPEN', 'CONFIRMED', 'IN_TRANSIT', 'DELIVERED', 'CLOSED', 'CANCELLED', 'DISPUTED'],
-    default: 'OPEN',
-    index: true
-  },
-  version: { type: Number, default: 1, required: true }, // Optimistic Concurrency Control (OCC)
-  sender: {
-    name: String,
-    phone: String,
-    address: String,
-    location: { type: { type: String, default: 'Point' }, coordinates: [Number] }
-  },
-  recipient: {
-    name: String,
-    phone: String,
-    address: String,
-    location: { type: { type: String, default: 'Point' }, coordinates: [Number] }
-  },
-  parcel: {
-    weightKg: { type: Number, required: true },
-    dimensions: { lengthCm: Number, widthCm: Number, heightCm: Number },
-    declaredValue: Number,
-    description: String
-  },
-  pricing: {
-    baseFare: Number,
-    pickupFare: Number,
-    deliveryFare: Number,
-    surcharges: Number,
-    totalFare: Number,
-    currency: { type: String, default: 'INR' }
-  },
-  security: {
-    qrSealCode: String,
-    qrSealVerified: { type: Boolean, default: false },
-    deliveryOtpHash: String,
-    otpVerified: { type: Boolean, default: false }
-  },
-  assignedBus: {
-    vehicleId: String,
-    routeId: String,
-    corridorName: String,
-    cargoBay: String
-  },
-  currentCustodian: {
-    custodianId: String,
-    custodianType: { type: String, enum: ['SENDER', 'FIRST_MILE_RIDER', 'TERMINAL_AGENT', 'BUS_DRIVER', 'LAST_MILE_RIDER', 'RECIPIENT'] },
-    handoffTimestamp: Date
-  }
-}, { timestamps: true });
+The schema is divided into **6 logical Domain-Driven Design (DDD) modules** implemented across `src/db/migrations/000_master_schema.sql` and `src/db/migrations/001_master_schema.sql`.
+
+```mermaid
+erDiagram
+    operators ||--o{ users : "employs / registers"
+    operators ||--o{ terminals : "manages"
+    operators ||--o{ routes : "operates"
+    operators ||--o{ vehicles : "owns"
+    operators ||--o{ capacity_slots : "allocates"
+    operators ||--o{ shipments : "fulfills"
+    operators ||--o{ ledger_entries : "receives settlements"
+
+    terminals ||--o{ routes : "origin / destination"
+    terminals ||--o{ route_stops : "checkpoint"
+
+    routes ||--o{ route_stops : "contains ordered stops"
+    routes ||--o{ capacity_slots : "schedules"
+    routes ||--o{ shipments : "transits"
+
+    vehicles ||--o{ capacity_slots : "allocates cargo space"
+    vehicles ||--o{ shipments : "carries"
+
+    users ||--o{ saved_addresses : "saves"
+    users ||--o{ payment_methods : "stores"
+    users ||--o{ shipments : "books (as customer)"
+    users ||--o{ messaging_consents : "grants / revokes"
+    users ||--o{ support_tickets : "files"
+    users ||--o{ audit_logs : "triggers"
+
+    shipments ||--o{ shipment_legs : "decomposes into legs"
+    shipments ||--o{ custody_handoffs : "logs custody transfers"
+    shipments ||--o| proof_of_delivery : "confirms completion"
+    shipments ||--o{ ledger_entries : "generates postings"
+    shipments ||--o| transaction_snapshots : "archives on closure"
+    shipments ||--o{ notifications : "dispatches"
+
+    shipment_legs ||--o{ provider_quotes : "caches quotes"
+    shipment_legs ||--o{ provider_dispatches : "tracks dispatches"
 ```
 
-### 2. Multi-Modal Child Legs (`src/models/ShipmentLeg.js`)
+---
 
-```javascript
-const shipmentLegSchema = new mongoose.Schema({
-  shipmentId: { type: mongoose.Schema.Types.ObjectId, ref: 'Shipment', required: true, index: true },
-  trackingId: { type: String, required: true, index: true },
-  legType: { type: String, enum: ['FIRST_MILE_PICKUP', 'INTERCITY_TRANSIT', 'LAST_MILE_DELIVERY'], required: true },
-  sequence: { type: Number, required: true },
-  provider: { type: String, enum: ['UBER_DIRECT', 'RAPIDO', 'INDRIVE', 'STATE_EXPRESS_BUS', 'SELF_SERVICE'], required: true },
-  status: { type: String, enum: ['PENDING', 'ASSIGNED', 'IN_PROGRESS', 'COMPLETED', 'EXCEPTION'], default: 'PENDING' },
-  origin: { name: String, coordinates: [Number] },
-  destination: { name: String, coordinates: [Number] },
-  quotedPrice: Number,
-  actualPrice: Number,
-  externalReferenceId: String,
-  proofOfHandoff: {
-    qrCodeScanned: String,
-    timestamp: Date,
-    location: [Number]
-  }
-}, { timestamps: true });
-```
+### Module 1: System Extensions, Enums & IAM (Identity & Access Management)
 
-### 3. PostGIS Relational Spatial Tables (`src/db/migrations/001_master_schema.sql`)
+Enforces role-based security, multi-tenant authority isolation, and customer credential/address profiles.
 
-| Table Name | Description | Spatial Geometry | Primary Indexes |
+#### 1. System Extensions & Domain Enums
+- **Extensions:** `postgis` (spatial computing), `pgcrypto` (cryptographic hashing & random generation), `uuid-ossp` (UUID v4 identifiers).
+- **Custom Enum Types:**
+  - `user_role`: `'CUSTOMER'`, `'OPERATOR'`, `'OPERATIONS_MANAGER'`, `'DELIVERY_PARTNER'`, `'DRIVER'`, `'ADMIN'`
+  - `shipment_status`: `'OPEN'`, `'CONFIRMED'`, `'IN_TRANSIT'`, `'DELIVERED'`, `'CLOSED'`, `'CANCELLED'`, `'DISPUTED'`
+  - `leg_type_enum`: `'PICKUP_LAST_MILE'`, `'TRANSIT'`, `'DELIVERY_LAST_MILE'`
+  - `leg_status_enum`: `'PENDING'`, `'QUOTED'`, `'DISPATCHED'`, `'COLLECTED'`, `'IN_TRANSIT'`, `'COMPLETED'`, `'EXCEPTION'`, `'CANCELLED'`
+  - `seal_status_enum`: `'INTACT'`, `'DAMAGED'`, `'TAMPERED'`, `'REPLACED'`
+  - `ledger_entry_type_enum`: `'SHIPMENT_REVENUE'`, `'OPERATOR_EARNING'`, `'PARTNER_COMMISSION'`, `'PLATFORM_FEE'`, `'REFUND'`, `'DISPUTE_ADJUSTMENT'`
+
+#### 2. Master Tables & Schemas
+- **`operators`**: First-class multi-tenant transit authority entities with UUID, E.164 phone check (`contact_phone ~ '^\+[1-9]\d{1,14}$'`), commission rates, and JSONB configuration settings (`autoAcceptBookings`, `maxCargoCapacityRatio`).
+- **`users`**: Master user identity table supporting OAuth/JWT claims, E.164 phone numbers, tenant operator foreign keys (`operator_id REFERENCES operators(id)`), roles, and customer preferences JSONB.
+- **`saved_addresses`**: Customer saved pickup and delivery addresses containing geocoded coordinates `latitude`, `longitude`, and spatial point geometry `geom GEOMETRY(Point, 4326)` indexed with GIST.
+- **`payment_methods`**: Saved customer payment profiles supporting Card tokenization, UPI Virtual Payment Addresses (VPAs), and digital wallets.
+
+---
+
+### Module 2: Transit Network Infrastructure (Spatial/GIS)
+
+Persists geocoded terminals, intercity corridor routes, and ordered stop sequences conforming to OpenGIS & OGC standards.
+
+- **`terminals`**: ISBT depots, transit stations, and logistics hubs storing location `GEOMETRY(Point, 4326)`, optional boundary `geofence_polygon GEOMETRY(Polygon, 4326)`, and `geofence_radius_meters` (default: 250m) with GIST spatial indexing.
+- **`route_transactions`**: Corridors open for update and closed for modification (OCP versioning) tracking `logical_route_id`, `version`, `path GEOMETRY(LineString, 4326)`, origin/destination terminal foreign keys, and active flags (`is_latest`).
+- **`route_stops`**: Ordered transit checkpoints along corridor routes with `sequence_order`, stop name, offset time in minutes, and `geom GEOMETRY(Point, 4326)`, constrained by a compound unique index `uq_route_stop_sequence (route_transaction_id, sequence_order)`.
+
+---
+
+### Module 3: Fleet & Capacity Management (Atomic OCC)
+
+Enforces atomic inventory allocation and physical vehicle capacity constraints without overbooking.
+
+- **`vehicles`**: Fleet buses, minibuses, and cargo vans with unique registration numbers, cargo capacity in kg (`cargo_capacity_kg`), volumetric limit (`cargo_volume_m3`), and last known spatial coordinate `last_geom GEOMETRY(Point, 4326)`.
+- **`capacity_slots`**: Date-specific inventory quotas linking vehicle, route, departure time, and date.
+  - **Optimistic Concurrency Control (OCC):** Every reservation updates version: `UPDATE capacity_slots SET reserved_weight_kg = reserved_weight_kg + $w, available_weight_kg = available_weight_kg - $w, version = version + 1 WHERE id = $id AND version = $expectedVersion AND available_weight_kg >= $w`.
+  - **Balance Invariant Check:** Enforced by PostgreSQL constraint `chk_capacity_balance CHECK (available_weight_kg + reserved_weight_kg <= total_capacity_kg)`.
+
+---
+
+### Module 4: Multimodal Shipments & Last-Mile Orchestration
+
+Represents the master transaction aggregate root and provider-neutral third-party last-mile execution.
+
+- **`shipments`**: Master transaction aggregate root tracking sender/recipient E.164 phones, parcel weight/dimensions (JSONB), dynamic pricing, state machine transitions, PostGIS spatial coordinates (`pickup_geom`, `delivery_geom`, `origin_geom`, `dest_geom`), and cryptographic verification tokens:
+  - **HMAC-SHA256 QR Seal:** `qr_seal_code`, `qr_seal_hash`, and tamper flag `qr_seal_tampered`.
+  - **Salted SHA-256 Recipient OTP:** `delivery_otp_hash`, `delivery_otp_salt`, and verification flag `delivery_otp_verified`.
+- **`shipment_legs`**: Parent-child multimodal leg hierarchy mapping `PICKUP_LAST_MILE` (Sender $\rightarrow$ Origin Terminal), `TRANSIT` (Origin Terminal $\rightarrow$ Destination Terminal), and `DELIVERY_LAST_MILE` (Destination Terminal $\rightarrow$ Recipient).
+- **`provider_quotes`**: Caches real-time quotes returned by external provider adapters (Uber Direct, Rapido, inDrive) with expiration timestamps (`expires_at`) and provider capabilities JSONB.
+- **`provider_dispatches`**: Isolates provider dispatch lifecycle webhooks, tracking URLs, and unique idempotency keys (`idempotency_key UNIQUE`) to prevent duplicate dispatches.
+
+---
+
+### Module 5: Real-Time Telemetry & Custody Operations
+
+Handles sub-second spatial tracking, chain-of-custody handoffs, and digital proof-of-delivery evidence.
+
+- **`vehicle_telemetry`**: Persistent slow-path time-series GPS logging with spatial point `geom GEOMETRY(Point, 4326)` indexed with GIST, speed, heading, accuracy in meters, and compound B-tree index `(vehicle_id, ping_timestamp DESC)`.
+- **`custody_handoffs`**: Tamper-evident append-only chain of custody logs capturing every transfer between sender, riders, terminal agents, bus drivers, and recipients with QR seal status, digital signature URLs, and PostGIS geofence distance verification (`is_within_geofence`, `distance_meters`).
+- **`proof_of_delivery`**: Verification evidence linking recipient name, phone, verified OTP status, verified QR seal code, signature URL, photograph URL, and PostGIS geofence validated location `location_geom GEOMETRY(Point, 4326)`.
+
+---
+
+### Module 6: Settlements, Audits & Notifications
+
+Guarantees immutable accounting, compliance auditing, and multi-channel customer communications.
+
+- **`ledger_entries`**: Immutable double-entry financial ledger journal recording credit and debit postings (`SHIPMENT_REVENUE`, `OPERATOR_EARNING`, `PARTNER_COMMISSION`, `PLATFORM_FEE`, `REFUND`) ensuring zero-balance trial balance accounting across multi-tenant operators.
+- **`transaction_snapshots`**: Read-only immutable archive created upon shipment closure containing full transaction JSON, POD evidence, total handoff count, and cryptographic SHA-256 integrity digest (`snapshot_hash`).
+- **`messaging_consents`**: WhatsApp & SMS customer consent tracking with E.164 phone numbers and `OPTED_IN` / `OPTED_OUT` state transitions.
+- **`notifications`**: Outbound notification queue and dispatch history tracking channels (`WHATSAPP`, `SMS`, `EMAIL`, `PUSH`), template names, delivery statuses (`QUEUED`, `SENT`, `DELIVERED`, `FAILED`), and error logs.
+- **`support_tickets`**: Customer and operator support tickets with priority ranking (`LOW`, `MEDIUM`, `HIGH`, `URGENT`), shipment references, and resolution timestamps.
+- **`audit_logs`**: Administrative security audit trail recording actor user IDs, roles, administrative actions (`FORCE_CLOSE_SHIPMENT`, `UPDATE_CAPACITY_OVERRIDE`), IP addresses, user agents, and context payloads for the Admin Command Center.
+
+---
+
+### Complete Database Relations & Index Reference
+
+The PostgreSQL database maintains **23 base relations and 53 active indexes** (including PostGIS GIST spatial indexes on SRID 4326):
+
+| Relation Name | Module | Primary Key | Key Indexes & Spatial Acceleration |
 | :--- | :--- | :--- | :--- |
-| `operators` | Multi-tenant transport authorities | — | `PRIMARY KEY (id)` |
-| `terminals` | ISBT Depots & Hubs | `location GEOMETRY(Point, 4326)` | `GIST (location)` |
-| `routes` | Logical corridor routes (OCP Versioned) | `path GEOMETRY(LineString, 4326)` | `GIST (path)` |
-| `route_stops` | Scheduled stop sequences along routes | `location GEOMETRY(Point, 4326)` | `GIST (location)` |
-| `vehicles` | Fleet bus registrations & capacity | — | `operator_id, registration_number` |
-| `capacity_slots` | Date-specific weight quotas | — | `vehicle_id, slot_date` |
-| `shipment_records` | Relational sync of aggregate shipments | `origin_geom, dest_geom` | `GIST (origin_geom), GIST (dest_geom)` |
-| `vehicle_telemetry` | Time-series high-frequency GPS logs | `location GEOMETRY(Point, 4326)` | `GIST (location), recorded_at` |
-| `custody_handoff_logs` | Immutable chain of custody audits | `location GEOMETRY(Point, 4326)` | `shipment_id, recorded_at` |
-| `proof_of_deliveries` | POD signatures, photos, and OTP logs | `delivery_location GEOMETRY` | `GIST (delivery_location)` |
-| `transaction_snapshots` | Closed transaction archive records | — | `snapshot_hash, tracking_id` |
-| `ledger_journal` | Double-entry financial transactions | — | `transaction_id, posted_at` |
-
----
+| `operators` | IAM | `id` (BIGSERIAL) | `UNIQUE(code)`, `UNIQUE(operator_uuid)`, `UNIQUE(license_number)` |
+| `users` | IAM | `id` (BIGSERIAL) | `UNIQUE(email)`, `UNIQUE(user_uuid)`, `INDEX(role)`, `INDEX(phone)` |
+| `saved_addresses` | IAM | `id` (BIGSERIAL) | `INDEX(user_id)`, `GIST(geom)` |
+| `payment_methods` | IAM | `id` (BIGSERIAL) | `INDEX(user_id)` |
+| `terminals` | Spatial GIS | `id` (BIGSERIAL) | `UNIQUE(terminal_code)`, `GIST(location)`, `GIST(geofence_polygon)` |
+| `route_transactions` | Spatial GIS | `id` (BIGSERIAL) | `UNIQUE(logical_route_id, version)`, `GIST(path)`, `GIST(origin_geom)`, `GIST(destination_geom)` |
+| `route_stops` | Spatial GIS | `id` (BIGSERIAL) | `UNIQUE(route_transaction_id, sequence_order)`, `GIST(location)`, `GIST(geom)` |
+| `vehicles` | Fleet | `id` (BIGSERIAL) | `UNIQUE(registration)`, `INDEX(operator_id)`, `GIST(last_geom)` |
+| `capacity_slots` | Fleet | `id` (BIGSERIAL) | `UNIQUE(vehicle_id, slot_date)`, `INDEX(route_transaction_id, slot_date)`, `INDEX(vehicle_id, slot_date, version)` |
+| `shipments` | Multimodal | `id` (BIGSERIAL) | `UNIQUE(tracking_id)`, `GIST(origin_geom)`, `GIST(dest_geom)`, `GIST(pickup_geom)`, `GIST(delivery_geom)` |
+| `shipment_legs` | Multimodal | `id` (BIGSERIAL) | `INDEX(shipment_id, leg_type)`, `GIST(pickup_geom)`, `GIST(dropoff_geom)` |
+| `provider_quotes` | Multimodal | `id` (BIGSERIAL) | `INDEX(shipment_leg_id)` |
+| `provider_dispatches` | Multimodal | `id` (BIGSERIAL) | `UNIQUE(idempotency_key)`, `INDEX(external_delivery_id)`, `INDEX(shipment_leg_id)` |
+| `vehicle_telemetry` | Telemetry | `id` (BIGSERIAL) | `GIST(geom)`, `INDEX(vehicle_id, ping_timestamp DESC)`, `INDEX(operator_id, ping_timestamp DESC)` |
+| `custody_handoffs` | Telemetry | `id` (BIGSERIAL) | `INDEX(shipment_id, handoff_timestamp)`, `GIST(location_geom)` |
+| `proof_of_delivery` | Telemetry | `id` (BIGSERIAL) | `UNIQUE(shipment_id)`, `GIST(location_geom)` |
+| `ledger_entries` | Settlements | `id` (BIGSERIAL) | `INDEX(operator_id, posted_at)`, `INDEX(shipment_id)` |
+| `transaction_snapshots` | Settlements | `id` (BIGSERIAL) | `UNIQUE(shipment_id)`, `INDEX(operator_id)` |
+| `messaging_consents` | Notifications | `id` (BIGSERIAL) | `INDEX(phone_e164, status)`, `INDEX(user_id)` |
+| `notifications` | Notifications | `id` (BIGSERIAL) | `INDEX(shipment_id)`, `INDEX(status, channel)`, `INDEX(user_id)` |
+| `support_tickets` | Support | `id` (BIGSERIAL) | `INDEX(user_id)`, `INDEX(status)` |
+| `audit_logs` | Audit | `id` (BIGSERIAL) | `INDEX(actor_user_id, created_at DESC)`, `INDEX(resource_type, resource_id)`, `INDEX(created_at DESC)` |
 
 ## 6. Comprehensive REST & WebSocket API Reference
 
@@ -521,7 +577,7 @@ sequenceDiagram
   participant Saga as BookingSaga Orchestrator
   participant Capacity as Capacity Domain (OCC)
   participant Pricing as Dynamic Pricing Engine
-  participant Mongo as MongoDB (Aggregate Store)
+  participant DB as PostgreSQL (Master Relational Store)
   participant WhatsApp as WhatsApp Cloud Assistant
 
   User->>Client: Enter Pickup, Delivery & Parcel Weight
@@ -544,9 +600,9 @@ sequenceDiagram
     Saga->>Pricing: calculateMultimodalFare(...)
     Pricing-->>Saga: Total Fare: ₹450.00
     
-    Note over Saga,Mongo: Step 3: Create Master Shipment & Legs
-    Saga->>Mongo: Insert Shipment (Status: CONFIRMED, Version: 1)
-    Saga->>Mongo: Insert Child Legs (Pickup, Transit, Delivery)
+    Note over Saga,DB: Step 3: Create Master Shipment & Legs
+    Saga->>DB: Insert Shipment (Status: CONFIRMED, Version: 1)
+    Saga->>DB: Insert Child Legs (Pickup, Transit, Delivery)
     
     Note over Saga,WhatsApp: Step 4: Notification Dispatch
     Saga->>WhatsApp: dispatchMilestoneNotification(BOOKING_CONFIRMED)

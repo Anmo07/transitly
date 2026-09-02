@@ -114,10 +114,13 @@ CREATE TABLE IF NOT EXISTS operators (
 );
 
 
--- 1.3 Evolve users table — add operator link and activation flag
+-- 1.3 Evolve users & saved addresses
 ALTER TABLE users ADD COLUMN IF NOT EXISTS operator_id BIGINT REFERENCES operators(id) ON DELETE SET NULL;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS password_hash VARCHAR(255);
 ALTER TABLE users ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT TRUE;
+
+ALTER TABLE saved_addresses ADD COLUMN IF NOT EXISTS city VARCHAR(100);
+ALTER TABLE saved_addresses ADD COLUMN IF NOT EXISTS postal_code VARCHAR(20);
 
 CREATE INDEX IF NOT EXISTS idx_users_operator ON users(operator_id);
 CREATE INDEX IF NOT EXISTS idx_users_phone ON users(phone);
@@ -239,12 +242,14 @@ CREATE INDEX IF NOT EXISTS idx_capacity_slots_route ON capacity_slots(route_tran
 -- MODULE 4: Multimodal Shipments & Last-Mile Orchestration
 -- ============================================================================
 
--- 4.1 Evolve shipments — add customer link, dimensions, crypto hashes, closure
+-- 4.1 Evolve shipments — add customer link, dimensions, crypto hashes, spatial geoms, closure
 ALTER TABLE shipments ADD COLUMN IF NOT EXISTS customer_user_id BIGINT REFERENCES users(id);
 ALTER TABLE shipments ADD COLUMN IF NOT EXISTS dimensions JSONB
     DEFAULT '{"length": 0, "width": 0, "height": 0, "unit": "cm"}'::jsonb;
 ALTER TABLE shipments ADD COLUMN IF NOT EXISTS declared_value NUMERIC(10, 2) DEFAULT 0.0;
 ALTER TABLE shipments ADD COLUMN IF NOT EXISTS qr_seal_hash VARCHAR(64);       -- HMAC-SHA256
+ALTER TABLE shipments ADD COLUMN IF NOT EXISTS origin_geom GEOMETRY(Point, 4326);
+ALTER TABLE shipments ADD COLUMN IF NOT EXISTS dest_geom GEOMETRY(Point, 4326);
 ALTER TABLE shipments ADD COLUMN IF NOT EXISTS closed_at TIMESTAMPTZ;
 ALTER TABLE shipments ADD COLUMN IF NOT EXISTS parent_transaction_id BIGINT REFERENCES shipments(id);
 ALTER TABLE shipments ADD COLUMN IF NOT EXISTS is_adjustment BOOLEAN DEFAULT FALSE;
@@ -253,6 +258,8 @@ ALTER TABLE shipments ADD COLUMN IF NOT EXISTS cancellation_reason TEXT;
 
 CREATE INDEX IF NOT EXISTS idx_shipments_customer ON shipments(customer_user_id);
 CREATE INDEX IF NOT EXISTS idx_shipments_operator ON shipments(operator_id);
+CREATE INDEX IF NOT EXISTS idx_shipments_origin_geom ON shipments USING GIST(origin_geom);
+CREATE INDEX IF NOT EXISTS idx_shipments_dest_geom ON shipments USING GIST(dest_geom);
 
 
 -- 4.2 Evolve shipment_legs — add direction, pricing, windows
@@ -404,5 +411,14 @@ CREATE INDEX IF NOT EXISTS idx_audit_logs_actor ON audit_logs(actor_user_id, cre
 CREATE INDEX IF NOT EXISTS idx_audit_logs_resource ON audit_logs(resource_type, resource_id);
 CREATE INDEX IF NOT EXISTS idx_audit_logs_time ON audit_logs(created_at DESC);
 
+-- Synchronize sequence IDs past any seeded records
+SELECT setval('users_id_seq', (SELECT COALESCE(MAX(id), 1) + 1 FROM users));
+SELECT setval('vehicles_id_seq', (SELECT COALESCE(MAX(id), 1) + 1 FROM vehicles));
+SELECT setval('route_transactions_id_seq', (SELECT COALESCE(MAX(id), 1) + 1 FROM route_transactions));
+SELECT setval('capacity_slots_id_seq', (SELECT COALESCE(MAX(id), 1) + 1 FROM capacity_slots));
+SELECT setval('shipments_id_seq', (SELECT COALESCE(MAX(id), 1) + 1 FROM shipments));
+SELECT setval('shipment_legs_id_seq', (SELECT COALESCE(MAX(id), 1) + 1 FROM shipment_legs));
+SELECT setval('saved_addresses_id_seq', (SELECT COALESCE(MAX(id), 1) + 1 FROM saved_addresses));
+SELECT setval('payment_methods_id_seq', (SELECT COALESCE(MAX(id), 1) + 1 FROM payment_methods));
 
 COMMIT;

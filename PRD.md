@@ -196,21 +196,25 @@ The WhatsApp assistant handles the following authenticated customer intents:
 
 | Entity | Key fields |
 | --- | --- |
-| User | id, role, name, email, phone |
-| Shipment | id, trackingId, sender, recipient, dimensions, weight, status, price, qrSeal, deliveryOtp, currentCustodian, pickupGeofence, deliveryGeofence |
-| Vehicle | id, operatorId, registration, cargoCapacityKg, availableCapacityKg, GPS reference |
-| RouteTransaction | id, logicalRouteId, version, operatorId, origin, destination, stops, effectiveFrom, effectiveTo, isLatest, status |
-| CustodyHandoff | id, shipmentId, fromCustodian, toCustodian, qrSealCode, sealStatus, handoffType, location, geofenceValidation, timestamp |
-| CapacitySlot | id, vehicleId, routeId, date, availableWeightKg, reservedWeightKg, version, status |
-| TrackingEvent | id, shipmentId, status, latitude, longitude, timestamp, note |
-| ProofOfDelivery | id, shipmentId, recipientName, recipientPhone, otpVerified, qrSealVerified, signatureUrl, photoUrl, location, geofenceValidated, timestamp |
-| TransactionSnapshot | id, transactionId, trackingId, operatorId, finalVersion, finalStatus, snapshotData, proofOfDelivery, totalHandoffCount, snapshotHash, closedAt |
-| LedgerEntry | id, transactionId, trackingId, operatorId, entryType, amount, currency, debitAccount, creditAccount, postedAt |
-| Notification | id, shipmentId, channel, template, status, sentAt |
-| LastMileLeg | id, shipmentId, direction, status, provider, serviceability, quotedAmount, acceptedAmount, pickupWindow, deliveryWindow |
-| ProviderQuote | id, lastMileLegId, provider, externalQuoteId, amount, currency, expiresAt, capabilities |
-| ProviderDispatch | id, lastMileLegId, provider, externalDeliveryId, status, lastWebhookAt, idempotencyKey |
-| MessagingConsent | id, customerId, channel, phoneE164, status, source, consentedAt, revokedAt |
+| Operator | id, operatorUuid, name, code, contactEmail, contactPhone, commissionRate, isActive, config |
+| User | id, operatorId, role, name, email, phone, preferences, isActive |
+| Terminal | id, terminalCode, name, operatorId, address, city, location (Point), geofencePolygon, geofenceRadiusMeters |
+| Shipment | id, trackingId, operatorId, customerUserId, capacitySlotId, assignedVehicleId, assignedRouteId, status, version, sender, recipient, weightKg, price, qrSealCode, qrSealHash, qrSealTampered, deliveryOtpHash, deliveryOtpSalt, deliveryOtpVerified, pickupGeom, deliveryGeom, originGeom, destGeom |
+| Vehicle | id, operatorId, registration, vehicleType, cargoCapacityKg, availableCapacityKg, cargoVolumeM3, lastGeom (Point), isActive |
+| RouteTransaction | id, logicalRouteId, version, operatorId, originTerminal, destinationTerminal, path (LineString), distanceKm, estimatedDurationMinutes, isLatest, status |
+| RouteStop | id, routeTransactionId, terminalId, stopName, sequenceOrder, latitude, longitude, geom (Point), estimatedStopOffsetMinutes |
+| CapacitySlot | id, operatorId, vehicleId, routeTransactionId, slotDate, departureTime, totalCapacityKg, availableWeightKg, reservedWeightKg, version, status |
+| CustodyHandoff | id, shipmentId, trackingId, fromUserId, toUserId, fromRole, toRole, qrSealCode, sealStatus, handoffType, locationGeom (Point), isWithinGeofence, distanceMeters, signatureUrl |
+| ProofOfDelivery | id, shipmentId, trackingId, recipientName, recipientPhone, otpVerified, qrSealVerified, qrSealCode, signatureUrl, photoUrl, locationGeom (Point), geofenceValidated, deliveredByUserId |
+| TransactionSnapshot | id, shipmentId, trackingId, operatorId, finalVersion, finalStatus, snapshotData, totalHandoffCount, snapshotHash, closedAt |
+| LedgerEntry | id, shipmentId, trackingId, operatorId, entryType, amount, currency, debitAccount, creditAccount, description, postedAt |
+| Notification | id, shipmentId, userId, channel, templateName, recipientE164, status, payload, sentAt, deliveredAt |
+| ShipmentLeg | id, shipmentId, trackingId, legType, direction, status, provider, pickupAddress, dropoffAddress, quotedAmount, acceptedAmount, pickupGeom (Point), dropoffGeom (Point) |
+| ProviderQuote | id, shipmentLegId, provider, externalQuoteId, amount, currency, expiresAt, capabilities, rawPayload |
+| ProviderDispatch | id, shipmentLegId, provider, externalDeliveryId, status, trackingUrl, idempotencyKey, lastWebhookAt, rawWebhookPayload |
+| MessagingConsent | id, userId, channel, phoneE164, status, source, consentedAt, revokedAt |
+| SupportTicket | id, userId, shipmentId, category, trackingId, description, status, priority, assignedToUserId, resolvedAt |
+| AuditLog | id, actorUserId, actorRole, action, resourceType, resourceId, ipAddress, userAgent, payload |
 
 ## Production Technical Architecture
 
@@ -218,8 +222,8 @@ The WhatsApp assistant handles the following authenticated customer intents:
 
 - **Language and runtime:** JavaScript (ES2022+) on Node.js 20 LTS or newer.
 - **Service shape:** Modular domain-driven architecture with independently deployable worker services, REST APIs, and WebSockets.
-- **Primary datastore:** MongoDB with automated backups, point-in-time recovery, and replica sets for high availability.
-- **Fast state and cache:** Redis for rate limiting, short-lived caching, distributed locks, and real-time tracking fan-out.
+- **Primary datastore:** Unified PostgreSQL 16 + PostGIS 3.4 relational and spatial database with automated backups, point-in-time recovery (PITR), GIST spatial indexing (SRID 4326), and connection pooling.
+- **Fast state and cache:** Redis 7 for Fast Path stream ingestion, sub-5ms `GEOADD`/`GEOSEARCH` lookups, distributed locks, rate limiting, and real-time tracking fan-out.
 - **Asynchronous work:** A durable managed queue or event bus for tracking ingestion, notifications, proof-of-delivery processing, route calculations, and settlement exports.
 - **Files:** Private object storage for proof-of-delivery assets, accessed only through short-lived signed URLs.
 

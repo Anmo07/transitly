@@ -22,11 +22,10 @@ This **Technical Requirements Document (TRD)** establishes the canonical technic
 │                           TRANSITLY RUNTIME STACK                               │
 │                                                                                 │
 │   Backend Runtime:      Node.js 20+ LTS (ES2022+)                               │
-│   API & Web Framework:  Express.js 4.x (Stateless Container Nodes)              │
-│   Document Store:       MongoDB 7.0 (Mongoose 8.x ODM, Replica Sets)            │
-│   Spatial Relational:   PostgreSQL 16 + PostGIS 3.4 (pg 8.x Pool)               │
-│   Fast-State & Streams: Redis 7.x (ioredis / node-redis 4.x)                    │
-│   Real-Time Protocol:   WebSocket (ws / Socket.io) with Redis Pub/Sub           │
+│   API & Web Framework:  Express.js 5.x (Stateless Container Nodes)              │
+│   Master Database:      PostgreSQL 16 + PostGIS 3.4 (pg 8.x Pool, SRID 4326)    │
+│   Fast-State & Streams: Redis 7.x (ioredis Fast Path Streams & GeoSearch)       │
+│   Real-Time Protocol:   WebSocket (Socket.io) with Redis Pub/Sub                │
 │   CSS Engine:           Tailwind CSS (PostCSS Minified, Zero-CDN Overhead)      │
 │   Mapping Engine:       Leaflet.js 1.9.4 (Dynamic Lazy Loaded)                  │
 │   Messaging API:        Meta WhatsApp Cloud API v19.0 (Graph REST Endpoints)    │
@@ -60,50 +59,61 @@ This **Technical Requirements Document (TRD)** establishes the canonical technic
 
 ## 4. Data Persistence & Spatial Indexing Architecture
 
-Transitly utilizes a **Polyglot Storage Topology** where data is partitioned by access characteristics:
+Transitly utilizes a **Unified PostgreSQL 16 + PostGIS Relational & Spatial Storage Topology** paired with an in-memory Redis Fast Path:
 
 ```mermaid
 graph LR
   subgraph Data_Routing ["Data Access Router"]
-    WriteReq["Incoming Request"]
+    WriteReq["Incoming Request / GPS Ping"]
   end
 
-  subgraph Transactional_Store ["Document Store (MongoDB 7.0)"]
-    Shipments["Shipments (Aggregate Root)"]
-    ShipmentLegs["ShipmentLegs (Multi-Modal Legs)"]
-    CapacitySlots["CapacitySlots (OCC Inventory)"]
-  end
-
-  subgraph Spatial_Store ["Spatial Relational Store (PostGIS 3.4)"]
-    GISRoutes["routes (LineString 4326)"]
-    GISTerminals["terminals (Point 4326)"]
-    GISTelemetry["vehicle_telemetry (Time-Series Point)"]
+  subgraph Spatial_Relational_Store ["Master PostgreSQL 16 + PostGIS 3.4 (SRID 4326)"]
+    Operators["operators (Multi-Tenant Hubs)"]
+    Terminals["terminals (Point & Polygon Geofences)"]
+    Routes["route_transactions (Corridor LineStrings)"]
+    Stops["route_stops (Ordered Checkpoints)"]
+    Vehicles["vehicles & capacity_slots (OCC Inventory)"]
+    Shipments["shipments & shipment_legs (Multimodal Aggregates)"]
+    Telemetry["vehicle_telemetry (Time-Series Spatial Pings)"]
+    Custody["custody_handoffs & proof_of_delivery (Immutable Audit)"]
+    Settlements["ledger_entries & transaction_snapshots (Double-Entry)"]
+    Notifications["messaging_consents & notifications (Dispatch Queue)"]
+    Audit["audit_logs & support_tickets (Security Admin)"]
   end
 
   subgraph Memory_Store ["In-Memory Fast Store (Redis 7)"]
-    GeoKey["active_buses (GEOADD)"]
-    StreamKey["telemetry_stream (XADD)"]
+    GeoKey["active_buses (GEOADD / GEOSEARCH)"]
+    StreamKey["telemetry_stream (XADD / XREADGROUP)"]
     PubSub["bus_telemetry_channel (PUBLISH)"]
   end
 
-  WriteReq --> Transactional_Store
-  WriteReq --> Spatial_Store
+  WriteReq --> Spatial_Relational_Store
   WriteReq --> Memory_Store
 ```
 
-### 4.1 Indexing Specifications
+### 4.1 Indexing & Spatial Acceleration Specifications
 
-#### MongoDB Indexes
-- `Shipments`: `{ trackingId: 1 }` (Unique), `{ operatorId: 1, status: 1 }`, `{ createdAt: -1 }`
-- `ShipmentLegs`: `{ shipmentId: 1, sequence: 1 }`, `{ trackingId: 1 }`
-- `CapacitySlots`: `{ vehicleId: 1, date: 1 }` (Unique compound), `{ status: 1 }`
-- `CustodyHandoffs`: `{ shipmentId: 1, timestamp: -1 }`
+#### PostGIS Spatial (GIST) Indexes
+- `terminals`: `CREATE INDEX idx_terminals_location ON terminals USING GIST (location);`
+- `terminals`: `CREATE INDEX idx_terminals_polygon ON terminals USING GIST (geofence_polygon);`
+- `route_transactions`: `CREATE INDEX idx_routes_path ON route_transactions USING GIST (path);`
+- `route_stops`: `CREATE INDEX idx_route_stops_geom ON route_stops USING GIST (geom);`
+- `shipments`: `CREATE INDEX idx_shipments_origin_geom ON shipments USING GIST (origin_geom);`
+- `shipments`: `CREATE INDEX idx_shipments_dest_geom ON shipments USING GIST (dest_geom);`
+- `shipment_legs`: `CREATE INDEX idx_shipment_legs_pickup_geom ON shipment_legs USING GIST (pickup_geom);`
+- `shipment_legs`: `CREATE INDEX idx_shipment_legs_dropoff_geom ON shipment_legs USING GIST (dropoff_geom);`
+- `vehicle_telemetry`: `CREATE INDEX idx_telemetry_geom ON vehicle_telemetry USING GIST (geom);`
+- `custody_handoffs`: `CREATE INDEX idx_custody_handoffs_geom ON custody_handoffs USING GIST (location_geom);`
+- `proof_of_delivery`: `CREATE INDEX idx_pod_location_geom ON proof_of_delivery USING GIST (location_geom);`
+- `saved_addresses`: `CREATE INDEX idx_saved_addresses_geom ON saved_addresses USING GIST (geom);`
 
-#### PostGIS Spatial Indexes
-- `terminals`: `CREATE INDEX idx_terminals_geom ON terminals USING GIST (location);`
-- `routes`: `CREATE INDEX idx_routes_geom ON routes USING GIST (path);`
-- `vehicle_telemetry`: `CREATE INDEX idx_telemetry_geom ON vehicle_telemetry USING GIST (location);`
-- `proof_of_deliveries`: `CREATE INDEX idx_pod_geom ON proof_of_deliveries USING GIST (delivery_location);`
+#### B-Tree & Concurrency Indexes
+- `capacity_slots`: `UNIQUE (vehicle_id, slot_date)`, `INDEX (route_transaction_id, slot_date)`
+- `shipments`: `UNIQUE (tracking_id)`, `INDEX (id, status, version)` (OCC acceleration)
+- `provider_dispatches`: `UNIQUE (idempotency_key)`, `INDEX (external_delivery_id)`
+- `vehicle_telemetry`: `INDEX (vehicle_id, ping_timestamp DESC)`, `INDEX (operator_id, ping_timestamp DESC)`
+- `ledger_entries`: `INDEX (operator_id, posted_at)`, `INDEX (shipment_id)`
+- `audit_logs`: `INDEX (actor_user_id, created_at DESC)`, `INDEX (resource_type, resource_id)`
 
 ---
 
@@ -316,11 +326,11 @@ All inter-service asynchronous events conform to the standard JSON event envelop
 
 | Threat Vector | Mitigation Architecture | Implementation |
 | :--- | :--- | :--- |
-| **Parcel Tampering / Fake Seals** | HMAC-SHA256 Cryptographic Digital QR Seals | [`src/utils/security.js`](file:///Users/anmoljangra/Documents/Project%20-%20Alphaa%20IT/src/utils/security.js) |
-| **False Delivery Claim** | Constant-Time SHA-256 Hashed 6-digit OTP + Geofence Match | `crypto.timingSafeEqual` |
-| **Off-Route Unauthorized Handoff** | PostGIS Geofence Spatial Boundary Validation | `ST_Contains` query |
+| **Parcel Tampering / Fake Seals** | HMAC-SHA256 Cryptographic Digital QR Seals | [`src/utils/security.js`](file:///Users/anmol/Documents/Projects/transitly/src/utils/security.js) |
+| **False Delivery Claim** | Constant-Time SHA-256 Hashed 6-digit OTP + Geofence Match | `crypto.timingSafeEqual` + PostGIS `ST_DWithin` |
+| **Off-Route Unauthorized Handoff** | PostGIS Geofence Spatial Boundary Validation | PostGIS `ST_DWithin` / `ST_Contains` query |
 | **Driver Privacy & Stalking** | Automatic PII Redaction Filter on all customer responses | `redactCustomerMessage()` |
-| **Concurrent Capacity Overbooking** | Optimistic Concurrency Control (OCC) on Capacity Slots | MongoDB `$inc: { version: 1 }` |
+| **Concurrent Capacity Overbooking** | Optimistic Concurrency Control (OCC) on Capacity Slots | PostgreSQL `UPDATE ... WHERE version = $v` |
 | **API Denial of Service** | Redis Sliding Window Rate Limiting (100 req/min/IP) | Redis Key TTL Rate Limiter |
 
 ---
@@ -332,7 +342,7 @@ All inter-service asynchronous events conform to the standard JSON event envelop
 # Build Multi-Stage Production Container
 docker build -t transitly-app:latest .
 
-# Launch Entire 5-Service Stack
+# Launch Container Stack (PostgreSQL 16 + PostGIS 3.4, Redis 7, App)
 docker-compose up -d
 
 # Verify Container Health
@@ -341,6 +351,6 @@ docker-compose ps
 
 ### 12.2 CI/CD Quality Gates
 Every pull request to `main` must pass:
-1. `npm test`: All 7 unit, architecture, security, and schema test suites pass.
+1. `npm test`: All 9 unit, architecture, security, schema, and database operations test suites pass (100% success rate).
 2. `npm run build:css`: Tailwind CSS compiles with zero warnings.
-3. Automated endpoint check: All 31 HTTP routes return `200 OK`.
+3. Automated endpoint check: All HTTP routes return `200 OK`.

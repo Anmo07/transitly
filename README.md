@@ -33,9 +33,9 @@ Transitly is specified as a JavaScript (ES2022+) platform running on Node.js 20 
 - **Domain Modules:** Decoupled modules (`Bookings`, `Capacity`, `Tracking`, `Custody`, `Delivery Evidence`, `Pricing`, `Settlements`, `Notifications`, `Identity`) own their specific rules and storage logic.
 - **Versioned Event Contracts:** Event-driven architecture with standardized envelope schemas (`shipment.booked.v1`, `capacity.reserved.v1`, `delivery.confirmed.v1`, etc.).
 - **Saga Workflow Orchestration:** Booking and dispatch lifecycles are orchestrated via distributed sagas with automatic compensation rollbacks (e.g. releasing capacity on payment/confirmation failure).
-- **Aggregate Summary & OCC:** Master transaction records are lean aggregates that avoid document growth by offloading tracking streams and handoff records to dedicated collections. Writes enforce Optimistic Concurrency Control (`version` checks).
+- **Aggregate Summary & OCC:** Master transaction records are lean relational rows that avoid table bloat by offloading tracking streams and handoff records to dedicated normalized tables. Writes enforce Optimistic Concurrency Control (`version` checks).
 - **Immutable Closures:** Transitions to `CLOSED` produce tamper-evident archive snapshots and double-entry ledger entries. Post-closure adjustments are recorded as linked adjustment transactions.
-- **Real-Time GPS Tracking:** Live telematics and location streaming via WebSockets with Redis pub/sub fan-out.
+- **Real-Time GPS Tracking:** Live telematics and location streaming via WebSockets with Redis pub/sub fan-out and PostGIS slow-path persistence.
 
 ## Last-Mile Orchestration & WhatsApp Integration
 
@@ -66,16 +66,26 @@ Transitly is specified as a JavaScript (ES2022+) platform running on Node.js 20 
 | Operations manager | Monitors shipments and resolves exceptions |
 | Delivery partner | Collects and confirms delivery |
 
-## Environment setup
+## Quick Start & Database Commands
 
-1. Copy `.env.example` to `.env`.
-2. Supply values for your database, cache, queue, authentication, maps, GPS, notification, and storage providers.
-3. Use a managed secret store in staging and production; `.env` is for local development only.
-4. Never commit the completed `.env` file.
+```bash
+# 1. Initialize and Seed Master PostgreSQL 16 + PostGIS 3.4 Database
+npm run db:init
+
+# 2. Inspect Master Routes, Shipments, Vehicles & Telemetry in Terminal
+npm run db:inspect
+
+# 3. Open Interactive psql Console
+npm run db:psql
+
+# 4. Run All 9 Test Suites (including 28-point Operations Suite)
+npm test
+```
 
 ## Documentation & Architecture References
 
 - [PRD (Product Requirements Document)](PRD.md)
 - [Master Project Documentation](docs/PROJECT_DOCUMENTATION.md)
 - [TRD (Technical Requirements Document)](docs/TRD.md)
+- [PostgreSQL & PostGIS Terminal Guide](docs/POSTGRES_TERMINAL_GUIDE.md)
 - [OpenAPI / Swagger API Docs](http://localhost:3000/api/docs)
