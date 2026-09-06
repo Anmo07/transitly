@@ -31,10 +31,13 @@ app.use(express.json({ limit: '25mb' }));
 app.use(express.urlencoded({ limit: '25mb', extended: true }));
 app.use(morgan('dev'));
 
-// Static Frontend Assets (Prevent aggressive caching during development)
+// Static Frontend Assets (JS, CSS, images — NOT HTML page routes)
+// index: false prevents express.static from auto-serving index.html for '/',
+// ensuring all HTML page routes go through our explicit route handlers with auth middleware.
 app.use(express.static(path.join(__dirname, '../public'), {
   etag: false,
   lastModified: false,
+  index: false,
   setHeaders: (res, filePath) => {
     res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
   }

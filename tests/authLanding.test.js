@@ -235,7 +235,73 @@ async function runTests() {
     assert.strictEqual(resInjSignup.status, 400, 'Expected 400 for SQL injection in signup');
     console.log('✔ Anti-injection defense verified on signup endpoint.');
 
-    console.log('\nAll User Login, Two-Step Verification, Sign Up & SSO tests passed successfully!\n');
+    // 18. Server-Side Authorization Gate: Protected routes redirect to /login without auth
+    console.log('18. Testing server-side route protection (unauthenticated → redirect to /login)...');
+    const protectedPaths = ['/', '/deliver', '/tracking', '/services', '/history', '/profile',
+      '/saved-addresses', '/payment-methods', '/settings', '/help-support', '/notifications', '/admin'];
+    for (const protectedPath of protectedPaths) {
+      const resProt = await request('GET', protectedPath);
+      assert.strictEqual(resProt.status, 302, `Expected 302 redirect for ${protectedPath} without auth`);
+      assert.ok(resProt.headers.location.includes('/login'), `Expected redirect to /login for ${protectedPath}, got: ${resProt.headers.location}`);
+      assert.ok(resProt.headers.location.includes('redirect='), `Expected redirect param preserved for ${protectedPath}`);
+    }
+    console.log(`✔ All ${protectedPaths.length} protected routes correctly redirect unauthenticated users to /login.`);
+
+    // 19. Public routes remain accessible without auth
+    console.log('19. Testing public routes remain accessible without auth...');
+    const publicPaths = ['/login', '/signup', '/faq', '/privacy-policy', '/terms'];
+    for (const pubPath of publicPaths) {
+      const resPub = await request('GET', pubPath);
+      assert.strictEqual(resPub.status, 200, `Expected 200 for public route ${pubPath}`);
+    }
+    console.log(`✔ All ${publicPaths.length} public routes accessible without authentication.`);
+
+    // 20. Authenticated access to protected routes with valid JWT cookie
+    console.log('20. Testing authenticated access to protected routes with valid JWT session cookie...');
+    const jwt = require('jsonwebtoken');
+    const testJwt = jwt.sign(
+      { userId: 999, email: 'test@transitly.in', role: 'CUSTOMER' },
+      process.env.AUTH_SECRET || 'transitly-jwt-secret-key-2026',
+      { expiresIn: '1h' }
+    );
+    const authRequest = (method, urlPath, payload = null) => {
+      return new Promise((resolve, reject) => {
+        const url = new URL(urlPath, baseUrl);
+        const req = http.request(url, {
+          method,
+          headers: {
+            'Content-Type': 'application/json',
+            'Cookie': `transitly_session=${testJwt}`
+          }
+        }, (res) => {
+          let body = '';
+          res.on('data', (chunk) => body += chunk);
+          res.on('end', () => {
+            let json = null;
+            try { json = JSON.parse(body); } catch (_) {}
+            resolve({ status: res.statusCode, headers: res.headers, body, json });
+          });
+        });
+        req.on('error', reject);
+        if (payload) {
+          req.write(JSON.stringify(payload));
+        }
+        req.end();
+      });
+    };
+
+    const resHome = await authRequest('GET', '/');
+    assert.strictEqual(resHome.status, 200, 'Expected 200 for / with valid JWT cookie');
+    assert.ok(resHome.body.includes('Transitly'), 'Expected Transitly content on homepage');
+
+    const resTracking = await authRequest('GET', '/tracking');
+    assert.strictEqual(resTracking.status, 200, 'Expected 200 for /tracking with valid JWT cookie');
+
+    const resProfile = await authRequest('GET', '/profile');
+    assert.strictEqual(resProfile.status, 200, 'Expected 200 for /profile with valid JWT cookie');
+    console.log('✔ Authenticated users can access all protected routes with valid JWT session cookie.');
+
+    console.log('\nAll User Login, Two-Step Verification, Sign Up, SSO & Authorization Gate tests passed successfully!\n');
   } finally {
     server.close();
   }

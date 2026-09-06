@@ -341,7 +341,10 @@
 
       window.addEventListener('message', (e) => {
         if (e.data && e.data.type === 'TRANSITLY_AUTH_SUCCESS') {
-          if (e.data.token) localStorage.setItem('transitly_auth_token', e.data.token);
+          if (e.data.token) {
+            localStorage.setItem('transitly_auth_token', e.data.token);
+            if (typeof syncSessionCookie === 'function') syncSessionCookie(e.data.token);
+          }
           if (e.data.name) localStorage.setItem('transitly_user_name', e.data.name);
           window.location.href = '/';
         }
@@ -435,6 +438,7 @@
             // Persist User Session
             if (data.data && data.data.token) {
               localStorage.setItem('transitly_auth_token', data.data.token);
+              if (typeof syncSessionCookie === 'function') syncSessionCookie(data.data.token);
             }
             localStorage.setItem('transitly_user_name', data.data?.user?.name || fullName);
             localStorage.setItem('transitly_user_email', data.data?.user?.email || email);

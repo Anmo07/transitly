@@ -698,6 +698,8 @@
             // Persist Session
             if (data.data && data.data.token) {
               localStorage.setItem('transitly_auth_token', data.data.token);
+              // Sync session cookie for server-side route protection
+              if (typeof syncSessionCookie === 'function') syncSessionCookie(data.data.token);
             }
             localStorage.setItem('transitly_user_name', userState.fullName);
             localStorage.setItem('transitly_user_email', userState.identifier.includes('@') ? userState.identifier : 'alex@example.com');
@@ -752,9 +754,14 @@
       // Listen for successful authentication from popup window
       window.addEventListener('message', (e) => {
         if (e.data && e.data.type === 'TRANSITLY_AUTH_SUCCESS') {
-          if (e.data.token) localStorage.setItem('transitly_auth_token', e.data.token);
+          if (e.data.token) {
+            localStorage.setItem('transitly_auth_token', e.data.token);
+            if (typeof syncSessionCookie === 'function') syncSessionCookie(e.data.token);
+          }
           if (e.data.name) localStorage.setItem('transitly_user_name', e.data.name);
-          window.location.href = '/';
+          const params = new URLSearchParams(window.location.search);
+          const redirect = params.get('redirect') || '/';
+          window.location.href = redirect;
         }
       });
 
