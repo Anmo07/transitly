@@ -31,6 +31,15 @@ app.use(express.json({ limit: '25mb' }));
 app.use(express.urlencoded({ limit: '25mb', extended: true }));
 app.use(morgan('dev'));
 
+// Block direct .html file access to prevent auth bypass (e.g., /tracking.html)
+// All HTML pages must be served through our explicit route handlers with auth middleware.
+app.use((req, res, next) => {
+  if (req.path.endsWith('.html')) {
+    return res.redirect(req.path.replace(/\.html$/, ''));
+  }
+  next();
+});
+
 // Static Frontend Assets (JS, CSS, images — NOT HTML page routes)
 // index: false prevents express.static from auto-serving index.html for '/',
 // ensuring all HTML page routes go through our explicit route handlers with auth middleware.
