@@ -71,23 +71,79 @@ app.get('/robots.txt', (req, res) => {
   res.sendFile(path.join(publicDir, 'robots.txt'));
 });
 
-// Frontend Screen Routes
-app.get(['/', '/deliver'], (req, res) => res.sendFile(path.join(publicDir, 'index.html')));
+// =========================================================================
+// Authorization Middleware — Server-Side Route Protection
+// =========================================================================
+const jwt = require('jsonwebtoken');
+const AUTH_SECRET = process.env.AUTH_SECRET || 'transitly-jwt-secret-key-2026';
+
+/**
+ * Parse the session token from cookies or Authorization header.
+ * Returns decoded JWT payload if valid, null otherwise.
+ */
+const extractSessionToken = (req) => {
+  // 1. Check cookie: transitly_session=<jwt>
+  const cookieHeader = req.headers.cookie || '';
+  const cookieMatch = cookieHeader.match(/(?:^|;\s*)transitly_session=([^\s;]+)/);
+  if (cookieMatch && cookieMatch[1]) {
+    try {
+      return jwt.verify(cookieMatch[1], AUTH_SECRET);
+    } catch (e) { /* expired or invalid */ }
+  }
+  // 2. Check Authorization: Bearer <jwt>
+  const authHeader = req.headers.authorization || '';
+  if (authHeader.startsWith('Bearer ')) {
+    try {
+      return jwt.verify(authHeader.slice(7), AUTH_SECRET);
+    } catch (e) { /* expired or invalid */ }
+  }
+  return null;
+};
+
+/**
+ * Middleware: Require authentication for protected page routes.
+ * Redirects unauthenticated visitors to /login?redirect=<original_path>
+ */
+const requirePageAuth = (req, res, next) => {
+  const decoded = extractSessionToken(req);
+  if (decoded) {
+    req.user = decoded;
+    return next();
+  }
+  // Redirect to login with the attempted URL as redirect param
+  const redirectPath = encodeURIComponent(req.originalUrl);
+  return res.redirect(`/login?redirect=${redirectPath}`);
+};
+
+// =========================================================================
+// Public Routes — Accessible Without Authentication
+// =========================================================================
+// Login, Signup, and Verification pages (must be accessible unauthenticated)
 app.get(['/login', '/auth', '/signin', '/verify'], (req, res) => res.sendFile(path.join(publicDir, 'login.html')));
 app.get(['/signup', '/register', '/create-account'], (req, res) => res.sendFile(path.join(publicDir, 'signup.html')));
-app.get('/tracking', (req, res) => res.sendFile(path.join(publicDir, 'tracking.html')));
-app.get('/services', (req, res) => res.sendFile(path.join(publicDir, 'services.html')));
-app.get('/history', (req, res) => res.sendFile(path.join(publicDir, 'history.html')));
-app.get('/profile', (req, res) => res.sendFile(path.join(publicDir, 'profile.html')));
-app.get('/saved-addresses', (req, res) => res.sendFile(path.join(publicDir, 'saved-addresses.html')));
-app.get('/payment-methods', (req, res) => res.sendFile(path.join(publicDir, 'payment-methods.html')));
-app.get('/settings', (req, res) => res.sendFile(path.join(publicDir, 'settings.html')));
-app.get('/help-support', (req, res) => res.sendFile(path.join(publicDir, 'help-support.html')));
-app.get(['/faq', '/faqs'], (req, res) => res.sendFile(path.join(publicDir, 'faq.html')));
+
+// Legal & Informational pages (publicly accessible for SEO and compliance)
 app.get(['/privacy', '/privacy-policy'], (req, res) => res.sendFile(path.join(publicDir, 'privacy-policy.html')));
 app.get(['/terms', '/terms-and-conditions', '/terms-of-use'], (req, res) => res.sendFile(path.join(publicDir, 'terms.html')));
-app.get('/notifications', (req, res) => res.sendFile(path.join(publicDir, 'notifications.html')));
-app.get('/admin', (req, res) => res.sendFile(path.join(publicDir, 'admin.html')));
+app.get(['/faq', '/faqs'], (req, res) => res.sendFile(path.join(publicDir, 'faq.html')));
+
+// =========================================================================
+// Protected Routes — Require Valid Session Token
+// =========================================================================
+// Homepage / Dashboard (redirects to login if no session)
+app.get(['/', '/deliver'], requirePageAuth, (req, res) => res.sendFile(path.join(publicDir, 'index.html')));
+
+// Core App Screens
+app.get('/tracking', requirePageAuth, (req, res) => res.sendFile(path.join(publicDir, 'tracking.html')));
+app.get('/services', requirePageAuth, (req, res) => res.sendFile(path.join(publicDir, 'services.html')));
+app.get('/history', requirePageAuth, (req, res) => res.sendFile(path.join(publicDir, 'history.html')));
+app.get('/profile', requirePageAuth, (req, res) => res.sendFile(path.join(publicDir, 'profile.html')));
+app.get('/saved-addresses', requirePageAuth, (req, res) => res.sendFile(path.join(publicDir, 'saved-addresses.html')));
+app.get('/payment-methods', requirePageAuth, (req, res) => res.sendFile(path.join(publicDir, 'payment-methods.html')));
+app.get('/settings', requirePageAuth, (req, res) => res.sendFile(path.join(publicDir, 'settings.html')));
+app.get('/help-support', requirePageAuth, (req, res) => res.sendFile(path.join(publicDir, 'help-support.html')));
+app.get('/notifications', requirePageAuth, (req, res) => res.sendFile(path.join(publicDir, 'notifications.html')));
+app.get('/admin', requirePageAuth, (req, res) => res.sendFile(path.join(publicDir, 'admin.html')));
 
 // Custom 404 Handler for Unmatched Routes (Prevents Soft 404 SEO penalties)
 app.use((req, res) => {

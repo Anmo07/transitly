@@ -6,6 +6,64 @@
 
 const API_BASE = window.location.origin;
 
+// =========================================================================
+// 0. Universal Authorization Gate — Client-Side Route Protection
+// =========================================================================
+// Pages that do NOT require authentication:
+const PUBLIC_PAGES = ['/login', '/signin', '/auth', '/verify', '/signup', '/register', '/create-account',
+  '/privacy', '/privacy-policy', '/terms', '/terms-and-conditions', '/terms-of-use',
+  '/faq', '/faqs', '/404'];
+
+/**
+ * Sync the JWT from localStorage into a secure session cookie so the server
+ * can verify it on protected page GET requests.
+ */
+const syncSessionCookie = (token) => {
+  if (token) {
+    document.cookie = `transitly_session=${token}; path=/; max-age=${30 * 24 * 60 * 60}; SameSite=Lax`;
+  }
+};
+
+/**
+ * Clear all auth state (localStorage + cookie). Use on logout.
+ */
+window.transitlyLogout = () => {
+  localStorage.removeItem('transitly_auth_token');
+  localStorage.removeItem('transitly_user_name');
+  localStorage.removeItem('transitly_user_email');
+  localStorage.removeItem('transitly_user_phone');
+  localStorage.removeItem('transitly_user_avatar');
+  document.cookie = 'transitly_session=; path=/; max-age=0; SameSite=Lax';
+  window.location.href = '/login';
+};
+
+// On every page load: sync existing localStorage token into cookie
+const existingToken = localStorage.getItem('transitly_auth_token');
+if (existingToken) {
+  syncSessionCookie(existingToken);
+}
+
+// On every page load: if this is a protected page and user has no token, redirect to login
+(() => {
+  const currentPath = window.location.pathname.toLowerCase().replace(/\.html$/, '').replace(/\/$/, '') || '/';
+  const isPublic = PUBLIC_PAGES.some(p => currentPath === p || currentPath.startsWith(p + '/'));
+  if (!isPublic && !existingToken) {
+    const redirectParam = encodeURIComponent(window.location.pathname + window.location.search);
+    window.location.replace(`/login?redirect=${redirectParam}`);
+  }
+})();
+
+// Listen for token changes (login events) and sync cookie immediately
+window.addEventListener('storage', (e) => {
+  if (e.key === 'transitly_auth_token') {
+    if (e.newValue) {
+      syncSessionCookie(e.newValue);
+    } else {
+      document.cookie = 'transitly_session=; path=/; max-age=0; SameSite=Lax';
+    }
+  }
+});
+
 document.addEventListener('DOMContentLoaded', () => {
   // -------------------------------------------------------------
   // 1. Highlight Active Nav Item based on Current URL Path
