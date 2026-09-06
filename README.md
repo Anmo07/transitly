@@ -6,13 +6,17 @@ Transitly is a JavaScript parcel-management platform concept that helps public t
 
 - Parcel booking and pricing
 - Spare-capacity matching
+- User authentication with two-step OTP verification (NIST SP 800-63B compliant)
+- Server & client-side route authorization gates protecting internal application views
+- Social sign-in options (Google OAuth 2.0 and Apple ID)
+- Purpose-binding, rate limiting, and exponential backoff cooldowns against telephony abuse
+- Anti-injection & parameter sanitization engine protecting all entry forms
+- Legal compliance suite (Privacy Policy, Terms of Service, FAQ, Cookie Consent pop-up)
+- Search Engine Optimization (SEO canonical URLs and XML sitemap)
 - GPS-based real-time tracking via WebSockets and estimated arrival times
 - End-to-end secure custody (QR seal scanning, geofenced handoffs, and immutable audit logs)
 - Recipient OTP delivery confirmation and digital proof of delivery
-- Route optimization
-- Revenue reporting
-- Customer notifications
-- Optional door-to-door pickup and delivery through approved third-party providers
+- Route optimization and revenue reporting
 - Consent-based WhatsApp parcel-status assistant
 
 ## Production technology baseline
@@ -22,14 +26,17 @@ Transitly is specified as a JavaScript (ES2022+) platform running on Node.js 20 
 | Area | Production choice |
 | --- | --- |
 | API and workers | Node.js JavaScript services, deployed as stateless containers |
+| Authentication & Identity | JWT session tokens (30d), NIST SP 800-63B OTP engine, WebAuthn FIDO2 Biometrics |
 | Transactional & spatial data | Managed PostgreSQL (PostGIS) with backups, point-in-time recovery, and connection pooling |
 | Real-time state | Redis for caching, rate limits, locks, and tracking fan-out |
 | Event processing | Durable queue or event bus with retries and a dead-letter queue |
 | Delivery evidence | Private object storage with short-lived signed URLs |
-| Observability | Structured logs, metrics, alerts, and distributed traces |
+| Observability | Structured logs, metrics, alerts, distributed traces, and delivery audit log |
 
 ## Architecture & Scalability Principles
 
+- **Primary Landing Page & Route Protection:** `/login` is the primary entry point. Direct surfing to internal routes (`/`, `/deliver`, `/tracking`, `/profile`, etc.) without an authenticated session is blocked at both the Express server tier (302 redirect preserving target URL) and client-side router.
+- **Hardened OTP Verification Engine:** Single-use, purpose-bound (`login`, `signup`, `reset_password`), rate-limited (5 sends/hr destination, 10 sends/hr IP), exponential resend backoff (`30s→60s→120s→300s`), and auto-revocation on 5 failed attempts (`HTTP 423 Locked`).
 - **Domain Modules:** Decoupled modules (`Bookings`, `Capacity`, `Tracking`, `Custody`, `Delivery Evidence`, `Pricing`, `Settlements`, `Notifications`, `Identity`) own their specific rules and storage logic.
 - **Versioned Event Contracts:** Event-driven architecture with standardized envelope schemas (`shipment.booked.v1`, `capacity.reserved.v1`, `delivery.confirmed.v1`, etc.).
 - **Saga Workflow Orchestration:** Booking and dispatch lifecycles are orchestrated via distributed sagas with automatic compensation rollbacks (e.g. releasing capacity on payment/confirmation failure).
@@ -53,7 +60,7 @@ Transitly is specified as a JavaScript (ES2022+) platform running on Node.js 20 
 ## Delivery quality bar
 
 - Versioned APIs with schema validation, OpenAPI documentation, pagination, and idempotency keys on write operations.
-- Automated unit, integration, contract, end-to-end, and load testing.
+- Automated unit, integration, contract, end-to-end, and load testing across 10 distinct test suites.
 - Managed secrets, encrypted storage, audit logging, dependency scanning, and access controls.
 - Health checks, rolling deployments, rollback, backup restoration tests, dashboards, alerts, and operational runbooks.
 
@@ -61,9 +68,9 @@ Transitly is specified as a JavaScript (ES2022+) platform running on Node.js 20 
 
 | Role | Primary responsibility |
 | --- | --- |
-| Customer | Books and tracks parcels |
+| Customer | Books, tracks parcels, and authenticates via two-step OTP or SSO |
 | Operator | Publishes vehicle capacity and routes |
-| Operations manager | Monitors shipments and resolves exceptions |
+| Operations manager | Monitors shipments, commands fleet, and resolves exceptions |
 | Delivery partner | Collects and confirms delivery |
 
 ## Quick Start & Database Commands
@@ -78,7 +85,7 @@ npm run db:inspect
 # 3. Open Interactive psql Console
 npm run db:psql
 
-# 4. Run All 9 Test Suites (including 28-point Operations Suite)
+# 4. Run All 10 Automated Test Suites (including Auth, Route Gates & 28-point Operations)
 npm test
 ```
 

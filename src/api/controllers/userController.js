@@ -4,7 +4,131 @@ const { pool } = require('../../config/postgres');
 const { generateOtp, hashOtp, verifyOtp } = require('../../utils/security');
 
 const AUTH_SECRET = process.env.AUTH_SECRET || 'transitly-jwt-secret-key-2026';
-const activeOtps = new Map(); // Key: normalized identifier, Value: { hash, salt, fullName, expiresAt }
+
+// =========================================================================
+// OTP Engine — Purpose-Bound, Rate-Limited, Attempt-Tracked
+// Implements NIST SP 800-63B §5.1.4 (lookup secrets), anti-abuse controls,
+// exponential backoff, and structured delivery audit logging.
+// =========================================================================
+
+/** Active OTP records keyed by `${destination}::${purpose}` */
+const activeOtps = new Map();
+
+/**
+ * Rate limit store keyed by destination or IP.
+ * Value: { sends: [{timestamp}], lastSendAt, sendCount, cooldownUntil }
+ */
+const rateLimitStore = new Map();
+
+/** Structured audit log for OTP lifecycle events */
+const otpAuditLog = [];
+
+// Configuration constants
+const OTP_CONFIG = {
+  EXPIRY_MS: 120 * 1000,               // 120 seconds (2 minutes) — tighter than before
+  MAX_ATTEMPTS: 5,                       // Max failed verify attempts per OTP
+  MAX_SENDS_PER_HOUR_DESTINATION: 5,     // Max sends per destination per hour
+  MAX_SENDS_PER_HOUR_IP: 10,            // Max sends per IP per hour
+  VALID_PURPOSES: ['login', 'signup', 'reset_password', 'confirm_payment'],
+  // Exponential backoff cooldowns (seconds) per consecutive resend
+  BACKOFF_SCHEDULE: [30, 60, 120, 300],  // 30s → 60s → 2m → 5m
+};
+
+/**
+ * Check rate limits for OTP send requests.
+ * Enforces per-destination hourly caps, per-IP hourly caps, and exponential backoff.
+ * @returns {{ allowed: boolean, retryAfterSeconds?: number, reason?: string }}
+ */
+const checkOtpRateLimit = (destination, ipAddress) => {
+  const now = Date.now();
+  const oneHourAgo = now - 60 * 60 * 1000;
+
+  // --- Per-destination rate limit ---
+  const destKey = `dest:${destination}`;
+  let destRecord = rateLimitStore.get(destKey);
+  if (!destRecord) {
+    destRecord = { sends: [], sendCount: 0, lastSendAt: 0, cooldownUntil: 0 };
+    rateLimitStore.set(destKey, destRecord);
+  }
+  // Prune sends older than 1 hour
+  destRecord.sends = destRecord.sends.filter(s => s > oneHourAgo);
+
+  // Check hourly cap
+  if (destRecord.sends.length >= OTP_CONFIG.MAX_SENDS_PER_HOUR_DESTINATION) {
+    const oldestInWindow = destRecord.sends[0];
+    const retryAfter = Math.ceil((oldestInWindow + 60 * 60 * 1000 - now) / 1000);
+    return { allowed: false, retryAfterSeconds: retryAfter, reason: 'Maximum OTP requests reached for this destination. Please try again later.' };
+  }
+
+  // Check exponential backoff cooldown
+  if (destRecord.cooldownUntil > now) {
+    const retryAfter = Math.ceil((destRecord.cooldownUntil - now) / 1000);
+    return { allowed: false, retryAfterSeconds: retryAfter, reason: `Please wait ${retryAfter} seconds before requesting a new code.` };
+  }
+
+  // --- Per-IP rate limit ---
+  if (ipAddress) {
+    const ipKey = `ip:${ipAddress}`;
+    let ipRecord = rateLimitStore.get(ipKey);
+    if (!ipRecord) {
+      ipRecord = { sends: [], sendCount: 0, lastSendAt: 0, cooldownUntil: 0 };
+      rateLimitStore.set(ipKey, ipRecord);
+    }
+    ipRecord.sends = ipRecord.sends.filter(s => s > oneHourAgo);
+
+    if (ipRecord.sends.length >= OTP_CONFIG.MAX_SENDS_PER_HOUR_IP) {
+      const oldestInWindow = ipRecord.sends[0];
+      const retryAfter = Math.ceil((oldestInWindow + 60 * 60 * 1000 - now) / 1000);
+      return { allowed: false, retryAfterSeconds: retryAfter, reason: 'Too many OTP requests from this network. Please try again later.' };
+    }
+  }
+
+  return { allowed: true };
+};
+
+/**
+ * Record a successful OTP send for rate limiting and compute next cooldown.
+ */
+const recordOtpSend = (destination, ipAddress) => {
+  const now = Date.now();
+
+  const destKey = `dest:${destination}`;
+  const destRecord = rateLimitStore.get(destKey) || { sends: [], sendCount: 0, lastSendAt: 0, cooldownUntil: 0 };
+  destRecord.sends.push(now);
+  destRecord.sendCount++;
+  destRecord.lastSendAt = now;
+
+  // Compute exponential backoff for next resend
+  const backoffIdx = Math.min(destRecord.sends.length - 1, OTP_CONFIG.BACKOFF_SCHEDULE.length - 1);
+  const backoffSeconds = OTP_CONFIG.BACKOFF_SCHEDULE[backoffIdx];
+  destRecord.cooldownUntil = now + backoffSeconds * 1000;
+  rateLimitStore.set(destKey, destRecord);
+
+  if (ipAddress) {
+    const ipKey = `ip:${ipAddress}`;
+    const ipRecord = rateLimitStore.get(ipKey) || { sends: [], sendCount: 0, lastSendAt: 0, cooldownUntil: 0 };
+    ipRecord.sends.push(now);
+    ipRecord.sendCount++;
+    ipRecord.lastSendAt = now;
+    rateLimitStore.set(ipKey, ipRecord);
+  }
+};
+
+/**
+ * Append a structured entry to the OTP audit log.
+ */
+const logOtpEvent = (event) => {
+  const entry = {
+    ...event,
+    timestamp: new Date().toISOString(),
+    id: crypto.randomUUID()
+  };
+  otpAuditLog.push(entry);
+  // Keep audit log bounded to last 500 entries in-memory
+  if (otpAuditLog.length > 500) otpAuditLog.shift();
+  console.log(`[OTP Audit] ${JSON.stringify(entry)}`);
+};
+
 
 /**
  * Strict Anti-Injection & Canonical Data Formatting Engine
@@ -524,35 +648,83 @@ class UserController {
 
   /**
    * Dispatch 6-Digit OTP Verification Code (SMS / WhatsApp / Email)
+   * Enforces purpose-binding, per-destination & per-IP rate limits, exponential backoff,
+   * and structured delivery audit logging.
    */
   async sendOtp(req, res) {
     try {
-      const { fullName, identifier, channel } = req.body;
+      const { fullName, identifier, channel, purpose } = req.body;
 
       // 1. Strict Anti-Injection & Canonical Formatting
       const cleanIdent = DataSanitizer.sanitizeIdentifier(identifier);
       const cleanName = DataSanitizer.sanitizeName(fullName);
-      const cleanChannel = (channel && String(channel).toLowerCase() === 'whatsapp') ? 'whatsapp' : 'sms';
+      const cleanChannel = (channel && String(channel).toLowerCase() === 'whatsapp') ? 'whatsapp' : (channel && String(channel).toLowerCase() === 'email' ? 'email' : 'sms');
+      const cleanPurpose = (purpose && OTP_CONFIG.VALID_PURPOSES.includes(String(purpose).toLowerCase()))
+        ? String(purpose).toLowerCase()
+        : 'login';
 
       const cleanIdentifier = cleanIdent.formatted;
+      const clientIp = req.ip || req.headers['x-forwarded-for'] || req.socket?.remoteAddress || '127.0.0.1';
+
+      // 2. Rate Limit & Exponential Backoff Check
+      const rateCheck = checkOtpRateLimit(cleanIdentifier, clientIp);
+      if (!rateCheck.allowed) {
+        logOtpEvent({
+          destination: cleanIdentifier,
+          purpose: cleanPurpose,
+          channel: cleanChannel,
+          ipAddress: clientIp,
+          outcome: 'rate_limited',
+          reason: rateCheck.reason,
+          retryAfterSeconds: rateCheck.retryAfterSeconds
+        });
+        return res.status(429).json({
+          status: 'error',
+          message: rateCheck.reason,
+          retryAfterSeconds: rateCheck.retryAfterSeconds
+        });
+      }
+
+      // 3. Cryptographically Secure OTP Generation & Hashing
       const otp = generateOtp(6);
       const salt = crypto.randomBytes(8).toString('hex');
       const hash = hashOtp(otp, salt);
-      const expiresAt = Date.now() + 5 * 60 * 1000; // 5 minutes
+      const expiresAt = Date.now() + OTP_CONFIG.EXPIRY_MS;
 
-      activeOtps.set(cleanIdentifier, {
+      // 4. Purpose-Bound Active OTP Storage (Single active OTP per destination + purpose)
+      const otpKey = `${cleanIdentifier}::${cleanPurpose}`;
+      activeOtps.set(otpKey, {
         hash,
         salt,
         fullName: cleanName,
-        expiresAt
+        purpose: cleanPurpose,
+        channel: cleanChannel,
+        expiresAt,
+        attempts: 0,
+        createdAt: Date.now(),
+        ipAddress: clientIp
+      });
+
+      // 5. Record send for rate limiting & exponential backoff
+      recordOtpSend(cleanIdentifier, clientIp);
+
+      // 6. Audit Logging
+      logOtpEvent({
+        destination: cleanIdentifier,
+        purpose: cleanPurpose,
+        channel: cleanChannel,
+        ipAddress: clientIp,
+        outcome: 'sent',
+        expiresAt: new Date(expiresAt).toISOString()
       });
 
       console.log(`\n======================================================`);
       console.log(`🔑 [TRANSITLY 2-STEP AUTHENTICATION OTP]`);
       console.log(`Recipient: ${cleanIdentifier} (${cleanName})`);
+      console.log(`Purpose: ${cleanPurpose.toUpperCase()}`);
       console.log(`Channel: ${cleanChannel.toUpperCase()}`);
       console.log(`6-Digit Verification Code: >>> ${otp} <<<`);
-      console.log(`Expires: 5 minutes (${new Date(expiresAt).toLocaleTimeString()})`);
+      console.log(`Expires: ${Math.round(OTP_CONFIG.EXPIRY_MS / 1000)}s (${new Date(expiresAt).toLocaleTimeString()})`);
       console.log(`======================================================\n`);
 
       return res.status(200).json({
@@ -561,7 +733,8 @@ class UserController {
         data: {
           identifier: cleanIdentifier,
           channel: cleanChannel,
-          expiresInSeconds: 300,
+          purpose: cleanPurpose,
+          expiresInSeconds: Math.round(OTP_CONFIG.EXPIRY_MS / 1000),
           testOtp: process.env.NODE_ENV !== 'production' ? otp : undefined
         }
       });
@@ -573,25 +746,60 @@ class UserController {
 
   /**
    * Verify 6-Digit OTP & Issue JWT Session Token
+   * Enforces purpose-binding, max attempt limits (5 attempts), constant-time comparison,
+   * single-use consumption, and structured audit logging.
    */
   async verifyOtp(req, res) {
     try {
-      const { identifier, otp, fullName } = req.body;
+      const { identifier, otp, fullName, purpose } = req.body;
 
       // 1. Strict Anti-Injection & Canonical Formatting
       const cleanIdent = DataSanitizer.sanitizeIdentifier(identifier);
       const cleanOtp = DataSanitizer.sanitizeOtp(otp);
       const cleanName = DataSanitizer.sanitizeName(fullName);
-      const cleanIdentifier = cleanIdent.formatted;
+      const cleanPurpose = (purpose && OTP_CONFIG.VALID_PURPOSES.includes(String(purpose).toLowerCase()))
+        ? String(purpose).toLowerCase()
+        : 'login';
 
-      const record = activeOtps.get(cleanIdentifier);
+      const cleanIdentifier = cleanIdent.formatted;
+      const clientIp = req.ip || req.headers['x-forwarded-for'] || req.socket?.remoteAddress || '127.0.0.1';
+
+      // 2. Lookup purpose-bound OTP record
+      const otpKey = `${cleanIdentifier}::${cleanPurpose}`;
+      const record = activeOtps.get(otpKey);
       let isMatch = false;
 
       if (record) {
+        // Check expiry
         if (Date.now() > record.expiresAt) {
-          activeOtps.delete(cleanIdentifier);
+          activeOtps.delete(otpKey);
+          logOtpEvent({
+            destination: cleanIdentifier,
+            purpose: cleanPurpose,
+            ipAddress: clientIp,
+            outcome: 'expired',
+            attempts: record.attempts
+          });
           return res.status(400).json({ status: 'error', message: 'Verification code has expired. Please request a new code.' });
         }
+
+        // Check attempt lockout
+        if (record.attempts >= OTP_CONFIG.MAX_ATTEMPTS) {
+          activeOtps.delete(otpKey);
+          logOtpEvent({
+            destination: cleanIdentifier,
+            purpose: cleanPurpose,
+            ipAddress: clientIp,
+            outcome: 'locked_out',
+            attempts: record.attempts
+          });
+          return res.status(423).json({
+            status: 'error',
+            message: 'Too many incorrect attempts. For your security, this verification code has been locked. Please request a new code.'
+          });
+        }
+
+        // Constant-time verification
         isMatch = verifyOtp(cleanOtp, record.hash, record.salt);
       }
 
@@ -600,12 +808,66 @@ class UserController {
         isMatch = true;
       }
 
-      if (!isMatch) {
-        return res.status(400).json({ status: 'error', message: 'Invalid 6-digit verification code. Please check and try again.' });
+      // If failed match with active record
+      if (!isMatch && record) {
+        record.attempts += 1;
+        const remainingAttempts = OTP_CONFIG.MAX_ATTEMPTS - record.attempts;
+
+        if (record.attempts >= OTP_CONFIG.MAX_ATTEMPTS) {
+          activeOtps.delete(otpKey);
+          logOtpEvent({
+            destination: cleanIdentifier,
+            purpose: cleanPurpose,
+            ipAddress: clientIp,
+            outcome: 'locked_out',
+            attempts: record.attempts
+          });
+          return res.status(423).json({
+            status: 'error',
+            message: 'Too many incorrect attempts. For your security, this verification code has been locked. Please request a new code.'
+          });
+        }
+
+        logOtpEvent({
+          destination: cleanIdentifier,
+          purpose: cleanPurpose,
+          ipAddress: clientIp,
+          outcome: 'failed_attempt',
+          attempts: record.attempts,
+          remainingAttempts
+        });
+
+        return res.status(400).json({
+          status: 'error',
+          message: `Invalid 6-digit verification code. ${remainingAttempts} attempt${remainingAttempts === 1 ? '' : 's'} remaining.`,
+          remainingAttempts
+        });
       }
 
-      // Consume OTP
-      activeOtps.delete(cleanIdentifier);
+      // If no record and not a master dev code
+      if (!isMatch) {
+        logOtpEvent({
+          destination: cleanIdentifier,
+          purpose: cleanPurpose,
+          ipAddress: clientIp,
+          outcome: 'not_found_or_invalid'
+        });
+        return res.status(400).json({
+          status: 'error',
+          message: 'Invalid or expired 6-digit verification code. Please check and try again.'
+        });
+      }
+
+      // 3. Consume OTP (Single-Use Invalidation)
+      activeOtps.delete(otpKey);
+
+      logOtpEvent({
+        destination: cleanIdentifier,
+        purpose: cleanPurpose,
+        ipAddress: clientIp,
+        outcome: 'verified_success',
+        attempts: record ? record.attempts + 1 : 1
+      });
 
       const resolvedName = cleanName || record?.fullName || 'Valued Customer';
       const isEmail = cleanIdent.type === 'EMAIL';
@@ -1126,4 +1388,15 @@ class UserController {
   }
 }
 
-module.exports = new UserController();
+const userControllerInstance = new UserController();
+userControllerInstance.activeOtps = activeOtps;
+userControllerInstance.rateLimitStore = rateLimitStore;
+userControllerInstance.otpAuditLog = otpAuditLog;
+userControllerInstance.OTP_CONFIG = OTP_CONFIG;
+userControllerInstance._resetStores = () => {
+  activeOtps.clear();
+  rateLimitStore.clear();
+  otpAuditLog.length = 0;
+};
+
+module.exports = userControllerInstance;

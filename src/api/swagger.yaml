@@ -11,6 +11,143 @@ servers:
     description: Local Development Server
 
 paths:
+  /auth/otp/send:
+    post:
+      summary: Dispatch Purpose-Bound 6-Digit Verification Code
+      description: >
+        Sends a cryptographically secure 6-digit OTP code to an E.164 phone number
+        or email address via SMS, WhatsApp, or Email. Enforces per-destination (5/hr)
+        and per-IP (10/hr) rate limits, exponential backoff (30s->60s->120s->300s),
+        and purpose-binding.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - identifier
+                - fullName
+              properties:
+                identifier:
+                  type: string
+                  example: "+919876543210"
+                fullName:
+                  type: string
+                  example: "Alex Morgan"
+                channel:
+                  type: string
+                  enum: [sms, whatsapp, email]
+                  default: sms
+                  example: "sms"
+                purpose:
+                  type: string
+                  enum: [login, signup, reset_password, confirm_payment]
+                  default: login
+                  example: "login"
+      responses:
+        200:
+          description: Verification code successfully dispatched.
+        400:
+          description: Validation error or anti-injection filter triggered.
+        429:
+          description: Rate limit or exponential backoff cooldown breached.
+
+  /auth/otp/verify:
+    post:
+      summary: Verify 6-Digit OTP & Issue JWT Session Token
+      description: >
+        Verifies a 6-digit OTP using constant-time hash comparison and purpose-binding.
+        Caps failed verification attempts at 5 before auto-revoking the code (HTTP 423).
+        Upon success, returns a signed 30-day JWT session token and user profile.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - identifier
+                - otp
+              properties:
+                identifier:
+                  type: string
+                  example: "+919876543210"
+                otp:
+                  type: string
+                  example: "482910"
+                fullName:
+                  type: string
+                  example: "Alex Morgan"
+                purpose:
+                  type: string
+                  enum: [login, signup, reset_password, confirm_payment]
+                  default: login
+                  example: "login"
+      responses:
+        200:
+          description: Account verified successfully, returns JWT session token.
+        400:
+          description: Invalid code, expired code, or purpose mismatch.
+        423:
+          description: Too many incorrect attempts; OTP locked out.
+
+  /auth/signup:
+    post:
+      summary: Register Dedicated User Profile
+      description: >
+        Creates a new user profile with strict anti-injection sanitization, dedicated
+        schema formatting, and parameterized PostgreSQL persistence. Rejects duplicate
+        email/phone registrations with HTTP 409.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - fullName
+                - email
+                - phone
+              properties:
+                fullName:
+                  type: string
+                  example: "Vikram Malhotra"
+                email:
+                  type: string
+                  example: "vikram@transitly.in"
+                phone:
+                  type: string
+                  example: "+919811223344"
+                accountType:
+                  type: string
+                  enum: [personal, business]
+                  default: personal
+                  example: "business"
+      responses:
+        201:
+          description: Account registered successfully, returns JWT session token.
+        400:
+          description: Validation or anti-injection error.
+        409:
+          description: Duplicate account with this email or phone already exists.
+
+  /auth/google:
+    get:
+      summary: Google OAuth 2.0 Sign-In Flow
+      description: Initiates Google OAuth authentication with account selector and popup/redirect handling.
+      responses:
+        200:
+          description: Google account selection / authentication screen.
+
+  /auth/apple:
+    get:
+      summary: Apple ID Sign-In Flow
+      description: Initiates Apple ID OAuth authentication with popup/redirect handling.
+      responses:
+        200:
+          description: Apple ID sign-in screen.
+
   /bookings:
     post:
       summary: Create Multimodal Shipment Booking (Distributed Saga)

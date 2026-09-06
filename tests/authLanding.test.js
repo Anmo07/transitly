@@ -49,6 +49,8 @@ async function runTests() {
     assert.ok(resLogin.body.includes('full-name-input'), 'Expected full name input');
     assert.ok(resLogin.body.includes('identifier-input'), 'Expected identifier input');
     assert.ok(resLogin.body.includes('otp-container'), 'Expected 6-digit OTP container');
+    assert.ok(resLogin.body.includes('autocomplete="one-time-code"'), 'Expected autocomplete="one-time-code" attribute');
+    assert.ok(resLogin.body.includes('code-expiry-indicator'), 'Expected code-expiry-indicator element');
     assert.ok(resLogin.body.includes('https://transitly.in/login'), 'Expected canonical tag');
 
     const resAuth = await request('GET', '/auth');
@@ -67,11 +69,13 @@ async function runTests() {
     const resSend = await request('POST', '/api/v1/auth/otp/send', {
       fullName: 'Alex Morgan',
       identifier: testIdentifier,
-      channel: 'sms'
+      channel: 'sms',
+      purpose: 'login'
     });
     assert.strictEqual(resSend.status, 200, 'Expected 200 OK for OTP dispatch');
     assert.strictEqual(resSend.json.status, 'success');
-    assert.strictEqual(resSend.json.data.expiresInSeconds, 300);
+    assert.strictEqual(resSend.json.data.expiresInSeconds, 120);
+    assert.strictEqual(resSend.json.data.purpose, 'login');
     const sentOtp = resSend.json.data.testOtp;
     assert.ok(sentOtp && sentOtp.length === 6, 'Expected 6-digit testOtp in dev environment');
     console.log(`✔ OTP dispatched successfully (code: ${sentOtp}).`);
@@ -80,18 +84,21 @@ async function runTests() {
     console.log('4. Testing POST /api/v1/auth/otp/verify with invalid code...');
     const resBadVerify = await request('POST', '/api/v1/auth/otp/verify', {
       identifier: testIdentifier,
-      otp: '000000'
+      otp: '000000',
+      purpose: 'login'
     });
     assert.strictEqual(resBadVerify.status, 400, 'Expected 400 for bad OTP');
     assert.strictEqual(resBadVerify.json.status, 'error');
-    console.log('✔ Invalid OTP code correctly rejected.');
+    assert.strictEqual(resBadVerify.json.remainingAttempts, 4);
+    console.log('✔ Invalid OTP code correctly rejected with remaining attempts counter.');
 
     // 5. Verify with Valid Code
     console.log('5. Testing POST /api/v1/auth/otp/verify with valid code...');
     const resGoodVerify = await request('POST', '/api/v1/auth/otp/verify', {
       identifier: testIdentifier,
       otp: sentOtp,
-      fullName: 'Alex Morgan'
+      fullName: 'Alex Morgan',
+      purpose: 'login'
     });
     assert.strictEqual(resGoodVerify.status, 200, 'Expected 200 OK for successful verification');
     assert.strictEqual(resGoodVerify.json.status, 'success');
@@ -104,11 +111,128 @@ async function runTests() {
     const resMasterVerify = await request('POST', '/api/v1/auth/otp/verify', {
       identifier: 'alex@example.com',
       otp: '482910',
-      fullName: 'Alex Morgan'
+      fullName: 'Alex Morgan',
+      purpose: 'login'
     });
     assert.strictEqual(resMasterVerify.status, 200, 'Expected 200 OK for master test code');
     assert.ok(resMasterVerify.json.data.token, 'Expected JWT session token for master code');
     console.log('✔ Master OTP test code verified successfully.');
+
+    // 6a. Purpose-Binding Enforcement
+    console.log('6a. Testing Purpose-Binding: OTP generated for login cannot be verified for signup...');
+    const purposeIdent = '+919876543201';
+    const resSendLogin = await request('POST', '/api/v1/auth/otp/send', {
+      fullName: 'Purpose Test User',
+      identifier: purposeIdent,
+      channel: 'sms',
+      purpose: 'login'
+    });
+    assert.strictEqual(resSendLogin.status, 200, 'Expected 200 for purpose login send');
+    const purposeOtp = resSendLogin.json.data.testOtp;
+
+    // Attempt to verify with 'signup' purpose -> Should FAIL
+    const resVerifyWrongPurpose = await request('POST', '/api/v1/auth/otp/verify', {
+      identifier: purposeIdent,
+      otp: purposeOtp,
+      purpose: 'signup'
+    });
+    assert.strictEqual(resVerifyWrongPurpose.status, 400, 'Expected 400 for mismatched purpose');
+    console.log('✔ Purpose mismatch rejected successfully.');
+
+    // Verify with matching 'login' purpose -> Should SUCCEED
+    const resVerifyRightPurpose = await request('POST', '/api/v1/auth/otp/verify', {
+      identifier: purposeIdent,
+      otp: purposeOtp,
+      purpose: 'login'
+    });
+    assert.strictEqual(resVerifyRightPurpose.status, 200, 'Expected 200 for matching purpose');
+    console.log('✔ Matching purpose verification succeeded.');
+
+    // 6b. Resend Cooldown (Exponential Backoff)
+    console.log('6b. Testing Resend Cooldown: immediate consecutive send throttled with HTTP 429...');
+    const backoffIdent = '+919876543202';
+    const resFirstSend = await request('POST', '/api/v1/auth/otp/send', {
+      fullName: 'Backoff User',
+      identifier: backoffIdent,
+      channel: 'sms'
+    });
+    assert.strictEqual(resFirstSend.status, 200, 'First send should succeed');
+
+    // Immediate second send to same identifier -> Should be throttled
+    const resSecondSend = await request('POST', '/api/v1/auth/otp/send', {
+      fullName: 'Backoff User',
+      identifier: backoffIdent,
+      channel: 'sms'
+    });
+    assert.strictEqual(resSecondSend.status, 429, 'Expected 429 Too Many Requests for cooldown breach');
+    assert.ok(resSecondSend.json.retryAfterSeconds > 0, 'Expected retryAfterSeconds > 0');
+    assert.ok(resSecondSend.json.message.includes('wait'), 'Expected cooldown wait message');
+    console.log(`✔ Resend cooldown enforced with HTTP 429 (retry after ${resSecondSend.json.retryAfterSeconds}s).`);
+
+    // 6c. Attempt Limits (Max 5 Failed Attempts -> Lockout)
+    console.log('6c. Testing Attempt Limits: 5 consecutive failed attempts lock out code (HTTP 423)...');
+    const lockoutIdent = '+919876543203';
+    const resSendLockout = await request('POST', '/api/v1/auth/otp/send', {
+      fullName: 'Lockout User',
+      identifier: lockoutIdent,
+      channel: 'sms'
+    });
+    assert.strictEqual(resSendLockout.status, 200);
+    const correctLockoutOtp = resSendLockout.json.data.testOtp;
+
+    // Attempts 1 to 4 should return 400 with decreasing remaining attempts
+    for (let attempt = 1; attempt <= 4; attempt++) {
+      const resFailed = await request('POST', '/api/v1/auth/otp/verify', {
+        identifier: lockoutIdent,
+        otp: '999999'
+      });
+      assert.strictEqual(resFailed.status, 400, `Attempt ${attempt} should return 400`);
+      assert.strictEqual(resFailed.json.remainingAttempts, 5 - attempt);
+    }
+
+    // 5th failed attempt -> 423 Locked
+    const resFifthFailed = await request('POST', '/api/v1/auth/otp/verify', {
+      identifier: lockoutIdent,
+      otp: '999999'
+    });
+    assert.strictEqual(resFifthFailed.status, 423, '5th failed attempt should return 423 Locked');
+    assert.ok(resFifthFailed.json.message.includes('locked'), 'Expected locked out message');
+
+    // Even correct code should now fail because OTP was auto-invalidated
+    const resPostLockout = await request('POST', '/api/v1/auth/otp/verify', {
+      identifier: lockoutIdent,
+      otp: correctLockoutOtp
+    });
+    assert.ok(resPostLockout.status === 400 || resPostLockout.status === 423, 'Post-lockout verify must be rejected');
+    console.log('✔ Attempt limit lockout (5 attempts) and auto-invalidation verified.');
+
+    // 6d. Destination Hourly Rate Limiting
+    console.log('6d. Testing Hourly Destination Rate Limiting (5 sends/hour cap)...');
+    const userController = require('../src/api/controllers/userController');
+    const rateLimitIdent = '+919876543204';
+    // Send 1st
+    const r1 = await request('POST', '/api/v1/auth/otp/send', { identifier: rateLimitIdent, fullName: 'Rate Limit User' });
+    assert.strictEqual(r1.status, 200);
+    // Simulate quota exhaustion in rateLimitStore
+    const destRecord = userController.rateLimitStore.get(`dest:${rateLimitIdent}`);
+    assert.ok(destRecord, 'Expected dest record in rateLimitStore');
+    destRecord.cooldownUntil = 0; // Clear cooldown so we can test the hourly quota check
+    destRecord.sends = [Date.now(), Date.now(), Date.now(), Date.now(), Date.now()]; // 5 sends
+    const resQuotaExhausted = await request('POST', '/api/v1/auth/otp/send', { identifier: rateLimitIdent, fullName: 'Rate Limit User' });
+    assert.strictEqual(resQuotaExhausted.status, 429, 'Expected 429 for hourly cap');
+    assert.ok(resQuotaExhausted.json.message.includes('Maximum OTP requests reached'), 'Expected maximum requests message');
+    console.log('✔ Hourly rate limiting per destination enforced successfully.');
+
+    // 6e. Delivery Audit Trail
+    console.log('6e. Testing Structured Delivery Audit Logging...');
+    assert.ok(userController.otpAuditLog.length > 0, 'Audit log should contain entries');
+    const lastAudit = userController.otpAuditLog[userController.otpAuditLog.length - 1];
+    assert.ok(lastAudit.destination, 'Audit entry should have destination');
+    assert.ok(lastAudit.purpose, 'Audit entry should have purpose');
+    assert.ok(lastAudit.outcome, 'Audit entry should have outcome');
+    assert.ok(lastAudit.timestamp, 'Audit entry should have ISO timestamp');
+    assert.ok(lastAudit.id, 'Audit entry should have unique event ID');
+    console.log(`✔ Audit log verified (${userController.otpAuditLog.length} events logged).`);
 
     // 7. Security & Anti-Injection Defense: SQL Injection Attempt in identifier
     console.log('7. Testing Anti-Injection: SQL injection payload in identifier (\' OR \'1\'=\'1)...');

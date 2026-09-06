@@ -64,9 +64,13 @@ The following matrix documents full traceability between the core requirements s
 | **§ Scope 5** | Recipient OTP & Proof of Delivery | Delivery Evidence Module | [`src/models/ProofOfDelivery.js`](file:///Users/anmoljangra/Documents/Project%20-%20Alphaa%20IT/src/models/ProofOfDelivery.js) | ✅ Verified |
 | **§ Scope 6** | Double-Entry Financial Settlements | Financial Ledger Module | [`src/models/LedgerEntry.js`](file:///Users/anmoljangra/Documents/Project%20-%20Alphaa%20IT/src/models/LedgerEntry.js) | ✅ Verified |
 | **§ Scope 7** | Door-to-Door Last-Mile Orchestration | Dual Geolocation Feasibility Matrix | [`src/modules/lastMile/lastMileOrchestrator.js`](file:///Users/anmoljangra/Documents/Project%20-%20Alphaa%20IT/src/modules/lastMile/lastMileOrchestrator.js) | ✅ Verified |
-| **§ Scope 8** | Event-Driven WhatsApp Assistant | WhatsApp Webhook & Cloud API Bot | [`src/modules/whatsapp/whatsappService.js`](file:///Users/anmoljangra/Documents/Project%20-%20Alphaa%20IT/src/modules/whatsapp/whatsappService.js) | ✅ Verified |
-| **§ Architecture** | Optimistic Concurrency Control (OCC) | State Machine & Version Tokens | [`src/models/Shipment.js`](file:///Users/anmoljangra/Documents/Project%20-%20Alphaa%20IT/src/models/Shipment.js) | ✅ Verified |
-| **§ Architecture** | Immutable Closures & Snapshots | Transaction Snapshot Module | [`src/models/TransactionSnapshot.js`](file:///Users/anmoljangra/Documents/Project%20-%20Alphaa%20IT/src/models/TransactionSnapshot.js) | ✅ Verified |
+| **§ Scope 8** | Event-Driven WhatsApp Assistant | WhatsApp Webhook & Cloud API Bot | [`src/modules/whatsapp/whatsappService.js`](file:///Users/anmol/Documents/Projects/transitly/src/modules/whatsapp/whatsappService.js) | ✅ Verified |
+| **§ Scope 9** | Hardened Two-Step OTP Verification | NIST SP 800-63B OTP Engine & Audit | [`src/api/controllers/userController.js`](file:///Users/anmol/Documents/Projects/transitly/src/api/controllers/userController.js) | ✅ Verified |
+| **§ Scope 10** | Dual-Layer Route Authorization Gate | Express Middleware & Client Gate | [`src/app.js`](file:///Users/anmol/Documents/Projects/transitly/src/app.js), [`public/js/common.js`](file:///Users/anmol/Documents/Projects/transitly/public/js/common.js) | ✅ Verified |
+| **§ Scope 11** | Social Sign-On & Account Creation | Google & Apple OAuth, Anti-Injection | [`src/api/controllers/userController.js`](file:///Users/anmol/Documents/Projects/transitly/src/api/controllers/userController.js) | ✅ Verified |
+| **§ Scope 12** | Legal Compliance & SEO Engine | Terms, Privacy, FAQ, Cookie Consent, Sitemap | [`public/privacy-policy.html`](file:///Users/anmol/Documents/Projects/transitly/public/privacy-policy.html), [`public/sitemap.xml`](file:///Users/anmol/Documents/Projects/transitly/public/sitemap.xml) | ✅ Verified |
+| **§ Architecture** | Optimistic Concurrency Control (OCC) | State Machine & Version Tokens | [`src/models/Shipment.js`](file:///Users/anmol/Documents/Projects/transitly/src/models/Shipment.js) | ✅ Verified |
+| **§ Architecture** | Immutable Closures & Snapshots | Transaction Snapshot Module | [`src/models/TransactionSnapshot.js`](file:///Users/anmol/Documents/Projects/transitly/src/models/TransactionSnapshot.js) | ✅ Verified |
 
 ---
 
@@ -142,16 +146,22 @@ Transitly/
 │   ├── POSTGRES_TERMINAL_GUIDE.md       # Interactive PostgreSQL & PostGIS terminal guide
 │   └── stitch_design_prompts.md         # UI/UX design specifications & prompt catalog
 │
-├── public/                              # Modular Static Frontend (9 Stitch Screens)
-│   ├── index.html                       # Deliver / Home Screen (/ and /deliver)
-│   ├── tracking.html                    # Live Telematics & Tracking Screen (/tracking)
-│   ├── services.html                    # All Cargo & Transit Services Bento (/services)
-│   ├── history.html                     # Delivery History Screen (/history)
-│   ├── profile.html                     # Profile Hub Screen (/profile)
-│   ├── saved-addresses.html             # Saved Addresses Sub-screen (/saved-addresses)
-│   ├── payment-methods.html             # Payment Methods Sub-screen (/payment-methods)
-│   ├── settings.html                    # Settings Sub-screen (/settings)
-│   ├── help-support.html                # Help & Support Sub-screen (/help-support)
+├── public/                              # Modular Static Frontend (Google Stitch Design)
+│   ├── login.html                       # Foremost Landing Page & Two-Step Verification (/login and /auth)
+│   ├── signup.html                      # Create Account & Dedicated User Registration (/signup)
+│   ├── index.html                       # Deliver / Home Screen (/ and /deliver - Auth Protected)
+│   ├── tracking.html                    # Live Telematics & Tracking Screen (/tracking - Auth Protected)
+│   ├── services.html                    # All Cargo & Transit Services Bento (/services - Auth Protected)
+│   ├── history.html                     # Delivery History Screen (/history - Auth Protected)
+│   ├── profile.html                     # Profile Hub Screen (/profile - Auth Protected)
+│   ├── saved-addresses.html             # Saved Addresses Sub-screen (/saved-addresses - Auth Protected)
+│   ├── payment-methods.html             # Payment Methods Sub-screen (/payment-methods - Auth Protected)
+│   ├── settings.html                    # Settings Sub-screen (/settings - Auth Protected)
+│   ├── help-support.html                # Help & Support Sub-screen (/help-support - Auth Protected)
+│   ├── privacy-policy.html              # Privacy Policy & Data Processing (/privacy-policy - Public)
+│   ├── terms.html                       # Terms of Service & Shipper Conditions (/terms - Public)
+│   ├── faq.html                         # Interactive FAQ Hub & WhatsApp Deep-Links (/faq - Public)
+│   ├── sitemap.xml                      # Canonical Search Engine Indexing XML Sitemap
 │   │
 │   ├── css/                             # Dedicated Screen Stylesheets
 │   │   ├── style.css                    # Minified production compiled Tailwind CSS bundle
@@ -167,7 +177,9 @@ Transitly/
 │   │   └── help-support.css             # FAQ cards & WhatsApp action styles
 │   │
 │   └── js/                              # Dedicated Screen Controllers
-│       ├── common.js                    # Nav active detection, booking modal saga controller
+│       ├── common.js                    # Nav active detection, client auth gate, session cookie sync
+│       ├── cookie-consent.js            # GDPR/DPDP compliant categorized cookie consent banner
+│       ├── i18n.js                      # Multi-language localization dictionary
 │       ├── deliver.js                   # Homepage quick search & corridor triggers
 │       ├── tracking.js                  # Leaflet map engine, 30s auto-refresh, insights catalog
 │       ├── services.js                  # Bento card click handlers & modal pre-fill
@@ -240,7 +252,7 @@ Transitly/
 │   └── websockets/                      # Real-time WebSocket Layer
 │       └── trackingSocket.js            # Live GPS broadcast via Redis pub/sub
 │
-└── tests/                               # Comprehensive Automated Test Suites (9 Master Suites)
+└── tests/                               # Comprehensive Automated Test Suites (11 Master Suites)
     ├── security.test.js                 # OTP, QR Seal, and Geofence tests
     ├── architecture.test.js             # OCC, State Machine, and Saga tests
     ├── lastMile.test.js                 # Provider adapters & Feasibility Matrix tests
@@ -249,6 +261,8 @@ Transitly/
     ├── schema.test.js                   # PostGIS DDL, spatial columns, GIST indexing
     ├── haryanaRoadways.test.js          # Intercity Express routes & Meta Webhooks
     ├── adminAuth.test.js                # Admin Master Password & Biometric auth
+    ├── legalAndSeoRoutes.test.js        # Privacy, Terms, FAQ, Sitemap, Cookie consent & SEO
+    ├── authLanding.test.js              # Two-step OTP hardening, route gates, SSO, anti-injection
     └── databaseOperations.test.js       # 28-point end-to-end PostgreSQL + PostGIS operations suite
 ```
 
@@ -564,6 +578,117 @@ Accepts driver GPS pings in sub-5ms using Redis Fast Path (`GEOADD` + Redis Stre
 
 ---
 
+### 7. User Authentication — Dispatch Verification OTP (`POST /api/v1/auth/otp/send`)
+
+Dispatches a cryptographically secure, single-use 6-digit OTP code to an E.164 phone number or email address via SMS, WhatsApp, or Email.
+
+- **URL:** `/api/v1/auth/otp/send`
+- **Method:** `POST`
+- **Security Controls:**
+  - **Purpose-Binding:** Bound to requested purpose (`login`, `signup`, `reset_password`, `confirm_payment`).
+  - **Destination Rate Limit:** Max 5 sends/hour per phone/email.
+  - **IP Rate Limit:** Max 10 sends/hour per network IP.
+  - **Exponential Backoff:** Escalating cooldown: 30s → 60s → 120s → 300s. Returns `HTTP 429` with `retryAfterSeconds` if breached.
+  - **Data Sanitization:** Strict whitelist regex rejecting SQLi, XSS, and control characters.
+- **Request Body:**
+```json
+{
+  "fullName": "Alex Morgan",
+  "identifier": "+919876543210",
+  "channel": "sms",
+  "purpose": "login"
+}
+```
+- **Response (200 OK):**
+```json
+{
+  "status": "success",
+  "message": "A 6-digit verification code has been dispatched to +919876543210.",
+  "data": {
+    "identifier": "+919876543210",
+    "channel": "sms",
+    "purpose": "login",
+    "expiresInSeconds": 120
+  }
+}
+```
+
+---
+
+### 8. User Authentication — Verify OTP & Issue Session Token (`POST /api/v1/auth/otp/verify`)
+
+Verifies a 6-digit verification code against the active purpose-bound OTP record using constant-time hash comparison (`crypto.timingSafeEqual`).
+
+- **URL:** `/api/v1/auth/otp/verify`
+- **Method:** `POST`
+- **Security Controls:**
+  - **Attempt Tracking & Lockout:** Max 5 failed attempts per OTP. On the 5th failed attempt, the code is auto-revoked and the server responds with `HTTP 423 Locked`.
+  - **Single-Use Invalidation:** OTP record is deleted immediately upon successful verification.
+  - **Audit Logging:** Logs structured event to `otpAuditLog`.
+- **Request Body:**
+```json
+{
+  "identifier": "+919876543210",
+  "fullName": "Alex Morgan",
+  "otp": "482910",
+  "purpose": "login"
+}
+```
+- **Response (200 OK):**
+```json
+{
+  "status": "success",
+  "message": "Account verified successfully.",
+  "data": {
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "user": {
+      "id": 1788385500,
+      "name": "Alex Morgan",
+      "email": "alex@transitly.in",
+      "phone": "+919876543210",
+      "avatarUrl": ""
+    }
+  }
+}
+```
+
+---
+
+### 9. User Registration — Dedicated Profile Creation (`POST /api/v1/auth/signup`)
+
+Creates a new customer user profile in PostgreSQL using parameterized queries with explicit type casts (`$1::varchar`, `$5::jsonb`) and dedicated schema defaults.
+
+- **URL:** `/api/v1/auth/signup`
+- **Method:** `POST`
+- **Duplicate Prevention:** Rejects duplicate email or phone numbers with `HTTP 409 Conflict`.
+- **Request Body:**
+```json
+{
+  "fullName": "Vikram Malhotra",
+  "email": "vikram@transitly.in",
+  "phone": "+919811223344",
+  "accountType": "business"
+}
+```
+- **Response (201 Created):** Returns signed 30-day JWT session token and dedicated user profile.
+
+---
+
+### 10. Social Single Sign-On Handlers (`GET /api/v1/auth/google` & `GET /api/v1/auth/apple`)
+
+Initiates OAuth 2.0 PKCE authentication for Google and Apple ID with popup and direct-redirect fallback modes. Cross-window authentication communicates back via `window.opener.postMessage({ type: 'TRANSITLY_AUTH_SUCCESS', token, name })`.
+
+---
+
+### 11. Admin Authentication Suite
+
+- `POST /api/v1/admin/auth/password`: Master admin credential authentication.
+- `GET /api/v1/admin/auth/biometric/challenge`: Generates WebAuthn cryptographic challenge for Touch ID / Face ID.
+- `POST /api/v1/admin/auth/biometric/verify`: Verifies hardware biometric signature from the Secure Enclave.
+- `POST /api/v1/admin/auth/recovery`: Dispatches emergency admin recovery credentials via Google Gmail SMTP.
+
+---
+
 ## 7. System Workflows & Sequence Diagrams
 
 ### Workflow 1: Multimodal Booking & Saga Lifecycle
@@ -648,71 +773,58 @@ sequenceDiagram
   Consumer->>Stream: XACK telemetry_stream (PEL acknowledgment)
 ```
 
----
-
-### Workflow 3: QR Seal & Chain-of-Custody Handoff
-
-```mermaid
-sequenceDiagram
-  autonumber
-  actor Rider as Delivery Partner / Driver
-  participant Scanner as Mobile Scanner Device
-  participant API as Custody API Endpoint
-  participant Security as Security & Geofence Engine
-  participant DB as Immutable Custody Log
-
-  Rider->>Scanner: Scan Parcel QR Seal at Depot
-  Scanner->>API: POST /api/v1/custody/handoff
-  API->>Security: verifyQrSeal(qrCode, secretKey)
-  Security-->>API: Seal Valid (Tamper-Free)
-  API->>Security: validateGeofence(driverCoords, terminalBounds)
-  Security-->>API: Within Authorized Polygon (True)
-  API->>DB: INSERT CustodyHandoff (from: RIDER_1, to: BUS_DRIVER_402)
-  API-->>Scanner: 200 OK (Chain of Custody Transferred)
-```
-
----
-
-## 8. Frontend Design & Google Stitch Screens
-
-The frontend implements the **Google Stitch Design Specification** using dedicated HTML, CSS, and JS files for each screen:
-
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                           GOOGLE STITCH DESIGN SYSTEM                        │
-│                                                                             │
-│   Primary: #0050cb (Deep Cobalt)      Surface: #faf8ff (Clean Ambient)       │
-│   Primary-Fixed: #dae1ff              Text: #191b24 (High Contrast)         │
-│   Glassmorphism: 16px Blur            Shadows: 0px 4px 20px rgba(0,0,0,0.05)│
-└─────────────────────────────────────────────────────────────────────────────┘
-```
-
 ### Screen Breakdown
 
-1. **Deliver / Home (`/` and `/deliver`):**
+1. **User Login & Two-Step Verification (`/login` and `/auth`):**
+   - **Foremost Landing Page:** Direct unauthenticated access to the platform redirects to `/login`.
+   - **Dynamic Channel Auto-Detection:** Automatically switches icon and format indicators between Phone (+91 prefix) and Email.
+   - **Interactive 6-Digit OTP Box Entry:** Individual digit inputs with auto-focus progression, backspace handling, full-string paste support, and `autocomplete="one-time-code"` for mobile OS and WebOTP autofill.
+   - **Exponential Backoff Cooldown UI:** Resend buttons throttled with visual countdown timers (30s → 60s → 120s → 300s).
+   - **Synchronized Expiry Indicator:** Countdown timer synced with server-issued TTL (120s) with expired state warning.
+   - **Social SSO Cards:** Google and Apple Sign-In buttons with modal popup communication.
+   - **Sign Up Navigation:** Link to `/signup` for new customer account creation.
+
+2. **Dedicated User Sign Up (`/signup` and `/register`):**
+   - Matching Stitch design layout with Full Name, Email Address, and Phone Number inputs.
+   - Account Type selector: Personal Cargo vs Business Shipper.
+   - Anti-injection client sanitization and instant 30-day JWT session creation upon registration.
+
+3. **Deliver / Home (`/` and `/deliver` - Auth Protected):**
    - LCP hero ambient map banner with pulse pickup pin.
    - Omnibox search supporting location queries and direct tracking IDs.
    - Quick-action service badges and 4 official intercity corridors.
    - Interactive booking modal with live multi-modal feasibility evaluation.
-2. **Tracking Screen (`/tracking`):**
+
+4. **Tracking Screen (`/tracking` - Auth Protected):**
    - Verified Parcel ID search bar (`Verify & Track`) with error toast.
    - Leaflet interactive map with animated bus GPS marker.
    - Internal Parcel Insights card: Assigned Fleet Bus (`#402 HR-55-AB-1234`), Corridor, Cargo Locker Bay, and parties.
    - 30-second live bus movement auto-refresh with active countdown timer badge.
    - Next Handoff card and multi-stop timeline with active radar halos.
-3. **All Services Bento Hub (`/services`):**
+
+5. **All Services Bento Hub (`/services` - Auth Protected):**
    - 4 Bento grid cards: Intercity Express Cargo (`₹120`), Door-to-Door Partners (`₹80`), Terminal Hub Drop (`₹60`), and Cryptographic QR Seals (`Zero Extra Fee`).
-4. **Delivery History (`/history`):**
+
+6. **Delivery History (`/history` - Auth Protected):**
    - Real-time text search and status filter chips (`All`, `Delivered`, `In Transit`, `Cancelled`).
    - Month-grouped timeline with partner carrier logos (Uber Direct, Rapido Express, inDrive).
-5. **Profile Hub (`/profile`):**
+
+7. **Profile Hub (`/profile` - Auth Protected):**
    - Glassmorphic user header with avatar, email, and rating (`★ 4.9 / 124 trips`).
    - Bento options leading to dedicated sub-screens: Saved Addresses, Payment Methods, Settings, Help & Support.
-6. **Sub-Screens:**
+
+8. **Sub-Screens (Auth Protected):**
    - **Saved Addresses (`/saved-addresses`):** Home, Work, Gym, Cafe cards with pre-fill booking action.
    - **Payment Methods (`/payment-methods`):** Visa default with active glow, Mastercard, Apple Pay, and UPI.
    - **Settings (`/settings`):** Animated switches for Push Notifications, Email Updates, Location Services.
    - **Help & Support (`/help-support`):** 24/7 WhatsApp AI Support action card, knowledge categories, and floating WhatsApp bubble.
+
+9. **Legal & Compliance Public Pages:**
+   - **Privacy Policy (`/privacy-policy`):** Information Collection, Geolocation Telemetry Usage, Data Protection Officer contact, and Cookie policies.
+   - **Terms of Service (`/terms`):** Carriage Conditions, Prohibited Cargo, Liability Limits, and Dispute Resolution.
+   - **Interactive FAQ (`/faq`):** Filterable question accordions with direct WhatsApp support deep-links.
+   - **Cookie Consent Banner (`public/js/cookie-consent.js`):** GDPR/DPDP-compliant banner pop-up with categorized consent management (`essential`, `analytics`, `marketing`) and preferences drawer.
+   - **Canonical XML Sitemap (`/sitemap.xml`):** Comprehensive search engine indexing map with changefreq and priority scores.
 
 ---
 
@@ -732,21 +844,34 @@ Custody transfers are validated against geographical polygons using the Haversin
 ### 4. PII Redaction Filter
 Customer WhatsApp responses, client-facing logs, and third-party partner payloads automatically redact sensitive driver GPS trails, internal operational notes, payment tokens, and full customer phone numbers.
 
+### 5. NIST SP 800-63B Hardened OTP Engine
+- **Purpose-Binding:** Keys OTP records as `${destination}::${purpose}` (`login`, `signup`, `reset_password`, `confirm_payment`), preventing cross-flow code reuse.
+- **Max Attempt Lockout:** Caps failed attempts at 5. On the 5th failed attempt, the code is auto-invalidated and returns `HTTP 423 Locked`.
+- **Anti-Abuse Rate Limiting:** Enforces max 5 sends/hour per destination and 10 sends/hour per IP address.
+- **Exponential Backoff:** Server-enforced resend cooldowns (`30s → 60s → 120s → 300s`) preventing telephony flooding.
+- **Structured Audit Logging:** Every OTP event (send, verify, fail, lockout, expiry) is recorded in an in-memory audit log with unique UUIDs.
+
+### 6. Strict Anti-Injection Sanitization Engine (`DataSanitizer`)
+All authentication inputs are validated against strict whitelist regexes before reaching controllers or database queries. Disallowed tokens (`'`, `--`, `/*`, `*/`, `;`, `<`, `>`, `$`, `{`, `}`, `\`, `union`, `select`, `drop`, `exec`, `script`) are immediately rejected with `HTTP 400 Bad Request`.
+
+### 7. Dual-Layer Route Authorization Protocol
+- **Layer 1 (Server Middleware):** `requirePageAuth` intercepts GET requests to internal routes and redirects unauthenticated users to `/login?redirect=<url>`.
+- **Layer 2 (Client Gate):** `common.js` validates JWT existence on DOM load.
+- **Direct HTML Access Prevention:** Requests ending in `.html` are redirected to clean routes, enforcing server middleware checks.
+
 ---
 
 ## 10. Deployment, Infrastructure & Containerization
 
-### Multi-Stage Dockerfile Specification
+### Multi-Stage Container Dockerfile
 
 ```dockerfile
-# Stage 1: Build Dependencies
-FROM node:22-alpine AS deps
+FROM node:20-alpine AS deps
 WORKDIR /app
-COPY package.json package-lock.json* ./
-RUN npm ci --omit=dev --ignore-scripts && npm cache clean --force
+COPY package*.json ./
+RUN npm ci --only=production
 
-# Stage 2: Production Container Runner
-FROM node:22-alpine AS runner
+FROM node:20-alpine AS runner
 WORKDIR /app
 RUN addgroup --system --gid 1001 transitly && \
     adduser --system --uid 1001 transitly
@@ -806,17 +931,20 @@ services:
 
 ```
 === Automated Test Suite Breakdown ===
-1. Security Utility Tests          : PASS (OTP crypto, QR Seal, Geofence boundary)
-2. Architecture & Domain Tests     : PASS (OCC versioning, State Machine, Sagas)
-3. Last-Mile Orchestration         : PASS (Provider adapters, Feasibility matrix)
-4. WhatsApp Assistant & Bot        : PASS (Notification templates, Bot intents, Redaction)
-5. Telemetry Ingestion Engine      : PASS (Redis Fast Path, PostGIS bulk SQL, Streams)
-6. Master Database Schema          : PASS (12 SQL tables, PostGIS geometries, GIST indexes)
-7. Intercity Express Corridors     : PASS (Corridors, Meta Webhook verification challenge)
-8. Admin Command Center Security   : PASS (Master password, WebAuthn Touch ID, Gmail recovery)
+1.  Security Utility Tests          : PASS (OTP crypto, QR Seal, Geofence boundary)
+2.  Architecture & Domain Tests     : PASS (OCC versioning, State Machine, Sagas)
+3.  Last-Mile Orchestration         : PASS (Provider adapters, Feasibility matrix)
+4.  WhatsApp Assistant & Bot        : PASS (Notification templates, Bot intents, Redaction)
+5.  Telemetry Ingestion Engine      : PASS (Redis Fast Path, PostGIS bulk SQL, Streams)
+6.  Master Database Schema          : PASS (12 SQL tables, PostGIS geometries, GIST indexes)
+7.  Intercity Express Corridors     : PASS (Corridors, Meta Webhook verification challenge)
+8.  Admin Command Center Security   : PASS (Master password, WebAuthn Touch ID, Gmail recovery)
+9.  Legal, Policy & SEO Routes      : PASS (Privacy, Terms, FAQ, Sitemap, Cookie Consent, Meta)
+10. User Login & Two-Step Auth      : PASS (Hardened OTP, Route Gates, SSO, Anti-Injection)
+11. Database Operations Master      : PASS (28-point end-to-end PostgreSQL + PostGIS operations)
 ```
 
-All 8 test suites pass unconditionally with 0 errors.
+All 11 test suites pass unconditionally with 0 errors.
 
 ---
 

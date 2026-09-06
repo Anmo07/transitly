@@ -332,6 +332,11 @@ All inter-service asynchronous events conform to the standard JSON event envelop
 | **Driver Privacy & Stalking** | Automatic PII Redaction Filter on all customer responses | `redactCustomerMessage()` |
 | **Concurrent Capacity Overbooking** | Optimistic Concurrency Control (OCC) on Capacity Slots | PostgreSQL `UPDATE ... WHERE version = $v` |
 | **API Denial of Service** | Redis Sliding Window Rate Limiting (100 req/min/IP) | Redis Key TTL Rate Limiter |
+| **OTP Replay / Cross-Flow Tampering** | Purpose-Binding (`${identifier}::${purpose}`) | [`src/api/controllers/userController.js`](file:///Users/anmol/Documents/Projects/transitly/src/api/controllers/userController.js) |
+| **OTP Brute-Force Guessing** | Max 5 verification attempts with immediate revocation (`HTTP 423`) | Auto-invalidation on 5th failure |
+| **SMS/Telephony Denial of Wallet** | Exponential Backoff (`30s→60s→120s→300s`) + 5 sends/hr cap | In-memory `rateLimitStore` + client cooldown |
+| **SQLi / XSS / Parameter Tampering** | Strict whitelist regex sanitization engine (`DataSanitizer`) | Parameterized queries with explicit `$n::type` casts |
+| **Unauthenticated Surfing Bypass** | Dual-Layer Route Authorization Gate (`requirePageAuth` + client gate) | HTTP 302 redirect with preserved redirect parameter |
 
 ---
 
@@ -351,6 +356,63 @@ docker-compose ps
 
 ### 12.2 CI/CD Quality Gates
 Every pull request to `main` must pass:
-1. `npm test`: All 9 unit, architecture, security, schema, and database operations test suites pass (100% success rate).
+1. `npm test`: All 10 unit, architecture, security, schema, legal, and auth test suites pass (100% success rate).
 2. `npm run build:css`: Tailwind CSS compiles with zero warnings.
-3. Automated endpoint check: All HTTP routes return `200 OK`.
+3. Automated endpoint check: All HTTP routes return `200 OK` or `302 Redirect` to `/login` for unauthenticated requests.
+
+---
+
+## 13. User Identity, Authentication & Two-Step Verification Architecture
+
+### 13.1 Hardened OTP Engine (NIST SP 800-63B §5.1.4)
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                       TRANSITLY OTP SECURITY ENGINE                         │
+│                                                                             │
+│  [Client Request] ──► [DataSanitizer Whitelist Regex]                      │
+│                            │                                                │
+│                            ▼                                                │
+│                 [Rate & Backoff Check] ──(Breached)──► [HTTP 429 RetryAfter]│
+│                            │                                                │
+│                            ▼                                                │
+│                 [crypto.randomBytes(3)] ──► 6-Digit Dec Code                │
+│                            │                                                │
+│                            ▼                                                │
+│                 [SHA-256 Hash + Salt] ──► activeOtps Map                   │
+│                                           Key: ${dest}::${purpose}          │
+│                                           TTL: 120 Seconds                  │
+│                                           Max Attempts: 5                   │
+│                                           Audit: [otpAuditLog.push()]       │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+#### Technical Specifications:
+1. **Purpose-Binding**: Every OTP token is strictly bound to its intended functional domain (`login`, `signup`, `reset_password`, `confirm_payment`). Verification across different purposes is rejected with `HTTP 400 Bad Request`.
+2. **Cryptographic Generation & Storage**: Generated via Node.js native `crypto.randomBytes()`, salted with 8 random bytes, and hashed via SHA-256. Plaintext codes never persist in memory or storage.
+3. **Constant-Time Verification**: Verification executes via `crypto.timingSafeEqual(Buffer.from(candidateHash), Buffer.from(storedHash))` to neutralize timing side-channel attacks.
+4. **Attempt Tracking & Auto-Revocation**: Each incorrect guess increments an attempts counter. Reaching 5 failed attempts auto-revokes the OTP and responds with `HTTP 423 Locked`.
+5. **Exponential Resend Cooldown**: Backoff escalation schedule: $30\text{s} \rightarrow 60\text{s} \rightarrow 120\text{s} \rightarrow 300\text{s}$.
+6. **Delivery Audit Logging**: Structured in-memory circular buffer recording `{ id, destination, purpose, channel, ipAddress, outcome, attempts, timestamp }`.
+
+### 13.2 Dual-Layer Route Authorization Protocol
+
+Transitly establishes `/login` as the foremost entry point. Direct surfing to internal routes without authorization is blocked at two independent tiers:
+
+1. **Tier 1 (Server-Side Middleware):** `requirePageAuth` intercepts protected GET routes (`/`, `/deliver`, `/tracking`, `/services`, `/history`, `/profile`, `/saved-addresses`, `/payment-methods`, `/settings`, `/help-support`, `/notifications`, `/admin`). Unauthenticated requests receive an immediate `302 Found` redirect to `/login?redirect=<target_uri>`.
+2. **Tier 2 (Client-Side Gate):** `public/js/common.js` verifies `localStorage.getItem('transitly_auth_token')` on DOM initialization. Missing tokens trigger an immediate `window.location.replace('/login')`.
+3. **Cookie-Token Synchronization:** Authentication issues a signed 30-day JWT token, synchronized across `localStorage` and a secure `transitly_session` cookie for seamless server-side validation.
+4. **Static HTML Bypass Prevention:** Direct access to `.html` files is intercepted and normalized to clean routes, enforcing middleware gates.
+
+### 13.3 Social Sign-On & Account Registration Contracts
+
+- **Social SSO**: Full support for Google OAuth 2.0 and Apple Sign-In with popup/redirect modes and cross-window `postMessage` token transport.
+- **Dedicated User Schema**: Strict anti-injection sanitization (`DataSanitizer`) enforcing parameterized PostgreSQL insertion with explicit type casts (`$1::varchar`, `$4::jsonb`).
+- **Duplicate Prevention**: Registration against existing email or phone numbers returns `HTTP 409 Conflict`.
+
+### 13.4 Legal & SEO Compliance
+
+- **Public Legal Pages**: Dedicated `/privacy-policy`, `/terms`, and `/faq` routes with clear Call-to-Actions (CTAs).
+- **Search Engine Optimization**: Strict canonical URL tags (`<link rel="canonical" href="https://transitly.in/...">`), OpenGraph meta tags, and `sitemap.xml` listing all priority routes.
+- **Cookie Consent**: GDPR/DPDP-compliant banner pop-up managing categorized consents (`essential`, `analytics`, `marketing`) persisted in `localStorage`.
+
