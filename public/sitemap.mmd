@@ -1,0 +1,118 @@
+graph TD
+  %% Transitly Platform Architecture & Site Map
+  %% Generated: 2026-09-08
+  %% Format: Mermaid Text Format (.mmd)
+
+  classDef root fill:#312E81,stroke:#6366F1,stroke-width:3px,color:#FFFFFF,font-weight:bold,rx:8px,ry:8px;
+  classDef public fill:#064E3B,stroke:#10B981,stroke-width:2px,color:#ECFDF5,rx:6px,ry:6px;
+  classDef customer fill:#1E3A8A,stroke:#3B82F6,stroke-width:2px,color:#EFF6FF,rx:6px,ry:6px;
+  classDef account fill:#164E63,stroke:#06B6D4,stroke-width:2px,color:#ECFEFF,rx:6px,ry:6px;
+  classDef partner fill:#78350F,stroke:#F59E0B,stroke-width:2px,color:#FFFBEB,rx:6px,ry:6px;
+  classDef admin fill:#581C87,stroke:#A855F7,stroke-width:2px,color:#FAF5FF,rx:6px,ry:6px;
+
+  Home["🏠 Transitly Core Hub<br/><code>https://transitly.in/</code>"]:::root
+
+  %% Subgraph: Public & Legal
+  subgraph PublicDomain ["🌐 Public & Legal Infrastructure"]
+    Login["🔐 Login & Verification<br/><code>/login</code>"]:::public
+    Signup["📝 Role-Based Signup<br/><code>/signup</code>"]:::public
+    FAQ["❓ FAQs & Knowledgebase<br/><code>/faq</code>"]:::public
+    Privacy["🛡️ Privacy Policy (DPDP/GDPR)<br/><code>/privacy-policy</code>"]:::public
+    Terms["📜 Terms & Conditions<br/><code>/terms</code>"]:::public
+    Help["🎧 Help & Support Tickets<br/><code>/help-support</code>"]:::public
+  end
+
+  %% Subgraph: Customer Logistics
+  subgraph CustomerDomain ["📦 Customer Cargo & Logistics"]
+    Deliver["📦 Cargo Booking Portal<br/><code>/deliver</code>"]:::customer
+    Services["🚌 Intercity Bus Catalog<br/><code>/services</code>"]:::customer
+    Tracking["📍 Live Map & Telematics<br/><code>/tracking</code>"]:::customer
+    History["🗄️ Shipment History & POD<br/><code>/history</code>"]:::customer
+    Notifications["🔔 Notification Center<br/><code>/notifications</code>"]:::customer
+  end
+
+  %% Subgraph: Customer Account
+  subgraph AccountDomain ["👤 Customer Account & Wallet"]
+    Profile["👤 User Profile & Config<br/><code>/profile</code>"]:::account
+    Addresses["📍 Saved Addresses<br/><code>/saved-addresses</code>"]:::account
+    Payments["💳 Payment Methods & UPI<br/><code>/payment-methods</code>"]:::account
+    Settings["⚙️ Security & Preferences<br/><code>/settings</code>"]:::account
+  end
+
+  %% Subgraph: Delivery Partner Cockpit
+  subgraph PartnerDomain ["🛵 Delivery Partner Cockpit"]
+    PartnerHub["🛵 Partner Onboarding<br/><code>/delivery-partner</code>"]:::partner
+    RiderDash["⚡ Cockpit & Duty Toggle<br/><code>/rider-dashboard</code>"]:::partner
+    RiderReq["⏱️ Dispatch Queue (30s TTL)<br/><code>/rider-requests</code>"]:::partner
+    RiderMap["🗺️ GPS Ride & PIN Dropoff<br/><code>/rider-map-trips</code>"]:::partner
+    RiderEarn["💰 Earnings & Payout Ledger<br/><code>/rider-earnings</code>"]:::partner
+  end
+
+  %% Subgraph: Platform & Infrastructure
+  subgraph PlatformDomain ["⚙️ Platform & Developer Infrastructure"]
+    Admin["🛡️ Fleet Admin Operations<br/><code>/admin</code>"]:::admin
+    ApiDocs["📖 OpenAPI / Swagger Specs<br/><code>/api/docs</code>"]:::admin
+    VisualMap["🗺️ Multi-Format Sitemap<br/><code>/visual-sitemap</code>"]:::admin
+  end
+
+  %% Relationships from Hub
+  Home --> PublicDomain
+  Home --> CustomerDomain
+  Home --> AccountDomain
+  Home --> PartnerDomain
+  Home --> PlatformDomain
+
+  %% Direct Domain Links
+  PublicDomain --> Login
+  PublicDomain --> Signup
+  PublicDomain --> FAQ
+  PublicDomain --> Privacy
+  PublicDomain --> Terms
+  PublicDomain --> Help
+
+  CustomerDomain --> Deliver
+  CustomerDomain --> Services
+  CustomerDomain --> Tracking
+  CustomerDomain --> History
+  CustomerDomain --> Notifications
+
+  AccountDomain --> Profile
+  AccountDomain --> Addresses
+  AccountDomain --> Payments
+  AccountDomain --> Settings
+
+  PartnerDomain --> PartnerHub
+  PartnerDomain --> RiderDash
+  PartnerDomain --> RiderReq
+  PartnerDomain --> RiderMap
+  PartnerDomain --> RiderEarn
+
+  PlatformDomain --> Admin
+  PlatformDomain --> ApiDocs
+  PlatformDomain --> VisualMap
+
+  %% Click Bindings
+  click Home "https://transitly.in/" "Transitly Homepage"
+  click Login "/login" "Login & Two-Step Verification"
+  click Signup "/signup" "Sign Up & Registration"
+  click FAQ "/faq" "Frequently Asked Questions"
+  click Privacy "/privacy-policy" "Privacy Policy"
+  click Terms "/terms" "Terms of Service"
+  click Help "/help-support" "Help & Support"
+  click Deliver "/deliver" "Cargo Booking Flow"
+  click Services "/services" "Available Transit Cargo Services"
+  click Tracking "/tracking" "Live Bus & Parcel Tracking"
+  click History "/history" "Past Shipment Records"
+  click Notifications "/notifications" "Notification Center"
+  click Profile "/profile" "User Profile Management"
+  click Addresses "/saved-addresses" "Saved Delivery Locations"
+  click Payments "/payment-methods" "Payment Gateways & UPI"
+  click Settings "/settings" "User Preferences & Settings"
+  click PartnerHub "/delivery-partner" "Delivery Partner Portal"
+  click RiderDash "/rider-dashboard" "Delivery Partner Cockpit"
+  click RiderReq "/rider-requests" "Live Dispatch Matching Queue"
+  click RiderMap "/rider-map-trips" "Turn-by-Turn GPS Telemetry"
+  click RiderEarn "/rider-earnings" "Earnings & Payout Ledger"
+  click Admin "/admin" "Fleet Operations Dashboard"
+  click ApiDocs "/api/docs" "Swagger API Documentation"
+  click VisualMap "/visual-sitemap" "Interactive Platform Sitemap"

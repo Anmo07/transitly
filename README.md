@@ -12,7 +12,7 @@ Transitly is a JavaScript parcel-management platform concept that helps public t
 - Purpose-binding, rate limiting, and exponential backoff cooldowns against telephony abuse
 - Anti-injection & parameter sanitization engine protecting all entry forms
 - Legal compliance suite (Privacy Policy, Terms of Service, FAQ, Cookie Consent pop-up)
-- Search Engine Optimization (SEO canonical URLs and XML sitemap)
+- Search Engine Optimization (SEO canonical URLs, SVG vector sitemap, and Mermaid text format specifications)
 - GPS-based real-time tracking via WebSockets and estimated arrival times
 - End-to-end secure custody (QR seal scanning, geofenced handoffs, and immutable audit logs)
 - Recipient OTP delivery confirmation and digital proof of delivery

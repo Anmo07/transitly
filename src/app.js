@@ -1,3 +1,4 @@
+const fs = require('fs');
 const path = require('path');
 const express = require('express');
 const cors = require('cors');
@@ -49,6 +50,9 @@ app.use(express.static(path.join(__dirname, '../public'), {
   index: false,
   setHeaders: (res, filePath) => {
     res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    if (filePath.endsWith('.mmd')) {
+      res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+    }
   }
 }));
 
@@ -72,11 +76,20 @@ app.use('/api', (req, res) => {
   res.status(404).json({ error: 'Endpoint Not Found' });
 });
 
-// SEO & Crawler Directives
+// SEO & Crawler Directives — SVG Vector & Mermaid Text Sitemaps
 const publicDir = path.join(__dirname, '../public');
+app.get('/sitemap.svg', (req, res) => {
+  res.sendFile(path.join(publicDir, 'sitemap.svg'), {
+    headers: { 'Content-Type': 'image/svg+xml; charset=utf-8' }
+  });
+});
+app.get(['/sitemap.mmd', '/sitemap.txt', '/sitemap/mermaid'], (req, res) => {
+  const content = fs.readFileSync(path.join(publicDir, 'sitemap.mmd'), 'utf8');
+  res.type('text/plain').send(content);
+});
+// Legacy XML sitemap redirect to modern SVG vector sitemap
 app.get('/sitemap.xml', (req, res) => {
-  res.header('Content-Type', 'application/xml');
-  res.sendFile(path.join(publicDir, 'sitemap.xml'));
+  res.redirect(301, '/sitemap.svg');
 });
 app.get('/robots.txt', (req, res) => {
   res.header('Content-Type', 'text/plain');
@@ -138,6 +151,7 @@ app.get(['/signup', '/register', '/create-account'], (req, res) => res.sendFile(
 app.get(['/privacy', '/privacy-policy'], (req, res) => res.sendFile(path.join(publicDir, 'privacy-policy.html')));
 app.get(['/terms', '/terms-and-conditions', '/terms-of-use'], (req, res) => res.sendFile(path.join(publicDir, 'terms.html')));
 app.get(['/faq', '/faqs'], (req, res) => res.sendFile(path.join(publicDir, 'faq.html')));
+app.get(['/visual-sitemap', '/sitemap'], (req, res) => res.sendFile(path.join(publicDir, 'visual-sitemap.html')));
 
 // =========================================================================
 // Protected Routes — Require Valid Session Token

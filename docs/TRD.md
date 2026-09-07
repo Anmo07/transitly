@@ -413,6 +413,6 @@ Transitly establishes `/login` as the foremost entry point. Direct surfing to in
 ### 13.4 Legal & SEO Compliance
 
 - **Public Legal Pages**: Dedicated `/privacy-policy`, `/terms`, and `/faq` routes with clear Call-to-Actions (CTAs).
-- **Search Engine Optimization**: Strict canonical URL tags (`<link rel="canonical" href="https://transitly.in/...">`), OpenGraph meta tags, and `sitemap.xml` listing all priority routes.
+- **Search Engine Optimization**: Strict canonical URL tags (`<link rel="canonical" href="https://transitly.in/...">`), OpenGraph meta tags, and interactive multi-format sitemaps (`sitemap.svg` & `sitemap.mmd`) listing all priority routes.
 - **Cookie Consent**: GDPR/DPDP-compliant banner pop-up managing categorized consents (`essential`, `analytics`, `marketing`) persisted in `localStorage`.
 

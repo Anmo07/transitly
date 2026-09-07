@@ -64,23 +64,42 @@ async function runTests() {
     assert.strictEqual(resFaqsAlias.status, 200, 'Expected 200 for /faqs alias');
     console.log('✔ FAQ route and JSON-LD schema verified successfully.');
 
-    // 4. Sitemap.xml
-    console.log('4. Testing Sitemap.xml (/sitemap.xml)...');
-    const resSitemap = await request('/sitemap.xml');
-    assert.strictEqual(resSitemap.status, 200, 'Expected 200 for /sitemap.xml');
-    assert.ok(resSitemap.headers['content-type'].includes('xml'), 'Expected application/xml content-type');
-    assert.ok(resSitemap.body.includes('<urlset'), 'Expected <urlset> root node in XML');
-    assert.ok(resSitemap.body.includes('https://transitly.in/privacy-policy'), 'Expected privacy-policy in sitemap');
-    assert.ok(resSitemap.body.includes('https://transitly.in/terms'), 'Expected terms in sitemap');
-    assert.ok(resSitemap.body.includes('https://transitly.in/faq'), 'Expected faq in sitemap');
-    console.log('✔ XML Sitemap verified with canonical endpoints.');
+    // 4. SVG and Mermaid Sitemaps (/sitemap.svg, /sitemap.mmd, /sitemap.xml redirect, /visual-sitemap)
+    console.log('4. Testing SVG Vector & Mermaid Text Sitemaps (/sitemap.svg & /sitemap.mmd)...');
+    const resSvg = await request('/sitemap.svg');
+    assert.strictEqual(resSvg.status, 200, 'Expected 200 for /sitemap.svg');
+    assert.ok(resSvg.headers['content-type'].includes('image/svg+xml'), 'Expected image/svg+xml content-type');
+    assert.ok(resSvg.body.includes('<svg'), 'Expected <svg> root element');
+    assert.ok(resSvg.body.includes('TRANSITLY SITEMAP'), 'Expected SVG title');
+    assert.ok(resSvg.body.includes('/privacy-policy'), 'Expected privacy-policy in SVG sitemap');
+    assert.ok(resSvg.body.includes('/tracking'), 'Expected tracking in SVG sitemap');
+    assert.ok(resSvg.body.includes('/rider-dashboard'), 'Expected rider-dashboard in SVG sitemap');
+    console.log('✔ Scalable Vector Graphics (SVG) sitemap verified.');
+
+    const resMmd = await request('/sitemap.mmd');
+    assert.strictEqual(resMmd.status, 200, 'Expected 200 for /sitemap.mmd');
+    assert.ok(resMmd.headers['content-type'].includes('text/plain'), 'Expected text/plain content-type');
+    assert.ok(resMmd.body.includes('graph TD'), 'Expected graph TD in Mermaid definition');
+    assert.ok(resMmd.body.includes('/privacy-policy'), 'Expected privacy-policy in Mermaid sitemap');
+    assert.ok(resMmd.body.includes('/rider-dashboard'), 'Expected rider-dashboard in Mermaid sitemap');
+    console.log('✔ Mermaid text format (.mmd) sitemap verified.');
+
+    const resLegacy = await request('/sitemap.xml');
+    assert.strictEqual(resLegacy.status, 301, 'Expected 301 permanent redirect for legacy /sitemap.xml');
+    assert.strictEqual(resLegacy.headers['location'], '/sitemap.svg', 'Expected redirect location /sitemap.svg');
+    console.log('✔ Legacy /sitemap.xml 301 redirect to /sitemap.svg verified.');
+
+    const resVisual = await request('/visual-sitemap');
+    assert.strictEqual(resVisual.status, 200, 'Expected 200 for /visual-sitemap');
+    assert.ok(resVisual.body.includes('Transitly Visual Sitemap'), 'Expected Visual Sitemap page');
+    console.log('✔ Visual Sitemap page verified.');
 
     // 5. Robots.txt
     console.log('5. Testing Robots.txt (/robots.txt)...');
     const resRobots = await request('/robots.txt');
     assert.strictEqual(resRobots.status, 200, 'Expected 200 for /robots.txt');
     assert.ok(resRobots.headers['content-type'].includes('text/plain'), 'Expected text/plain content-type');
-    assert.ok(resRobots.body.includes('Sitemap: https://transitly.in/sitemap.xml'), 'Expected Sitemap reference');
+    assert.ok(resRobots.body.includes('Sitemap: https://transitly.in/sitemap.svg'), 'Expected Sitemap reference to sitemap.svg');
     assert.ok(resRobots.body.includes('Disallow: /admin'), 'Expected disallow admin');
     console.log('✔ Robots.txt directives verified.');
 

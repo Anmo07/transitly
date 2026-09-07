@@ -68,7 +68,7 @@ The following matrix documents full traceability between the core requirements s
 | **§ Scope 9** | Hardened Two-Step OTP Verification | NIST SP 800-63B OTP Engine & Audit | [`src/api/controllers/userController.js`](file:///Users/anmol/Documents/Projects/transitly/src/api/controllers/userController.js) | ✅ Verified |
 | **§ Scope 10** | Dual-Layer Route Authorization Gate | Express Middleware & Client Gate | [`src/app.js`](file:///Users/anmol/Documents/Projects/transitly/src/app.js), [`public/js/common.js`](file:///Users/anmol/Documents/Projects/transitly/public/js/common.js) | ✅ Verified |
 | **§ Scope 11** | Social Sign-On & Account Creation | Google & Apple OAuth, Anti-Injection | [`src/api/controllers/userController.js`](file:///Users/anmol/Documents/Projects/transitly/src/api/controllers/userController.js) | ✅ Verified |
-| **§ Scope 12** | Legal Compliance & SEO Engine | Terms, Privacy, FAQ, Cookie Consent, Sitemap | [`public/privacy-policy.html`](file:///Users/anmol/Documents/Projects/transitly/public/privacy-policy.html), [`public/sitemap.xml`](file:///Users/anmol/Documents/Projects/transitly/public/sitemap.xml) | ✅ Verified |
+| **§ Scope 12** | Legal Compliance & SEO Engine | Terms, Privacy, FAQ, Cookie Consent, Sitemap | [`public/privacy-policy.html`](file:///Users/anmol/Documents/Projects/transitly/public/privacy-policy.html), [`public/sitemap.svg`](file:///Users/anmol/Documents/Projects/transitly/public/sitemap.svg) | ✅ Verified |
 | **§ Architecture** | Optimistic Concurrency Control (OCC) | State Machine & Version Tokens | [`src/models/Shipment.js`](file:///Users/anmol/Documents/Projects/transitly/src/models/Shipment.js) | ✅ Verified |
 | **§ Architecture** | Immutable Closures & Snapshots | Transaction Snapshot Module | [`src/models/TransactionSnapshot.js`](file:///Users/anmol/Documents/Projects/transitly/src/models/TransactionSnapshot.js) | ✅ Verified |
 
@@ -161,7 +161,8 @@ Transitly/
 │   ├── privacy-policy.html              # Privacy Policy & Data Processing (/privacy-policy - Public)
 │   ├── terms.html                       # Terms of Service & Shipper Conditions (/terms - Public)
 │   ├── faq.html                         # Interactive FAQ Hub & WhatsApp Deep-Links (/faq - Public)
-│   ├── sitemap.xml                      # Canonical Search Engine Indexing XML Sitemap
+│   ├── sitemap.svg                      # Scalable Vector Graphics Topology Sitemap (/sitemap.svg)
+│   ├── sitemap.mmd                      # Mermaid Text Specification Sitemap (/sitemap.mmd)
 │   │
 │   ├── css/                             # Dedicated Screen Stylesheets
 │   │   ├── style.css                    # Minified production compiled Tailwind CSS bundle
@@ -824,7 +825,7 @@ sequenceDiagram
    - **Terms of Service (`/terms`):** Carriage Conditions, Prohibited Cargo, Liability Limits, and Dispute Resolution.
    - **Interactive FAQ (`/faq`):** Filterable question accordions with direct WhatsApp support deep-links.
    - **Cookie Consent Banner (`public/js/cookie-consent.js`):** GDPR/DPDP-compliant banner pop-up with categorized consent management (`essential`, `analytics`, `marketing`) and preferences drawer.
-   - **Canonical XML Sitemap (`/sitemap.xml`):** Comprehensive search engine indexing map with changefreq and priority scores.
+   - **Interactive Vector & Mermaid Sitemaps (`/sitemap.svg` & `/sitemap.mmd`):** Scalable vector topology and structured Mermaid diagram mapping all 24 platform routes and authorization domains.
 
 ---
 

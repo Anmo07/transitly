@@ -1,0 +1,528 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1600 1120" width="100%" height="100%">
+  <defs>
+    <!-- Modern Gradients -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0B0F19" />
+      <stop offset="50%" stop-color="#111827" />
+      <stop offset="100%" stop-color="#090D16" />
+    </linearGradient>
+
+    <linearGradient id="hubGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4F46E5" />
+      <stop offset="100%" stop-color="#312E81" />
+    </linearGradient>
+
+    <linearGradient id="publicGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#065F46" />
+      <stop offset="100%" stop-color="#022C22" />
+    </linearGradient>
+
+    <linearGradient id="customerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E40AF" />
+      <stop offset="100%" stop-color="#172554" />
+    </linearGradient>
+
+    <linearGradient id="accountGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0E7490" />
+      <stop offset="100%" stop-color="#083344" />
+    </linearGradient>
+
+    <linearGradient id="partnerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#B45309" />
+      <stop offset="100%" stop-color="#451A03" />
+    </linearGradient>
+
+    <linearGradient id="adminGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7E22CE" />
+      <stop offset="100%" stop-color="#3B0764" />
+    </linearGradient>
+
+    <!-- Card Shadow -->
+    <filter id="cardShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#000000" flood-opacity="0.4" />
+    </filter>
+
+    <!-- Glowing Effect -->
+    <filter id="hubGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="0" stdDeviation="12" flood-color="#6366F1" flood-opacity="0.6" />
+    </filter>
+
+    <style>
+      text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+      .title { font-size: 24px; font-weight: 800; fill: #FFFFFF; letter-spacing: -0.5px; }
+      .subtitle { font-size: 13px; font-weight: 400; fill: #94A3B8; }
+      .domain-header { font-size: 15px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; }
+      .card { transition: all 0.2s ease-in-out; cursor: pointer; }
+      .card:hover rect { stroke-width: 2px; filter: brightness(1.15); }
+      .card-title { font-size: 13px; font-weight: 600; fill: #F1F5F9; }
+      .card-url { font-size: 11px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; fill: #94A3B8; }
+      .badge-text { font-size: 9px; font-weight: 700; text-transform: uppercase; }
+      .conn-path { stroke-dasharray: 6 3; animation: dash 30s linear infinite; }
+      @keyframes dash { to { stroke-dashoffset: -100; } }
+    </style>
+  </defs>
+
+  <!-- Canvas Background -->
+  <rect width="1600" height="1120" fill="url(#bgGrad)" />
+
+  <!-- Background Decorative Grid Lines -->
+  <g stroke="#1E293B" stroke-width="1" opacity="0.35">
+    <line x1="0" y1="220" x2="1600" y2="220" />
+    <line x1="0" y1="400" x2="1600" y2="400" />
+    <line x1="0" y1="600" x2="1600" y2="600" />
+    <line x1="0" y1="800" x2="1600" y2="800" />
+    <line x1="330" y1="180" x2="330" y2="1100" />
+    <line x1="645" y1="180" x2="645" y2="1100" />
+    <line x1="960" y1="180" x2="960" y2="1100" />
+    <line x1="1275" y1="180" x2="1275" y2="1100" />
+  </g>
+
+  <!-- Platform Header Banner -->
+  <g transform="translate(80, 45)">
+    <rect x="0" y="0" width="42" height="42" rx="10" fill="#4F46E5" />
+    <path d="M11 28L21 14L31 28M15 24H27" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+    <text x="56" y="24" class="title">TRANSITLY SITEMAP &amp; TOPOLOGY</text>
+    <text x="56" y="40" class="subtitle">Official Scalable Vector Sitemap (SVG) • Multi-Modal Intercity Cargo Logistics Network</text>
+    
+    <!-- Meta Status Pill -->
+    <rect x="1170" y="5" width="270" height="32" rx="16" fill="#1E293B" stroke="#334155" stroke-width="1" />
+    <circle cx="1186" cy="21" r="5" fill="#10B981" />
+    <text x="1198" y="25" font-size="11" font-weight="600" fill="#E2E8F0">Active Routes: 24 Canonical Endpoints</text>
+  </g>
+
+  <!-- Connector Curves from Hub to Domain Headers -->
+  <g fill="none" opacity="0.55">
+    <!-- To Domain 1 (Public) -->
+    <path d="M 720 145 C 500 145, 190 170, 190 230" stroke="#10B981" stroke-width="2" class="conn-path" />
+    <!-- To Domain 2 (Customer) -->
+    <path d="M 760 160 C 650 170, 500 180, 500 230" stroke="#3B82F6" stroke-width="2" class="conn-path" />
+    <!-- To Domain 3 (Account) -->
+    <path d="M 800 165 C 800 190, 810 200, 810 230" stroke="#06B6D4" stroke-width="2" class="conn-path" />
+    <!-- To Domain 4 (Partner) -->
+    <path d="M 840 160 C 950 170, 1120 180, 1120 230" stroke="#F59E0B" stroke-width="2" class="conn-path" />
+    <!-- To Domain 5 (Platform) -->
+    <path d="M 880 145 C 1100 145, 1425 170, 1425 230" stroke="#A855F7" stroke-width="2" class="conn-path" />
+  </g>
+
+  <!-- Central Hub Node (Root / Homepage) -->
+  <g transform="translate(660, 105)" filter="url(#hubGlow)" class="card">
+    <a xlink:href="/" target="_top">
+      <rect width="280" height="70" rx="16" fill="url(#hubGrad)" stroke="#818CF8" stroke-width="2" />
+      <text x="140" y="32" text-anchor="middle" font-size="16" font-weight="800" fill="#FFFFFF">🏠 Transitly Core Hub</text>
+      <text x="140" y="52" text-anchor="middle" font-size="12" font-family="monospace" fill="#C7D2FE">https://transitly.in/ ( / )</text>
+    </a>
+  </g>
+
+  <!-- ========================================================================= -->
+  <!-- 1. DOMAIN: PUBLIC & LEGAL (Col 1: X = 50..310)                           -->
+  <!-- ========================================================================= -->
+  <g transform="translate(60, 230)">
+    <!-- Domain Header Pill -->
+    <rect width="260" height="42" rx="10" fill="url(#publicGrad)" stroke="#10B981" stroke-width="1.5" />
+    <text x="130" y="26" text-anchor="middle" class="domain-header" fill="#34D399">🌐 Public &amp; Legal</text>
+
+    <!-- Node 1: Login -->
+    <g transform="translate(0, 60)" class="card" filter="url(#cardShadow)">
+      <a xlink:href="/login" target="_top">
+        <rect width="260" height="85" rx="10" fill="#111827" stroke="#1F2937" stroke-width="1.5" />
+        <rect x="15" y="14" width="28" height="28" rx="6" fill="#064E3B" />
+        <text x="29" y="33" text-anchor="middle" font-size="14">🔐</text>
+        <text x="52" y="27" class="card-title">Login &amp; Verification</text>
+        <text x="52" y="42" class="card-url">/login</text>
+        <rect x="52" y="54" width="60" height="18" rx="4" fill="#064E3B" />
+        <text x="82" y="66" text-anchor="middle" class="badge-text" fill="#34D399">PUBLIC</text>
+        <rect x="120" y="54" width="70" height="18" rx="4" fill="#1E293B" />
+        <text x="155" y="66" text-anchor="middle" class="badge-text" fill="#94A3B8">2FA OTP</text>
+      </a>
+    </g>
+
+    <!-- Node 2: Signup -->
+    <g transform="translate(0, 160)" class="card" filter="url(#cardShadow)">
+      <a xlink:href="/signup" target="_top">
+        <rect width="260" height="85" rx="10" fill="#111827" stroke="#1F2937" stroke-width="1.5" />
+        <rect x="15" y="14" width="28" height="28" rx="6" fill="#064E3B" />
+        <text x="29" y="33" text-anchor="middle" font-size="14">📝</text>
+        <text x="52" y="27" class="card-title">Registration &amp; Roles</text>
+        <text x="52" y="42" class="card-url">/signup</text>
+        <rect x="52" y="54" width="60" height="18" rx="4" fill="#064E3B" />
+        <text x="82" y="66" text-anchor="middle" class="badge-text" fill="#34D399">PUBLIC</text>
+        <rect x="120" y="54" width="100" height="18" rx="4" fill="#1E293B" />
+        <text x="170" y="66" text-anchor="middle" class="badge-text" fill="#94A3B8">CUSTOMER / RIDER</text>
+      </a>
+    </g>
+
+    <!-- Node 3: FAQ -->
+    <g transform="translate(0, 260)" class="card" filter="url(#cardShadow)">
+      <a xlink:href="/faq" target="_top">
+        <rect width="260" height="85" rx="10" fill="#111827" stroke="#1F2937" stroke-width="1.5" />
+        <rect x="15" y="14" width="28" height="28" rx="6" fill="#064E3B" />
+        <text x="29" y="33" text-anchor="middle" font-size="14">❓</text>
+        <text x="52" y="27" class="card-title">Knowledgebase &amp; FAQs</text>
+        <text x="52" y="42" class="card-url">/faq</text>
+        <rect x="52" y="54" width="60" height="18" rx="4" fill="#064E3B" />
+        <text x="82" y="66" text-anchor="middle" class="badge-text" fill="#34D399">PUBLIC</text>
+        <rect x="120" y="54" width="90" height="18" rx="4" fill="#1E293B" />
+        <text x="165" y="66" text-anchor="middle" class="badge-text" fill="#94A3B8">FAQPAGE SCHEMA</text>
+      </a>
+    </g>
+
+    <!-- Node 4: Privacy Policy -->
+    <g transform="translate(0, 360)" class="card" filter="url(#cardShadow)">
+      <a xlink:href="/privacy-policy" target="_top">
+        <rect width="260" height="85" rx="10" fill="#111827" stroke="#1F2937" stroke-width="1.5" />
+        <rect x="15" y="14" width="28" height="28" rx="6" fill="#064E3B" />
+        <text x="29" y="33" text-anchor="middle" font-size="14">🛡️</text>
+        <text x="52" y="27" class="card-title">Privacy Policy</text>
+        <text x="52" y="42" class="card-url">/privacy-policy</text>
+        <rect x="52" y="54" width="60" height="18" rx="4" fill="#064E3B" />
+        <text x="82" y="66" text-anchor="middle" class="badge-text" fill="#34D399">PUBLIC</text>
+        <rect x="120" y="54" width="105" height="18" rx="4" fill="#1E293B" />
+        <text x="172" y="66" text-anchor="middle" class="badge-text" fill="#94A3B8">DPDP / GDPR 2026</text>
+      </a>
+    </g>
+
+    <!-- Node 5: Terms -->
+    <g transform="translate(0, 460)" class="card" filter="url(#cardShadow)">
+      <a xlink:href="/terms" target="_top">
+        <rect width="260" height="85" rx="10" fill="#111827" stroke="#1F2937" stroke-width="1.5" />
+        <rect x="15" y="14" width="28" height="28" rx="6" fill="#064E3B" />
+        <text x="29" y="33" text-anchor="middle" font-size="14">📜</text>
+        <text x="52" y="27" class="card-title">Terms of Service</text>
+        <text x="52" y="42" class="card-url">/terms</text>
+        <rect x="52" y="54" width="60" height="18" rx="4" fill="#064E3B" />
+        <text x="82" y="66" text-anchor="middle" class="badge-text" fill="#34D399">PUBLIC</text>
+        <rect x="120" y="54" width="115" height="18" rx="4" fill="#1E293B" />
+        <text x="177" y="66" text-anchor="middle" class="badge-text" fill="#94A3B8">CONTRABAND RULES</text>
+      </a>
+    </g>
+
+    <!-- Node 6: Help & Support -->
+    <g transform="translate(0, 560)" class="card" filter="url(#cardShadow)">
+      <a xlink:href="/help-support" target="_top">
+        <rect width="260" height="85" rx="10" fill="#111827" stroke="#1F2937" stroke-width="1.5" />
+        <rect x="15" y="14" width="28" height="28" rx="6" fill="#064E3B" />
+        <text x="29" y="33" text-anchor="middle" font-size="14">🎧</text>
+        <text x="52" y="27" class="card-title">Help &amp; Support</text>
+        <text x="52" y="42" class="card-url">/help-support</text>
+        <rect x="52" y="54" width="70" height="18" rx="4" fill="#1E3A8A" />
+        <text x="87" y="66" text-anchor="middle" class="badge-text" fill="#93C5FD">AUTH REQ</text>
+        <rect x="130" y="54" width="95" height="18" rx="4" fill="#1E293B" />
+        <text x="177" y="66" text-anchor="middle" class="badge-text" fill="#94A3B8">TICKET DISPATCH</text>
+      </a>
+    </g>
+  </g>
+
+  <!-- ========================================================================= -->
+  <!-- 2. DOMAIN: CUSTOMER LOGISTICS (Col 2: X = 370..630)                      -->
+  <!-- ========================================================================= -->
+  <g transform="translate(370, 230)">
+    <!-- Domain Header Pill -->
+    <rect width="260" height="42" rx="10" fill="url(#customerGrad)" stroke="#3B82F6" stroke-width="1.5" />
+    <text x="130" y="26" text-anchor="middle" class="domain-header" fill="#60A5FA">📦 Customer Logistics</text>
+
+    <!-- Node 1: Deliver / Cargo Booking -->
+    <g transform="translate(0, 60)" class="card" filter="url(#cardShadow)">
+      <a xlink:href="/deliver" target="_top">
+        <rect width="260" height="85" rx="10" fill="#111827" stroke="#1F2937" stroke-width="1.5" />
+        <rect x="15" y="14" width="28" height="28" rx="6" fill="#1E3A8A" />
+        <text x="29" y="33" text-anchor="middle" font-size="14">📦</text>
+        <text x="52" y="27" class="card-title">Luggage Capacity Booking</text>
+        <text x="52" y="42" class="card-url">/deliver</text>
+        <rect x="52" y="54" width="70" height="18" rx="4" fill="#1E3A8A" />
+        <text x="87" y="66" text-anchor="middle" class="badge-text" fill="#93C5FD">AUTH REQ</text>
+        <rect x="130" y="54" width="85" height="18" rx="4" fill="#1E293B" />
+        <text x="172" y="66" text-anchor="middle" class="badge-text" fill="#94A3B8">DYNAMIC QUOTE</text>
+      </a>
+    </g>
+
+    <!-- Node 2: Services -->
+    <g transform="translate(0, 160)" class="card" filter="url(#cardShadow)">
+      <a xlink:href="/services" target="_top">
+        <rect width="260" height="85" rx="10" fill="#111827" stroke="#1F2937" stroke-width="1.5" />
+        <rect x="15" y="14" width="28" height="28" rx="6" fill="#1E3A8A" />
+        <text x="29" y="33" text-anchor="middle" font-size="14">🚌</text>
+        <text x="52" y="27" class="card-title">Intercity Route Catalog</text>
+        <text x="52" y="42" class="card-url">/services</text>
+        <rect x="52" y="54" width="70" height="18" rx="4" fill="#1E3A8A" />
+        <text x="87" y="66" text-anchor="middle" class="badge-text" fill="#93C5FD">AUTH REQ</text>
+        <rect x="130" y="54" width="95" height="18" rx="4" fill="#1E293B" />
+        <text x="177" y="66" text-anchor="middle" class="badge-text" fill="#94A3B8">HARYANA ROADWAYS</text>
+      </a>
+    </g>
+
+    <!-- Node 3: Live Tracking -->
+    <g transform="translate(0, 260)" class="card" filter="url(#cardShadow)">
+      <a xlink:href="/tracking" target="_top">
+        <rect width="260" height="85" rx="10" fill="#111827" stroke="#1F2937" stroke-width="1.5" />
+        <rect x="15" y="14" width="28" height="28" rx="6" fill="#1E3A8A" />
+        <text x="29" y="33" text-anchor="middle" font-size="14">📍</text>
+        <text x="52" y="27" class="card-title">Live Map &amp; Telematics</text>
+        <text x="52" y="42" class="card-url">/tracking</text>
+        <rect x="52" y="54" width="70" height="18" rx="4" fill="#1E3A8A" />
+        <text x="87" y="66" text-anchor="middle" class="badge-text" fill="#93C5FD">AUTH REQ</text>
+        <rect x="130" y="54" width="85" height="18" rx="4" fill="#1E293B" />
+        <text x="172" y="66" text-anchor="middle" class="badge-text" fill="#94A3B8">POSTGIS GPS</text>
+      </a>
+    </g>
+
+    <!-- Node 4: History -->
+    <g transform="translate(0, 360)" class="card" filter="url(#cardShadow)">
+      <a xlink:href="/history" target="_top">
+        <rect width="260" height="85" rx="10" fill="#111827" stroke="#1F2937" stroke-width="1.5" />
+        <rect x="15" y="14" width="28" height="28" rx="6" fill="#1E3A8A" />
+        <text x="29" y="33" text-anchor="middle" font-size="14">🗄️</text>
+        <text x="52" y="27" class="card-title">Shipment History &amp; POD</text>
+        <text x="52" y="42" class="card-url">/history</text>
+        <rect x="52" y="54" width="70" height="18" rx="4" fill="#1E3A8A" />
+        <text x="87" y="66" text-anchor="middle" class="badge-text" fill="#93C5FD">AUTH REQ</text>
+        <rect x="130" y="54" width="90" height="18" rx="4" fill="#1E293B" />
+        <text x="175" y="66" text-anchor="middle" class="badge-text" fill="#94A3B8">DIGITAL AUDIT</text>
+      </a>
+    </g>
+
+    <!-- Node 5: Notifications -->
+    <g transform="translate(0, 460)" class="card" filter="url(#cardShadow)">
+      <a xlink:href="/notifications" target="_top">
+        <rect width="260" height="85" rx="10" fill="#111827" stroke="#1F2937" stroke-width="1.5" />
+        <rect x="15" y="14" width="28" height="28" rx="6" fill="#1E3A8A" />
+        <text x="29" y="33" text-anchor="middle" font-size="14">🔔</text>
+        <text x="52" y="27" class="card-title">Real-Time Alerts Hub</text>
+        <text x="52" y="42" class="card-url">/notifications</text>
+        <rect x="52" y="54" width="70" height="18" rx="4" fill="#1E3A8A" />
+        <text x="87" y="66" text-anchor="middle" class="badge-text" fill="#93C5FD">AUTH REQ</text>
+        <rect x="130" y="54" width="90" height="18" rx="4" fill="#1E293B" />
+        <text x="175" y="66" text-anchor="middle" class="badge-text" fill="#94A3B8">DYNAMIC FEED</text>
+      </a>
+    </g>
+  </g>
+
+  <!-- ========================================================================= -->
+  <!-- 3. DOMAIN: CUSTOMER ACCOUNT (Col 3: X = 680..940)                        -->
+  <!-- ========================================================================= -->
+  <g transform="translate(680, 230)">
+    <!-- Domain Header Pill -->
+    <rect width="260" height="42" rx="10" fill="url(#accountGrad)" stroke="#06B6D4" stroke-width="1.5" />
+    <text x="130" y="26" text-anchor="middle" class="domain-header" fill="#22D3EE">👤 Account &amp; Wallet</text>
+
+    <!-- Node 1: Profile -->
+    <g transform="translate(0, 60)" class="card" filter="url(#cardShadow)">
+      <a xlink:href="/profile" target="_top">
+        <rect width="260" height="85" rx="10" fill="#111827" stroke="#1F2937" stroke-width="1.5" />
+        <rect x="15" y="14" width="28" height="28" rx="6" fill="#164E63" />
+        <text x="29" y="33" text-anchor="middle" font-size="14">👤</text>
+        <text x="52" y="27" class="card-title">User Profile &amp; Identity</text>
+        <text x="52" y="42" class="card-url">/profile</text>
+        <rect x="52" y="54" width="70" height="18" rx="4" fill="#1E3A8A" />
+        <text x="87" y="66" text-anchor="middle" class="badge-text" fill="#93C5FD">AUTH REQ</text>
+        <rect x="130" y="54" width="85" height="18" rx="4" fill="#1E293B" />
+        <text x="172" y="66" text-anchor="middle" class="badge-text" fill="#94A3B8">SESSION AUTH</text>
+      </a>
+    </g>
+
+    <!-- Node 2: Saved Addresses -->
+    <g transform="translate(0, 160)" class="card" filter="url(#cardShadow)">
+      <a xlink:href="/saved-addresses" target="_top">
+        <rect width="260" height="85" rx="10" fill="#111827" stroke="#1F2937" stroke-width="1.5" />
+        <rect x="15" y="14" width="28" height="28" rx="6" fill="#164E63" />
+        <text x="29" y="33" text-anchor="middle" font-size="14">📍</text>
+        <text x="52" y="27" class="card-title">Saved Address Hub</text>
+        <text x="52" y="42" class="card-url">/saved-addresses</text>
+        <rect x="52" y="54" width="70" height="18" rx="4" fill="#1E3A8A" />
+        <text x="87" y="66" text-anchor="middle" class="badge-text" fill="#93C5FD">AUTH REQ</text>
+        <rect x="130" y="54" width="90" height="18" rx="4" fill="#1E293B" />
+        <text x="175" y="66" text-anchor="middle" class="badge-text" fill="#94A3B8">POSTGIS GEOM</text>
+      </a>
+    </g>
+
+    <!-- Node 3: Payment Methods -->
+    <g transform="translate(0, 260)" class="card" filter="url(#cardShadow)">
+      <a xlink:href="/payment-methods" target="_top">
+        <rect width="260" height="85" rx="10" fill="#111827" stroke="#1F2937" stroke-width="1.5" />
+        <rect x="15" y="14" width="28" height="28" rx="6" fill="#164E63" />
+        <text x="29" y="33" text-anchor="middle" font-size="14">💳</text>
+        <text x="52" y="27" class="card-title">Payment Methods &amp; UPI</text>
+        <text x="52" y="42" class="card-url">/payment-methods</text>
+        <rect x="52" y="54" width="70" height="18" rx="4" fill="#1E3A8A" />
+        <text x="87" y="66" text-anchor="middle" class="badge-text" fill="#93C5FD">AUTH REQ</text>
+        <rect x="130" y="54" width="80" height="18" rx="4" fill="#1E293B" />
+        <text x="170" y="66" text-anchor="middle" class="badge-text" fill="#94A3B8">TOKENIZED</text>
+      </a>
+    </g>
+
+    <!-- Node 4: Settings -->
+    <g transform="translate(0, 360)" class="card" filter="url(#cardShadow)">
+      <a xlink:href="/settings" target="_top">
+        <rect width="260" height="85" rx="10" fill="#111827" stroke="#1F2937" stroke-width="1.5" />
+        <rect x="15" y="14" width="28" height="28" rx="6" fill="#164E63" />
+        <text x="29" y="33" text-anchor="middle" font-size="14">⚙️</text>
+        <text x="52" y="27" class="card-title">Settings &amp; Preferences</text>
+        <text x="52" y="42" class="card-url">/settings</text>
+        <rect x="52" y="54" width="70" height="18" rx="4" fill="#1E3A8A" />
+        <text x="87" y="66" text-anchor="middle" class="badge-text" fill="#93C5FD">AUTH REQ</text>
+        <rect x="130" y="54" width="95" height="18" rx="4" fill="#1E293B" />
+        <text x="177" y="66" text-anchor="middle" class="badge-text" fill="#94A3B8">PRIVACY &amp; 2FA</text>
+      </a>
+    </g>
+  </g>
+
+  <!-- ========================================================================= -->
+  <!-- 4. DOMAIN: DELIVERY PARTNER COCKPIT (Col 4: X = 990..1250)                -->
+  <!-- ========================================================================= -->
+  <g transform="translate(990, 230)">
+    <!-- Domain Header Pill -->
+    <rect width="260" height="42" rx="10" fill="url(#partnerGrad)" stroke="#F59E0B" stroke-width="1.5" />
+    <text x="130" y="26" text-anchor="middle" class="domain-header" fill="#FBBF24">🛵 Partner Cockpit</text>
+
+    <!-- Node 1: Partner Landing -->
+    <g transform="translate(0, 60)" class="card" filter="url(#cardShadow)">
+      <a xlink:href="/delivery-partner" target="_top">
+        <rect width="260" height="85" rx="10" fill="#111827" stroke="#1F2937" stroke-width="1.5" />
+        <rect x="15" y="14" width="28" height="28" rx="6" fill="#78350F" />
+        <text x="29" y="33" text-anchor="middle" font-size="14">🛵</text>
+        <text x="52" y="27" class="card-title">Partner Landing &amp; Fleet</text>
+        <text x="52" y="42" class="card-url">/delivery-partner</text>
+        <rect x="52" y="54" width="70" height="18" rx="4" fill="#1E3A8A" />
+        <text x="87" y="66" text-anchor="middle" class="badge-text" fill="#93C5FD">AUTH REQ</text>
+        <rect x="130" y="54" width="85" height="18" rx="4" fill="#1E293B" />
+        <text x="172" y="66" text-anchor="middle" class="badge-text" fill="#94A3B8">ONBOARDING</text>
+      </a>
+    </g>
+
+    <!-- Node 2: Rider Dashboard -->
+    <g transform="translate(0, 160)" class="card" filter="url(#cardShadow)">
+      <a xlink:href="/rider-dashboard" target="_top">
+        <rect width="260" height="85" rx="10" fill="#111827" stroke="#1F2937" stroke-width="1.5" />
+        <rect x="15" y="14" width="28" height="28" rx="6" fill="#78350F" />
+        <text x="29" y="33" text-anchor="middle" font-size="14">⚡</text>
+        <text x="52" y="27" class="card-title">Rider Cockpit &amp; Duty</text>
+        <text x="52" y="42" class="card-url">/rider-dashboard</text>
+        <rect x="52" y="54" width="70" height="18" rx="4" fill="#1E3A8A" />
+        <text x="87" y="66" text-anchor="middle" class="badge-text" fill="#93C5FD">AUTH REQ</text>
+        <rect x="130" y="54" width="85" height="18" rx="4" fill="#1E293B" />
+        <text x="172" y="66" text-anchor="middle" class="badge-text" fill="#94A3B8">DUTY TOGGLE</text>
+      </a>
+    </g>
+
+    <!-- Node 3: Rider Requests -->
+    <g transform="translate(0, 260)" class="card" filter="url(#cardShadow)">
+      <a xlink:href="/rider-requests" target="_top">
+        <rect width="260" height="85" rx="10" fill="#111827" stroke="#1F2937" stroke-width="1.5" />
+        <rect x="15" y="14" width="28" height="28" rx="6" fill="#78350F" />
+        <text x="29" y="33" text-anchor="middle" font-size="14">⏱️</text>
+        <text x="52" y="27" class="card-title">Dispatch Queue (30s TTL)</text>
+        <text x="52" y="42" class="card-url">/rider-requests</text>
+        <rect x="52" y="54" width="70" height="18" rx="4" fill="#1E3A8A" />
+        <text x="87" y="66" text-anchor="middle" class="badge-text" fill="#93C5FD">AUTH REQ</text>
+        <rect x="130" y="54" width="100" height="18" rx="4" fill="#1E293B" />
+        <text x="180" y="66" text-anchor="middle" class="badge-text" fill="#94A3B8">OFFER BROADCAST</text>
+      </a>
+    </g>
+
+    <!-- Node 4: Rider Map & Trips -->
+    <g transform="translate(0, 360)" class="card" filter="url(#cardShadow)">
+      <a xlink:href="/rider-map-trips" target="_top">
+        <rect width="260" height="85" rx="10" fill="#111827" stroke="#1F2937" stroke-width="1.5" />
+        <rect x="15" y="14" width="28" height="28" rx="6" fill="#78350F" />
+        <text x="29" y="33" text-anchor="middle" font-size="14">🗺️</text>
+        <text x="52" y="27" class="card-title">GPS Ride &amp; PIN Dropoff</text>
+        <text x="52" y="42" class="card-url">/rider-map-trips</text>
+        <rect x="52" y="54" width="70" height="18" rx="4" fill="#1E3A8A" />
+        <text x="87" y="66" text-anchor="middle" class="badge-text" fill="#93C5FD">AUTH REQ</text>
+        <rect x="130" y="54" width="90" height="18" rx="4" fill="#1E293B" />
+        <text x="175" y="66" text-anchor="middle" class="badge-text" fill="#94A3B8">GEOFENCE PIN</text>
+      </a>
+    </g>
+
+    <!-- Node 5: Rider Earnings -->
+    <g transform="translate(0, 460)" class="card" filter="url(#cardShadow)">
+      <a xlink:href="/rider-earnings" target="_top">
+        <rect width="260" height="85" rx="10" fill="#111827" stroke="#1F2937" stroke-width="1.5" />
+        <rect x="15" y="14" width="28" height="28" rx="6" fill="#78350F" />
+        <text x="29" y="33" text-anchor="middle" font-size="14">💰</text>
+        <text x="52" y="27" class="card-title">Earnings Ledger &amp; Payout</text>
+        <text x="52" y="42" class="card-url">/rider-earnings</text>
+        <rect x="52" y="54" width="70" height="18" rx="4" fill="#1E3A8A" />
+        <text x="87" y="66" text-anchor="middle" class="badge-text" fill="#93C5FD">AUTH REQ</text>
+        <rect x="130" y="54" width="95" height="18" rx="4" fill="#1E293B" />
+        <text x="177" y="66" text-anchor="middle" class="badge-text" fill="#94A3B8">INSTANT CASHOUT</text>
+      </a>
+    </g>
+  </g>
+
+  <!-- ========================================================================= -->
+  <!-- 5. DOMAIN: PLATFORM INFRASTRUCTURE (Col 5: X = 1300..1560)                -->
+  <!-- ========================================================================= -->
+  <g transform="translate(1300, 230)">
+    <!-- Domain Header Pill -->
+    <rect width="250" height="42" rx="10" fill="url(#adminGrad)" stroke="#A855F7" stroke-width="1.5" />
+    <text x="125" y="26" text-anchor="middle" class="domain-header" fill="#C084FC">⚙️ Platform &amp; APIs</text>
+
+    <!-- Node 1: Admin Console -->
+    <g transform="translate(0, 60)" class="card" filter="url(#cardShadow)">
+      <a xlink:href="/admin" target="_top">
+        <rect width="250" height="85" rx="10" fill="#111827" stroke="#1F2937" stroke-width="1.5" />
+        <rect x="15" y="14" width="28" height="28" rx="6" fill="#581C87" />
+        <text x="29" y="33" text-anchor="middle" font-size="14">🛡️</text>
+        <text x="52" y="27" class="card-title">Fleet Admin Console</text>
+        <text x="52" y="42" class="card-url">/admin</text>
+        <rect x="52" y="54" width="70" height="18" rx="4" fill="#581C87" />
+        <text x="87" y="66" text-anchor="middle" class="badge-text" fill="#D8B4FE">OPERATOR</text>
+        <rect x="130" y="54" width="85" height="18" rx="4" fill="#1E293B" />
+        <text x="172" y="66" text-anchor="middle" class="badge-text" fill="#94A3B8">OPS GATEWAY</text>
+      </a>
+    </g>
+
+    <!-- Node 2: OpenAPI Swagger Docs -->
+    <g transform="translate(0, 160)" class="card" filter="url(#cardShadow)">
+      <a xlink:href="/api/docs" target="_top">
+        <rect width="250" height="85" rx="10" fill="#111827" stroke="#1F2937" stroke-width="1.5" />
+        <rect x="15" y="14" width="28" height="28" rx="6" fill="#581C87" />
+        <text x="29" y="33" text-anchor="middle" font-size="14">📖</text>
+        <text x="52" y="27" class="card-title">OpenAPI / Swagger Specs</text>
+        <text x="52" y="42" class="card-url">/api/docs</text>
+        <rect x="52" y="54" width="60" height="18" rx="4" fill="#064E3B" />
+        <text x="82" y="66" text-anchor="middle" class="badge-text" fill="#34D399">PUBLIC</text>
+        <rect x="120" y="54" width="85" height="18" rx="4" fill="#1E293B" />
+        <text x="162" y="66" text-anchor="middle" class="badge-text" fill="#94A3B8">REST V1 SPEC</text>
+      </a>
+    </g>
+
+    <!-- Node 3: Visual Sitemap -->
+    <g transform="translate(0, 260)" class="card" filter="url(#cardShadow)">
+      <a xlink:href="/visual-sitemap" target="_top">
+        <rect width="250" height="85" rx="10" fill="#111827" stroke="#1F2937" stroke-width="1.5" />
+        <rect x="15" y="14" width="28" height="28" rx="6" fill="#581C87" />
+        <text x="29" y="33" text-anchor="middle" font-size="14">🗺️</text>
+        <text x="52" y="27" class="card-title">Visual Sitemap Hub</text>
+        <text x="52" y="42" class="card-url">/visual-sitemap</text>
+        <rect x="52" y="54" width="60" height="18" rx="4" fill="#064E3B" />
+        <text x="82" y="66" text-anchor="middle" class="badge-text" fill="#34D399">PUBLIC</text>
+        <rect x="120" y="54" width="95" height="18" rx="4" fill="#1E293B" />
+        <text x="167" y="66" text-anchor="middle" class="badge-text" fill="#94A3B8">SVG &amp; MERMAID</text>
+      </a>
+    </g>
+
+    <!-- Node 4: Health Check -->
+    <g transform="translate(0, 360)" class="card" filter="url(#cardShadow)">
+      <a xlink:href="/health" target="_top">
+        <rect width="250" height="85" rx="10" fill="#111827" stroke="#1F2937" stroke-width="1.5" />
+        <rect x="15" y="14" width="28" height="28" rx="6" fill="#581C87" />
+        <text x="29" y="33" text-anchor="middle" font-size="14">🩺</text>
+        <text x="52" y="27" class="card-title">Cluster Health Check</text>
+        <text x="52" y="42" class="card-url">/health</text>
+        <rect x="52" y="54" width="60" height="18" rx="4" fill="#064E3B" />
+        <text x="82" y="66" text-anchor="middle" class="badge-text" fill="#34D399">PUBLIC</text>
+        <rect x="120" y="54" width="80" height="18" rx="4" fill="#1E293B" />
+        <text x="160" y="66" text-anchor="middle" class="badge-text" fill="#94A3B8">TELEMETRY</text>
+      </a>
+    </g>
+  </g>
+
+  <!-- Bottom Footer Info -->
+  <g transform="translate(60, 1070)">
+    <line x1="0" y1="0" x2="1480" y2="0" stroke="#1E293B" stroke-width="1" />
+    <text x="0" y="24" font-size="12" fill="#64748B">Transitly Multi-Modal Architecture • Dynamic Node Graph • Canonical Vector Schema</text>
+    <text x="1480" y="24" text-anchor="end" font-size="12" fill="#64748B">Format: Scalable Vector Graphics (SVG 1.1) • Endpoints: /sitemap.svg | /sitemap.mmd</text>
+  </g>
+</svg>
