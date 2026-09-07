@@ -1,249 +1,493 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Visual Sitemap &amp; Architecture Graph | Transitly</title>
-    <meta name="description" content="Explore Transitly's comprehensive platform sitemap in high-definition SVG vector format and Mermaid text definitions.">
+    <meta name="description" content="Explore Transitly's comprehensive platform sitemap in minimalist high-definition SVG vector format and Mermaid text definitions.">
     <link rel="canonical" href="https://transitly.in/visual-sitemap">
-    <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="theme-color" content="#0050cb">
+
+    <!-- Google Fonts: Plus Jakarta Sans -->
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+
+    <!-- Tailwind CSS with custom brand theme -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0050cb",
+                        "primary-dark": "#003ba0",
+                        "primary-container": "#0066ff",
+                        "background": "#f6f8fc",
+                        "surface": "#ffffff",
+                        "on-surface": "#13161c",
+                        "on-surface-variant": "#434753",
+                        "outline-subtle": "#e2e8f0",
+                        "emerald-brand": "#0d8a50"
+                    },
+                    fontFamily: {
+                        sans: ["Plus Jakarta Sans", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Dependencies: Mermaid & Vis-Network -->
     <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
     <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+
     <style>
-        #network-graph { width: 100%; height: 620px; border: 1px solid #e5e7eb; border-radius: 0.75rem; background-color: #0f172a; }
-        .mermaid { display: flex; justify-content: center; overflow: auto; min-height: 480px; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+        }
+        #network-graph { 
+            width: 100%; 
+            height: 620px; 
+            border: 1px solid #e2e8f0; 
+            border-radius: 1rem; 
+            background-color: #f8fafc; 
+        }
+        .mermaid { 
+            display: flex; 
+            justify-content: center; 
+            overflow: auto; 
+            min-height: 480px; 
+        }
         .tab-content { display: none; }
-        .tab-content.active { display: block; animation: fadeIn 0.3s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
-        .svg-preview-box { width: 100%; min-height: 750px; background: #0b0f19; border: 1px solid #1e293b; border-radius: 0.75rem; overflow: hidden; }
-        .code-pre { background: #0f172a; color: #e2e8f0; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+        .tab-content.active { display: block; animation: fadeIn 0.25s ease-in-out; }
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(4px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+        .svg-preview-box { 
+            width: 100%; 
+            background: #ffffff; 
+            border: 1px solid #e2e8f0; 
+            border-radius: 1rem; 
+            overflow: hidden; 
+        }
+        .code-pre { 
+            background: #0f172a; 
+            color: #e2e8f0; 
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; 
+        }
     </style>
 </head>
-<body class="bg-gray-900 text-gray-100 font-sans antialiased min-h-screen flex flex-col">
-    <!-- Header -->
-    <header class="bg-gray-800/80 backdrop-blur border-b border-gray-700 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-            <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white font-bold text-xl shadow-md shadow-indigo-500/20">
-                    T
-                </div>
+<body class="bg-background text-on-surface font-sans antialiased min-h-screen flex flex-col selection:bg-primary selection:text-white">
+
+    <!-- ========================================================================= -->
+    <!-- Top Minimalist White/Blue Header                                         -->
+    <!-- ========================================================================= -->
+    <header class="bg-white/95 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto py-3.5 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+            <div class="flex items-center space-x-3.5">
+                <a href="/" aria-label="Transitly Home" class="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center hover:bg-primary hover:text-white transition-all shadow-sm">
+                    <span class="material-symbols-outlined text-2xl">local_shipping</span>
+                </a>
                 <div>
-                    <h1 class="text-xl font-bold text-white tracking-tight flex items-center gap-2">
+                    <h1 class="text-lg sm:text-xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
                         Transitly Visual Sitemap
-                        <span class="text-xs px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-medium border border-emerald-500/30">SVG &amp; Mermaid Format</span>
+                        <span class="text-[11px] px-2.5 py-0.5 rounded-full bg-blue-50 text-primary font-bold border border-blue-200/80">SVG &amp; Mermaid</span>
                     </h1>
-                    <p class="text-gray-400 text-xs mt-0.5">Scalable Vector Topology • Standard Mermaid Specification • 24 Live Endpoints</p>
+                    <p class="text-slate-500 text-xs mt-0.5">Scalable Vector Topology • 24 Canonical Platform Routes • Minimalist White &amp; Blue</p>
                 </div>
             </div>
-            <div class="flex items-center space-x-3">
-                <a href="/sitemap.svg" target="_blank" class="px-3 py-1.5 rounded-lg bg-indigo-600/20 text-indigo-300 hover:bg-indigo-600 hover:text-white border border-indigo-500/30 text-xs font-semibold transition-all">
-                    View Raw SVG
+            
+            <div class="flex items-center space-x-2 sm:space-x-3">
+                <a href="./sitemap.svg" target="_blank" class="px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-slate-700 hover:text-primary hover:border-primary text-xs font-semibold shadow-sm transition-all flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-[16px]">polyline</span>
+                    <span class="hidden sm:inline">View</span> Raw SVG
                 </a>
-                <a href="/sitemap.mmd" target="_blank" class="px-3 py-1.5 rounded-lg bg-purple-600/20 text-purple-300 hover:bg-purple-600 hover:text-white border border-purple-500/30 text-xs font-semibold transition-all">
+                <a href="./sitemap.mmd" target="_blank" class="px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-slate-700 hover:text-primary hover:border-primary text-xs font-semibold shadow-sm transition-all flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-[16px]">code</span>
                     Raw .mmd
                 </a>
-                <a href="/" class="text-gray-400 hover:text-white font-medium text-sm transition-colors ml-2">
-                    ← Back to App
+                <a href="/" class="px-3.5 py-1.5 rounded-xl bg-primary text-white text-xs font-bold shadow-sm hover:bg-primary-dark active:scale-95 transition-all flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[16px]">arrow_back</span>
+                    <span>Back to App</span>
                 </a>
             </div>
         </div>
     </header>
 
-    <main class="flex-grow max-w-7xl w-full mx-auto py-6 px-4 sm:px-6 lg:px-8">
+    <!-- ========================================================================= -->
+    <!-- Main Content Container                                                    -->
+    <!-- ========================================================================= -->
+    <main class="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 space-y-6">
         
-        <!-- Tabs Navigation -->
-        <div class="bg-gray-800 rounded-t-xl border border-gray-700 px-4 pt-3 shadow-lg">
-            <nav class="-mb-px flex space-x-4 sm:space-x-8 overflow-x-auto" aria-label="Tabs">
-                <button onclick="switchTab('svgmap')" id="tab-svgmap" class="tab-btn border-indigo-500 text-indigo-400 whitespace-nowrap py-3 px-3 border-b-2 font-medium text-sm transition-colors focus:outline-none flex items-center gap-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+        <!-- Summary Stats Grid -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-3.5">
+                <div class="w-11 h-11 rounded-xl bg-blue-50 text-primary flex items-center justify-center font-bold">
+                    <span class="material-symbols-outlined text-2xl">route</span>
+                </div>
+                <div>
+                    <div class="text-xl font-extrabold text-slate-900">24 Routes</div>
+                    <div class="text-xs text-slate-500 font-medium">Canonical URL endpoints</div>
+                </div>
+            </div>
+
+            <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-3.5">
+                <div class="w-11 h-11 rounded-xl bg-blue-50 text-primary flex items-center justify-center font-bold">
+                    <span class="material-symbols-outlined text-2xl">account_tree</span>
+                </div>
+                <div>
+                    <div class="text-xl font-extrabold text-slate-900">5 Clusters</div>
+                    <div class="text-xs text-slate-500 font-medium">Architectural domains</div>
+                </div>
+            </div>
+
+            <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-3.5">
+                <div class="w-11 h-11 rounded-xl bg-blue-50 text-primary flex items-center justify-center font-bold">
+                    <span class="material-symbols-outlined text-2xl">draw</span>
+                </div>
+                <div>
+                    <div class="text-xl font-extrabold text-slate-900">SVG + MMD</div>
+                    <div class="text-xs text-slate-500 font-medium">Vector &amp; text formats</div>
+                </div>
+            </div>
+
+            <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-3.5">
+                <div class="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-brand flex items-center justify-center font-bold">
+                    <span class="material-symbols-outlined text-2xl">check_circle</span>
+                </div>
+                <div>
+                    <div class="text-xl font-extrabold text-slate-900">HTTP 200</div>
+                    <div class="text-xs text-slate-500 font-medium">Live &amp; CORS ready</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Selector Pills -->
+        <div class="flex items-center justify-between flex-wrap gap-3">
+            <div class="inline-flex p-1 bg-slate-200/70 rounded-2xl border border-slate-200 gap-1" role="tablist">
+                <button onclick="switchTab('svgmap')" id="tab-svgmap" class="tab-btn px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 bg-white text-primary shadow-sm">
+                    <span class="material-symbols-outlined text-[16px]">polyline</span>
                     Vector SVG Sitemap
                 </button>
-                <button onclick="switchTab('mermaidflow')" id="tab-mermaidflow" class="tab-btn border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-500 whitespace-nowrap py-3 px-3 border-b-2 font-medium text-sm transition-colors focus:outline-none flex items-center gap-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c-1.105 0-2-.895-2-2V7c0-1.105.895-2 2-2s2 .895 2 2v10c0 1.105-.895 2-2 2z"></path></svg>
+                <button onclick="switchTab('mermaidflow')" id="tab-mermaidflow" class="tab-btn px-4 py-2 rounded-xl text-xs font-medium text-slate-600 hover:text-slate-900 transition-all flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-[16px]">hub</span>
                     Rendered Mermaid Flow
                 </button>
-                <button onclick="switchTab('mermaidcode')" id="tab-mermaidcode" class="tab-btn border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-500 whitespace-nowrap py-3 px-3 border-b-2 font-medium text-sm transition-colors focus:outline-none flex items-center gap-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+                <button onclick="switchTab('mermaidcode')" id="tab-mermaidcode" class="tab-btn px-4 py-2 rounded-xl text-xs font-medium text-slate-600 hover:text-slate-900 transition-all flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-[16px]">code</span>
                     Mermaid Text (.mmd)
                 </button>
-                <button onclick="switchTab('knowledgegraph')" id="tab-knowledgegraph" class="tab-btn border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-500 whitespace-nowrap py-3 px-3 border-b-2 font-medium text-sm transition-colors focus:outline-none flex items-center gap-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
-                    Interactive Knowledge Graph
+                <button onclick="switchTab('knowledgegraph')" id="tab-knowledgegraph" class="tab-btn px-4 py-2 rounded-xl text-xs font-medium text-slate-600 hover:text-slate-900 transition-all flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-[16px]">schema</span>
+                    Interactive Graph
                 </button>
-            </nav>
+            </div>
+
+            <div class="text-xs text-slate-500 font-medium hidden lg:block">
+                White &amp; Blue Design System • Minimalist Theme
+            </div>
         </div>
 
-        <!-- Tab Contents -->
-        <div class="bg-gray-800 rounded-b-xl shadow-xl border border-t-0 border-gray-700 p-6 min-h-[650px]">
-            
-            <!-- 1. SVG Vector Map View -->
-            <div id="content-svgmap" class="tab-content active">
-                <div class="mb-4 flex flex-wrap justify-between items-center gap-3">
+        <!-- ===================================================================== -->
+        <!-- Tab 1: Vector SVG View                                                -->
+        <!-- ===================================================================== -->
+        <div id="content-svgmap" class="tab-content active">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-4">
+                <div class="flex flex-wrap justify-between items-center gap-3">
                     <div>
-                        <h2 class="text-lg font-bold text-white">Interactive Vector Graphics (SVG) Sitemap</h2>
-                        <p class="text-xs text-gray-400">Click on any route node card to navigate directly to that page.</p>
+                        <h2 class="text-base font-bold text-slate-900">Minimalist Vector (SVG) Topology</h2>
+                        <p class="text-xs text-slate-500 mt-0.5">High-definition vector layout covering 24 canonical endpoints in Transitly's white &amp; blue palette.</p>
                     </div>
                     <div class="flex items-center gap-2">
-                        <a href="/sitemap.svg" download="transitly-sitemap.svg" class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold bg-gray-700 hover:bg-gray-600 text-gray-200 transition">
-                            <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        <a href="./sitemap.svg" download="sitemap.svg" class="inline-flex items-center px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition">
+                            <span class="material-symbols-outlined text-[16px] mr-1">download</span>
                             Download SVG
                         </a>
-                        <a href="/sitemap.svg" target="_blank" class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white transition">
-                            <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                            Open Fullscreen
+                        <a href="./sitemap.svg" target="_blank" class="inline-flex items-center px-3.5 py-1.5 rounded-xl text-xs font-bold bg-primary hover:bg-primary-dark text-white transition shadow-sm">
+                            <span class="material-symbols-outlined text-[16px] mr-1">open_in_new</span>
+                            Open Standalone SVG
                         </a>
                     </div>
                 </div>
-                <div class="svg-preview-box flex items-center justify-center p-2 rounded-xl shadow-inner">
-                    <object data="/sitemap.svg" type="image/svg+xml" class="w-full h-full min-h-[750px] rounded-lg border-0" title="Transitly SVG Sitemap">
-                        Your browser does not support SVG embedding. <a href="/sitemap.svg" class="text-indigo-400 underline">View sitemap directly</a>.
-                    </object>
+
+                <div class="svg-preview-box p-3 flex items-center justify-center bg-slate-50/60 rounded-xl overflow-auto border border-slate-200/80">
+                    <img src="./sitemap.svg" alt="Transitly Platform Architecture and Sitemap" class="w-full h-auto rounded-lg shadow-sm border border-slate-200/60 block" />
                 </div>
             </div>
+        </div>
 
-            <!-- 2. Rendered Mermaid Flow Chart View -->
-            <div id="content-mermaidflow" class="tab-content">
-                <div class="mb-4 text-center">
-                    <h2 class="text-lg font-bold text-white">Dynamic Mermaid Architecture Flow</h2>
-                    <p class="text-xs text-gray-400">Rendered client-side from the live <code class="text-indigo-300">/sitemap.mmd</code> definition.</p>
+        <!-- ===================================================================== -->
+        <!-- Tab 2: Rendered Mermaid Flowchart                                     -->
+        <!-- ===================================================================== -->
+        <div id="content-mermaidflow" class="tab-content">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-4">
+                <div class="text-center max-w-xl mx-auto">
+                    <h2 class="text-base font-bold text-slate-900">Dynamic Mermaid Architecture Flow</h2>
+                    <p class="text-xs text-slate-500 mt-0.5">Dynamically parsed and rendered from the live <code class="px-1.5 py-0.5 rounded bg-blue-50 text-primary font-mono text-[11px]">sitemap.mmd</code> specification.</p>
                 </div>
-                <div id="mermaid-flowchart" class="mermaid bg-gray-900 rounded-xl p-6 border border-gray-700 flex items-center justify-center shadow-inner">
-                    <div class="text-gray-400 text-sm animate-pulse">Rendering Mermaid Topology...</div>
-                </div>
-            </div>
-
-            <!-- 3. Mermaid Source Code (.mmd) View -->
-            <div id="content-mermaidcode" class="tab-content">
-                <div class="mb-4 flex justify-between items-center">
-                    <div>
-                        <h2 class="text-lg font-bold text-white">Mermaid Text Specification (<code class="text-indigo-300">sitemap.mmd</code>)</h2>
-                        <p class="text-xs text-gray-400">Machine-readable diagram syntax conforming to Mermaid v10+ standard.</p>
+                <div id="mermaid-flowchart" class="mermaid bg-slate-50/60 rounded-xl p-6 border border-slate-200/80 flex items-center justify-center overflow-x-auto">
+                    <div class="text-slate-400 text-sm animate-pulse flex items-center gap-2">
+                        <span class="material-symbols-outlined animate-spin">progress_activity</span>
+                        Rendering Mermaid Topology...
                     </div>
-                    <button id="copyMermaidBtn" onclick="copyMermaidCode()" class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white transition">
-                        <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
-                        <span id="copyBtnText">Copy Mermaid Code</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===================================================================== -->
+        <!-- Tab 3: Raw Mermaid Code Specification                                 -->
+        <!-- ===================================================================== -->
+        <div id="content-mermaidcode" class="tab-content">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-4">
+                <div class="flex flex-wrap justify-between items-center gap-3">
+                    <div>
+                        <h2 class="text-base font-bold text-slate-900">Mermaid Text Specification (sitemap.mmd)</h2>
+                        <p class="text-xs text-slate-500 mt-0.5">Machine-readable diagram syntax conforming to the Mermaid v10+ standard.</p>
+                    </div>
+                    <button onclick="copyMermaidCode()" id="copyBtn" class="inline-flex items-center px-3.5 py-1.5 rounded-xl text-xs font-bold bg-primary hover:bg-primary-dark text-white transition shadow-sm">
+                        <span class="material-symbols-outlined text-[16px] mr-1">content_copy</span>
+                        Copy Mermaid Code
                     </button>
                 </div>
-                <div class="rounded-xl overflow-hidden border border-gray-700">
-                    <pre class="code-pre p-6 text-xs overflow-x-auto max-h-[650px]"><code id="rawMermaidCode">Loading /sitemap.mmd specification...</code></pre>
+                <div class="rounded-xl overflow-hidden border border-slate-800">
+                    <pre class="code-pre p-5 text-xs overflow-x-auto max-h-[650px] leading-relaxed"><code id="rawMermaidCode">Loading sitemap.mmd specification...</code></pre>
                 </div>
             </div>
-
-            <!-- 4. Knowledge Graph View (vis-network) -->
-            <div id="content-knowledgegraph" class="tab-content">
-                <div class="mb-4 flex flex-wrap justify-between items-center gap-3">
-                    <div>
-                        <h2 class="text-lg font-bold text-white">Interactive Knowledge Graph</h2>
-                        <p class="text-xs text-gray-400">Physics-simulated network graph. Drag nodes to inspect relationships; scroll to zoom.</p>
-                    </div>
-                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-indigo-900/60 text-indigo-300 border border-indigo-700/50">
-                        vis-network 9.1
-                    </span>
-                </div>
-                <div id="network-graph" class="shadow-inner relative overflow-hidden cursor-move"></div>
-            </div>
-            
         </div>
+
+        <!-- ===================================================================== -->
+        <!-- Tab 4: Interactive Vis-Network Knowledge Graph                        -->
+        <!-- ===================================================================== -->
+        <div id="content-knowledgegraph" class="tab-content">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-4">
+                <div class="flex flex-wrap justify-between items-center gap-3">
+                    <div>
+                        <h2 class="text-base font-bold text-slate-900">Interactive Architecture Knowledge Graph</h2>
+                        <p class="text-xs text-slate-500 mt-0.5">Drag, zoom, and inspect relationship topologies across all 24 platform route endpoints.</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="fitNetworkGraph()" class="inline-flex items-center px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition">
+                            <span class="material-symbols-outlined text-[16px] mr-1">center_focus_strong</span>
+                            Fit Graph
+                        </button>
+                    </div>
+                </div>
+                <div id="network-graph"></div>
+            </div>
+        </div>
+
     </main>
 
-    <footer class="bg-gray-800 border-t border-gray-700 py-4 mt-auto">
-        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-gray-500">
-            Transitly Platform SEO &amp; Visual Architecture • Modern SVG &amp; Mermaid Specifications • DPDP &amp; GDPR Compliant
+    <!-- Minimalist Footer -->
+    <footer class="bg-white border-t border-slate-200 py-6 mt-12 text-center text-xs text-slate-500">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-2">
+            <div>
+                © 2026 Transitly Technologies Inc. • Multi-Modal Intercity Cargo Logistics Network
+            </div>
+            <div class="flex items-center gap-4 text-slate-400">
+                <a href="./sitemap.svg" class="hover:text-primary transition-colors">/sitemap.svg</a>
+                <span>•</span>
+                <a href="./sitemap.mmd" class="hover:text-primary transition-colors">/sitemap.mmd</a>
+                <span>•</span>
+                <a href="/faq" class="hover:text-primary transition-colors">FAQ</a>
+            </div>
         </div>
     </footer>
 
     <script>
-        // Global State
-        let cachedMermaidDef = '';
+        // Static Minimalist White & Blue Mermaid Definition
+        const DEFAULT_MERMAID_DEF = `graph TD
+  classDef root fill:#0050CB,stroke:#003BA0,stroke-width:2px,color:#FFFFFF,font-weight:bold,rx:8px,ry:8px;
+  classDef public fill:#FFFFFF,stroke:#0050CB,stroke-width:1.5px,color:#0F172A,rx:6px,ry:6px;
+  classDef customer fill:#FFFFFF,stroke:#0050CB,stroke-width:1.5px,color:#0F172A,rx:6px,ry:6px;
+  classDef account fill:#FFFFFF,stroke:#0050CB,stroke-width:1.5px,color:#0F172A,rx:6px,ry:6px;
+  classDef partner fill:#FFFFFF,stroke:#0050CB,stroke-width:1.5px,color:#0F172A,rx:6px,ry:6px;
+  classDef admin fill:#FFFFFF,stroke:#0050CB,stroke-width:1.5px,color:#0F172A,rx:6px,ry:6px;
 
-        // Initialize Mermaid
+  Home["🏠 Transitly Core Hub<br/><code>https://transitly.in/</code>"]:::root
+
+  subgraph PublicDomain ["🌐 Public & Legal Infrastructure"]
+    Login["🔐 Login & Verification<br/><code>/login</code>"]:::public
+    Signup["📝 Role-Based Signup<br/><code>/signup</code>"]:::public
+    FAQ["❓ FAQs & Knowledgebase<br/><code>/faq</code>"]:::public
+    Privacy["🛡️ Privacy Policy (DPDP/GDPR)<br/><code>/privacy-policy</code>"]:::public
+    Terms["📜 Terms & Conditions<br/><code>/terms</code>"]:::public
+    Help["🎧 Help & Support Tickets<br/><code>/help-support</code>"]:::public
+  end
+
+  subgraph CustomerDomain ["📦 Customer Cargo & Logistics"]
+    Deliver["📦 Cargo Booking Portal<br/><code>/deliver</code>"]:::customer
+    Services["🚌 Intercity Bus Catalog<br/><code>/services</code>"]:::customer
+    Tracking["📍 Live Map & Telematics<br/><code>/tracking</code>"]:::customer
+    History["🗄️ Shipment History & POD<br/><code>/history</code>"]:::customer
+    Notifications["🔔 Notification Center<br/><code>/notifications</code>"]:::customer
+  end
+
+  subgraph AccountDomain ["👤 Customer Account & Wallet"]
+    Profile["👤 User Profile & Config<br/><code>/profile</code>"]:::account
+    Addresses["📍 Saved Addresses<br/><code>/saved-addresses</code>"]:::account
+    Payments["💳 Payment Methods & UPI<br/><code>/payment-methods</code>"]:::account
+    Settings["⚙️ Security & Preferences<br/><code>/settings</code>"]:::account
+  end
+
+  subgraph PartnerDomain ["🛵 Delivery Partner Cockpit"]
+    PartnerHub["🛵 Partner Onboarding<br/><code>/delivery-partner</code>"]:::partner
+    RiderDash["⚡ Cockpit & Duty Toggle<br/><code>/rider-dashboard</code>"]:::partner
+    RiderReq["⏱️ Dispatch Queue (30s TTL)<br/><code>/rider-requests</code>"]:::partner
+    RiderMap["🗺️ GPS Ride & PIN Dropoff<br/><code>/rider-map-trips</code>"]:::partner
+    RiderEarn["💰 Earnings & Payout Ledger<br/><code>/rider-earnings</code>"]:::partner
+  end
+
+  subgraph PlatformDomain ["⚙️ Platform & Developer Infrastructure"]
+    Admin["🛡️ Fleet Admin Operations<br/><code>/admin</code>"]:::admin
+    ApiDocs["📖 OpenAPI / Swagger Specs<br/><code>/api/docs</code>"]:::admin
+    VisualMap["🗺️ Multi-Format Sitemap<br/><code>/visual-sitemap</code>"]:::admin
+  end
+
+  Home --> PublicDomain
+  Home --> CustomerDomain
+  Home --> AccountDomain
+  Home --> PartnerDomain
+  Home --> PlatformDomain
+
+  PublicDomain --> Login
+  PublicDomain --> Signup
+  PublicDomain --> FAQ
+  PublicDomain --> Privacy
+  PublicDomain --> Terms
+  PublicDomain --> Help
+
+  CustomerDomain --> Deliver
+  CustomerDomain --> Services
+  CustomerDomain --> Tracking
+  CustomerDomain --> History
+  CustomerDomain --> Notifications
+
+  AccountDomain --> Profile
+  AccountDomain --> Addresses
+  AccountDomain --> Payments
+  AccountDomain --> Settings
+
+  PartnerDomain --> PartnerHub
+  PartnerDomain --> RiderDash
+  PartnerDomain --> RiderReq
+  PartnerDomain --> RiderMap
+  PartnerDomain --> RiderEarn
+
+  PlatformDomain --> Admin
+  PlatformDomain --> ApiDocs
+  PlatformDomain --> VisualMap`;
+
+        let cachedMermaidDef = DEFAULT_MERMAID_DEF;
+
+        // Initialize Mermaid with clean light base theme matching white & blue
         mermaid.initialize({ 
             startOnLoad: false, 
-            theme: 'dark',
+            theme: 'base',
             themeVariables: {
-                darkMode: true,
-                background: '#0f172a',
-                primaryColor: '#312e81',
+                primaryColor: '#0050cb',
                 primaryTextColor: '#ffffff',
-                primaryBorderColor: '#6366f1',
-                lineColor: '#64748b',
-                secondaryColor: '#1e293b',
-                tertiaryColor: '#111827'
-            }
+                primaryBorderColor: '#003ba0',
+                lineColor: '#0050cb',
+                secondaryColor: '#eff6ff',
+                tertiaryColor: '#ffffff',
+                background: '#ffffff',
+                mainBkg: '#ffffff',
+                nodeBorder: '#0050cb',
+                clusterBkg: '#f8fafc',
+                clusterBorder: '#e2e8f0',
+                fontFamily: 'Plus Jakarta Sans, -apple-system, sans-serif'
+            },
+            securityLevel: 'loose',
+            flowchart: { curve: 'basis', htmlLabels: true }
         });
 
-        // Tab Switching
+        // Tab Switching Logic
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(b => {
-                b.classList.remove('border-indigo-500', 'text-indigo-400');
-                b.classList.add('border-transparent', 'text-gray-400');
+                b.className = 'tab-btn px-4 py-2 rounded-xl text-xs font-medium text-slate-600 hover:text-slate-900 transition-all flex items-center gap-1.5';
             });
-            document.getElementById(`content-${tabId}`).classList.add('active');
-            document.getElementById(`tab-${tabId}`).classList.remove('border-transparent', 'text-gray-400');
-            document.getElementById(`tab-${tabId}`).classList.add('border-indigo-500', 'text-indigo-400');
-            
+
+            const content = document.getElementById(`content-${tabId}`);
+            const btn = document.getElementById(`tab-${tabId}`);
+
+            if (content) content.classList.add('active');
+            if (btn) btn.className = 'tab-btn px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 bg-white text-primary shadow-sm';
+
             if (tabId === 'knowledgegraph' && window.networkGraph) {
-                setTimeout(() => window.networkGraph.fit(), 100);
+                setTimeout(() => window.networkGraph.fit(), 50);
             }
         }
 
         // Copy Mermaid Definition
         function copyMermaidCode() {
-            if (!cachedMermaidDef) return;
             navigator.clipboard.writeText(cachedMermaidDef).then(() => {
-                const btnText = document.getElementById('copyBtnText');
-                btnText.textContent = 'Copied!';
-                setTimeout(() => { btnText.textContent = 'Copy Mermaid Code'; }, 2000);
-            }).catch(err => {
-                console.error('Copy failed:', err);
+                const btn = document.getElementById('copyBtn');
+                btn.innerHTML = '<span class="material-symbols-outlined text-[16px] mr-1">done</span> Copied to Clipboard!';
+                btn.classList.replace('bg-primary', 'bg-emerald-600');
+                setTimeout(() => {
+                    btn.innerHTML = '<span class="material-symbols-outlined text-[16px] mr-1">content_copy</span> Copy Mermaid Code';
+                    btn.classList.replace('bg-emerald-600', 'bg-primary');
+                }, 2000);
             });
         }
 
         // Load Mermaid and Knowledge Graph
         async function loadPlatformSitemap() {
             try {
-                // Fetch Mermaid text specification directly
-                const res = await fetch('/sitemap.mmd');
-                if (res.ok) {
+                const res = await fetch('./sitemap.mmd').catch(() => null);
+                if (res && res.ok) {
                     cachedMermaidDef = await res.text();
-                    document.getElementById('rawMermaidCode').textContent = cachedMermaidDef;
-
-                    // Render Mermaid Diagram
-                    try {
-                        const { svg } = await mermaid.render('mermaid-rendered-svg', cachedMermaidDef);
-                        document.getElementById('mermaid-flowchart').innerHTML = svg;
-                    } catch (mErr) {
-                        console.error('Mermaid render error:', mErr);
-                        document.getElementById('mermaid-flowchart').innerHTML = `<p class="text-amber-400 text-sm">Mermaid rendering notice: ${mErr.message}</p>`;
-                    }
                 }
-            } catch (err) {
-                console.error('Error fetching /sitemap.mmd:', err);
+            } catch (_) {}
+
+            document.getElementById('rawMermaidCode').textContent = cachedMermaidDef;
+
+            // Render Mermaid Diagram
+            try {
+                const { svg } = await mermaid.render('mermaid-rendered-svg', cachedMermaidDef);
+                document.getElementById('mermaid-flowchart').innerHTML = svg;
+            } catch (mErr) {
+                console.error('Mermaid render error:', mErr);
+                document.getElementById('mermaid-flowchart').innerHTML = `<p class="text-amber-600 text-sm">Mermaid rendering notice: ${mErr.message}</p>`;
             }
 
-            // Initialize Vis-Network Knowledge Graph with all 24 platform routes
+            // Initialize Minimalist Vis-Network Knowledge Graph
             initKnowledgeGraph();
         }
 
         function initKnowledgeGraph() {
             const nodes = [
-                { id: 'Home', label: 'Transitly Hub\n(https://transitly.in)', shape: 'hexagon', size: 36, color: { background: '#4F46E5', border: '#818CF8' }, font: { color: '#ffffff', size: 14, face: 'Inter, sans-serif' } },
+                { 
+                    id: 'Home', 
+                    label: 'Transitly Hub\n(https://transitly.in)', 
+                    shape: 'hexagon', 
+                    size: 36, 
+                    color: { background: '#0050cb', border: '#003ba0' }, 
+                    font: { color: '#ffffff', size: 14, face: 'Plus Jakarta Sans, sans-serif' } 
+                },
                 
                 // Domain hubs
-                { id: 'DomainPublic', label: 'Public & Legal', shape: 'dot', size: 24, color: '#10B981', font: { color: '#34D399', size: 13 } },
-                { id: 'DomainCustomer', label: 'Customer Logistics', shape: 'dot', size: 24, color: '#3B82F6', font: { color: '#60A5FA', size: 13 } },
-                { id: 'DomainAccount', label: 'Account & Wallet', shape: 'dot', size: 24, color: '#06B6D4', font: { color: '#22D3EE', size: 13 } },
-                { id: 'DomainPartner', label: 'Delivery Partner', shape: 'dot', size: 24, color: '#F59E0B', font: { color: '#FBBF24', size: 13 } },
-                { id: 'DomainOps', label: 'Platform & APIs', shape: 'dot', size: 24, color: '#A855F7', font: { color: '#C084FC', size: 13 } }
+                { id: 'DomainPublic', label: 'Public & Legal', shape: 'dot', size: 24, color: { background: '#eff6ff', border: '#0050cb' }, font: { color: '#0050cb', size: 13, bold: true } },
+                { id: 'DomainCustomer', label: 'Customer Logistics', shape: 'dot', size: 24, color: { background: '#eff6ff', border: '#0050cb' }, font: { color: '#0050cb', size: 13, bold: true } },
+                { id: 'DomainAccount', label: 'Account & Wallet', shape: 'dot', size: 24, color: { background: '#eff6ff', border: '#0050cb' }, font: { color: '#0050cb', size: 13, bold: true } },
+                { id: 'DomainPartner', label: 'Delivery Partner', shape: 'dot', size: 24, color: { background: '#eff6ff', border: '#0050cb' }, font: { color: '#0050cb', size: 13, bold: true } },
+                { id: 'DomainOps', label: 'Platform & APIs', shape: 'dot', size: 24, color: { background: '#eff6ff', border: '#0050cb' }, font: { color: '#0050cb', size: 13, bold: true } }
             ];
 
             const edges = [
-                { from: 'Home', to: 'DomainPublic', color: { color: '#10B981' }, width: 2 },
-                { from: 'Home', to: 'DomainCustomer', color: { color: '#3B82F6' }, width: 2 },
-                { from: 'Home', to: 'DomainAccount', color: { color: '#06B6D4' }, width: 2 },
-                { from: 'Home', to: 'DomainPartner', color: { color: '#F59E0B' }, width: 2 },
-                { from: 'Home', to: 'DomainOps', color: { color: '#A855F7' }, width: 2 }
+                { from: 'Home', to: 'DomainPublic', color: { color: '#93c5fd' }, width: 2 },
+                { from: 'Home', to: 'DomainCustomer', color: { color: '#93c5fd' }, width: 2 },
+                { from: 'Home', to: 'DomainAccount', color: { color: '#93c5fd' }, width: 2 },
+                { from: 'Home', to: 'DomainPartner', color: { color: '#93c5fd' }, width: 2 },
+                { from: 'Home', to: 'DomainOps', color: { color: '#93c5fd' }, width: 2 }
             ];
 
             const leafPages = [
@@ -286,16 +530,16 @@
                     id: p.id,
                     label: p.label,
                     shape: 'box',
-                    color: { background: '#1e293b', border: '#475569' },
-                    font: { color: '#f1f5f9', size: 11, face: 'Inter, sans-serif' },
+                    color: { background: '#ffffff', border: '#cbd5e1' },
+                    font: { color: '#0f172a', size: 11, face: 'Plus Jakarta Sans, sans-serif' },
                     margin: 8,
-                    shadow: true
+                    shadow: { color: 'rgba(0, 80, 203, 0.05)', size: 4, x: 0, y: 2 }
                 });
                 edges.push({
                     from: p.domain,
                     to: p.id,
                     arrows: 'to',
-                    color: { color: '#334155', highlight: '#818cf8' },
+                    color: { color: '#cbd5e1', highlight: '#0050cb' },
                     length: 120
                 });
             });
@@ -303,7 +547,7 @@
             const container = document.getElementById('network-graph');
             const data = { nodes: new vis.DataSet(nodes), edges: new vis.DataSet(edges) };
             const options = {
-                nodes: { font: { face: 'Inter, sans-serif' } },
+                nodes: { font: { face: 'Plus Jakarta Sans, sans-serif' } },
                 edges: { smooth: { type: 'continuous' } },
                 physics: { 
                     barnesHut: { gravitationalConstant: -2400, centralGravity: 0.25, springLength: 140 },
@@ -312,6 +556,12 @@
                 interaction: { hover: true, tooltipDelay: 200 }
             };
             window.networkGraph = new vis.Network(container, data, options);
+        }
+
+        function fitNetworkGraph() {
+            if (window.networkGraph) {
+                window.networkGraph.fit();
+            }
         }
 
         window.onload = loadPlatformSitemap;
