@@ -4,8 +4,17 @@ class ProofOfDeliveryDAO {
   async create(data) {
     try {
       const res = await pool.query(`
-        INSERT INTO proof_of_delivery (shipment_id, tracking_id, recipient_name, recipient_phone, qr_seal_code, otp_verified, qr_seal_verified)
-        VALUES ($1, $2, $3, $4, $5, $6, $7)
+        INSERT INTO proof_of_delivery (
+          shipment_id, tracking_id, recipient_name, recipient_phone, 
+          qr_seal_code, otp_verified, qr_seal_verified, signature_url, 
+          photo_url, geofence_validated, delivered_by_user_id, location_geom
+        )
+        VALUES (
+          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11,
+          CASE WHEN $12::numeric IS NOT NULL AND $13::numeric IS NOT NULL 
+               THEN ST_SetSRID(ST_MakePoint($12, $13), 4326) 
+               ELSE NULL END
+        )
         RETURNING *
       `, [
         data.transactionId || data.shipmentId || 1,
@@ -14,10 +23,17 @@ class ProofOfDeliveryDAO {
         data.recipientPhone || '+919876543211',
         data.qrSealCode || 'SEAL-01',
         data.otpVerified !== undefined ? data.otpVerified : true,
-        data.qrSealVerified !== undefined ? data.qrSealVerified : true
+        data.qrSealVerified !== undefined ? data.qrSealVerified : true,
+        data.signatureUrl || null,
+        data.photoUrl || null,
+        data.geofenceValidated !== undefined ? data.geofenceValidated : true,
+        data.deliveredByUserId || null,
+        data.location?.longitude || null,
+        data.location?.latitude || null
       ]);
       return { _id: res.rows[0].id, ...res.rows[0] };
-    } catch (_) {
+    } catch (err) {
+      console.error('ProofOfDeliveryDAO create error:', err.message);
       return { _id: Date.now(), ...data };
     }
   }

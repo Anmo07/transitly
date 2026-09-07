@@ -140,6 +140,21 @@ const initializeDatabase = async () => {
 
       CREATE INDEX IF NOT EXISTS idx_support_tickets_user ON support_tickets(user_id);
 
+      -- 1e. Delivery Partner Profiles
+      CREATE TABLE IF NOT EXISTS delivery_partner_profiles (
+          id BIGSERIAL PRIMARY KEY,
+          user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE UNIQUE,
+          vehicle_type VARCHAR(50) NOT NULL CHECK (vehicle_type IN ('BIKE', 'SCOOTER', 'VAN', 'TRUCK')),
+          license_number VARCHAR(100),
+          status VARCHAR(50) DEFAULT 'OFFLINE' CHECK (status IN ('OFFLINE', 'ONLINE', 'ON_DELIVERY')),
+          active_leg_id BIGINT,
+          last_latitude DOUBLE PRECISION,
+          last_longitude DOUBLE PRECISION,
+          last_geom ${geomType},
+          created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+          updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+      );
+
       -- 2. Vehicles
       CREATE TABLE IF NOT EXISTS vehicles (
           id BIGSERIAL PRIMARY KEY,
@@ -235,6 +250,7 @@ const initializeDatabase = async () => {
           tracking_id VARCHAR(100) NOT NULL,
           leg_type VARCHAR(50) NOT NULL CHECK (leg_type IN ('PICKUP_LAST_MILE', 'TRANSIT', 'DELIVERY_LAST_MILE')),
           provider VARCHAR(50) NOT NULL,
+          rider_id BIGINT REFERENCES users(id),
           provider_dispatch_id VARCHAR(100),
           status VARCHAR(50) NOT NULL DEFAULT 'PENDING' CHECK (status IN ('PENDING', 'QUOTED', 'DISPATCHED', 'COLLECTED', 'IN_TRANSIT', 'COMPLETED', 'EXCEPTION', 'CANCELLED')),
           pickup_address TEXT NOT NULL,
@@ -377,7 +393,8 @@ const initializeDatabase = async () => {
       (4, 'Rohan Verma', 'rohan.verma@transitly.in', '+919876543211', 'CUSTOMER', '', '{}'::jsonb),
       (5, 'Express Last-Mile Delivery Partners', 'partner@expresslogistics.in', '+919876543212', 'DELIVERY_PARTNER', '', '{}'::jsonb),
       (6, 'Rajesh Kumar', 'rajesh.driver@transitly.in', '+919876543213', 'DRIVER', '', '{}'::jsonb),
-      (10, 'Haryana Roadways', 'contact@haryanaroadways.gov.in', '+911722704014', 'OPERATOR', '', '{}'::jsonb)
+      (10, 'Haryana Roadways', 'contact@haryanaroadways.gov.in', '+911722704014', 'OPERATOR', '', '{}'::jsonb),
+      (11, 'Rajesh Kumar', 'rider1@transitly.com', '+919988776655', 'DELIVERY_PARTNER', '', '{}'::jsonb)
       ON CONFLICT (id) DO UPDATE SET
         name = EXCLUDED.name,
         email = EXCLUDED.email,
@@ -394,6 +411,10 @@ const initializeDatabase = async () => {
       INSERT INTO payment_methods (id, user_id, type, card_name, card_last_four, card_expiry, upi_vpa, is_default) VALUES
       (1, 1, 'CARD', 'Anmol', '8831', '12/28', NULL, TRUE),
       (2, 1, 'UPI', 'Anmol', NULL, NULL, 'anmol@okhdfcbank', FALSE)
+      ON CONFLICT (id) DO NOTHING;
+
+      INSERT INTO delivery_partner_profiles (id, user_id, vehicle_type, license_number, status) VALUES
+      (1, 11, 'BIKE', 'HR-02-AB-9988', 'ONLINE')
       ON CONFLICT (id) DO NOTHING;
 
       INSERT INTO vehicles (id, operator_id, registration, cargo_capacity_kg, available_capacity_kg, last_latitude, last_longitude) VALUES
@@ -442,10 +463,10 @@ const initializeDatabase = async () => {
           5.00, 12.50, 'SEAL-7712-4410-1120', FALSE
       ) ON CONFLICT (id) DO NOTHING;
 
-      INSERT INTO shipment_legs (id, shipment_id, tracking_id, leg_type, provider, status, pickup_address, dropoff_address, price) VALUES
-      (1, 1, 'TRK-88219', 'PICKUP_LAST_MILE', 'UBER_DIRECT', 'COMPLETED', 'Connaught Place, New Delhi', 'ISBT Kashmiri Gate, Delhi', 85.00),
-      (2, 1, 'TRK-88219', 'TRANSIT', 'HARYANA_ROADWAYS', 'IN_TRANSIT', 'ISBT Kashmiri Gate, Delhi', 'ISBT Sector 17, Chandigarh', 280.00),
-      (3, 1, 'TRK-88219', 'DELIVERY_LAST_MILE', 'RAPIDO', 'QUOTED', 'ISBT Sector 17, Chandigarh', 'Sector 17, Chandigarh', 85.00)
+      INSERT INTO shipment_legs (id, shipment_id, tracking_id, leg_type, provider, rider_id, status, pickup_address, dropoff_address, price) VALUES
+      (1, 1, 'TRK-88219', 'PICKUP_LAST_MILE', 'UBER_DIRECT', NULL, 'COMPLETED', 'Connaught Place, New Delhi', 'ISBT Kashmiri Gate, Delhi', 85.00),
+      (2, 1, 'TRK-88219', 'TRANSIT', 'HARYANA_ROADWAYS', NULL, 'IN_TRANSIT', 'ISBT Kashmiri Gate, Delhi', 'ISBT Sector 17, Chandigarh', 280.00),
+      (3, 1, 'TRK-88219', 'DELIVERY_LAST_MILE', 'TRANSITLY_INTERNAL', 11, 'QUOTED', 'ISBT Sector 17, Chandigarh', 'Sector 17, Chandigarh', 85.00)
       ON CONFLICT (id) DO NOTHING;
     `;
 

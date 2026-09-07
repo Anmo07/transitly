@@ -10,6 +10,7 @@ const addressController = require('../controllers/addressController');
 const paymentController = require('../controllers/paymentController');
 const supportController = require('../controllers/supportController');
 const adminController = require('../controllers/adminController');
+const riderRoutes = require('./riderRoutes');
 const { pool } = require('../../config/postgres');
 
 const router = express.Router();
@@ -81,6 +82,9 @@ router.post('/lastmile/quotes', (req, res) => lastMileController.getQuotes(req, 
 // 4. Custody & Delivery Proof
 router.post('/custody/handoff', (req, res) => custodyController.logHandoff(req, res));
 router.post('/custody/verify-otp', (req, res) => custodyController.verifyDeliveryOtp(req, res));
+
+// 4.1 Internal Rider App Workflows
+router.use('/riders', riderRoutes);
 
 // 5. Telemetry & Tracking
 router.post('/tracking/telemetry', (req, res) => telemetryController.postTelemetryPing(req, res));
