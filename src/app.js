@@ -157,6 +157,13 @@ app.get('/help-support', requirePageAuth, (req, res) => res.sendFile(path.join(p
 app.get('/notifications', requirePageAuth, (req, res) => res.sendFile(path.join(publicDir, 'notifications.html')));
 app.get('/admin', requirePageAuth, (req, res) => res.sendFile(path.join(publicDir, 'admin.html')));
 
+// Delivery Partner Cockpit & Rider Mobile App Screens
+app.get('/rider-dashboard', requirePageAuth, (req, res) => res.sendFile(path.join(publicDir, 'rider-dashboard.html')));
+app.get('/rider-map-trips', requirePageAuth, (req, res) => res.sendFile(path.join(publicDir, 'rider-map-trips.html')));
+app.get('/rider-requests', requirePageAuth, (req, res) => res.sendFile(path.join(publicDir, 'rider-requests.html')));
+app.get('/rider-earnings', requirePageAuth, (req, res) => res.sendFile(path.join(publicDir, 'rider-earnings.html')));
+app.get('/delivery-partner', requirePageAuth, (req, res) => res.sendFile(path.join(publicDir, 'delivery-partner.html')));
+
 // Custom 404 Handler for Unmatched Routes (Prevents Soft 404 SEO penalties)
 app.use((req, res) => {
   res.status(404);

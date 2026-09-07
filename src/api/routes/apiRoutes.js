@@ -84,7 +84,16 @@ router.post('/custody/handoff', (req, res) => custodyController.logHandoff(req, 
 router.post('/custody/verify-otp', (req, res) => custodyController.verifyDeliveryOtp(req, res));
 
 // 4.1 Internal Rider App Workflows
+const deliveryPartnerController = require('../controllers/deliveryPartnerController');
 router.use('/riders', riderRoutes);
+
+// 4.2 Dispatch Matching Engine & Queue
+router.get('/dispatch/queue', (req, res) => deliveryPartnerController.getDispatchQueue(req, res));
+router.post('/dispatch/orders/:id/respond', (req, res) => deliveryPartnerController.respondToDispatchOffer(req, res));
+
+// 4.3 Rider Delivery Task Execution & PIN Verification
+router.get('/orders/active', (req, res) => deliveryPartnerController.getActiveOrder(req, res));
+router.post('/orders/:id/verify-otp', (req, res) => deliveryPartnerController.verifyOrderOtp(req, res));
 
 // 5. Telemetry & Tracking
 router.post('/tracking/telemetry', (req, res) => telemetryController.postTelemetryPing(req, res));

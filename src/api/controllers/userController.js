@@ -1261,13 +1261,13 @@ class UserController {
    */
   async registerUser(req, res) {
     try {
-      const { fullName, email, phone, accountType } = req.body;
+      const { fullName, email, phone, accountType, role } = req.body;
 
       // 1. Strict Anti-Injection & Canonical Formatting
       const cleanName = DataSanitizer.sanitizeName(fullName);
       const cleanEmail = DataSanitizer.sanitizeEmail(email);
       const cleanPhone = DataSanitizer.sanitizePhone(phone);
-      const dedicatedRole = 'CUSTOMER'; // Hardcode customer role to avoid privilege escalation
+      const dedicatedRole = (role === 'DELIVERY_PARTNER' || accountType === 'DELIVERY_PARTNER') ? 'DELIVERY_PARTNER' : 'CUSTOMER';
 
       // 2. Check for existing account in PostgreSQL and In-Memory Registry
       let isDuplicate = false;
@@ -1323,14 +1323,22 @@ class UserController {
       try {
         const insertRes = await pool.query(
           `INSERT INTO users (user_uuid, name, email, phone, role, avatar_url, preferences) 
-           VALUES ($1::uuid, $2::varchar, $3::varchar, $4::varchar, 'CUSTOMER', ''::text, $5::jsonb)
+           VALUES ($1::uuid, $2::varchar, $3::varchar, $4::varchar, $5::varchar, ''::text, $6::jsonb)
            RETURNING id, user_uuid, name, email, phone, role, avatar_url, preferences`,
-          [newUserUuid, cleanName, cleanEmail, cleanPhone, JSON.stringify(dedicatedPreferences)]
+          [newUserUuid, cleanName, cleanEmail, cleanPhone, dedicatedRole, JSON.stringify(dedicatedPreferences)]
         );
         if (insertRes.rows.length > 0) {
           const row = insertRes.rows[0];
           newUserId = row.id;
           newUserUuid = row.user_uuid;
+
+          if (dedicatedRole === 'DELIVERY_PARTNER') {
+            await pool.query(`
+              INSERT INTO delivery_partner_profiles (user_id, vehicle_type, status)
+              VALUES ($1, 'BIKE', 'OFFLINE')
+              ON CONFLICT (user_id) DO NOTHING
+            `, [newUserId]);
+          }
         }
       } catch (dbErr) {
         console.warn('[PostgreSQL Notice] registerUser persistence fallback:', dbErr.message);
@@ -1341,7 +1349,7 @@ class UserController {
       inMemoryUser.name = cleanName;
       inMemoryUser.email = cleanEmail;
       inMemoryUser.phone = cleanPhone;
-      inMemoryUser.role = 'CUSTOMER';
+      inMemoryUser.role = dedicatedRole;
       inMemoryUser.avatarUrl = '';
       inMemoryUser.settings = dedicatedPreferences;
 
@@ -1364,7 +1372,7 @@ class UserController {
           name: cleanName,
           email: cleanEmail,
           phone: cleanPhone,
-          role: 'CUSTOMER'
+          role: dedicatedRole
         },
         AUTH_SECRET,
         { expiresIn: '30d' }

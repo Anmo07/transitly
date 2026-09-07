@@ -485,6 +485,17 @@ const initializeDatabase = async () => {
     `);
     console.log('✔ Master seed data loaded & sequences synchronized.');
 
+    // 5. Apply Delivery Partner Schema & Seeds (002_delivery_partner_schema.sql)
+    console.log(`\n5. Applying Delivery Partner Infrastructure (002_delivery_partner_schema.sql)...`);
+    try {
+      const riderMigrationPath = path.join(__dirname, 'migrations', '002_delivery_partner_schema.sql');
+      const riderMigrationSQL = fs.readFileSync(riderMigrationPath, 'utf-8');
+      await targetPool.query(riderMigrationSQL);
+      console.log('✔ Delivery Partner Schema & Seeds applied (riders, shifts, parcel_orders, dispatch_offers, wallet_ledgers, quest_progress).');
+    } catch (err) {
+      console.warn('[Delivery Partner Migration Notice]', err.message);
+    }
+
     console.log('\n======================================================');
     console.log('🎉 PostgreSQL Database Migration & Seeding COMPLETED!');
     console.log(`Terminal CLI Connection (psql):`);

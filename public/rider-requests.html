@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+  <title>Parcel Requests (Dispatch &amp; Matching Engine) | Transitly</title>
+  <meta name="description" content="Transitly Delivery Partner Priority Dispatch Queue, 30s timed offers, available nearby parcel pool, and daily quests.">
+  <link rel="canonical" href="https://transitly.in/rider-requests.html">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-secondary-fixed": "#191c1e",
+            "on-background": "#191b24",
+            "tertiary-fixed-dim": "#ffb59d",
+            "primary-container": "#0066ff",
+            "on-primary-container": "#f8f7ff",
+            "tertiary-container": "#cc4204",
+            "inverse-surface": "#2e303a",
+            "primary-fixed": "#dae1ff",
+            "on-primary-fixed-variant": "#003fa4",
+            "on-error-container": "#93000a",
+            "on-tertiary": "#ffffff",
+            "outline-variant": "#c2c6d8",
+            "on-surface-variant": "#424656",
+            "secondary-fixed-dim": "#c4c7c9",
+            "on-tertiary-fixed": "#390c00",
+            "surface-container-lowest": "#ffffff",
+            "on-primary": "#ffffff",
+            "inverse-on-surface": "#eff0fd",
+            "on-tertiary-container": "#fff6f4",
+            "background": "#faf8ff",
+            "on-secondary-container": "#626567",
+            "on-primary-fixed": "#001849",
+            "surface-tint": "#0054d6",
+            "secondary-fixed": "#e0e3e5",
+            "error-container": "#ffdad6",
+            "surface-container-high": "#e6e7f4",
+            "inverse-primary": "#b3c5ff",
+            "on-tertiary-fixed-variant": "#832600",
+            "surface-dim": "#d8d9e6",
+            "secondary": "#5c5f61",
+            "on-secondary": "#ffffff",
+            "on-surface": "#191b24",
+            "primary-fixed-dim": "#b3c5ff",
+            "outline": "#727687",
+            "surface-container-highest": "#e1e2ee",
+            "tertiary-fixed": "#ffdbd0",
+            "surface": "#faf8ff",
+            "tertiary": "#a33200",
+            "on-error": "#ffffff",
+            "error": "#ba1a1a",
+            "surface-container": "#ecedfa",
+            "surface-bright": "#faf8ff",
+            "surface-container-low": "#f2f3ff",
+            "secondary-container": "#e0e3e5",
+            "on-secondary-fixed-variant": "#444749",
+            "surface-variant": "#e1e2ee",
+            "primary": "#0050cb"
+          },
+          "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+          "spacing": {
+            "section-gap": "40px", "gutter": "16px", "container-margin": "20px",
+            "stack-md": "12px", "stack-sm": "4px", "stack-lg": "24px", "base": "8px"
+          },
+          "fontFamily": {
+            "body-lg": ["Plus Jakarta Sans"], "label-md": ["Plus Jakarta Sans"],
+            "headline-lg-mobile": ["Plus Jakarta Sans"], "headline-lg": ["Plus Jakarta Sans"],
+            "headline-md": ["Plus Jakarta Sans"], "display": ["Plus Jakarta Sans"],
+            "label-sm": ["Plus Jakarta Sans"], "body-md": ["Plus Jakarta Sans"]
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    @layer base {
+      html, body { width: 100vw; margin: 0; padding: 0; }
+      body { overscroll-behavior: none; }
+      .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
+      .pt-safe { padding-top: env(safe-area-inset-top, 0px); }
+      main > :first-child { margin-top: 0 !important; }
+      main > :last-child { margin-bottom: 0 !important; }
+    }
+    ::-webkit-scrollbar { display: none; }
+  </style>
+</head>
+<body class="bg-background font-body-md text-body-md text-on-surface flex flex-col min-h-screen">
+  <!-- Top App Header -->
+  <header class="fixed top-0 w-full z-50 pt-safe bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
+    <div class="h-16 px-container-margin flex items-center justify-between">
+      <div class="flex items-center gap-stack-md">
+        <div class="flex items-center gap-stack-sm bg-surface-container-low px-stack-md py-1.5 rounded-full shadow-[0_2px_8px_rgba(0,0,0,0.03)]">
+          <span class="w-2.5 h-2.5 rounded-full bg-primary-container animate-pulse"></span>
+          <span class="font-label-sm text-label-sm text-on-surface">Online</span>
+        </div>
+        <a href="/rider-earnings" class="flex items-center gap-1 bg-surface-container-lowest px-stack-md py-1.5 rounded-full shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-md transition">
+          <span class="material-symbols-outlined text-primary text-[16px]">payments</span>
+          <span id="header-wallet-balance" class="font-label-sm text-label-sm text-on-surface">$148.50</span>
+        </a>
+      </div>
+      <div class="flex items-center gap-stack-md">
+        <h1 class="hidden font-headline-md text-headline-md text-on-surface">Requests</h1>
+        <a class="min-w-[44px] min-h-[44px] flex items-center justify-center" href="/profile">
+          <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shadow-[0_2px_8px_rgba(0,102,255,0.25)]">
+            <span class="material-symbols-outlined text-on-primary text-[18px]">person</span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="flex-1 flex flex-col relative w-full pt-16 pb-24 bg-surface">
+    <div class="flex flex-col w-full px-container-margin py-stack-lg gap-stack-lg">
+      
+      <!-- Shift Target Tracker Card -->
+      <div class="w-full bg-surface-container-lowest rounded-xl p-stack-lg shadow-[0_4px_20px_rgba(0,0,0,0.05)] relative overflow-hidden">
+        <div class="flex items-center justify-between gap-stack-md mb-stack-md">
+          <div class="flex items-center gap-stack-md">
+            <div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center text-primary">
+              <span class="material-symbols-outlined text-[22px]" style="font-variation-settings: 'FILL' 1;">military_tech</span>
+            </div>
+            <div class="flex flex-col min-w-0">
+              <div class="flex items-center gap-1.5">
+                <span class="font-label-sm text-label-sm uppercase tracking-wider text-primary font-bold">Daily Quest</span>
+                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-label-sm bg-tertiary-fixed text-on-tertiary-fixed font-semibold">+$25.00</span>
+              </div>
+              <span class="font-headline-md text-headline-md text-on-surface truncate">Sprint Bonus Tier 2</span>
+            </div>
+          </div>
+          <div class="text-right flex-shrink-0">
+            <span class="font-headline-md text-headline-md text-primary">8</span>
+            <span class="font-label-sm text-label-sm text-on-surface-variant">/10 done</span>
+          </div>
+        </div>
+
+        <!-- Target Message -->
+        <p class="font-body-md text-body-md text-on-surface-variant mb-stack-md">
+          Complete <span class="text-on-surface font-semibold">2 more deliveries</span> before 6:00 PM to unlock bonus.
+        </p>
+
+        <!-- Progress Track -->
+        <div class="w-full bg-surface-container-high rounded-full h-2.5 overflow-hidden flex items-center">
+          <div class="bg-primary-container h-full rounded-full transition-all duration-700 ease-out" style="width: 80%;"></div>
+        </div>
+        <div class="flex justify-between items-center mt-stack-sm text-on-surface-variant font-label-sm text-label-sm">
+          <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">schedule</span> 1h 42m remaining</span>
+          <span class="text-primary font-semibold">80% Reached</span>
+        </div>
+      </div>
+
+      <!-- Incoming Instant Request Alert Card with Circular Timer -->
+      <div class="w-full bg-surface-container-lowest rounded-xl p-stack-lg shadow-[0_8px_30px_rgba(0,102,255,0.12)] relative transition-all duration-300" id="instant-request-card">
+        <!-- Pulse badge & Header -->
+        <div class="flex items-start justify-between gap-stack-md mb-stack-md">
+          <div class="flex items-center gap-stack-md">
+            <div class="relative flex items-center justify-center">
+              <span class="absolute w-3.5 h-3.5 rounded-full bg-primary-container animate-ping opacity-75"></span>
+              <span class="relative w-3 h-3 rounded-full bg-primary"></span>
+            </div>
+            <div class="flex flex-col">
+              <span class="font-label-sm text-label-sm text-primary font-semibold uppercase tracking-wider">Priority Dispatch</span>
+              <h2 class="font-headline-md text-headline-md text-on-surface">New Parcel Request Available!</h2>
+            </div>
+          </div>
+          <!-- Circular Countdown Timer (30s) -->
+          <div class="relative w-12 h-12 flex-shrink-0 flex items-center justify-center">
+            <svg class="w-full h-full -rotate-90" viewBox="0 0 36 36">
+              <path class="text-surface-container" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3"></path>
+              <path class="text-primary-container transition-all duration-1000 ease-linear" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" id="countdown-circle" stroke="currentColor" stroke-dasharray="100, 100" stroke-dashoffset="20" stroke-linecap="round" stroke-width="3.5"></path>
+            </svg>
+            <span class="absolute font-label-md text-label-md text-primary font-bold" id="countdown-number">24s</span>
+          </div>
+        </div>
+
+        <!-- Payout & Specs Pill row -->
+        <div class="bg-surface-container-low rounded-xl p-stack-md flex items-center justify-between mb-stack-lg">
+          <div class="flex flex-col">
+            <span class="font-label-sm text-label-sm text-on-surface-variant">Guaranteed Earnings</span>
+            <div class="flex items-baseline gap-1.5">
+              <span class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface font-bold">$14.80</span>
+              <span class="font-label-sm text-label-sm text-tertiary font-semibold bg-tertiary-fixed px-2 py-0.5 rounded-full">+$3 Surge</span>
+            </div>
+          </div>
+          <div class="flex items-center gap-stack-sm bg-surface-container-lowest px-stack-md py-1.5 rounded-full shadow-[0_2px_8px_rgba(0,0,0,0.03)]">
+            <span class="material-symbols-outlined text-primary text-[18px]">inventory_2</span>
+            <span class="font-label-sm text-label-sm text-on-surface">Medium &lt; 5 kg</span>
+          </div>
+        </div>
+
+        <!-- Mini Route Map Preview -->
+        <div class="relative w-full h-28 rounded-xl overflow-hidden mb-stack-md shadow-[0_2px_10px_rgba(0,0,0,0.04)]">
+          <div class="w-full h-full bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=600&q=80');"></div>
+          <div class="absolute inset-0 bg-gradient-to-t from-inverse-surface/60 via-transparent to-transparent flex items-end p-2.5">
+            <span class="font-label-sm text-label-sm text-on-primary font-medium flex items-center gap-1 drop-shadow-sm">
+              <span class="material-symbols-outlined text-[16px]">alt_route</span>
+              2.4 km pickup • 5.1 km total trip • ~22 mins
+            </span>
+          </div>
+        </div>
+
+        <!-- Pickup & Drop-off Step Indicator -->
+        <div class="space-y-stack-md mb-stack-lg">
+          <div class="flex items-start gap-stack-md">
+            <div class="flex flex-col items-center">
+              <div class="w-7 h-7 rounded-full bg-primary-fixed flex items-center justify-center text-primary">
+                <span class="material-symbols-outlined text-[16px]">storefront</span>
+              </div>
+              <div class="w-0.5 h-6 bg-surface-container-high my-1"></div>
+            </div>
+            <div class="flex flex-col min-w-0 pt-0.5">
+              <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Pickup (2.4 km away)</span>
+              <span class="font-label-md text-label-md text-on-surface font-semibold truncate">Metro Express Parcel Locker, St. Marks Rd</span>
+            </div>
+          </div>
+          <div class="flex items-start gap-stack-md">
+            <div class="w-7 h-7 rounded-full bg-tertiary-fixed flex items-center justify-center text-tertiary">
+              <span class="material-symbols-outlined text-[16px]">location_on</span>
+            </div>
+            <div class="flex flex-col min-w-0 pt-0.5">
+              <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Drop-off destination</span>
+              <span class="font-label-md text-label-md text-on-surface font-semibold truncate">Apartment 4B, Pinecrest Towers</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex items-center gap-stack-md pt-stack-sm">
+          <button class="h-14 px-stack-lg rounded-xl bg-surface-container text-on-surface font-label-md text-label-md hover:bg-surface-container-high transition-colors flex items-center justify-center min-w-[96px]" id="btn-decline">
+            Decline
+          </button>
+          <button class="h-14 flex-1 rounded-xl bg-primary-container text-on-primary font-label-md text-label-md font-bold shadow-[0_4px_16px_rgba(0,102,255,0.3)] hover:opacity-95 active:scale-[0.99] transition-all flex items-center justify-center gap-stack-sm" id="btn-accept">
+            <span class="material-symbols-outlined text-[20px]">check_circle</span>
+            <span id="accept-label">Accept Order (24s)</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Available Queue / Nearby Pool Section -->
+      <div class="flex flex-col gap-stack-md">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-stack-sm">
+            <h3 class="font-headline-md text-headline-md text-on-surface">Available Queue</h3>
+            <span class="bg-surface-container-high text-on-surface font-label-sm text-label-sm px-2 py-0.5 rounded-full font-bold" id="queue-count-badge">5 nearby</span>
+          </div>
+          <a href="/rider-map-trips" class="flex items-center gap-1 font-label-sm text-label-sm text-primary font-semibold hover:underline">
+            <span class="material-symbols-outlined text-[16px]">tune</span> Map View
+          </a>
+        </div>
+
+        <!-- Filter Pills (Horizontal Scroll) -->
+        <div class="flex items-center gap-stack-sm overflow-x-auto pb-1.5 -mx-container-margin px-container-margin" style="scrollbar-width: none;">
+          <button class="filter-btn px-stack-md py-2 rounded-full font-label-sm text-label-sm bg-primary-container text-on-primary font-semibold whitespace-nowrap shadow-[0_2px_8px_rgba(0,102,255,0.2)]" data-filter="all">
+            All (5)
+          </button>
+          <button class="filter-btn px-stack-md py-2 rounded-full font-label-sm text-label-sm bg-surface-container-lowest text-on-surface font-medium whitespace-nowrap shadow-[0_1px_4px_rgba(0,0,0,0.04)] hover:bg-surface-container-low transition-colors" data-filter="high_payout">
+            High Payout ($18+)
+          </button>
+          <button class="filter-btn px-stack-md py-2 rounded-full font-label-sm text-label-sm bg-surface-container-lowest text-on-surface font-medium whitespace-nowrap shadow-[0_1px_4px_rgba(0,0,0,0.04)] hover:bg-surface-container-low transition-colors" data-filter="short_distance">
+            Short Distance (&lt;3km)
+          </button>
+        </div>
+
+        <!-- Queue List Container -->
+        <div class="flex flex-col gap-stack-md" id="queue-list-container">
+          
+          <!-- Order 1 -->
+          <div class="w-full bg-surface-container-lowest rounded-xl p-stack-md shadow-[0_4px_20px_rgba(0,0,0,0.04)] flex flex-col gap-stack-md">
+            <div class="flex items-start justify-between gap-stack-md">
+              <div class="flex items-center gap-stack-md min-w-0">
+                <div class="w-12 h-12 rounded-xl bg-surface-container-low flex items-center justify-center text-primary flex-shrink-0">
+                  <span class="material-symbols-outlined text-[24px]">local_mall</span>
+                </div>
+                <div class="flex flex-col min-w-0">
+                  <span class="font-label-md text-label-md text-on-surface font-bold truncate">Artisan Bakery &amp; Pantry</span>
+                  <span class="font-label-sm text-label-sm text-on-surface-variant truncate">To: Kensington Terraces #12</span>
+                </div>
+              </div>
+              <div class="text-right flex-shrink-0">
+                <span class="font-headline-md text-headline-md text-on-surface font-bold text-primary">$19.20</span>
+                <span class="block font-label-sm text-label-sm text-on-surface-variant">Est. 28 min</span>
+              </div>
+            </div>
+            <div class="flex items-center justify-between pt-stack-sm bg-surface-container-low/60 p-2.5 rounded-lg">
+              <div class="flex items-center gap-stack-md text-on-surface-variant font-label-sm text-label-sm">
+                <span class="flex items-center gap-1 text-on-surface"><span class="material-symbols-outlined text-[16px] text-tertiary">star</span> 4.9 (124)</span>
+                <span>•</span>
+                <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">scale</span> 2.1 kg</span>
+                <span>•</span>
+                <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">navigation</span> 1.2 km away</span>
+              </div>
+              <button class="claim-btn px-stack-md py-1.5 rounded-lg bg-surface-container-lowest text-primary font-label-sm text-label-sm font-bold shadow-[0_2px_6px_rgba(0,0,0,0.04)] hover:bg-primary hover:text-on-primary transition-colors" data-id="3">
+                Claim
+              </button>
+            </div>
+          </div>
+
+          <!-- Order 2 -->
+          <div class="w-full bg-surface-container-lowest rounded-xl p-stack-md shadow-[0_4px_20px_rgba(0,0,0,0.04)] flex flex-col gap-stack-md">
+            <div class="flex items-start justify-between gap-stack-md">
+              <div class="flex items-center gap-stack-md min-w-0">
+                <div class="w-12 h-12 rounded-xl bg-surface-container-low flex items-center justify-center text-primary flex-shrink-0">
+                  <span class="material-symbols-outlined text-[24px]">medical_services</span>
+                </div>
+                <div class="flex flex-col min-w-0">
+                  <div class="flex items-center gap-1.5">
+                    <span class="font-label-md text-label-md text-on-surface font-bold truncate">CarePharmacy Express</span>
+                    <span class="font-label-sm text-label-sm bg-tertiary-fixed text-on-tertiary-fixed px-1.5 py-0.2 rounded font-bold">Fragile</span>
+                  </div>
+                  <span class="font-label-sm text-label-sm text-on-surface-variant truncate">To: Oakridge Medical Center Rm 204</span>
+                </div>
+              </div>
+              <div class="text-right flex-shrink-0">
+                <span class="font-headline-md text-headline-md text-on-surface font-bold text-primary">$12.50</span>
+                <span class="block font-label-sm text-label-sm text-on-surface-variant">Est. 15 min</span>
+              </div>
+            </div>
+            <div class="flex items-center justify-between pt-stack-sm bg-surface-container-low/60 p-2.5 rounded-lg">
+              <div class="flex items-center gap-stack-md text-on-surface-variant font-label-sm text-label-sm">
+                <span class="flex items-center gap-1 text-on-surface"><span class="material-symbols-outlined text-[16px] text-tertiary">star</span> 5.0 (88)</span>
+                <span>•</span>
+                <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">scale</span> 0.8 kg</span>
+                <span>•</span>
+                <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">navigation</span> 0.6 km away</span>
+              </div>
+              <button class="claim-btn px-stack-md py-1.5 rounded-lg bg-surface-container-lowest text-primary font-label-sm text-label-sm font-bold shadow-[0_2px_6px_rgba(0,0,0,0.04)] hover:bg-primary hover:text-on-primary transition-colors" data-id="4">
+                Claim
+              </button>
+            </div>
+          </div>
+
+          <!-- Order 3 -->
+          <div class="w-full bg-surface-container-lowest rounded-xl p-stack-md shadow-[0_4px_20px_rgba(0,0,0,0.04)] flex flex-col gap-stack-md">
+            <div class="flex items-start justify-between gap-stack-md">
+              <div class="flex items-center gap-stack-md min-w-0">
+                <div class="w-12 h-12 rounded-xl bg-surface-container-low flex items-center justify-center text-primary flex-shrink-0">
+                  <span class="material-symbols-outlined text-[24px]">dataset</span>
+                </div>
+                <div class="flex flex-col min-w-0">
+                  <div class="flex items-center gap-1.5">
+                    <span class="font-label-md text-label-md text-on-surface font-bold truncate">E-Commerce Return Bundles</span>
+                    <span class="font-label-sm text-label-sm bg-surface-container text-on-surface-variant px-1.5 py-0.2 rounded font-semibold">2 Stops</span>
+                  </div>
+                  <span class="font-label-sm text-label-sm text-on-surface-variant truncate">Pickups: High St • Hub drop</span>
+                </div>
+              </div>
+              <div class="text-right flex-shrink-0">
+                <span class="font-headline-md text-headline-md text-on-surface font-bold text-primary">$23.40</span>
+                <span class="block font-label-sm text-label-sm text-on-surface-variant">Est. 36 min</span>
+              </div>
+            </div>
+            <div class="flex items-center justify-between pt-stack-sm bg-surface-container-low/60 p-2.5 rounded-lg">
+              <div class="flex items-center gap-stack-md text-on-surface-variant font-label-sm text-label-sm">
+                <span class="flex items-center gap-1 text-on-surface"><span class="material-symbols-outlined text-[16px] text-tertiary">star</span> 4.8 (310)</span>
+                <span>•</span>
+                <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">scale</span> 4.4 kg</span>
+                <span>•</span>
+                <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">navigation</span> 2.8 km away</span>
+              </div>
+              <button class="claim-btn px-stack-md py-1.5 rounded-lg bg-surface-container-lowest text-primary font-label-sm text-label-sm font-bold shadow-[0_2px_6px_rgba(0,0,0,0.04)] hover:bg-primary hover:text-on-primary transition-colors" data-id="5">
+                Claim
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Bottom Navigation Bar -->
+  <nav class="fixed bottom-0 w-full z-50 pb-safe bg-surface/80 backdrop-blur-xl shadow-[0_-2px_12px_rgba(0,0,0,0.04)]">
+    <div class="flex justify-around items-center h-16 px-container-margin">
+      <a class="flex flex-col items-center justify-center gap-1 min-w-[44px] min-h-[44px] text-on-surface-variant hover:text-on-surface" href="/rider-dashboard">
+        <span class="material-symbols-outlined text-[24px]">speed</span>
+        <span class="font-label-sm text-label-sm">Dashboard</span>
+      </a>
+      <a class="flex flex-col items-center justify-center gap-1 min-w-[44px] min-h-[44px] text-on-surface-variant hover:text-on-surface" href="/rider-map-trips">
+        <span class="material-symbols-outlined text-[24px]">navigation</span>
+        <span class="font-label-sm text-label-sm">Map &amp; Trips</span>
+      </a>
+      <a aria-current="page" class="relative flex flex-col items-center justify-center gap-1 min-w-[44px] min-h-[44px] text-primary-container font-label-md" href="/rider-requests">
+        <div class="relative flex items-center justify-center">
+          <span class="material-symbols-outlined text-[24px]">local_shipping</span>
+          <span class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-primary-container rounded-full ring-2 ring-surface"></span>
+        </div>
+        <span class="font-label-sm text-label-sm">Requests</span>
+      </a>
+      <a class="flex flex-col items-center justify-center gap-1 min-w-[44px] min-h-[44px] text-on-surface-variant hover:text-on-surface" href="/rider-earnings">
+        <span class="material-symbols-outlined text-[24px]">account_balance_wallet</span>
+        <span class="font-label-sm text-label-sm">Earnings</span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- Countdown Timer & Actions Script -->
+  <script>
+    (function() {
+      let timeLeft = 24;
+      const totalTime = 30;
+      const numberEl = document.getElementById('countdown-number');
+      const circleEl = document.getElementById('countdown-circle');
+      const labelEl = document.getElementById('accept-label');
+      const declineBtn = document.getElementById('btn-decline');
+      const acceptBtn = document.getElementById('btn-accept');
+      const cardEl = document.getElementById('instant-request-card');
+
+      const interval = setInterval(() => {
+        timeLeft--;
+        if (timeLeft <= 0) {
+          clearInterval(interval);
+          if (cardEl) {
+            cardEl.classList.add('opacity-40', 'pointer-events-none');
+          }
+          if (labelEl) labelEl.textContent = 'Request Expired';
+          if (numberEl) numberEl.textContent = '0s';
+          if (circleEl) circleEl.setAttribute('stroke-dashoffset', '100');
+          return;
+        }
+        
+        if (numberEl) numberEl.textContent = timeLeft + 's';
+        if (labelEl) labelEl.textContent = 'Accept Order (' + timeLeft + 's)';
+        
+        if (circleEl) {
+          const offset = 100 - ((timeLeft / totalTime) * 100);
+          circleEl.setAttribute('stroke-dashoffset', offset.toFixed(1));
+        }
+      }, 1000);
+
+      // Decline action
+      if (declineBtn && cardEl) {
+        declineBtn.addEventListener('click', async () => {
+          clearInterval(interval);
+          cardEl.style.transform = 'scale(0.96)';
+          cardEl.style.opacity = '0';
+          try {
+            await fetch('/api/v1/dispatch/orders/1/respond', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ decision: 'DECLINE' })
+            });
+          } catch (_) {}
+          setTimeout(() => {
+            cardEl.remove();
+          }, 250);
+        });
+      }
+
+      // Accept priority order
+      if (acceptBtn && cardEl) {
+        acceptBtn.addEventListener('click', async () => {
+          clearInterval(interval);
+          acceptBtn.innerHTML = '<span class="material-symbols-outlined text-[20px] animate-spin">refresh</span> Dispatch Confirmed!';
+          acceptBtn.classList.replace('bg-primary-container', 'bg-primary');
+          cardEl.classList.add('ring-2', 'ring-primary-container');
+          
+          try {
+            const res = await fetch('/api/v1/dispatch/orders/1/respond', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ decision: 'ACCEPT' })
+            });
+            const data = await res.json();
+            setTimeout(() => {
+              window.location.href = '/rider-map-trips';
+            }, 600);
+          } catch (e) {
+            setTimeout(() => {
+              window.location.href = '/rider-map-trips';
+            }, 600);
+          }
+        });
+      }
+
+      // Claim buttons on available queue items
+      document.querySelectorAll('.claim-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const btnTarget = e.currentTarget;
+          btnTarget.textContent = 'Claimed!';
+          btnTarget.classList.remove('bg-surface-container-lowest', 'text-primary');
+          btnTarget.classList.add('bg-primary', 'text-on-primary');
+          setTimeout(() => {
+            window.location.href = '/rider-map-trips';
+          }, 500);
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

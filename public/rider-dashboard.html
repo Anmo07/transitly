@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+  <title>Partner Dashboard (Cockpit) | Transitly</title>
+  <meta name="description" content="Transitly Delivery Partner Cockpit — Duty status, shift metrics, vehicle health, active task preview, and dispatch assignments.">
+  <link rel="canonical" href="https://transitly.in/rider-dashboard.html">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-secondary-fixed": "#191c1e",
+            "on-background": "#191b24",
+            "tertiary-fixed-dim": "#ffb59d",
+            "primary-container": "#0066ff",
+            "on-primary-container": "#f8f7ff",
+            "tertiary-container": "#cc4204",
+            "inverse-surface": "#2e303a",
+            "primary-fixed": "#dae1ff",
+            "on-primary-fixed-variant": "#003fa4",
+            "on-error-container": "#93000a",
+            "on-tertiary": "#ffffff",
+            "outline-variant": "#c2c6d8",
+            "on-surface-variant": "#424656",
+            "secondary-fixed-dim": "#c4c7c9",
+            "on-tertiary-fixed": "#390c00",
+            "surface-container-lowest": "#ffffff",
+            "on-primary": "#ffffff",
+            "inverse-on-surface": "#eff0fd",
+            "on-tertiary-container": "#fff6f4",
+            "background": "#faf8ff",
+            "on-secondary-container": "#626567",
+            "on-primary-fixed": "#001849",
+            "surface-tint": "#0054d6",
+            "secondary-fixed": "#e0e3e5",
+            "error-container": "#ffdad6",
+            "surface-container-high": "#e6e7f4",
+            "inverse-primary": "#b3c5ff",
+            "on-tertiary-fixed-variant": "#832600",
+            "surface-dim": "#d8d9e6",
+            "secondary": "#5c5f61",
+            "on-secondary": "#ffffff",
+            "on-surface": "#191b24",
+            "primary-fixed-dim": "#b3c5ff",
+            "outline": "#727687",
+            "surface-container-highest": "#e1e2ee",
+            "tertiary-fixed": "#ffdbd0",
+            "surface": "#faf8ff",
+            "tertiary": "#a33200",
+            "on-error": "#ffffff",
+            "error": "#ba1a1a",
+            "surface-container": "#ecedfa",
+            "surface-bright": "#faf8ff",
+            "surface-container-low": "#f2f3ff",
+            "secondary-container": "#e0e3e5",
+            "on-secondary-fixed-variant": "#444749",
+            "surface-variant": "#e1e2ee",
+            "primary": "#0050cb"
+          },
+          "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+          "spacing": {
+            "section-gap": "40px", "gutter": "16px", "container-margin": "20px",
+            "stack-md": "12px", "stack-sm": "4px", "stack-lg": "24px", "base": "8px"
+          },
+          "fontFamily": {
+            "body-lg": ["Plus Jakarta Sans"], "label-md": ["Plus Jakarta Sans"],
+            "headline-lg-mobile": ["Plus Jakarta Sans"], "headline-lg": ["Plus Jakarta Sans"],
+            "headline-md": ["Plus Jakarta Sans"], "display": ["Plus Jakarta Sans"],
+            "label-sm": ["Plus Jakarta Sans"], "body-md": ["Plus Jakarta Sans"]
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    @layer base {
+      html, body { width: 100vw; margin: 0; padding: 0; }
+      body { overscroll-behavior: none; }
+      .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
+      .pt-safe { padding-top: env(safe-area-inset-top, 0px); }
+      main > :first-child { margin-top: 0 !important; }
+      main > :last-child { margin-bottom: 0 !important; }
+    }
+    ::-webkit-scrollbar { display: none; }
+  </style>
+</head>
+<body class="bg-background font-body-md text-body-md text-on-surface flex flex-col min-h-screen">
+  <!-- Top App Header -->
+  <header class="fixed top-0 w-full z-50 pt-safe bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
+    <div class="h-16 px-container-margin flex items-center justify-between">
+      <div class="flex items-center gap-stack-md">
+        <div id="duty-badge" class="flex items-center gap-stack-sm bg-surface-container-low px-stack-md py-1.5 rounded-full shadow-[0_2px_8px_rgba(0,0,0,0.03)]">
+          <span id="duty-pulse" class="w-2.5 h-2.5 rounded-full bg-primary-container animate-pulse"></span>
+          <span id="duty-status-text" class="font-label-sm text-label-sm text-on-surface">Online</span>
+        </div>
+        <a href="/rider-earnings" class="flex items-center gap-1 bg-surface-container-lowest px-stack-md py-1.5 rounded-full shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-md transition">
+          <span class="material-symbols-outlined text-primary text-[16px]">payments</span>
+          <span id="header-wallet-balance" class="font-label-sm text-label-sm text-on-surface">$148.50</span>
+        </a>
+      </div>
+      <div class="flex items-center gap-stack-md">
+        <h1 class="hidden font-headline-md text-headline-md text-on-surface">Dashboard</h1>
+        <a class="min-w-[44px] min-h-[44px] flex items-center justify-center" href="/profile">
+          <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shadow-[0_2px_8px_rgba(0,102,255,0.25)]">
+            <span class="material-symbols-outlined text-on-primary text-[18px]">person</span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="flex-1 flex flex-col relative w-full pt-16 pb-24 bg-surface">
+    <div class="flex flex-col w-full px-container-margin py-stack-lg gap-stack-lg">
+      
+      <!-- Status Control & Master Duty Bar -->
+      <div class="bg-surface-container-lowest p-stack-lg rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.04)] flex flex-col gap-stack-md relative overflow-hidden">
+        <div class="absolute -right-10 -top-10 w-36 h-36 bg-primary/5 rounded-full blur-2xl pointer-events-none"></div>
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-stack-md">
+            <div class="relative flex items-center justify-center w-12 h-12 rounded-xl bg-primary-container/10 text-primary-container">
+              <span class="material-symbols-outlined text-[26px]" style="font-variation-settings: 'FILL' 1;">electric_moped</span>
+              <span id="moped-ping" class="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-primary-container rounded-full animate-ping"></span>
+              <span class="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-primary-container rounded-full"></span>
+            </div>
+            <div>
+              <div class="flex items-center gap-1.5">
+                <h2 class="font-headline-md text-headline-md text-on-surface">Duty Mode</h2>
+                <span class="px-2 py-0.5 rounded-full bg-primary-container/10 text-primary-container font-label-sm text-label-sm">High Demand</span>
+              </div>
+              <p id="duty-subtext" class="font-body-md text-label-sm text-on-surface-variant">Ready for dispatch assignments</p>
+            </div>
+          </div>
+          <!-- Online Interactive Toggle -->
+          <button aria-label="Toggle Online Duty" class="relative w-14 h-8 rounded-full bg-primary-container p-1 transition-colors duration-300 focus:outline-none" id="duty-toggle-btn">
+            <div class="w-6 h-6 rounded-full bg-surface-container-lowest shadow-md transform translate-x-6 transition-transform duration-300 flex items-center justify-center" id="duty-toggle-dot">
+              <span class="material-symbols-outlined text-[14px] text-primary-container" id="duty-toggle-icon">check</span>
+            </div>
+          </button>
+        </div>
+
+        <!-- Quick Preferences Sub-Bar -->
+        <div class="pt-stack-md flex items-center justify-between bg-surface-container-low rounded-xl px-stack-md py-2.5">
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-[18px] text-primary">bolt</span>
+            <span class="font-label-sm text-label-sm text-on-surface font-semibold">Auto-Accept Dispatches</span>
+          </div>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input checked="" class="sr-only peer" id="auto-accept-input" type="checkbox"/>
+            <div class="w-10 h-6 bg-surface-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-container"></div>
+          </label>
+        </div>
+      </div>
+
+      <!-- Key Partner KPIs 2x2 Grid -->
+      <div class="grid grid-cols-2 gap-stack-md">
+        <!-- Earnings Metric -->
+        <div class="bg-surface-container-lowest p-stack-md rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] flex flex-col justify-between gap-stack-sm">
+          <div class="flex items-center justify-between">
+            <span class="font-label-sm text-label-sm text-on-surface-variant">Today's Total</span>
+            <div class="w-7 h-7 rounded-full bg-primary-fixed flex items-center justify-center">
+              <span class="material-symbols-outlined text-[16px] text-on-primary-fixed-variant">payments</span>
+            </div>
+          </div>
+          <div>
+            <div id="kpi-today-total" class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface font-bold">$84.50</div>
+            <div class="flex items-center gap-1 font-label-sm text-label-sm text-primary font-medium">
+              <span id="kpi-orders-count">8 orders completed</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Shift Duration Metric -->
+        <div class="bg-surface-container-lowest p-stack-md rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] flex flex-col justify-between gap-stack-sm">
+          <div class="flex items-center justify-between">
+            <span class="font-label-sm text-label-sm text-on-surface-variant">Shift Time</span>
+            <div class="w-7 h-7 rounded-full bg-surface-container-high flex items-center justify-center">
+              <span class="material-symbols-outlined text-[16px] text-on-surface">timer</span>
+            </div>
+          </div>
+          <div>
+            <div id="kpi-shift-time" class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface font-bold">4h 12m</div>
+            <div class="flex items-center gap-1 font-label-sm text-label-sm text-on-surface-variant">
+              <span class="w-1.5 h-1.5 rounded-full bg-primary animate-ping"></span>
+              <span id="kpi-login-time">Logged in 08:30 AM</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Partner Rating -->
+        <div class="bg-surface-container-lowest p-stack-md rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] flex flex-col justify-between gap-stack-sm">
+          <div class="flex items-center justify-between">
+            <span class="font-label-sm text-label-sm text-on-surface-variant">Score</span>
+            <div class="w-7 h-7 rounded-full bg-tertiary-fixed flex items-center justify-center">
+              <span class="material-symbols-outlined text-[16px] text-tertiary" style="font-variation-settings: 'FILL' 1;">star</span>
+            </div>
+          </div>
+          <div>
+            <div class="flex items-baseline gap-1">
+              <span id="kpi-rating" class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface font-bold">4.94</span>
+              <span class="font-label-sm text-label-sm text-on-surface-variant">/ 5.0</span>
+            </div>
+            <p id="kpi-review-count" class="font-label-sm text-label-sm text-on-surface-variant">240 reviews (Top 3%)</p>
+          </div>
+        </div>
+
+        <!-- Acceptance Rate -->
+        <div class="bg-surface-container-lowest p-stack-md rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] flex flex-col justify-between gap-stack-sm">
+          <div class="flex items-center justify-between">
+            <span class="font-label-sm text-label-sm text-on-surface-variant">Acceptance</span>
+            <div class="w-7 h-7 rounded-full bg-surface-container-high flex items-center justify-center">
+              <span class="material-symbols-outlined text-[16px] text-primary">verified</span>
+            </div>
+          </div>
+          <div>
+            <div id="kpi-acceptance" class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface font-bold">96%</div>
+            <p class="font-label-sm text-label-sm text-primary font-medium">Tier 1 Platinum Bonus</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Active Delivery Assignment Card -->
+      <div class="bg-surface-container-lowest rounded-xl p-stack-lg shadow-[0_8px_30px_rgba(0,102,255,0.08)] flex flex-col gap-stack-md">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-1 rounded-full bg-primary-container text-on-primary font-label-sm text-label-sm tracking-wide uppercase">Next Pickup</span>
+            <span id="task-tracking-code" class="font-label-sm text-label-sm text-on-surface-variant font-mono">#TRZ-9921</span>
+          </div>
+          <div class="flex items-center gap-1 text-primary">
+            <span class="material-symbols-outlined text-[18px]">near_me</span>
+            <span id="task-eta" class="font-label-md text-label-md font-bold">6 mins</span>
+          </div>
+        </div>
+
+        <!-- Stop Details -->
+        <div class="flex gap-stack-md items-start pt-1">
+          <div class="flex flex-col items-center gap-1 mt-0.5">
+            <div class="w-3.5 h-3.5 rounded-full bg-primary flex items-center justify-center">
+              <div class="w-1.5 h-1.5 rounded-full bg-white"></div>
+            </div>
+            <div class="w-0.5 h-9 bg-surface-container-high"></div>
+            <span class="material-symbols-outlined text-outline text-[16px]">inventory_2</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <h3 id="task-pickup-hub" class="font-headline-md text-headline-md text-on-surface truncate">Central Hub Terminal 4</h3>
+            <p id="task-sublocation" class="font-body-md text-label-sm text-on-surface-variant truncate">Bay 12, Level 2 • Gate B Secure Dock</p>
+            <div class="flex items-center gap-2 mt-2">
+              <span id="task-pkg-type" class="px-2 py-0.5 rounded-md bg-surface-container-low text-on-surface font-label-sm text-label-sm">Expedited Medic/Supply</span>
+              <span id="task-weight" class="font-label-sm text-label-sm text-on-surface-variant">1.8 kg</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Action Buttons -->
+        <div class="grid grid-cols-2 gap-stack-md pt-2">
+          <a class="h-14 rounded-xl bg-primary-container text-on-primary font-label-md text-label-md flex items-center justify-center gap-2 shadow-[0_4px_12px_rgba(0,102,255,0.2)] hover:opacity-95 transition-opacity" href="/rider-map-trips">
+            <span class="material-symbols-outlined text-[20px]">directions</span>
+            <span>Navigate</span>
+          </a>
+          <a id="btn-call-sender" class="h-14 rounded-xl bg-surface-container-low text-primary font-label-md text-label-md flex items-center justify-center gap-2 hover:bg-surface-container transition-colors" href="tel:5550192">
+            <span class="material-symbols-outlined text-[20px]">call</span>
+            <span>Call Sender</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Heatmap / Dynamic Surge Snippet -->
+      <div class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.04)] flex flex-col">
+        <div class="p-stack-md flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <div class="w-2.5 h-2.5 rounded-full bg-tertiary-container animate-pulse"></div>
+            <h3 class="font-headline-md text-headline-md text-on-surface">Demand Hotspot</h3>
+          </div>
+          <span class="font-label-sm text-label-sm px-2.5 py-1 rounded-full bg-tertiary-fixed text-tertiary font-bold">+15% Surge Bonus</span>
+        </div>
+        <!-- Visual Heatmap Static Map Canvas -->
+        <div class="relative w-full h-44 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=800&q=80');">
+          <div class="absolute inset-0 bg-gradient-to-t from-surface-container-lowest via-transparent to-transparent"></div>
+          <!-- Overlay Floating Badge on Map -->
+          <a href="/rider-requests" class="absolute bottom-3 left-4 right-4 bg-surface-container-lowest/90 backdrop-blur-md p-2.5 rounded-xl flex items-center justify-between shadow-sm hover:bg-surface-container-lowest transition">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-tertiary text-[20px]">local_fire_department</span>
+              <div>
+                <p class="font-label-sm text-label-sm font-bold text-on-surface">Downtown Logistics Center</p>
+                <p class="font-label-sm text-label-sm text-on-surface-variant">Est. 18 new requests in queue</p>
+              </div>
+            </div>
+            <span class="material-symbols-outlined text-primary text-[20px]">arrow_forward_ios</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Driver Vehicle Readiness Status Card -->
+      <div class="bg-surface-container-lowest p-stack-lg rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.04)] flex flex-col gap-stack-md">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-stack-md">
+            <div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface">
+              <span class="material-symbols-outlined text-[22px]">two_wheeler</span>
+            </div>
+            <div>
+              <h3 class="font-headline-md text-headline-md text-on-surface">Vehicle &amp; Safety</h3>
+              <p id="vehicle-details" class="font-label-sm text-label-sm text-on-surface-variant">NIU NQi-Sport • ID #DX-412</p>
+            </div>
+          </div>
+          <span class="px-2.5 py-1 rounded-full bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm">Inspected</span>
+        </div>
+
+        <!-- Battery / Fuel Bar Progress -->
+        <div class="flex flex-col gap-1.5 pt-1">
+          <div class="flex items-center justify-between">
+            <span class="font-label-sm text-label-sm text-on-surface font-semibold flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-[16px] text-primary">battery_charging_full</span>
+              <span id="battery-pct-label">Battery Range (82%)</span>
+            </span>
+            <span id="battery-km-label" class="font-label-sm text-label-sm text-on-surface-variant">46 km remaining</span>
+          </div>
+          <div class="w-full h-2.5 bg-surface-container-high rounded-full overflow-hidden">
+            <div id="battery-bar" class="h-full bg-primary-container rounded-full" style="width: 82%;"></div>
+          </div>
+        </div>
+
+        <!-- Safety Gear Checklist -->
+        <div class="grid grid-cols-2 gap-stack-sm pt-1">
+          <div class="flex items-center gap-2 p-2 rounded-lg bg-surface-container-low">
+            <span class="material-symbols-outlined text-[18px] text-primary">check_circle</span>
+            <span class="font-label-sm text-label-sm text-on-surface">Helmet Verified</span>
+          </div>
+          <div class="flex items-center gap-2 p-2 rounded-lg bg-surface-container-low">
+            <span class="material-symbols-outlined text-[18px] text-primary">check_circle</span>
+            <span class="font-label-sm text-label-sm text-on-surface">Thermal Bag Ready</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Completed Trips Mini-List -->
+      <div class="flex flex-col gap-stack-md">
+        <div class="flex items-center justify-between">
+          <h3 class="font-headline-md text-headline-md text-on-surface">Recent Deliveries</h3>
+          <a class="font-label-sm text-label-sm text-primary font-bold" href="/rider-earnings">View Ledger</a>
+        </div>
+
+        <!-- Trip Item 1 -->
+        <div class="bg-surface-container-lowest p-stack-md rounded-xl shadow-[0_2px_10px_rgba(0,0,0,0.03)] flex items-center justify-between gap-stack-md">
+          <div class="w-10 h-10 rounded-xl bg-surface-container-low flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-primary text-[20px]">package_2</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-1.5">
+              <span class="font-label-md text-label-md text-on-surface font-semibold truncate">Oakwood Pharmacy</span>
+              <span class="px-1.5 py-0.5 rounded bg-tertiary-fixed text-tertiary font-label-sm text-[10px] font-bold">+$2 Tip</span>
+            </div>
+            <p class="font-label-sm text-label-sm text-on-surface-variant truncate">0.6 kg Cold Chain • 24 mins ago</p>
+          </div>
+          <div class="text-right shrink-0">
+            <span class="font-label-md text-label-md text-on-surface font-bold block">$11.20</span>
+            <span class="font-label-sm text-label-sm text-primary">Completed</span>
+          </div>
+        </div>
+
+        <!-- Trip Item 2 -->
+        <div class="bg-surface-container-lowest p-stack-md rounded-xl shadow-[0_2px_10px_rgba(0,0,0,0.03)] flex items-center justify-between gap-stack-md">
+          <div class="w-10 h-10 rounded-xl bg-surface-container-low flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-on-surface-variant text-[20px]">inventory</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <span class="font-label-md text-label-md text-on-surface font-semibold truncate block">Riverside Office Park</span>
+            <p class="font-label-sm text-label-sm text-on-surface-variant truncate">3.2 kg Documents • 1h 05m ago</p>
+          </div>
+          <div class="text-right shrink-0">
+            <span class="font-label-md text-label-md text-on-surface font-bold block">$9.50</span>
+            <span class="font-label-sm text-label-sm text-primary">Completed</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Bottom Navigation Bar -->
+  <nav class="fixed bottom-0 w-full z-50 pb-safe bg-surface/80 backdrop-blur-xl shadow-[0_-2px_12px_rgba(0,0,0,0.04)]">
+    <div class="flex justify-around items-center h-16 px-container-margin">
+      <a aria-current="page" class="flex flex-col items-center justify-center gap-1 min-w-[44px] min-h-[44px] text-primary-container font-label-md" href="/rider-dashboard">
+        <span class="material-symbols-outlined text-[24px]">speed</span>
+        <span class="font-label-sm text-label-sm">Dashboard</span>
+      </a>
+      <a class="flex flex-col items-center justify-center gap-1 min-w-[44px] min-h-[44px] text-on-surface-variant hover:text-on-surface" href="/rider-map-trips">
+        <span class="material-symbols-outlined text-[24px]">navigation</span>
+        <span class="font-label-sm text-label-sm">Map &amp; Trips</span>
+      </a>
+      <a class="relative flex flex-col items-center justify-center gap-1 min-w-[44px] min-h-[44px] text-on-surface-variant hover:text-on-surface" href="/rider-requests">
+        <div class="relative flex items-center justify-center">
+          <span class="material-symbols-outlined text-[24px]">local_shipping</span>
+          <span class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-primary-container rounded-full ring-2 ring-surface"></span>
+        </div>
+        <span class="font-label-sm text-label-sm">Requests</span>
+      </a>
+      <a class="flex flex-col items-center justify-center gap-1 min-w-[44px] min-h-[44px] text-on-surface-variant hover:text-on-surface" href="/rider-earnings">
+        <span class="material-symbols-outlined text-[24px]">account_balance_wallet</span>
+        <span class="font-label-sm text-label-sm">Earnings</span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- Dashboard Telemetry & Controller Script -->
+  <script>
+    (function() {
+      const toggleBtn = document.getElementById('duty-toggle-btn');
+      const toggleDot = document.getElementById('duty-toggle-dot');
+      const toggleIcon = document.getElementById('duty-toggle-icon');
+      const autoAcceptInput = document.getElementById('auto-accept-input');
+      const dutyBadge = document.getElementById('duty-badge');
+      const dutyStatusText = document.getElementById('duty-status-text');
+      const dutySubtext = document.getElementById('duty-subtext');
+      const dutyPulse = document.getElementById('duty-pulse');
+      const mopedPing = document.getElementById('moped-ping');
+
+      let isOnline = true;
+      let autoAccept = true;
+
+      // Update UI for duty status
+      function renderDutyState(online) {
+        isOnline = online;
+        if (isOnline) {
+          toggleBtn.classList.remove('bg-secondary-fixed-dim');
+          toggleBtn.classList.add('bg-primary-container');
+          toggleDot.classList.remove('translate-x-0');
+          toggleDot.classList.add('translate-x-6');
+          toggleIcon.textContent = 'check';
+          dutyStatusText.textContent = 'Online';
+          dutySubtext.textContent = 'Ready for dispatch assignments';
+          dutyPulse.classList.remove('hidden');
+          mopedPing.classList.remove('hidden');
+        } else {
+          toggleBtn.classList.remove('bg-primary-container');
+          toggleBtn.classList.add('bg-secondary-fixed-dim');
+          toggleDot.classList.remove('translate-x-6');
+          toggleDot.classList.add('translate-x-0');
+          toggleIcon.textContent = 'close';
+          dutyStatusText.textContent = 'Offline';
+          dutySubtext.textContent = 'Duty paused — You will not receive offers';
+          dutyPulse.classList.add('hidden');
+          mopedPing.classList.add('hidden');
+        }
+      }
+
+      // Sync Duty Toggle with Backend
+      async function syncDuty(newOnline, newAutoAccept) {
+        try {
+          const res = await fetch('/api/v1/riders/duty', {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ isOnline: newOnline, autoAccept: newAutoAccept })
+          });
+          const data = await res.json();
+          if (data.data) {
+            renderDutyState(data.data.isOnline);
+            if (autoAcceptInput) autoAcceptInput.checked = data.data.autoAccept;
+          }
+        } catch (err) {
+          console.warn('Duty toggle sync error:', err);
+        }
+      }
+
+      if (toggleBtn) {
+        toggleBtn.addEventListener('click', () => {
+          syncDuty(!isOnline, autoAcceptInput ? autoAcceptInput.checked : autoAccept);
+        });
+      }
+
+      if (autoAcceptInput) {
+        autoAcceptInput.addEventListener('change', () => {
+          syncDuty(isOnline, autoAcceptInput.checked);
+        });
+      }
+
+      // Initial Dashboard Data Fetch
+      async function loadDashboard() {
+        try {
+          const res = await fetch('/api/v1/riders/dashboard');
+          if (res.ok) {
+            const result = await res.json();
+            const d = result.data;
+            if (d) {
+              renderDutyState(d.isOnline);
+              if (autoAcceptInput) autoAcceptInput.checked = d.autoAccept;
+              if (d.walletBalance) {
+                document.getElementById('header-wallet-balance').textContent = '$' + d.walletBalance.toFixed(2);
+              }
+              if (d.shift) {
+                document.getElementById('kpi-today-total').textContent = '$' + d.shift.todayTotal.toFixed(2);
+                document.getElementById('kpi-orders-count').textContent = d.shift.ordersCompleted + ' orders completed';
+                document.getElementById('kpi-shift-time').textContent = d.shift.shiftTimeFormatted;
+                document.getElementById('kpi-login-time').textContent = 'Logged in ' + d.shift.loginTimeFormatted;
+              }
+              if (d.rating) document.getElementById('kpi-rating').textContent = d.rating.toFixed(2);
+              if (d.reviewCount) document.getElementById('kpi-review-count').textContent = d.reviewCount + ' reviews (Top 3%)';
+              if (d.acceptanceRate) document.getElementById('kpi-acceptance').textContent = Math.round(d.acceptanceRate) + '%';
+              if (d.vehicle) {
+                document.getElementById('vehicle-details').textContent = d.vehicle.type + ' • ID #' + d.vehicle.idCode;
+                document.getElementById('battery-pct-label').textContent = 'Battery Range (' + d.vehicle.batteryLevel + '%)';
+                document.getElementById('battery-km-label').textContent = d.vehicle.batteryRangeKm + ' km remaining';
+                document.getElementById('battery-bar').style.width = d.vehicle.batteryLevel + '%';
+              }
+            }
+          }
+        } catch (e) {
+          console.warn('Could not refresh dashboard data:', e);
+        }
+      }
+
+      loadDashboard();
+    })();
+  </script>
+</body>
+</html>

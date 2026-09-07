@@ -41,6 +41,46 @@ const initializeSocket = (server) => {
       socket.join(`tracking_${vehicleId}`);
     });
 
+    // 1. Delivery Partner Real-Time Telemetry & Location Ping
+    socket.on('rider:location_ping', async (data) => {
+      try {
+        const RiderModel = require('../models/RiderModel');
+        const updated = await RiderModel.updateLocation(data.riderId || 1, {
+          latitude: parseFloat(data.lat || data.latitude || 28.6315),
+          longitude: parseFloat(data.lng || data.longitude || 77.2167),
+          speed: data.speed,
+          heading: data.heading
+        });
+        io.emit(`rider:location_${data.riderId || 1}`, {
+          riderId: data.riderId || 1,
+          lat: data.lat || data.latitude,
+          lng: data.lng || data.longitude,
+          speed: data.speed,
+          heading: data.heading,
+          timestamp: new Date().toISOString()
+        });
+      } catch (err) {
+        socket.emit('error', { message: `Rider telemetry ping failed: ${err.message}` });
+      }
+    });
+
+    // 2. Delivery Partner Duty Mode Toggle
+    socket.on('rider:toggle_duty', async (data) => {
+      try {
+        const RiderModel = require('../models/RiderModel');
+        const res = await RiderModel.toggleDuty(data.riderId || 1, {
+          isOnline: data.isOnline,
+          autoAccept: data.autoAccept
+        });
+        socket.emit('rider:duty_updated', {
+          isOnline: res.is_online,
+          autoAccept: res.auto_accept
+        });
+      } catch (err) {
+        socket.emit('error', { message: `Duty toggle failed: ${err.message}` });
+      }
+    });
+
     socket.on('disconnect', () => {
       console.log(`Client disconnected: ${socket.id}`);
     });
