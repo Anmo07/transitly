@@ -192,7 +192,7 @@
             <div class="pl-base pr-stack-sm flex items-center justify-center text-on-surface-variant">
               <span class="material-symbols-outlined text-[20px]">person</span>
             </div>
-            <input class="w-full bg-transparent py-stack-md pr-stack-md font-body-md text-body-md text-on-surface placeholder:text-outline focus:outline-none" id="full-name-input" placeholder="e.g. Alex Morgan" type="text" value="Alex Morgan" required />
+            <input class="w-full bg-transparent py-stack-md pr-stack-md font-body-md text-body-md text-on-surface placeholder:text-outline focus:outline-none" id="full-name-input" placeholder="e.g. Alex Morgan" type="text" value="" required />
           </div>
         </div>
 
@@ -207,7 +207,7 @@
               <span class="material-symbols-outlined text-[20px]" id="prefix-icon">contact_mail</span>
               <span class="font-label-md text-label-md text-on-surface font-semibold hidden" id="country-code">+91</span>
             </div>
-            <input class="w-full bg-transparent py-stack-md pr-stack-md font-body-md text-body-md text-on-surface placeholder:text-outline focus:outline-none truncate" id="identifier-input" placeholder="e.g. +91 98765 43210 or alex@example.com" type="text" value="+91 98765 43210" required />
+            <input class="w-full bg-transparent py-stack-md pr-stack-md font-body-md text-body-md text-on-surface placeholder:text-outline focus:outline-none truncate" id="identifier-input" placeholder="e.g. +91 98765 43210 or alex@example.com" type="text" value="" required />
           </div>
         </div>
 
@@ -416,8 +416,8 @@
 
       // State
       let userState = {
-        fullName: 'Alex Morgan',
-        identifier: '+91 98765 43210',
+        fullName: '',
+        identifier: '',
         channel: 'sms',
         purpose: 'login'
       };

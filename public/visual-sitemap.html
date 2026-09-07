@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visual Sitemap & Knowledge Graph | Transitly</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <style>
+        #network-graph { width: 100%; height: 600px; border: 1px solid #e5e7eb; border-radius: 0.5rem; background-color: #f9fafb; }
+        .mermaid { display: flex; justify-content: center; overflow: auto; min-height: 400px; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900 font-sans antialiased min-h-screen flex flex-col">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-extrabold text-indigo-700 tracking-tight">Transitly Visual Sitemap</h1>
+                <p class="text-gray-500 mt-1">Interactive structure, user flow, and knowledge graph mapping.</p>
+            </div>
+            <a href="/" class="text-indigo-600 hover:text-indigo-800 font-medium transition-colors">← Back to Site</a>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto py-8 px-4 sm:px-6 lg:px-8">
+        
+        <!-- Tabs Navigation -->
+        <div class="bg-white rounded-t-lg border-b border-gray-200 px-4 pt-4 shadow-sm">
+            <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+                <button onclick="switchTab('mindmap')" id="tab-mindmap" class="tab-btn border-indigo-500 text-indigo-600 whitespace-nowrap py-4 px-4 border-b-2 font-medium text-sm transition-colors focus:outline-none">
+                    <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c-1.105 0-2-.895-2-2V7c0-1.105.895-2 2-2s2 .895 2 2v10c0 1.105-.895 2-2 2zM5 19c-1.105 0-2-.895-2-2V7c0-1.105.895-2 2-2s2 .895 2 2v10c0 1.105-.895 2-2 2z"></path></svg>
+                    Mind Map
+                </button>
+                <button onclick="switchTab('flowchart')" id="tab-flowchart" class="tab-btn border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-4 border-b-2 font-medium text-sm transition-colors focus:outline-none">
+                    <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>
+                    User Flow Chart
+                </button>
+                <button onclick="switchTab('knowledgegraph')" id="tab-knowledgegraph" class="tab-btn border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-4 border-b-2 font-medium text-sm transition-colors focus:outline-none">
+                    <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+                    Knowledge Graph
+                </button>
+            </nav>
+        </div>
+
+        <!-- Tab Contents -->
+        <div class="bg-white rounded-b-lg shadow-sm border border-t-0 border-gray-200 p-6 min-h-[600px]">
+            
+            <!-- Mind Map View -->
+            <div id="content-mindmap" class="tab-content active">
+                <div class="mb-6 text-center">
+                    <h2 class="text-2xl font-bold text-gray-800">Site Structure Mind Map</h2>
+                    <p class="text-gray-500">A hierarchical view of all pages extracted from the live sitemap.</p>
+                </div>
+                <div id="mermaid-mindmap" class="mermaid bg-gray-50 rounded-xl p-8 border border-gray-100 flex items-center justify-center"></div>
+            </div>
+
+            <!-- Flow Chart View -->
+            <div id="content-flowchart" class="tab-content">
+                <div class="mb-6 text-center">
+                    <h2 class="text-2xl font-bold text-gray-800">User Journey Flow Chart</h2>
+                    <p class="text-gray-500">Logical categorization and navigation flows between platform sections.</p>
+                </div>
+                <div id="mermaid-flowchart" class="mermaid bg-gray-50 rounded-xl p-8 border border-gray-100 flex items-center justify-center"></div>
+            </div>
+
+            <!-- Knowledge Graph View -->
+            <div id="content-knowledgegraph" class="tab-content">
+                <div class="mb-6 flex justify-between items-end">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-800">Interactive Knowledge Graph</h2>
+                        <p class="text-gray-500">A physics-based node graph. Drag nodes to explore relationships. Zoom using scroll.</p>
+                    </div>
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800">
+                        Powered by vis-network
+                    </span>
+                </div>
+                <div id="network-graph" class="shadow-inner relative overflow-hidden cursor-move"></div>
+            </div>
+            
+        </div>
+    </main>
+
+    <script>
+        // Initialize Mermaid with custom beautiful theme
+        mermaid.initialize({ 
+            startOnLoad: false, 
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#e0e7ff',
+                primaryTextColor: '#3730a3',
+                primaryBorderColor: '#818cf8',
+                lineColor: '#9ca3af',
+                secondaryColor: '#f3f4f6',
+                tertiaryColor: '#fff'
+            }
+        });
+
+        // Tab Switching Logic
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => {
+                b.classList.remove('border-indigo-500', 'text-indigo-600');
+                b.classList.add('border-transparent', 'text-gray-500');
+            });
+            document.getElementById(`content-${tabId}`).classList.add('active');
+            document.getElementById(`tab-${tabId}`).classList.remove('border-transparent', 'text-gray-500');
+            document.getElementById(`tab-${tabId}`).classList.add('border-indigo-500', 'text-indigo-600');
+            
+            // Re-fit network graph if switching to it
+            if(tabId === 'knowledgegraph' && window.networkGraph) {
+                setTimeout(() => window.networkGraph.fit(), 100);
+            }
+        }
+
+        // Load and Parse Sitemap
+        async function loadSitemap() {
+            try {
+                // In a real environment, fetch from /sitemap.xml
+                // Fetch the actual file
+                const response = await fetch('/sitemap.xml');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const text = await response.text();
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(text, "text/xml");
+                const urls = Array.from(xmlDoc.getElementsByTagName("loc")).map(node => node.textContent);
+                
+                if(urls.length === 0) {
+                    throw new Error("No URLs found in sitemap.");
+                }
+                
+                await generateVisuals(urls);
+            } catch (error) {
+                console.error("Error loading sitemap:", error);
+                document.getElementById('mermaid-mindmap').innerHTML = `
+                    <div class="text-center p-10 bg-red-50 text-red-600 rounded-lg border border-red-200">
+                        <svg class="mx-auto h-12 w-12 text-red-400 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                        <h3 class="text-lg font-medium">Failed to load sitemap.xml</h3>
+                        <p class="mt-2 text-sm">Please ensure sitemap.xml is available at the root of the server.</p>
+                        <p class="mt-1 text-xs opacity-75">${error.message}</p>
+                    </div>`;
+            }
+        }
+
+        // Helper to extract path from URL
+        function extractPath(urlStr) {
+            try {
+                const url = new URL(urlStr);
+                return url.pathname === '/' ? 'Home' : url.pathname.substring(1);
+            } catch (e) {
+                return urlStr;
+            }
+        }
+
+        // Generate the 3 Visualizations
+        async function generateVisuals(urls) {
+            const paths = urls.map(extractPath).filter(Boolean); // Filter out empty strings if any
+            
+            // 1. Mind Map (Mermaid)
+            let mindmapDef = "mindmap\n  root((Transitly))\n";
+            paths.forEach(p => {
+                if (p !== 'Home') {
+                    // Prettify names slightly
+                    const name = p.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+                    mindmapDef += `    ${name}\n`;
+                }
+            });
+            
+            // 2. Flow Chart (Mermaid)
+            let flowchartDef = "graph TD\n  Home((Home))\n";
+            paths.forEach((p) => {
+                if (p !== 'Home') {
+                    const name = p.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+                    const id = p.replace(/[^a-zA-Z0-9]/g, '');
+                    
+                    // Categorize for cleaner flowchart
+                    if (['login', 'signup'].includes(p)) {
+                        flowchartDef += `  Home --> Auth{Authentication}\n`;
+                        flowchartDef += `  Auth --> ${id}[${name}]\n`;
+                    } else if (['privacy-policy', 'terms', 'faq', 'help-support'].includes(p)) {
+                        flowchartDef += `  Home --> Info{Information & Legal}\n`;
+                        flowchartDef += `  Info --> ${id}[${name}]\n`;
+                    } else if (['profile', 'history', 'saved-addresses', 'payment-methods'].includes(p)) {
+                        flowchartDef += `  Home --> UserDash{User Dashboard}\n`;
+                        flowchartDef += `  UserDash --> ${id}[${name}]\n`;
+                    } else {
+                        flowchartDef += `  Home --> ${id}[${name}]\n`;
+                    }
+                }
+            });
+
+            // Deduplicate lines in flowchart definition
+            flowchartDef = Array.from(new Set(flowchartDef.split('\n'))).join('\n');
+
+            try {
+                // Render SVG elements
+                const { svg: mindmapSvg } = await mermaid.render('mindmap-svg', mindmapDef);
+                document.getElementById('mermaid-mindmap').innerHTML = mindmapSvg;
+                
+                const { svg: flowchartSvg } = await mermaid.render('flowchart-svg', flowchartDef);
+                document.getElementById('mermaid-flowchart').innerHTML = flowchartSvg;
+            } catch (err) {
+                console.error("Mermaid rendering error", err);
+            }
+
+            // 3. Knowledge Graph (Vis-Network)
+            const nodes = [{ id: 'Home', label: 'Home (Transitly)', shape: 'hexagon', size: 35, color: { background: '#4F46E5', border: '#3730A3' }, font: { color: '#ffffff', face: 'Inter, sans-serif' } }];
+            const edges = [];
+            
+            // Add logical group nodes
+            const groups = {
+                Auth: { id: 'Auth', label: 'Authentication', shape: 'dot', color: '#10B981', font: { face: 'Inter, sans-serif' } },
+                Info: { id: 'Info', label: 'Info & Legal', shape: 'dot', color: '#F59E0B', font: { face: 'Inter, sans-serif' } },
+                User: { id: 'User', label: 'User Dashboard', shape: 'dot', color: '#3B82F6', font: { face: 'Inter, sans-serif' } },
+                Core: { id: 'Core', label: 'Core Services', shape: 'dot', color: '#8B5CF6', font: { face: 'Inter, sans-serif' } }
+            };
+
+            Object.values(groups).forEach(g => {
+                nodes.push(g);
+                edges.push({ from: 'Home', to: g.id, arrows: 'to', color: { color: '#CBD5E1' } });
+            });
+
+            paths.forEach((p) => {
+                if (p === 'Home') return;
+                
+                const name = p.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+                nodes.push({ id: p, label: name, shape: 'box', color: { background: '#ffffff', border: '#E2E8F0' }, font: { color: '#334155', face: 'Inter, sans-serif' }, shadow: true });
+                
+                const edgeOptions = { arrows: 'to', color: { color: '#E2E8F0', highlight: '#818CF8' } };
+                
+                if (['login', 'signup'].includes(p)) {
+                    edges.push({ from: 'Auth', to: p, ...edgeOptions });
+                } else if (['privacy-policy', 'terms', 'faq', 'help-support'].includes(p)) {
+                    edges.push({ from: 'Info', to: p, ...edgeOptions });
+                } else if (['profile', 'history', 'saved-addresses', 'payment-methods'].includes(p)) {
+                    edges.push({ from: 'User', to: p, ...edgeOptions });
+                } else {
+                    edges.push({ from: 'Core', to: p, ...edgeOptions });
+                }
+            });
+
+            const container = document.getElementById('network-graph');
+            const data = { nodes: new vis.DataSet(nodes), edges: new vis.DataSet(edges) };
+            const options = {
+                nodes: { font: { size: 14 } },
+                edges: { smooth: { type: 'continuous' } },
+                physics: { 
+                    barnesHut: { gravitationalConstant: -2000, centralGravity: 0.3, springLength: 150 },
+                    stabilization: { iterations: 200 }
+                },
+                interaction: { hover: true, tooltipDelay: 200 }
+            };
+            window.networkGraph = new vis.Network(container, data, options);
+        }
+
+        // Boot
+        window.onload = loadSitemap;
+    </script>
+</body>
+</html>
