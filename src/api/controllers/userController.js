@@ -887,18 +887,32 @@ class UserController {
       inMemoryUser.phone = dedicatedPhone;
       inMemoryUser.avatarUrl = '';
 
+      const requestedRole = req.body.role === 'DELIVERY_PARTNER' ? 'DELIVERY_PARTNER' : 'CUSTOMER';
+
       // Persist to PostgreSQL using explicitly typed parameterized query with hardcoded format
       try {
-        await pool.query(
+        const userInsertRes = await pool.query(
           `INSERT INTO users (user_uuid, name, email, phone, role, avatar_url, preferences) 
-           VALUES (gen_random_uuid(), $1::varchar, $2::varchar, $3::varchar, 'CUSTOMER', ''::text, $4::jsonb)
+           VALUES (gen_random_uuid(), $1::varchar, $2::varchar, $3::varchar, $5::varchar, ''::text, $4::jsonb)
            ON CONFLICT (email) DO UPDATE SET
              name = EXCLUDED.name,
              phone = EXCLUDED.phone,
              avatar_url = '',
-             updated_at = CURRENT_TIMESTAMP`,
-          [resolvedName, dedicatedEmail, dedicatedPhone, dedicatedPreferences]
+             updated_at = CURRENT_TIMESTAMP
+           RETURNING id`,
+          [resolvedName, dedicatedEmail, dedicatedPhone, dedicatedPreferences, requestedRole]
         );
+        
+        const userId = userInsertRes.rows[0]?.id;
+        
+        // If they signed up as a Delivery Partner, initialize their Rider profile automatically
+        if (userId && requestedRole === 'DELIVERY_PARTNER') {
+          await pool.query(`
+            INSERT INTO delivery_partner_profiles (user_id, vehicle_type, status) 
+            VALUES ($1, 'BIKE', 'OFFLINE') 
+            ON CONFLICT (user_id) DO NOTHING
+          `, [userId]);
+        }
       } catch (dbErr) {
         console.warn('[PostgreSQL Notice] verifyOtp persistence:', dbErr.message);
       }
@@ -909,7 +923,7 @@ class UserController {
           sub: inMemoryUser.id,
           name: resolvedName,
           identifier: cleanIdentifier,
-          role: 'CUSTOMER'
+          role: requestedRole
         },
         AUTH_SECRET,
         { expiresIn: '30d' }

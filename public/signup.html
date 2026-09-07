@@ -222,12 +222,12 @@
           </label>
           <div class="grid grid-cols-2 gap-2">
             <label class="flex items-center gap-2 p-2.5 rounded-xl border border-surface-container bg-surface-container-low cursor-pointer hover:border-primary/40 transition-colors">
-              <input type="radio" name="accountType" value="personal" checked class="text-primary focus:ring-primary">
-              <span class="text-xs font-semibold text-on-surface">Personal Cargo</span>
+              <input type="radio" name="accountType" value="CUSTOMER" checked class="text-primary focus:ring-primary">
+              <span class="text-xs font-semibold text-on-surface">Customer</span>
             </label>
             <label class="flex items-center gap-2 p-2.5 rounded-xl border border-surface-container bg-surface-container-low cursor-pointer hover:border-primary/40 transition-colors">
-              <input type="radio" name="accountType" value="business" class="text-primary focus:ring-primary">
-              <span class="text-xs font-semibold text-on-surface">Business Shipper</span>
+              <input type="radio" name="accountType" value="DELIVERY_PARTNER" class="text-primary focus:ring-primary">
+              <span class="text-xs font-semibold text-on-surface">Delivery Partner</span>
             </label>
           </div>
         </div>
@@ -381,7 +381,7 @@
         const fullName = inputName.value.trim();
         const email = inputEmail.value.trim();
         let phone = inputPhone.value.trim();
-        const accountType = form.querySelector('input[name="accountType"]:checked')?.value || 'personal';
+        const role = form.querySelector('input[name="accountType"]:checked')?.value || 'CUSTOMER';
 
         if (!fullName || fullName.length < 2) {
           errorBox.textContent = 'Please enter your Full Name (at least 2 characters).';
@@ -420,7 +420,7 @@
           const res = await fetch('/api/v1/auth/signup', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ fullName, email, phone, accountType })
+            body: JSON.stringify({ fullName, email, phone, role })
           });
 
           const data = await res.json();
@@ -449,8 +449,12 @@
             }));
 
             setTimeout(() => {
-              window.location.href = '/';
-            }, 800);
+              if (role === 'DELIVERY_PARTNER') {
+                window.location.href = '/rider-dashboard.html';
+              } else {
+                window.location.href = '/';
+              }
+            }, 1000);
           } else {
             submitBtn.disabled = false;
             submitBtnText.textContent = 'Create Account';

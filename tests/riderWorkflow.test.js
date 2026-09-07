@@ -1,3 +1,4 @@
+require('dotenv').config();
 const assert = require('assert');
 const DeliveryPartner = require('../src/models/DeliveryPartner');
 const ShipmentLeg = require('../src/models/ShipmentLeg');

@@ -211,6 +211,23 @@
           </div>
         </div>
 
+        <!-- Account Type Selector -->
+        <div class="flex flex-col gap-stack-sm">
+          <label class="font-label-md text-label-md text-on-surface font-semibold">
+            Account Type
+          </label>
+          <div class="grid grid-cols-2 gap-2">
+            <label class="flex items-center gap-2 p-2.5 rounded-xl border border-surface-container bg-surface-container-low cursor-pointer hover:border-primary/40 transition-colors">
+              <input type="radio" name="accountType" value="CUSTOMER" checked class="text-primary focus:ring-primary">
+              <span class="text-xs font-semibold text-on-surface">Customer</span>
+            </label>
+            <label class="flex items-center gap-2 p-2.5 rounded-xl border border-surface-container bg-surface-container-low cursor-pointer hover:border-primary/40 transition-colors">
+              <input type="radio" name="accountType" value="DELIVERY_PARTNER" class="text-primary focus:ring-primary">
+              <span class="text-xs font-semibold text-on-surface">Delivery Partner</span>
+            </label>
+          </div>
+        </div>
+
         <!-- Keep Me Signed In -->
         <div class="flex items-center gap-stack-sm pt-stack-sm">
           <label class="relative flex items-center cursor-pointer">
@@ -590,10 +607,13 @@
           return;
         }
 
+        const accountType = document.querySelector('input[name="accountType"]:checked')?.value || 'CUSTOMER';
+
         userState.fullName = name;
         userState.identifier = idVal;
         userState.channel = channel;
         userState.purpose = 'login';
+        userState.role = accountType;
 
         // UI Loading State
         submitBtn.disabled = true;
@@ -609,7 +629,8 @@
               fullName: userState.fullName,
               identifier: userState.identifier,
               channel: userState.channel,
-              purpose: userState.purpose
+              purpose: userState.purpose,
+              role: userState.role
             })
           });
           const data = await res.json();
@@ -749,7 +770,8 @@
               identifier: userState.identifier,
               fullName: userState.fullName,
               otp: otpCode,
-              purpose: userState.purpose || 'login'
+              purpose: userState.purpose || 'login',
+              role: userState.role
             })
           });
           const data = await res.json();
@@ -775,17 +797,18 @@
             localStorage.setItem('transitly_user_phone', !userState.identifier.includes('@') ? userState.identifier : '+91 98765 43210');
 
             window.dispatchEvent(new CustomEvent('transitly:profile_updated', {
-              detail: {
-                name: userState.fullName,
-                identifier: userState.identifier
-              }
+              detail: data.data.user
             }));
 
             // Redirect back to Deliver / Home
             setTimeout(() => {
-              const params = new URLSearchParams(window.location.search);
-              const redirect = params.get('redirect') || '/';
-              window.location.href = redirect;
+              if (userState.role === 'DELIVERY_PARTNER') {
+                window.location.href = '/rider-dashboard.html';
+              } else {
+                const params = new URLSearchParams(window.location.search);
+                const redirect = params.get('redirect') || '/';
+                window.location.href = redirect;
+              }
             }, 800);
           } else {
             verifyBtn.disabled = false;
