@@ -12,6 +12,13 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentActiveBus = null;
   let alertTimeout = null;
 
+  // Live Vehicle Movement & Unobstructed Viewport Centering State
+  let vehicleMovementTimer = null;
+  let currentCorridorWaypoints = [];
+  let currentWaypointIndex = 0;
+  let userInteractedWithMap = false;
+  let userInteractionTimeout = null;
+
   // DOM Elements
   const mapElement = document.getElementById('liveTrackingMap');
   const staticFallback = document.getElementById('staticMapFallback');
@@ -21,6 +28,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const alertMessage = document.getElementById('busAlertMessage');
   const btnCloseAlert = document.getElementById('btnCloseBusAlert');
   const quickBusChips = document.querySelectorAll('.quick-bus-chip');
+
+  // View Containers (Empty State vs Active Tracking)
+  const trackingEmptyView = document.getElementById('trackingEmptyView');
+  const trackingActiveView = document.getElementById('trackingActiveView');
+  const btnExploreDemoBus = document.getElementById('btnExploreDemoBus');
 
   // Bottom Sheet Gesture Elements
   const busDetailsBottomSheet = document.getElementById('busDetailsBottomSheet');
@@ -32,6 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let isSheetCollapsed = false;
 
   // HUD Elements
+  const telematicsHud = document.getElementById('telematicsHud');
   const hudBusPlate = document.getElementById('hudBusPlate');
   const hudSpeed = document.getElementById('hudSpeed');
   const hudCoords = document.getElementById('hudCoords');
@@ -39,11 +52,86 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Bottom Sheet Elements
   const trackStatusTitle = document.getElementById('trackStatusTitle');
+  const trackedBusBadge = document.getElementById('trackedBusBadge');
   const trackLiveStatusText = document.getElementById('trackLiveStatusText');
   const trackEta = document.getElementById('trackEta');
   const trackOperatorName = document.getElementById('trackOperatorName');
   const trackNextHandoff = document.getElementById('trackNextHandoff');
   const stopsTimelineContainer = document.getElementById('stopsTimelineContainer');
+
+  /**
+   * Helper: Calculate the Unobstructed Center for Leaflet Map
+   * Dynamically measures top obstruction (Header & Floating Search Bar)
+   * and bottom obstruction (Details Sheet / Bottom Panel) across any device screen width and length.
+   * Places the vehicle in the exact visual center of the visible map window.
+   */
+  const getUnobstructedCenter = (targetLatLng, targetZoom = null) => {
+    if (!map || !targetLatLng) return targetLatLng;
+    const zoom = targetZoom !== null ? targetZoom : (map.getZoom() || 14.5);
+
+    // 1. Top Obstruction: Header + Floating Search Container
+    let topObstruction = 56;
+    const searchEl = document.getElementById('busPlateSearchForm');
+    const searchContainer = searchEl ? searchEl.closest('.fixed') : null;
+    if (searchContainer) {
+      const sRect = searchContainer.getBoundingClientRect();
+      if (sRect.bottom > 0) {
+        topObstruction = Math.max(topObstruction, sRect.bottom + 8);
+      }
+    } else {
+      topObstruction = 165;
+    }
+
+    // 2. Bottom Obstruction: Details Display Panel / Bottom Sheet
+    let bottomObstructionY = window.innerHeight;
+    const sheetEl = document.getElementById('busDetailsBottomSheet');
+    if (sheetEl && sheetEl.offsetParent !== null) {
+      const bRect = sheetEl.getBoundingClientRect();
+      if (bRect.top > 0 && bRect.top < window.innerHeight) {
+        bottomObstructionY = bRect.top - 8;
+      }
+    } else {
+      bottomObstructionY = window.innerHeight - 64;
+    }
+
+    // Usable height between search bar and bottom sheet
+    const usableHeight = Math.max(90, bottomObstructionY - topObstruction);
+    const visualCenterY = topObstruction + (usableHeight / 2);
+
+    // 3. Horizontal Center: Account for Telematics HUD on small mobile screens
+    let visualCenterX = window.innerWidth / 2;
+    const hudEl = document.getElementById('telematicsHud');
+    if (hudEl && hudEl.offsetParent !== null && !hudEl.classList.contains('hidden') && window.innerWidth < 640) {
+      const hRect = hudEl.getBoundingClientRect();
+      if (hRect.left > 0 && hRect.left < window.innerWidth) {
+        visualCenterX = Math.max(110, (48 + hRect.left) / 2);
+      }
+    }
+
+    // 4. Transform LatLng to Projected Pixels, shift by delta, and unproject
+    const containerSize = map.getSize();
+    const containerCenterX = containerSize.x / 2;
+    const containerCenterY = containerSize.y / 2;
+
+    const targetPoint = map.project(targetLatLng, zoom);
+    const deltaX = containerCenterX - visualCenterX;
+    const deltaY = containerCenterY - visualCenterY;
+
+    const shiftedPoint = L.point(targetPoint.x + deltaX, targetPoint.y + deltaY);
+    return map.unproject(shiftedPoint, zoom);
+  };
+
+  /**
+   * Center Map on Vehicle in the Unobstructed Viewport
+   */
+  const centerMapOnVehicle = (latLng = null, zoom = 14.5, options = { duration: 0.9, easeLinearity: 0.25 }) => {
+    if (!map) return;
+    const target = latLng || (busMarker ? busMarker.getLatLng() : null);
+    if (!target) return;
+
+    const unobstructedCenter = getUnobstructedCenter(target, zoom);
+    map.flyTo(unobstructedCenter, zoom, options);
+  };
 
   /**
    * Gesture Bar State Controller (Collapse / Expand to reveal 100% map)
@@ -68,11 +156,13 @@ document.addEventListener('DOMContentLoaded', () => {
       if (sheetActionHint) sheetActionHint.textContent = 'Swipe down to view full map';
     }
 
-    // Re-adjust map viewport bounds smoothly
+    // Re-adjust map viewport bounds smoothly so bus remains unobstructed
     if (map) {
       map.invalidateSize();
       if (busMarker) {
-        map.flyTo(busMarker.getLatLng(), 14.5, { duration: 0.8 });
+        setTimeout(() => {
+          centerMapOnVehicle(busMarker.getLatLng(), map.getZoom() || 14.5, { duration: 0.6 });
+        }, 150);
       }
     }
   };
@@ -177,12 +267,132 @@ document.addEventListener('DOMContentLoaded', () => {
       if (btnZoomOut) btnZoomOut.addEventListener('click', () => map.zoomOut());
       if (btnCenter) {
         btnCenter.addEventListener('click', () => {
+          userInteractedWithMap = false;
           if (busMarker) {
-            map.flyTo(busMarker.getLatLng(), 13, { duration: 1 });
+            centerMapOnVehicle(busMarker.getLatLng(), 14.5, { duration: 0.8 });
           }
         });
       }
+
+      // Track manual map interactions so we don't fight user's manual dragging/zooming
+      map.on('dragstart zoomstart', () => {
+        userInteractedWithMap = true;
+        if (userInteractionTimeout) clearTimeout(userInteractionTimeout);
+        userInteractionTimeout = setTimeout(() => {
+          userInteractedWithMap = false;
+        }, 10000);
+      });
     }
+  };
+
+  /**
+   * Interpolate Dense Highway Waypoints between Stops for Smooth Movement
+   */
+  const generateCorridorPath = (stops) => {
+    if (!stops || stops.length < 2) return [];
+    const fullPath = [];
+    for (let i = 0; i < stops.length - 1; i++) {
+      const p1 = stops[i].coords;
+      const p2 = stops[i + 1].coords;
+      const steps = 40; // Dense sub-waypoints for fluid highway movement
+      for (let s = 0; s < steps; s++) {
+        const ratio = s / steps;
+        const lat = p1[0] + (p2[0] - p1[0]) * ratio;
+        const lng = p1[1] + (p2[1] - p1[1]) * ratio;
+        fullPath.push([lat, lng]);
+      }
+    }
+    fullPath.push(stops[stops.length - 1].coords);
+    return fullPath;
+  };
+
+  const findClosestWaypointIndex = (path, currentCoord) => {
+    let closestIdx = 0;
+    let minDistance = Infinity;
+    for (let i = 0; i < path.length; i++) {
+      const dLat = path[i][0] - currentCoord[0];
+      const dLng = path[i][1] - currentCoord[1];
+      const dist = dLat * dLat + dLng * dLng;
+      if (dist < minDistance) {
+        minDistance = dist;
+        closestIdx = i;
+      }
+    }
+    return closestIdx;
+  };
+
+  /**
+   * Recalibrated Vehicle Movement Simulation along Corridor Route
+   * Keeps vehicle moving smoothly along route and keeps camera centered in unobstructed view.
+   */
+  const startVehicleMovement = (data) => {
+    if (vehicleMovementTimer) clearInterval(vehicleMovementTimer);
+
+    const stops = data.stops || [];
+    if (stops.length < 2) return;
+
+    currentCorridorWaypoints = generateCorridorPath(stops);
+    const startCoord = [data.currentLocation.latitude, data.currentLocation.longitude];
+    currentWaypointIndex = findClosestWaypointIndex(currentCorridorWaypoints, startCoord);
+
+    let tick = 0;
+    let movingForward = true;
+
+    vehicleMovementTimer = setInterval(() => {
+      if (!busMarker || !map || currentCorridorWaypoints.length === 0) return;
+
+      tick++;
+      // Advance waypoint index along corridor
+      if (movingForward) {
+        currentWaypointIndex++;
+        if (currentWaypointIndex >= currentCorridorWaypoints.length - 1) {
+          movingForward = false;
+        }
+      } else {
+        currentWaypointIndex--;
+        if (currentWaypointIndex <= 0) {
+          movingForward = true;
+        }
+      }
+
+      const nextCoord = currentCorridorWaypoints[currentWaypointIndex];
+
+      // Realistic highway speed fluctuation (66 to 74 km/h)
+      const liveSpeed = Math.round(68 + Math.sin(tick * 0.4) * 4);
+
+      // Smoothly update marker position
+      busMarker.setLatLng(nextCoord);
+
+      // Update HUD elements in real time
+      if (hudSpeed) hudSpeed.textContent = `${liveSpeed} km/h • Highway`;
+      if (hudCoords) hudCoords.textContent = `${nextCoord[0].toFixed(3)}° N, ${nextCoord[1].toFixed(3)}° E`;
+
+      // Update popup content if open
+      if (busMarker.isPopupOpen()) {
+        const popup = busMarker.getPopup();
+        if (popup) {
+          popup.setContent(`
+            <div style="font-family: sans-serif; min-width: 190px; padding: 4px;">
+              <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 3px;">
+                <span style="display: inline-block; width: 8px; height: 8px; background: #10b981; border-radius: 50%;"></span>
+                <span style="font-weight: 800; font-size: 13px; color: #0066FF;">${data.busNumber}</span>
+              </div>
+              <div style="font-size: 11px; color: #333; margin-bottom: 4px; font-weight: 600;">${data.operatorName}</div>
+              <div style="font-size: 11px; background: #e0f2fe; color: #0369a1; padding: 3px 8px; border-radius: 6px; display: inline-block; font-weight: bold; margin-bottom: 4px;">
+                Speed: ${liveSpeed} km/h • Highway
+              </div>
+              <div style="font-size: 10px; color: #666;">Route: ${data.corridorName}</div>
+            </div>
+          `);
+        }
+      }
+
+      // Smooth camera follow in unobstructed visual center (unless user manually panned)
+      if (!userInteractedWithMap) {
+        const unobstructedCenter = getUnobstructedCenter(nextCoord);
+        map.panTo(unobstructedCenter, { animate: true, duration: 1.4 });
+      }
+    }, 1800);
   };
 
   /**
@@ -289,8 +499,8 @@ document.addEventListener('DOMContentLoaded', () => {
       </div>
     `);
 
-    // Pinpoint directly onto the current live bus location (Zoom level 14.5)
-    map.flyTo(busCoord, 14.5, {
+    // Pinpoint directly onto current live bus location in unobstructed map viewport
+    centerMapOnVehicle(busCoord, 14.5, {
       duration: 1.2,
       easeLinearity: 0.25
     });
@@ -301,23 +511,42 @@ document.addEventListener('DOMContentLoaded', () => {
         busMarker.openPopup();
       }
     }, 1250);
+
+    // Start live calibrated vehicle movement along highway route
+    startVehicleMovement(data);
   };
 
   /**
    * Update HUD and Bottom Sheet UI
    */
-  const updateUI = (data) => {
+  const updateUI = (data, parcelContext = null) => {
+    const isUserParcel = !!(parcelContext || data.current_tracking_id);
+    const trackingCode = parcelContext ? (parcelContext.trackingId || parcelContext.id) : (data.current_tracking_id || null);
+
     // HUD
-    if (hudBusPlate) hudBusPlate.textContent = data.busNumber;
+    if (hudBusPlate) hudBusPlate.textContent = isUserParcel && trackingCode ? `${data.busNumber} • ${trackingCode}` : data.busNumber;
     if (hudSpeed) hudSpeed.textContent = `${data.currentLocation.speedKmh} km/h • En-route`;
     if (hudCoords) hudCoords.textContent = `${data.currentLocation.latitude.toFixed(3)}° N, ${data.currentLocation.longitude.toFixed(3)}° E`;
-    if (hudJourneyState) hudJourneyState.textContent = 'ACTIVE IN SERVICE';
+    if (hudJourneyState) hudJourneyState.textContent = isUserParcel ? 'PARCEL IN TRANSIT' : 'ACTIVE IN SERVICE';
 
     // Bottom Sheet
-    if (trackStatusTitle) trackStatusTitle.textContent = `${data.operatorName} • ${data.busNumber}`;
-    if (trackLiveStatusText) trackLiveStatusText.textContent = data.corridorName;
+    if (trackStatusTitle) {
+      trackStatusTitle.textContent = isUserParcel && trackingCode
+        ? `Parcel ${trackingCode} • ${data.operatorName}`
+        : `${data.operatorName} • ${data.busNumber}`;
+    }
+    if (trackedBusBadge) {
+      trackedBusBadge.textContent = isUserParcel ? 'IN TRANSIT' : 'IN SERVICE';
+    }
+    if (trackLiveStatusText) {
+      trackLiveStatusText.textContent = (parcelContext && parcelContext.corridor) ? parcelContext.corridor : data.corridorName;
+    }
     if (trackOperatorName) trackOperatorName.textContent = data.operatorName;
-    if (trackNextHandoff) trackNextHandoff.textContent = `Cargo Available: ${data.availableCapacityKg} kg / ${data.cargoCapacityKg} kg`;
+    if (trackNextHandoff) {
+      trackNextHandoff.textContent = isUserParcel
+        ? `Carrier: ${data.operatorName} (${data.busNumber}) • Bay Locked`
+        : `Cargo Bay Available: ${data.availableCapacityKg} kg / ${data.cargoCapacityKg} kg`;
+    }
     if (trackEta) trackEta.textContent = data.eta || '14:30';
 
     // Render Timeline Stops
@@ -382,32 +611,89 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   /**
-   * Query Database for Entered Bus Number Plate
+   * Helper: Check if Current User Has an Active Sent Parcel
    */
-  const trackBusByPlate = async (plateNumber) => {
-    if (!plateNumber || !plateNumber.trim()) {
+  const getActiveUserParcel = () => {
+    try {
+      const activeBooking = localStorage.getItem('transitly_active_booking');
+      if (activeBooking) {
+        const parsed = JSON.parse(activeBooking);
+        if (parsed && (parsed.status === 'IN_TRANSIT' || parsed.status === 'CONFIRMED' || !parsed.status)) {
+          return parsed;
+        }
+      }
+      const sentRaw = localStorage.getItem('transitly_sent_parcels');
+      if (sentRaw) {
+        const list = JSON.parse(sentRaw);
+        if (Array.isArray(list) && list.length > 0) {
+          return list.find(p => p.status === 'IN_TRANSIT') || list[0];
+        }
+      }
+    } catch (_) {}
+    return null;
+  };
+
+  /**
+   * Query Database for Entered Bus Number Plate or Tracking ID
+   */
+  const trackBusOrParcel = async (queryInput, parcelCtx = null) => {
+    if (!queryInput || !queryInput.trim()) {
       showBusOutOfServiceAlert('Empty');
       return;
     }
 
-    const cleanPlate = plateNumber.trim();
+    const cleanQuery = queryInput.trim();
+    let parcelContext = parcelCtx;
+
+    if (!parcelContext) {
+      const localActive = getActiveUserParcel();
+      if (localActive && (localActive.trackingId === cleanQuery || cleanQuery.toUpperCase().startsWith('TRK'))) {
+        parcelContext = localActive;
+      }
+    }
 
     try {
-      const response = await fetch(`/api/v1/tracking/bus/${encodeURIComponent(cleanPlate)}`);
+      // 1. Direct query to backend telematics (supports registration OR s.tracking_id)
+      const response = await fetch(`/api/v1/tracking/bus/${encodeURIComponent(cleanQuery)}`);
       const result = await response.json();
 
       if (response.ok && result.status === 'success' && result.data) {
         hideBusAlert();
         currentActiveBus = result.data;
+        if (trackingEmptyView) trackingEmptyView.classList.add('hidden');
+        if (trackingActiveView) trackingActiveView.classList.remove('hidden');
+        if (telematicsHud) telematicsHud.classList.remove('hidden');
         renderBusOnMap(currentActiveBus);
-        updateUI(currentActiveBus);
-      } else {
-        // Bus not in database / service
-        showBusOutOfServiceAlert(cleanPlate);
+        updateUI(currentActiveBus, parcelContext);
+        return;
       }
+
+      // 2. If it's a tracking ID or shipment code, check shipments collection
+      if (cleanQuery.toUpperCase().startsWith('TRK') || cleanQuery.length >= 6) {
+        const shipRes = await fetch(`/api/v1/shipments/${encodeURIComponent(cleanQuery)}`);
+        const shipData = await shipRes.json();
+        if (shipRes.ok && shipData.status === 'success' && shipData.data) {
+          const assignedVehicle = shipData.data.assigned_vehicle_id || 'HR-68-A-1001';
+          const busRes = await fetch(`/api/v1/tracking/bus/${encodeURIComponent(assignedVehicle)}`);
+          const busData = await busRes.json();
+          if (busRes.ok && busData.data) {
+            hideBusAlert();
+            currentActiveBus = busData.data;
+            if (trackingEmptyView) trackingEmptyView.classList.add('hidden');
+            if (trackingActiveView) trackingActiveView.classList.remove('hidden');
+            if (telematicsHud) telematicsHud.classList.remove('hidden');
+            renderBusOnMap(currentActiveBus);
+            updateUI(currentActiveBus, shipData.data);
+            return;
+          }
+        }
+      }
+
+      // Bus/Parcel not in database or active service
+      showBusOutOfServiceAlert(cleanQuery);
     } catch (err) {
       console.error('[Bus Tracking Fetch Error]', err);
-      showBusOutOfServiceAlert(cleanPlate);
+      showBusOutOfServiceAlert(cleanQuery);
     }
   };
 
@@ -415,8 +701,8 @@ document.addEventListener('DOMContentLoaded', () => {
   if (form) {
     form.addEventListener('submit', (e) => {
       e.preventDefault();
-      const enteredPlate = inputBusPlate ? inputBusPlate.value : '';
-      trackBusByPlate(enteredPlate);
+      const enteredQuery = inputBusPlate ? inputBusPlate.value : '';
+      trackBusOrParcel(enteredQuery);
     });
   }
 
@@ -432,7 +718,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const busPlate = chip.getAttribute('data-bus');
       if (inputBusPlate) inputBusPlate.value = busPlate;
-      trackBusByPlate(busPlate);
+      trackBusOrParcel(busPlate);
     });
   });
 
@@ -554,15 +840,72 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Check URL query parameters (e.g. /tracking?bus=HR-68-A-1001)
+  // Check URL query parameters (e.g. /tracking?bus=HR-68-A-1001 or ?id=TRK-88219)
   const urlParams = new URLSearchParams(window.location.search);
-  const initialBus = urlParams.get('bus') || (inputBusPlate ? inputBusPlate.value : 'HR-68-A-1001');
+  const paramBus = urlParams.get('bus');
+  const paramTrackingId = urlParams.get('id') || urlParams.get('trackingId');
+  const userParcel = getActiveUserParcel();
 
-  if (inputBusPlate) {
-    inputBusPlate.value = initialBus;
+  // Initialize Map (Centering on regional corridor overview)
+  initLeafletMap([29.3, 76.9]);
+
+  if (paramBus) {
+    if (inputBusPlate) inputBusPlate.value = paramBus;
+    quickBusChips.forEach(c => {
+      if (c.getAttribute('data-bus') === paramBus) {
+        c.classList.add('bg-primary-container', 'text-white');
+        c.classList.remove('bg-surface-container-low', 'text-on-surface-variant');
+      }
+    });
+    trackBusOrParcel(paramBus);
+  } else if (paramTrackingId) {
+    if (inputBusPlate) inputBusPlate.value = paramTrackingId;
+    trackBusOrParcel(paramTrackingId, userParcel);
+  } else if (userParcel && (userParcel.status === 'IN_TRANSIT' || userParcel.status === 'CONFIRMED')) {
+    // User has an active in-transit parcel! Track its assigned bus or tracking ID
+    const target = userParcel.trackingId || userParcel.busNumber || 'HR-68-A-1001';
+    if (inputBusPlate) inputBusPlate.value = target;
+    trackBusOrParcel(target, userParcel);
+  } else {
+    // User has NOT sent any parcel in transit!
+    // Show Empty State (DO NOT show a phantom bus in transit)
+    if (trackingEmptyView) trackingEmptyView.classList.remove('hidden');
+    if (trackingActiveView) trackingActiveView.classList.add('hidden');
+    if (telematicsHud) telematicsHud.classList.add('hidden');
   }
 
-  // Initialize Map & Load Initial Bus from Database
-  initLeafletMap();
-  trackBusByPlate(initialBus);
+  // Hook up Demo Bus button inside empty state
+  if (btnExploreDemoBus) {
+    btnExploreDemoBus.addEventListener('click', () => {
+      const demoBus = 'HR-68-A-1001';
+      if (inputBusPlate) inputBusPlate.value = demoBus;
+      quickBusChips.forEach(c => {
+        if (c.getAttribute('data-bus') === demoBus) {
+          c.classList.add('bg-primary-container', 'text-white');
+          c.classList.remove('bg-surface-container-low', 'text-on-surface-variant');
+        } else {
+          c.classList.remove('bg-primary-container', 'text-white');
+          c.classList.add('bg-surface-container-low', 'text-on-surface-variant');
+        }
+      });
+      trackBusOrParcel(demoBus);
+    });
+  }
+
+  // Window Resize & Orientation Change Listeners (Responsive across all device widths/lengths)
+  window.addEventListener('resize', () => {
+    if (map && busMarker) {
+      map.invalidateSize();
+      centerMapOnVehicle(busMarker.getLatLng(), map.getZoom() || 14.5, { duration: 0.3 });
+    }
+  });
+
+  window.addEventListener('orientationchange', () => {
+    if (map && busMarker) {
+      setTimeout(() => {
+        map.invalidateSize();
+        centerMapOnVehicle(busMarker.getLatLng(), map.getZoom() || 14.5, { duration: 0.4 });
+      }, 150);
+    }
+  });
 });

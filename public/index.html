@@ -781,31 +781,34 @@
       </div>
 
       <!-- Alerts List -->
-      <div class="space-y-3">
-        <div class="bg-slate-50 rounded-2xl p-3.5 border border-slate-100 flex gap-3 items-start">
+      <div class="space-y-3" id="drawerAlertsList">
+        <!-- In-Transit Alert Card (Only unhidden dynamically when user has sent a parcel) -->
+        <div id="drawerInTransitCard" class="hidden bg-primary/5 rounded-2xl p-3.5 border border-primary/20 flex gap-3 items-start">
           <span class="material-symbols-outlined text-primary text-xl">directions_bus</span>
-          <div>
-            <p class="text-xs font-bold text-slate-900">Intercity Express #402 in Transit</p>
-            <p class="text-[11px] text-slate-500">Cruising near Panipat Toll Plaza. ETA 14:30 on schedule.</p>
-            <span class="text-[10px] text-slate-400 font-medium">2 mins ago</span>
+          <div class="flex-1 min-w-0">
+            <p class="text-xs font-bold text-slate-900" id="drawerInTransitTitle">Parcel in Transit</p>
+            <p class="text-[11px] text-slate-500 mt-0.5" id="drawerInTransitSub">Live highway telematics active.</p>
+            <a id="drawerInTransitLink" href="/tracking" class="inline-flex items-center gap-1 text-[11px] font-bold text-primary hover:underline mt-1.5">
+              <span>Track Live ➔</span>
+            </a>
           </div>
         </div>
 
         <div class="bg-slate-50 rounded-2xl p-3.5 border border-slate-100 flex gap-3 items-start">
-          <span class="material-symbols-outlined text-emerald-600 text-xl">qr_code_2</span>
+          <span class="material-symbols-outlined text-amber-600 text-xl">local_offer</span>
           <div>
-            <p class="text-xs font-bold text-slate-900">QR Bay Seal Verified</p>
-            <p class="text-[11px] text-slate-500">Parcel TRK-88219 locked into Bay B2 at ISBT Terminal.</p>
-            <span class="text-[10px] text-slate-400 font-medium">18 mins ago</span>
+            <p class="text-xs font-bold text-slate-900">🎁 Weekend Express Deal: Flat 30% OFF</p>
+            <p class="text-[11px] text-slate-500">Special 30% discount on all Delhi ➔ Chandigarh intercity bookings with code TRANSIT30.</p>
+            <span class="text-[10px] text-slate-400 font-medium">Promo Offer</span>
           </div>
         </div>
 
         <div class="bg-slate-50 rounded-2xl p-3.5 border border-slate-100 flex gap-3 items-start">
-          <span class="material-symbols-outlined text-slate-600 text-xl">two_wheeler</span>
+          <span class="material-symbols-outlined text-emerald-600 text-xl">verified_user</span>
           <div>
-            <p class="text-xs font-bold text-slate-900">First-Mile Pickup Assigned</p>
-            <p class="text-[11px] text-slate-500">Uber Direct courier picked up package from Connaught Place.</p>
-            <span class="text-[10px] text-slate-400 font-medium">45 mins ago</span>
+            <p class="text-xs font-bold text-slate-900">Cryptographic QR Seal Protection</p>
+            <p class="text-[11px] text-slate-500">All cargo bays are digitally sealed with HMAC SHA-256 custody chains.</p>
+            <span class="text-[10px] text-slate-400 font-medium">Security Verified</span>
           </div>
         </div>
       </div>

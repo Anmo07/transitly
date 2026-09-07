@@ -142,6 +142,8 @@ class TelemetryController {
         WHERE UPPER(REPLACE(REPLACE(v.registration, '-', ''), ' ', '')) = $1
            OR UPPER(v.registration) LIKE $2
            OR v.id::text = $3
+           OR UPPER(s.tracking_id) = $1
+           OR UPPER(s.tracking_id) LIKE $2
         ORDER BY s.id DESC NULLS LAST, r.id ASC NULLS LAST
         LIMIT 1;
       `;
@@ -219,7 +221,9 @@ class TelemetryController {
 
         const matched = staticBuses.find(b => 
           b.registration.replace(/[^A-Za-z0-9]/g, '').toUpperCase() === normalized ||
-          b.registration.toUpperCase().includes(rawQuery.toUpperCase())
+          b.registration.toUpperCase().includes(rawQuery.toUpperCase()) ||
+          (b.current_tracking_id && b.current_tracking_id.toUpperCase() === rawQuery.toUpperCase()) ||
+          (b.current_tracking_id && b.current_tracking_id.toUpperCase().includes(rawQuery.toUpperCase()))
         );
 
         if (matched) {

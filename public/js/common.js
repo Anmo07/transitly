@@ -241,22 +241,81 @@ document.addEventListener('DOMContentLoaded', () => {
           })
         });
         const data = await res.json();
+        const trackingId = (data && data.data && data.data.shipment) ? data.data.shipment.trackingId : `TRK-${Math.floor(10000 + Math.random() * 90000)}`;
+
+        const newParcel = {
+          trackingId,
+          status: 'IN_TRANSIT',
+          busNumber: 'HR-68-A-1001',
+          busName: 'Fleet Bus #402',
+          corridor: 'Delhi ➔ Chandigarh',
+          from: document.getElementById('modalSenderAddress')?.value || 'ISBT Kashmiri Gate, Delhi',
+          to: document.getElementById('modalReceiverAddress')?.value || 'ISBT Sector 17, Chandigarh',
+          fare: '₹450.00',
+          createdAt: Date.now()
+        };
+        localStorage.setItem('transitly_active_booking', JSON.stringify(newParcel));
+        try {
+          const sent = JSON.parse(localStorage.getItem('transitly_sent_parcels') || '[]');
+          sent.unshift(newParcel);
+          localStorage.setItem('transitly_sent_parcels', JSON.stringify(sent));
+        } catch (_) {}
+
+        try {
+          const notifs = JSON.parse(localStorage.getItem('transitly_notifications_store') || '[]');
+          notifs.unshift({
+            id: `notif-${trackingId}`,
+            trackingId,
+            category: 'in_transit',
+            type: 'telemetry_ping',
+            title: `Parcel ${trackingId} in Transit: Fleet Bus #402`,
+            message: `Your parcel ${trackingId} is en-route aboard HR-68-A-1001. Live telematics active.`,
+            timestamp: Date.now(),
+            isRead: false,
+            icon: 'directions_bus',
+            iconColor: 'bg-primary/10 text-primary border-primary/20',
+            actionType: 'track',
+            actionUrl: `/tracking?id=${trackingId}&bus=HR-68-A-1001`,
+            actionLabel: 'Track Live'
+          });
+          localStorage.setItem('transitly_notifications_store', JSON.stringify(notifs));
+        } catch (_) {}
+
         const successBox = document.getElementById('modalBookingSuccess');
-        if (successBox && data.data) {
+        if (successBox) {
           successBox.classList.remove('hidden');
           successBox.innerHTML = `
             🎉 <strong>Booking Confirmed!</strong><br>
-            Parcel Tracking ID: <span class="font-mono font-bold">${data.data.shipment.trackingId}</span>
+            Parcel Tracking ID: <span class="font-mono font-bold">${trackingId}</span>
           `;
           setTimeout(() => {
             window.closeBookingModal();
-            window.location.href = `/tracking?id=${data.data.shipment.trackingId}`;
+            window.location.href = `/tracking?id=${trackingId}`;
           }, 1500);
         }
       } catch (err) {
+        const fallbackTrk = `TRK-${Math.floor(10000 + Math.random() * 90000)}`;
+        const fallbackParcel = {
+          trackingId: fallbackTrk,
+          status: 'IN_TRANSIT',
+          busNumber: 'HR-68-A-1001',
+          busName: 'Fleet Bus #402',
+          corridor: 'Delhi ➔ Chandigarh',
+          from: document.getElementById('modalSenderAddress')?.value || 'ISBT Kashmiri Gate, Delhi',
+          to: document.getElementById('modalReceiverAddress')?.value || 'ISBT Sector 17, Chandigarh',
+          fare: '₹450.00',
+          createdAt: Date.now()
+        };
+        localStorage.setItem('transitly_active_booking', JSON.stringify(fallbackParcel));
+        try {
+          const sent = JSON.parse(localStorage.getItem('transitly_sent_parcels') || '[]');
+          sent.unshift(fallbackParcel);
+          localStorage.setItem('transitly_sent_parcels', JSON.stringify(sent));
+        } catch (_) {}
+
         alert('Booking confirmed in test simulation.');
         window.closeBookingModal();
-        window.location.href = '/tracking?id=TRK-88219';
+        window.location.href = `/tracking?id=${fallbackTrk}`;
       } finally {
         btn.disabled = false;
         btn.innerText = 'Confirm Booking';
@@ -269,18 +328,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // =============================================================
 
   const DEFAULT_ALERTS = [
-    {
-      id: 'notif-1',
-      category: 'in_transit',
-      title: 'Bus En-Route: Approaching Ambala Cantt',
-      message: 'Fleet Bus #402 (HR-68-A-1001) carrying parcel TRK-88219 has crossed Karnal Oasis Hub at 68 km/h. ETA Chandigarh: 45 mins.',
-      timestamp: Date.now() - 1000 * 60 * 6,
-      isRead: false,
-      icon: 'directions_bus',
-      iconColor: 'bg-primary/10 text-primary border-primary/20',
-      actionUrl: '/tracking?bus=HR-68-A-1001',
-      actionLabel: 'Track Live'
-    },
     {
       id: 'notif-2',
       category: 'offers',
@@ -295,26 +342,95 @@ document.addEventListener('DOMContentLoaded', () => {
       actionLabel: 'Claim 30% OFF'
     },
     {
-      id: 'notif-3',
-      category: 'in_transit',
-      title: 'Parcel TRK-74911: Luggage Bay Loaded',
-      message: 'Conductor at Delhi Tikri Border scanned QR Seal for Sirsa corridor bus HR-68-A-1002.',
-      timestamp: Date.now() - 1000 * 60 * 120,
-      isRead: false,
-      icon: 'qr_code_scanner',
-      iconColor: 'bg-indigo-100 text-indigo-700 border-indigo-200',
-      actionUrl: '/tracking?bus=HR-68-A-1002',
-      actionLabel: 'View Tracking'
+      id: 'notif-4',
+      category: 'offers',
+      title: '⚡ Door-to-Door First Mile Free Pickup',
+      message: 'Rapido & Uber Direct first-mile pickup fee (₹80) is 100% waived on parcels above 10kg across NCR terminals.',
+      promoCode: 'FREEDOOR',
+      timestamp: Date.now() - 1000 * 60 * 60 * 5,
+      isRead: true,
+      icon: 'two_wheeler',
+      iconColor: 'bg-emerald-100 text-emerald-800 border-emerald-200',
+      actionUrl: '/',
+      actionLabel: 'Claim Free Pickup'
+    },
+    {
+      id: 'notif-5',
+      category: 'system',
+      title: 'Cryptographic QR Seal Custody Active',
+      message: 'All intercity luggage cargo compartments are protected by HMAC SHA-256 digital seals and multi-factor receiver OTPs.',
+      timestamp: Date.now() - 1000 * 60 * 60 * 24,
+      isRead: true,
+      icon: 'verified_user',
+      iconColor: 'bg-emerald-100 text-emerald-800 border-emerald-200',
+      actionUrl: '/faq',
+      actionLabel: 'Security Info'
     }
   ];
 
+  const DELIVERY_PHASE_STATUSES = [
+    'OUT_FOR_DELIVERY',
+    'DELIVERY_LAST_MILE',
+    'DELIVERING',
+    'ARRIVED_DESTINATION',
+    'DELIVERED',
+    'COMPLETED',
+    'CLOSED'
+  ];
+
+  const isDeliveryPhaseStatus = (status) => {
+    if (!status) return false;
+    return DELIVERY_PHASE_STATUSES.includes(String(status).trim().toUpperCase());
+  };
+
   const getStoredNotifications = () => {
+    let list = [];
     try {
       const stored = localStorage.getItem('transitly_notifications_store');
-      if (stored) return JSON.parse(stored);
+      if (stored) list = JSON.parse(stored);
     } catch (_) {}
-    localStorage.setItem('transitly_notifications_store', JSON.stringify(DEFAULT_ALERTS));
-    return DEFAULT_ALERTS;
+    if (!list || list.length === 0) {
+      list = [...DEFAULT_ALERTS];
+    }
+
+    // Filter in_transit notifications: ONLY allow in_transit notifications if user has sent that parcel AND it is NOT in delivery phase!
+    try {
+      const activeRaw = localStorage.getItem('transitly_active_booking');
+      const sent = JSON.parse(localStorage.getItem('transitly_sent_parcels') || '[]');
+      const allParcels = [...sent];
+      if (activeRaw) {
+        const parsed = JSON.parse(activeRaw);
+        if (parsed && !allParcels.some(p => p.trackingId === parsed.trackingId)) {
+          allParcels.unshift(parsed);
+        }
+      }
+
+      // Check if user has ordered any parcel at all
+      const hasOrderedParcels = allParcels.length > 0;
+      // An active in-transit parcel must have status === 'IN_TRANSIT' and NOT be in delivery phase
+      const activeInTransitParcels = allParcels.filter(p => {
+        const s = (p.status || '').toUpperCase();
+        return (s === 'IN_TRANSIT' || s === 'CONFIRMED') && !isDeliveryPhaseStatus(s);
+      });
+
+      if (!hasOrderedParcels || activeInTransitParcels.length === 0) {
+        // User hasn't ordered parcel OR all parcels are in delivery phase / delivered
+        list = list.filter(n => n.category !== 'in_transit');
+      } else {
+        const validInTransitTrackingIds = new Set(activeInTransitParcels.map(p => p.trackingId).filter(Boolean));
+        list = list.filter(n => {
+          if (n.category === 'in_transit') {
+            if (n.trackingId) {
+              return validInTransitTrackingIds.has(n.trackingId);
+            }
+            return true;
+          }
+          return true;
+        });
+      }
+    } catch (_) {}
+
+    return list;
   };
 
   const getUnreadCount = () => {
@@ -324,6 +440,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   /**
    * Update the Notification Bell Icons and Badges Dynamically on Any Page
+   * Keeps notification button simple, static, without dimming or brightening pulses.
    */
   const refreshBellBadges = () => {
     const unreadCount = getUnreadCount();
@@ -361,10 +478,10 @@ document.addEventListener('DOMContentLoaded', () => {
       const oldBadge = btn.querySelector('.global-notif-badge');
       if (oldBadge) oldBadge.remove();
 
-      // Inject unread badge if unreadCount > 0
+      // Inject clean, simple, static unread badge if unreadCount > 0 (No pulse / dimming / brightening)
       if (unreadCount > 0) {
         const badgeEl = document.createElement('span');
-        badgeEl.className = 'global-notif-badge absolute -top-1 -right-1 min-w-[19px] h-[19px] px-1 bg-gradient-to-r from-red-500 to-rose-600 text-white text-[10px] font-black rounded-full flex items-center justify-center shadow-md ring-2 ring-white z-20 pointer-events-none transition-transform duration-200 animate-pulse';
+        badgeEl.className = 'global-notif-badge absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-rose-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-sm ring-2 ring-white z-20 pointer-events-none';
         badgeEl.textContent = unreadCount > 9 ? '9+' : unreadCount;
         btn.appendChild(badgeEl);
       }
@@ -408,7 +525,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     toast.innerHTML = `
       <div class="w-9 h-9 rounded-2xl bg-primary/10 text-primary border border-primary/20 flex items-center justify-center shrink-0">
-        <span class="material-symbols-outlined text-lg animate-pulse">notifications_active</span>
+        <span class="material-symbols-outlined text-lg text-primary">notifications</span>
       </div>
       <div class="flex-1 min-w-0">
         <div class="flex items-center justify-between gap-1 mb-0.5">
@@ -501,7 +618,30 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    const template = LIVE_EVENT_TEMPLATES[lastEventIndex % LIVE_EVENT_TEMPLATES.length];
+    // Check if user has an active parcel currently in transit (and NOT in delivery phase)
+    let hasActiveInTransitParcel = false;
+    try {
+      const activeRaw = localStorage.getItem('transitly_active_booking');
+      const sent = JSON.parse(localStorage.getItem('transitly_sent_parcels') || '[]');
+      const allParcels = [...sent];
+      if (activeRaw) allParcels.unshift(JSON.parse(activeRaw));
+      hasActiveInTransitParcel = allParcels.some(p => {
+        const s = (p.status || '').toUpperCase();
+        return (s === 'IN_TRANSIT' || s === 'CONFIRMED') && !isDeliveryPhaseStatus(s);
+      });
+    } catch (_) {}
+
+    // Filter candidate templates: strictly do not dispatch in-transit alerts if user hasn't ordered or if in delivery phase
+    const candidates = LIVE_EVENT_TEMPLATES.filter(t => {
+      if (t.category === 'in_transit') {
+        return hasActiveInTransitParcel;
+      }
+      return true;
+    });
+
+    if (candidates.length === 0) return;
+
+    const template = candidates[lastEventIndex % candidates.length];
     lastEventIndex++;
 
     const newAlert = {

@@ -18,21 +18,10 @@ document.addEventListener('DOMContentLoaded', () => {
   /**
    * Initial Default Rich Notifications Catalog
    */
+  /**
+   * Initial Default Notifications Catalog (Exclusive of In-Transit alerts unless parcel sent)
+   */
   const DEFAULT_NOTIFICATIONS = [
-    {
-      id: 'notif-1',
-      category: 'in_transit',
-      type: 'telemetry_ping',
-      title: 'Bus En-Route: Approaching Ambala Cantt',
-      message: 'Fleet Bus #402 (HR-68-A-1001) carrying parcel TRK-88219 has crossed Karnal Oasis Hub at 68 km/h. Estimated arrival at Chandigarh ISBT in 45 minutes.',
-      timestamp: Date.now() - 1000 * 60 * 6, // 6 mins ago
-      isRead: false,
-      icon: 'directions_bus',
-      iconColor: 'bg-primary/10 text-primary border-primary/20',
-      actionType: 'track',
-      actionUrl: '/tracking?bus=HR-68-A-1001',
-      actionLabel: 'Track Bus Live ➔'
-    },
     {
       id: 'notif-2',
       category: 'offers',
@@ -47,20 +36,6 @@ document.addEventListener('DOMContentLoaded', () => {
       actionType: 'promo',
       actionUrl: '/',
       actionLabel: 'Book with 30% OFF ➔'
-    },
-    {
-      id: 'notif-3',
-      category: 'in_transit',
-      type: 'milestone',
-      title: 'Parcel TRK-74911: Luggage Bay Loaded',
-      message: 'Conductor at Delhi Tikri Border successfully scanned and verified HMAC QR Seal for Sirsa corridor bus HR-68-A-1002.',
-      timestamp: Date.now() - 1000 * 60 * 120, // 2 hours ago
-      isRead: false,
-      icon: 'qr_code_scanner',
-      iconColor: 'bg-indigo-100 text-indigo-700 border-indigo-200',
-      actionType: 'track',
-      actionUrl: '/tracking?bus=HR-68-A-1002',
-      actionLabel: 'View Tracking'
     },
     {
       id: 'notif-4',
@@ -81,28 +56,108 @@ document.addEventListener('DOMContentLoaded', () => {
       id: 'notif-5',
       category: 'system',
       type: 'security_proof',
-      title: 'Proof of Delivery Archived: TRK-60912',
-      message: 'Recipient Rohan Verma verified delivery OTP (882194) and completed digital signature at Sindhi Camp Jaipur terminal.',
+      title: 'Cryptographic QR Seal Custody Active',
+      message: 'All intercity luggage cargo compartments are protected by HMAC SHA-256 digital seals and multi-factor receiver OTPs.',
       timestamp: Date.now() - 1000 * 60 * 60 * 24, // 1 day ago
       isRead: true,
       icon: 'verified_user',
       iconColor: 'bg-emerald-100 text-emerald-800 border-emerald-200',
       actionType: 'history',
-      actionUrl: '/history',
-      actionLabel: 'View POD Receipt'
+      actionUrl: '/faq',
+      actionLabel: 'Learn About POD Security'
     }
   ];
 
   /**
-   * Load Notifications from Storage or Default
+   * Helper: Check if User has Sent any Parcels
+   */
+  const getUserSentParcels = () => {
+    try {
+      const active = localStorage.getItem('transitly_active_booking');
+      const list = JSON.parse(localStorage.getItem('transitly_sent_parcels') || '[]');
+      if (active) {
+        const parsed = JSON.parse(active);
+        if (parsed && !list.some(p => p.trackingId === parsed.trackingId)) {
+          list.unshift(parsed);
+        }
+      }
+      return list;
+    } catch (_) {
+      return [];
+    }
+  };
+
+  const DELIVERY_PHASE_STATUSES = [
+    'OUT_FOR_DELIVERY',
+    'DELIVERY_LAST_MILE',
+    'DELIVERING',
+    'ARRIVED_DESTINATION',
+    'DELIVERED',
+    'COMPLETED',
+    'CLOSED'
+  ];
+
+  const isDeliveryPhaseStatus = (status) => {
+    if (!status) return false;
+    return DELIVERY_PHASE_STATUSES.includes(String(status).trim().toUpperCase());
+  };
+
+  /**
+   * Load Notifications from Storage or Default (Strictly Enforce in_transit Only When User Sent Parcel & NOT in Delivery Phase)
    */
   const getNotifications = () => {
+    let list = [];
     try {
       const stored = localStorage.getItem('transitly_notifications_store');
-      if (stored) return JSON.parse(stored);
+      if (stored) list = JSON.parse(stored);
     } catch (_) {}
-    localStorage.setItem('transitly_notifications_store', JSON.stringify(DEFAULT_NOTIFICATIONS));
-    return DEFAULT_NOTIFICATIONS;
+
+    if (!list || list.length === 0) {
+      list = [...DEFAULT_NOTIFICATIONS];
+    }
+
+    const userParcels = getUserSentParcels();
+    const activeInTransitParcels = userParcels.filter(p => {
+      const s = (p.status || '').toUpperCase();
+      return (s === 'IN_TRANSIT' || s === 'CONFIRMED') && !isDeliveryPhaseStatus(s);
+    });
+    const activeTrackingIds = new Set(activeInTransitParcels.map(p => p.trackingId).filter(Boolean));
+
+    // Remove in-transit notifications if user hasn't sent any parcel OR if the parcel is in delivery phase
+    list = list.filter(n => {
+      if (n.category === 'in_transit') {
+        if (n.trackingId) {
+          return activeTrackingIds.has(n.trackingId);
+        }
+        return activeInTransitParcels.length > 0;
+      }
+      return true;
+    });
+
+    // If user has actively sent parcels in transit, inject live notifications for them
+    activeInTransitParcels.forEach(p => {
+      const notifId = `notif-user-${p.trackingId}`;
+      if (!list.some(n => n.id === notifId || (n.trackingId && n.trackingId === p.trackingId))) {
+        list.unshift({
+          id: notifId,
+          trackingId: p.trackingId,
+          category: 'in_transit',
+          type: 'telemetry_ping',
+          title: `Parcel ${p.trackingId} in Transit: ${p.busName || 'Fleet Bus'}`,
+          message: `Your parcel ${p.trackingId} is in transit on corridor ${p.corridor || 'Delhi ➔ Chandigarh'} aboard ${p.busNumber || 'HR-68-A-1001'}. Live telematics active.`,
+          timestamp: p.createdAt || Date.now(),
+          isRead: false,
+          icon: 'directions_bus',
+          iconColor: 'bg-primary/10 text-primary border-primary/20',
+          actionType: 'track',
+          actionUrl: `/tracking?id=${p.trackingId}&bus=${p.busNumber || 'HR-68-A-1001'}`,
+          actionLabel: 'Track Bus Live ➔'
+        });
+      }
+    });
+
+    localStorage.setItem('transitly_notifications_store', JSON.stringify(list));
+    return list;
   };
 
   const saveNotifications = (list) => {
@@ -185,7 +240,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     filtered.forEach(item => {
       const unreadDot = !item.isRead
-        ? `<span class="w-2.5 h-2.5 rounded-full bg-primary animate-pulse shrink-0" title="Unread Alert"></span>`
+        ? `<span class="w-2 h-2 rounded-full bg-primary shrink-0" title="Unread Alert"></span>`
         : '';
 
       const cardBg = !item.isRead

@@ -866,6 +866,51 @@ document.addEventListener('DOMContentLoaded', () => {
       const trackingId = `TRK-${randomSuffix}`;
       activeCreatedTrackingId = trackingId;
 
+      const busPlate = (busName.includes('315') ? 'DL-01-AB-1234' : (busName.includes('508') ? 'HR-68-A-1002' : 'HR-68-A-1001'));
+      const newParcel = {
+        trackingId,
+        status: 'IN_TRANSIT',
+        busNumber: busPlate,
+        busName,
+        corridor: corridorText,
+        from: fromLocation.name,
+        to: toLocation.name,
+        fare: `₹${total}.00`,
+        createdAt: Date.now()
+      };
+
+      // Persist active booking & sent parcel history
+      localStorage.setItem('transitly_active_booking', JSON.stringify(newParcel));
+      try {
+        const sent = JSON.parse(localStorage.getItem('transitly_sent_parcels') || '[]');
+        sent.unshift(newParcel);
+        localStorage.setItem('transitly_sent_parcels', JSON.stringify(sent));
+      } catch (_) {}
+
+      // Add in-transit notification for this specific sent parcel
+      try {
+        const notifs = JSON.parse(localStorage.getItem('transitly_notifications_store') || '[]');
+        notifs.unshift({
+          id: `notif-${trackingId}`,
+          trackingId,
+          category: 'in_transit',
+          type: 'telemetry_ping',
+          title: `Parcel ${trackingId} in Transit: ${busName}`,
+          message: `Your parcel ${trackingId} is en-route from ${fromLocation.name.split(',')[0]} to ${toLocation.name.split(',')[0]} aboard ${busPlate}. Live telematics active.`,
+          timestamp: Date.now(),
+          isRead: false,
+          icon: 'directions_bus',
+          iconColor: 'bg-primary/10 text-primary border-primary/20',
+          actionType: 'track',
+          actionUrl: `/tracking?id=${trackingId}&bus=${busPlate}`,
+          actionLabel: 'Track Live'
+        });
+        localStorage.setItem('transitly_notifications_store', JSON.stringify(notifs));
+        if (typeof window.refreshTransitlyBellBadges === 'function') {
+          window.refreshTransitlyBellBadges();
+        }
+      } catch (_) {}
+
       const payload = {
         trackingId,
         operatorId: 10,
@@ -928,9 +973,35 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Notifications Drawer Handlers
+  const updateDrawerAlerts = () => {
+    const drawerCard = document.getElementById('drawerInTransitCard');
+    const drawerTitle = document.getElementById('drawerInTransitTitle');
+    const drawerSub = document.getElementById('drawerInTransitSub');
+    const drawerLink = document.getElementById('drawerInTransitLink');
+
+    try {
+      const activeRaw = localStorage.getItem('transitly_active_booking');
+      if (activeRaw) {
+        const parcel = JSON.parse(activeRaw);
+        if (parcel && (parcel.status === 'IN_TRANSIT' || parcel.status === 'CONFIRMED')) {
+          if (drawerCard) drawerCard.classList.remove('hidden');
+          if (drawerTitle) drawerTitle.textContent = `Parcel ${parcel.trackingId} in Transit: ${parcel.busName || 'Fleet Bus'}`;
+          if (drawerSub) drawerSub.textContent = `En-route from ${parcel.from?.split(',')[0] || 'Origin'} to ${parcel.to?.split(',')[0] || 'Destination'} aboard ${parcel.busNumber || 'bus'}.`;
+          if (drawerLink) drawerLink.href = `/tracking?id=${parcel.trackingId}&bus=${parcel.busNumber || 'HR-68-A-1001'}`;
+          return;
+        }
+      }
+    } catch (_) {}
+
+    if (drawerCard) drawerCard.classList.add('hidden');
+  };
+
+  updateDrawerAlerts();
+
   const btnNotificationTrigger = document.querySelector('[data-icon="notifications"]')?.closest('button');
   if (btnNotificationTrigger) {
     btnNotificationTrigger.addEventListener('click', () => {
+      updateDrawerAlerts();
       if (notificationsDrawer) notificationsDrawer.classList.remove('hidden');
     });
   }
