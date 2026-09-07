@@ -1,10 +1,10 @@
 # ============================================================================
-# Transitly — Full Stack Docker Compose
-# App + Redis + PostGIS (ARM64/Apple Silicon Native)
+# Transitly — Full Stack Docker Compose Orchestration
+# App (Express + Socket.io) + Redis + PostGIS 16 (ARM64 / Apple Silicon Native)
 # ============================================================================
 
 services:
-  # ---- Transitly Express Application ----
+  # ---- Transitly Express Core Application ----
   app:
     build:
       context: .
@@ -17,17 +17,21 @@ services:
       - .env.docker
     depends_on:
       redis:
-        condition: service_started
+        condition: service_healthy
       postgis:
         condition: service_healthy
+      db-init:
+        condition: service_completed_successfully
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/health"]
       interval: 30s
       timeout: 5s
       start_period: 15s
       retries: 3
+    networks:
+      - transitly-net
 
-  # ---- Database Initializer (Run-Once Seed Job) ----
+  # ---- Database Initializer (Run-Once Schema & Seed Job) ----
   db-init:
     build:
       context: .
@@ -40,6 +44,8 @@ services:
         condition: service_healthy
     command: ["node", "src/db/initDb.js"]
     restart: "no"
+    networks:
+      - transitly-net
 
   # ---- Fast Path In-Memory Datastore & Stream Buffer ----
   redis:
@@ -56,8 +62,10 @@ services:
       interval: 10s
       timeout: 3s
       retries: 5
+    networks:
+      - transitly-net
 
-  # ---- Spatial Telemetry & Transaction Datastore (PostGIS / PostgreSQL) ----
+  # ---- Spatial Telemetry & Transaction Datastore (PostGIS 16 / PostgreSQL) ----
   postgis:
     image: postgis/postgis:16-3.4-alpine
     container_name: transitly-postgis
@@ -70,15 +78,22 @@ services:
       - '5433:5432'
     volumes:
       - postgis_data:/var/lib/postgresql/data
-      - ./src/db/migrations:/docker-entrypoint-initdb.d
+      - ./src/db/migrations:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d transitly_telemetry"]
       interval: 10s
       timeout: 5s
       start_period: 30s
       retries: 5
+    networks:
+      - transitly-net
 
 volumes:
   redis_data:
+    driver: local
   postgis_data:
+    driver: local
 
+networks:
+  transitly-net:
+    driver: bridge

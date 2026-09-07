@@ -1,45 +1,48 @@
 # Dependencies
-node_modules
+node_modules/
 npm-debug.log*
 
 # Git
-.git
+.git/
 .gitignore
 
 # IDE & Editor
-.vscode
-.idea
+.vscode/
+.idea/
 *.swp
 *.swo
 *~
 
-# OS
+# OS artifacts
 .DS_Store
 Thumbs.db
 
-# Docker
+# Docker configuration files
 Dockerfile
 docker-compose.yml
 .dockerignore
 
-# Tests (not needed in production image)
+# Test suites & coverage
 tests/
+coverage/
 
-# Documentation source (not needed at runtime)
+# Documentation source
 *.md
 !README.md
+!docs/*.md
+!docs/sitemap.mmd
 
-# Development config
+# Development config & secrets
 .env
 .env.local
 .env.*.local
 nodemon.json
 
-# Agent / AI tooling
+# Agent & IDE internal paths
 .agents/
 .gemini/
 
-# Temp
+# Temporary directories
 tmp/
 temp/
 scratch/

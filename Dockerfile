@@ -1,17 +1,17 @@
 # ============================================================================
 # Transitly — Multi-stage Production Dockerfile
-# Node.js Express + Static Frontend (Google Stitch Design)
+# Node.js Express + PostGIS + Redis Microservices & Unified Frontend
 # ============================================================================
 
-# ---- Stage 1: Build CSS & Assets ----
+# ---- Stage 1: Build CSS & Static Assets ----
 FROM node:22-alpine AS builder
 WORKDIR /app
 
-# Install all dependencies including devDependencies for Tailwind CSS
+# Install dependencies needed for CSS compilation
 COPY package.json package-lock.json* ./
 RUN npm ci
 
-# Copy source and public assets to build CSS bundle
+# Copy source, templates, and Tailwind/PostCSS configs
 COPY src/ ./src/
 COPY public/ ./public/
 COPY tailwind.config.js postcss.config.js ./
@@ -23,7 +23,7 @@ WORKDIR /app
 COPY package.json package-lock.json* ./
 RUN npm ci --omit=dev --ignore-scripts && npm cache clean --force
 
-# ---- Stage 3: Production Image (Runner) ----
+# ---- Stage 3: Production Runtime Image ----
 FROM node:22-alpine AS runner
 LABEL maintainer="Anmo07 <anmolrajotiya@gmail.com>"
 LABEL org.opencontainers.image.title="Transitly"
@@ -38,29 +38,30 @@ RUN addgroup --system --gid 1001 transitly && \
 # Copy production dependencies
 COPY --from=deps /app/node_modules ./node_modules
 
-# Copy application source & built CSS
-COPY package.json ./
+# Copy application source & built assets
+COPY package.json run.js ./
+COPY sitemap.svg sitemap.mmd ./
 COPY src/ ./src/
 COPY public/ ./public/
 COPY --from=builder /app/public/css/style.css ./public/css/style.css
 COPY docs/ ./docs/
 
-# Set ownership
+# Set file ownership to non-root user
 RUN chown -R transitly:transitly /app
 
 # Switch to non-root user
 USER transitly
 
-# Environment defaults (overridable via docker-compose or --env-file)
+# Environment defaults
 ENV NODE_ENV=production
 ENV PORT=3000
 
-# Expose Express server port
+# Expose HTTP port
 EXPOSE 3000
 
-# Health check for container orchestration
+# Healthcheck for container orchestration
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:3000/health || exit 1
 
-# Start application
+# Launch production server
 CMD ["node", "src/server.js"]
