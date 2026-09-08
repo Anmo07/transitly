@@ -1,16 +1,26 @@
 const { Pool } = require('pg');
 
-const pool = new Pool({
-  host: process.env.POSTGRES_HOST || 'localhost',
-  port: parseInt(process.env.POSTGRES_PORT || '5432', 10),
-  database: process.env.POSTGRES_DB || 'transitly_telemetry',
-  user: process.env.POSTGRES_USER || 'postgres',
-  password: process.env.POSTGRES_PASSWORD || 'postgrespassword',
-  max: parseInt(process.env.POSTGRES_POOL_MAX || '20', 10),
-  idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 5000,
-  ssl: process.env.POSTGRES_SSL === 'true' ? { rejectUnauthorized: false } : false
-});
+const poolConfig = process.env.DATABASE_URL
+  ? {
+      connectionString: process.env.DATABASE_URL,
+      ssl: process.env.POSTGRES_SSL === 'false' ? false : { rejectUnauthorized: false },
+      max: parseInt(process.env.POSTGRES_POOL_MAX || '10', 10),
+      idleTimeoutMillis: 30000,
+      connectionTimeoutMillis: 10000
+    }
+  : {
+      host: process.env.POSTGRES_HOST || 'localhost',
+      port: parseInt(process.env.POSTGRES_PORT || '5432', 10),
+      database: process.env.POSTGRES_DB || 'transitly_telemetry',
+      user: process.env.POSTGRES_USER || 'postgres',
+      password: process.env.POSTGRES_PASSWORD || 'postgrespassword',
+      max: parseInt(process.env.POSTGRES_POOL_MAX || '20', 10),
+      idleTimeoutMillis: 30000,
+      connectionTimeoutMillis: 5000,
+      ssl: process.env.POSTGRES_SSL === 'true' ? { rejectUnauthorized: false } : false
+    };
+
+const pool = new Pool(poolConfig);
 
 pool.on('connect', () => {
   console.log('[PostgreSQL/PostGIS] Client connected to slow path telemetry pool');

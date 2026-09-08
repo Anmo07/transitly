@@ -17,43 +17,53 @@ const initializeDatabase = async () => {
   const host = process.env.POSTGRES_HOST || 'localhost';
   const port = parseInt(process.env.POSTGRES_PORT || '5432', 10);
 
-  // 1. Connect to root postgres database to ensure target database exists
-  console.log(`1. Ensuring database "${targetDb}" exists on ${host}:${port}...`);
-  const rootPool = new Pool({
-    host,
-    port,
-    user,
-    password,
-    database: 'postgres'
-  });
+  let targetPool;
 
-  try {
-    const dbCheck = await rootPool.query(
-      `SELECT 1 FROM pg_database WHERE datname = $1`,
-      [targetDb]
-    );
-    if (dbCheck.rowCount === 0) {
-      console.log(`Creating database "${targetDb}"...`);
-      await rootPool.query(`CREATE DATABASE "${targetDb}"`);
-      console.log(`✔ Database "${targetDb}" created.`);
-    } else {
-      console.log(`✔ Database "${targetDb}" verified.`);
+  if (process.env.DATABASE_URL) {
+    console.log(`1. Connecting directly to cloud database via DATABASE_URL...`);
+    targetPool = new Pool({
+      connectionString: process.env.DATABASE_URL,
+      ssl: process.env.POSTGRES_SSL === 'false' ? false : { rejectUnauthorized: false }
+    });
+  } else {
+    // 1. Connect to root postgres database to ensure target database exists
+    console.log(`1. Ensuring database "${targetDb}" exists on ${host}:${port}...`);
+    const rootPool = new Pool({
+      host,
+      port,
+      user,
+      password,
+      database: 'postgres'
+    });
+
+    try {
+      const dbCheck = await rootPool.query(
+        `SELECT 1 FROM pg_database WHERE datname = $1`,
+        [targetDb]
+      );
+      if (dbCheck.rowCount === 0) {
+        console.log(`Creating database "${targetDb}"...`);
+        await rootPool.query(`CREATE DATABASE "${targetDb}"`);
+        console.log(`✔ Database "${targetDb}" created.`);
+      } else {
+        console.log(`✔ Database "${targetDb}" verified.`);
+      }
+    } catch (err) {
+      console.warn('[Notice]', err.message);
+    } finally {
+      await rootPool.end();
     }
-  } catch (err) {
-    console.warn('[Notice]', err.message);
-  } finally {
-    await rootPool.end();
-  }
 
-  // 2. Connect to target database
-  console.log(`\n2. Connecting to "${targetDb}"...`);
-  const targetPool = new Pool({
-    host,
-    port,
-    user,
-    password,
-    database: targetDb
-  });
+    // 2. Connect to target database
+    console.log(`\n2. Connecting to "${targetDb}"...`);
+    targetPool = new Pool({
+      host,
+      port,
+      user,
+      password,
+      database: targetDb
+    });
+  }
 
   try {
     // Check for PostGIS availability
