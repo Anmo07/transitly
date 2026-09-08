@@ -38,17 +38,18 @@ This **Technical Requirements Document (TRD)** establishes the canonical technic
 
 ### 3.1 Availability & Latency Service Level Objectives (SLOs)
 
-| Metric | Target Objective | Measurement Window | Action on Breach |
-| :--- | :--- | :--- | :--- |
-| **Booking API Availability** | $\ge 99.95\%$ | Monthly Rolling | Trigger PagerDuty P1 incident, scale replica nodes |
-| **Booking API Latency** | $\text{p95} < 500\text{ ms}$ | 5-minute average | Inspect DB pool saturation & third-party partner delays |
-| **Telemetry Ingestion Latency** | $\text{p99} < 5\text{ ms}$ | Continuous | Redis Fast Path (`GEOADD` + `XADD`) execution check |
-| **GPS Telemetry Freshness** | $\ge 95\%$ within 30s | Continuous | Driver app reconnect retry & dead-zone alert |
-| **WhatsApp Notification SLA** | $\ge 95\%$ within 60s | 15-minute rolling | Inspect background worker queue backpressure |
-| **Recovery Point Objective (RPO)** | $\le 15\text{ minutes}$ | Disaster recovery | Point-in-time recovery (PITR) WAL log replay |
-| **Recovery Time Objective (RTO)** | $\le 4\text{ hours}$ | Disaster recovery | Automated Terraform multi-AZ container redeployment |
+| Metric                             | Target Objective             | Measurement Window | Action on Breach                                        |
+| :--------------------------------- | :--------------------------- | :----------------- | :------------------------------------------------------ |
+| **Booking API Availability**       | $\ge 99.95\%$                | Monthly Rolling    | Trigger PagerDuty P1 incident, scale replica nodes      |
+| **Booking API Latency**            | $\text{p95} < 500\text{ ms}$ | 5-minute average   | Inspect DB pool saturation & third-party partner delays |
+| **Telemetry Ingestion Latency**    | $\text{p99} < 5\text{ ms}$   | Continuous         | Redis Fast Path (`GEOADD` + `XADD`) execution check     |
+| **GPS Telemetry Freshness**        | $\ge 95\%$ within 30s        | Continuous         | Driver app reconnect retry & dead-zone alert            |
+| **WhatsApp Notification SLA**      | $\ge 95\%$ within 60s        | 15-minute rolling  | Inspect background worker queue backpressure            |
+| **Recovery Point Objective (RPO)** | $\le 15\text{ minutes}$      | Disaster recovery  | Point-in-time recovery (PITR) WAL log replay            |
+| **Recovery Time Objective (RTO)**  | $\le 4\text{ hours}$         | Disaster recovery  | Automated Terraform multi-AZ container redeployment     |
 
 ### 3.2 Scale & Throughput Baseline (Initial Production Horizon)
+
 - **Active Operators:** 100+ public transport agencies.
 - **Active Fleet Buses:** 10,000 concurrent moving vehicles.
 - **Daily Shipment Volume:** 100,000+ parcels processed per day.
@@ -94,6 +95,7 @@ graph LR
 ### 4.1 Indexing & Spatial Acceleration Specifications
 
 #### PostGIS Spatial (GIST) Indexes
+
 - `terminals`: `CREATE INDEX idx_terminals_location ON terminals USING GIST (location);`
 - `terminals`: `CREATE INDEX idx_terminals_polygon ON terminals USING GIST (geofence_polygon);`
 - `route_transactions`: `CREATE INDEX idx_routes_path ON route_transactions USING GIST (path);`
@@ -108,6 +110,7 @@ graph LR
 - `saved_addresses`: `CREATE INDEX idx_saved_addresses_geom ON saved_addresses USING GIST (geom);`
 
 #### B-Tree & Concurrency Indexes
+
 - `capacity_slots`: `UNIQUE (vehicle_id, slot_date)`, `INDEX (route_transaction_id, slot_date)`
 - `shipments`: `UNIQUE (tracking_id)`, `INDEX (id, status, version)` (OCC acceleration)
 - `provider_dispatches`: `UNIQUE (idempotency_key)`, `INDEX (external_delivery_id)`
@@ -167,18 +170,18 @@ const result = await Shipment.findOneAndUpdate(
   {
     _id: shipmentId,
     status: expectedStatus,
-    version: expectedVersion
+    version: expectedVersion,
   },
   {
     $set: updates,
-    $inc: { version: 1 }
+    $inc: { version: 1 },
   },
-  { returnDocument: 'after' }
+  { returnDocument: "after" },
 );
 
 if (!result) {
   throw new ConcurrencyConflictError(
-    `OCC Conflict: Shipment ${shipmentId} modified by concurrent transaction or invalid state.`
+    `OCC Conflict: Shipment ${shipmentId} modified by concurrent transaction or invalid state.`,
   );
 }
 ```
@@ -216,6 +219,7 @@ The booking process executes across multiple domains as a **Distributed Saga** w
 To handle 1,667+ GPS pings/sec with zero customer tracking latency:
 
 ### 7.1 Fast Path (In-Memory Sub-5ms)
+
 1. Driver GPS ping hits `POST /api/v1/tracking/telemetry`.
 2. Telemetry service executes Redis pipeline:
    - `GEOADD active_buses {lon} {lat} {vehicleId}`
@@ -225,6 +229,7 @@ To handle 1,667+ GPS pings/sec with zero customer tracking latency:
 4. WebSocket server listens to `bus_telemetry_channel` and broadcasts updates to connected map clients.
 
 ### 7.2 Slow Path (Durable Relational GIS Persistence)
+
 1. Asynchronous Node.js background consumer worker joins Redis Stream Consumer Group: `XREADGROUP GROUP telemetry_persist_workers worker_1 STREAMS telemetry_stream >`.
 2. Batches 100 pings into a single multi-row PostGIS SQL query:
    ```sql
@@ -246,31 +251,28 @@ interface LastMileProviderAdapter {
   checkServiceability(
     pickupCoords: Coordinates,
     dropoffCoords: Coordinates,
-    parcelSpecs: ParcelSpecs
+    parcelSpecs: ParcelSpecs,
   ): Promise<ServiceabilityResponse>;
 
   createQuote(
     pickupCoords: Coordinates,
     dropoffCoords: Coordinates,
-    parcelSpecs: ParcelSpecs
+    parcelSpecs: ParcelSpecs,
   ): Promise<ProviderQuote>;
 
   confirmDispatch(
     quoteId: string,
     idempotencyKey: string,
     pickupContact: ContactInfo,
-    deliveryContact: ContactInfo
+    deliveryContact: ContactInfo,
   ): Promise<DispatchConfirmation>;
 
   cancelDispatch(
     dispatchId: string,
-    reason: string
+    reason: string,
   ): Promise<CancellationResult>;
 
-  verifyWebhookSignature(
-    rawBody: string,
-    signatureHeader: string
-  ): boolean;
+  verifyWebhookSignature(rawBody: string, signatureHeader: string): boolean;
 }
 ```
 
@@ -324,25 +326,26 @@ All inter-service asynchronous events conform to the standard JSON event envelop
 
 ## 11. Security, Cryptography & Threat Mitigation
 
-| Threat Vector | Mitigation Architecture | Implementation |
-| :--- | :--- | :--- |
-| **Parcel Tampering / Fake Seals** | HMAC-SHA256 Cryptographic Digital QR Seals | [`src/utils/security.js`](file:///Users/anmol/Documents/Projects/transitly/src/utils/security.js) |
-| **False Delivery Claim** | Constant-Time SHA-256 Hashed 6-digit OTP + Geofence Match | `crypto.timingSafeEqual` + PostGIS `ST_DWithin` |
-| **Off-Route Unauthorized Handoff** | PostGIS Geofence Spatial Boundary Validation | PostGIS `ST_DWithin` / `ST_Contains` query |
-| **Driver Privacy & Stalking** | Automatic PII Redaction Filter on all customer responses | `redactCustomerMessage()` |
-| **Concurrent Capacity Overbooking** | Optimistic Concurrency Control (OCC) on Capacity Slots | PostgreSQL `UPDATE ... WHERE version = $v` |
-| **API Denial of Service** | Redis Sliding Window Rate Limiting (100 req/min/IP) | Redis Key TTL Rate Limiter |
-| **OTP Replay / Cross-Flow Tampering** | Purpose-Binding (`${identifier}::${purpose}`) | [`src/api/controllers/userController.js`](file:///Users/anmol/Documents/Projects/transitly/src/api/controllers/userController.js) |
-| **OTP Brute-Force Guessing** | Max 5 verification attempts with immediate revocation (`HTTP 423`) | Auto-invalidation on 5th failure |
-| **SMS/Telephony Denial of Wallet** | Exponential Backoff (`30s→60s→120s→300s`) + 5 sends/hr cap | In-memory `rateLimitStore` + client cooldown |
-| **SQLi / XSS / Parameter Tampering** | Strict whitelist regex sanitization engine (`DataSanitizer`) | Parameterized queries with explicit `$n::type` casts |
-| **Unauthenticated Surfing Bypass** | Dual-Layer Route Authorization Gate (`requirePageAuth` + client gate) | HTTP 302 redirect with preserved redirect parameter |
+| Threat Vector                         | Mitigation Architecture                                               | Implementation                                                                                                                    |
+| :------------------------------------ | :-------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------- |
+| **Parcel Tampering / Fake Seals**     | HMAC-SHA256 Cryptographic Digital QR Seals                            | [`src/utils/security.js`](file:///Users/anmol/Documents/Projects/transitly/src/utils/security.js)                                 |
+| **False Delivery Claim**              | Constant-Time SHA-256 Hashed 6-digit OTP + Geofence Match             | `crypto.timingSafeEqual` + PostGIS `ST_DWithin`                                                                                   |
+| **Off-Route Unauthorized Handoff**    | PostGIS Geofence Spatial Boundary Validation                          | PostGIS `ST_DWithin` / `ST_Contains` query                                                                                        |
+| **Driver Privacy & Stalking**         | Automatic PII Redaction Filter on all customer responses              | `redactCustomerMessage()`                                                                                                         |
+| **Concurrent Capacity Overbooking**   | Optimistic Concurrency Control (OCC) on Capacity Slots                | PostgreSQL `UPDATE ... WHERE version = $v`                                                                                        |
+| **API Denial of Service**             | Redis Sliding Window Rate Limiting (100 req/min/IP)                   | Redis Key TTL Rate Limiter                                                                                                        |
+| **OTP Replay / Cross-Flow Tampering** | Purpose-Binding (`${identifier}::${purpose}`)                         | [`src/api/controllers/userController.js`](file:///Users/anmol/Documents/Projects/transitly/src/api/controllers/userController.js) |
+| **OTP Brute-Force Guessing**          | Max 5 verification attempts with immediate revocation (`HTTP 423`)    | Auto-invalidation on 5th failure                                                                                                  |
+| **SMS/Telephony Denial of Wallet**    | Exponential Backoff (`30s→60s→120s→300s`) + 5 sends/hr cap            | In-memory `rateLimitStore` + client cooldown                                                                                      |
+| **SQLi / XSS / Parameter Tampering**  | Strict whitelist regex sanitization engine (`DataSanitizer`)          | Parameterized queries with explicit `$n::type` casts                                                                              |
+| **Unauthenticated Surfing Bypass**    | Dual-Layer Route Authorization Gate (`requirePageAuth` + client gate) | HTTP 302 redirect with preserved redirect parameter                                                                               |
 
 ---
 
 ## 12. Deployment, Containerization & CI/CD Pipeline
 
 ### 12.1 Container Verification
+
 ```bash
 # Build Multi-Stage Production Container
 docker build -t transitly-app:latest .
@@ -355,7 +358,9 @@ docker-compose ps
 ```
 
 ### 12.2 CI/CD Quality Gates
+
 Every pull request to `main` must pass:
+
 1. `npm test`: All 10 unit, architecture, security, schema, legal, and auth test suites pass (100% success rate).
 2. `npm run build:css`: Tailwind CSS compiles with zero warnings.
 3. Automated endpoint check: All HTTP routes return `200 OK` or `302 Redirect` to `/login` for unauthenticated requests.
@@ -388,6 +393,7 @@ Every pull request to `main` must pass:
 ```
 
 #### Technical Specifications:
+
 1. **Purpose-Binding**: Every OTP token is strictly bound to its intended functional domain (`login`, `signup`, `reset_password`, `confirm_payment`). Verification across different purposes is rejected with `HTTP 400 Bad Request`.
 2. **Cryptographic Generation & Storage**: Generated via Node.js native `crypto.randomBytes()`, salted with 8 random bytes, and hashed via SHA-256. Plaintext codes never persist in memory or storage.
 3. **Constant-Time Verification**: Verification executes via `crypto.timingSafeEqual(Buffer.from(candidateHash), Buffer.from(storedHash))` to neutralize timing side-channel attacks.
@@ -415,4 +421,3 @@ Transitly establishes `/login` as the foremost entry point. Direct surfing to in
 - **Public Legal Pages**: Dedicated `/privacy-policy`, `/terms`, and `/faq` routes with clear Call-to-Actions (CTAs).
 - **Search Engine Optimization**: Strict canonical URL tags (`<link rel="canonical" href="https://transitly.in/...">`), OpenGraph meta tags, and interactive multi-format sitemaps (`sitemap.svg` & `sitemap.mmd`) listing all priority routes.
 - **Cookie Consent**: GDPR/DPDP-compliant banner pop-up managing categorized consents (`essential`, `analytics`, `marketing`) persisted in `localStorage`.
-
