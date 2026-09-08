@@ -1,0 +1,16 @@
+[build]
+  command = "npm run build:css:min"
+  publish = "public"
+
+# Enable Pretty URLs (maps /login to /login.html automatically)
+[processing]
+  skip_processing = false
+
+[processing.html]
+  pretty_urls = true
+
+# Optional API proxy (uncomment and replace URL when backend is live)
+# [[redirects]]
+#   from = "/api/*"
+#   to = "https://your-backend-url.com/api/:splat"
+#   status = 200

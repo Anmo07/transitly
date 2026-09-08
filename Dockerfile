@@ -31,9 +31,14 @@ LABEL org.opencontainers.image.description="Bus-to-Door Intercity Parcel Logisti
 
 WORKDIR /app
 
+# Upgrade OS packages to patch vulnerabilities (e.g., openssl)
+# and remove npm to eliminate npm-related vulnerabilities (tar, brace-expansion)
+RUN apk upgrade --no-cache && \
+  rm -rf /usr/local/lib/node_modules/npm /usr/local/bin/npm /usr/local/bin/npx
+
 # Security: run as non-root
 RUN addgroup --system --gid 1001 transitly && \
-    adduser --system --uid 1001 transitly
+  adduser --system --uid 1001 transitly
 
 # Copy production dependencies
 COPY --from=deps /app/node_modules ./node_modules
