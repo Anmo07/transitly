@@ -9,8 +9,9 @@
 [processing.html]
   pretty_urls = true
 
-# Optional API proxy (uncomment and replace URL when backend is live)
-# [[redirects]]
-#   from = "/api/*"
-#   to = "https://your-backend-url.com/api/:splat"
-#   status = 200
+# Production API Proxy to Render Backend
+[[redirects]]
+  from = "/api/*"
+  to = "https://transitly-api.onrender.com/api/:splat"
+  status = 200
+  force = true

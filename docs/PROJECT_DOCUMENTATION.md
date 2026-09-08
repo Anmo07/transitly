@@ -924,6 +924,50 @@ services:
     volumes: [postgis_data:/var/lib/postgresql/data]
 ```
 
+### Live Cloud Architecture & Hosted Deployment Topology
+
+In addition to local Docker/Compose environments, Transitly is fully deployed across free-tier serverless cloud primitives:
+
+```
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│                                LIVE HOSTED TOPOLOGY                                    │
+│                                                                                        │
+│   [Netlify Frontend Edge]                                                              │
+│   URL: https://transitly.netlify.app                                                   │
+│   • Publishes /public HTML5/Tailwind SPA                                               │
+│   • Proxies /api/* requests with status 200 rewrite                                    │
+│                       │                                                                │
+│                       ▼ (HTTPS Reverse Proxy)                                          │
+│   [Render Core API Web Service]                                                        │
+│   URL: https://transitly-api.onrender.com                                              │
+│   • Node.js 20+ runtime                                                                │
+│   • REST endpoints & WebSockets (ws://) for live telemetry                             │
+│   • Health check probe: /health                                                        │
+│   • Swagger UI: /api/docs                                                              │
+│                       │                                                                │
+│                       ▼ (Encrypted SSL Pooler connection)                              │
+│   [Neon Lakebase Serverless PostgreSQL 16 + PostGIS 3.6]                               │
+│   Project: muddy-mountain-78061291 | Branch: production                                 │
+│   • PostGIS 3.6 spatial geometry engine                                                │
+│   • 16 relational tables + DDD schema evolution                                        │
+│   • Haryana Roadways Delhi-Chandigarh route master & multimodal shipments              │
+└────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+#### Service Registry & Credentials Map
+
+| Service Tier | Provider | Live URL / Endpoint | Configuration / Credentials |
+| :--- | :--- | :--- | :--- |
+| **Frontend Web App** | Netlify | `https://transitly.netlify.app` | Pretty URLs enabled, auto-deploys on `git push main` |
+| **Backend REST & WS** | Render | `https://transitly-api.onrender.com` | `transitly-api` Web Service, auto-deploys on `git push main` |
+| **Telemetry & Health** | Render | `https://transitly-api.onrender.com/health` | Active HTTP 200 monitoring probe |
+| **Spatial Database** | Neon | `ep-blue-paper-b3m86way...neon.tech` | PostgreSQL 16 + PostGIS 3.6 (`DATABASE_URL`) |
+
+#### Authentication Policy & Security Hardening
+* **NIST SP 800-63B Compliance:** Hardcoded bypass test codes (`123456`, `482910`) have been completely decommissioned.
+* **Cryptographic OTP Generation:** Every OTP is dynamically generated via `crypto.randomInt`, salted with a 16-character hex salt, and verified in constant time.
+* **Live Inspection:** In staging/testing environments, dispatched OTPs are visible in real-time within the Render Console Logs under `🔑 [TRANSITLY 2-STEP AUTHENTICATION OTP]` or dispatched via configured SMTP email gateways.
+
 ---
 
 ## 11. Quality Assurance & Verification Standards

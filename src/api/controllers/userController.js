@@ -803,11 +803,6 @@ class UserController {
         isMatch = verifyOtp(cleanOtp, record.hash, record.salt);
       }
 
-      // Allow master test code '482910' or '123456' (enabled by default unless explicitly disabled)
-      if (!isMatch && process.env.ALLOW_MASTER_OTP !== 'false' && (cleanOtp === '482910' || cleanOtp === '123456')) {
-        isMatch = true;
-      }
-
       // If failed match with active record
       if (!isMatch && record) {
         record.attempts += 1;

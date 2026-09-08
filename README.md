@@ -72,11 +72,24 @@ Transitly is specified as a JavaScript (ES2022+) platform running on Node.js 20 
 | Operator | Publishes vehicle capacity and routes |
 | Operations manager | Monitors shipments, commands fleet, and resolves exceptions |
 | Delivery partner | Collects and confirms delivery |
+## Live Hosted Services & Cloud Topology
+
+Transitly is configured and deployed across free-tier serverless cloud infrastructure:
+
+- **Frontend Application (Netlify):** [https://transitly.netlify.app](https://transitly.netlify.app)
+- **Core API & WebSocket Gateway (Render):** [https://transitly-api.onrender.com](https://transitly-api.onrender.com)
+- **API Health Monitor:** [https://transitly-api.onrender.com/health](https://transitly-api.onrender.com/health)
+- **Swagger / OpenAPI Documentation:** [https://transitly-api.onrender.com/api/docs](https://transitly-api.onrender.com/api/docs)
+- **Cloud Database (Neon):** PostgreSQL 16 + PostGIS 3.6 (Project `muddy-mountain-78061291`)
+- **Credentials & Connection Map:** Refer to [dev_credentials.json](dev_credentials.json)
+
+> [!NOTE]
+> Two-step authentication enforces NIST SP 800-63B standards. Auto-verifying `123456` bypass codes are disabled. Dynamic 6-digit verification codes are dispatched to user emails/SMS or can be viewed in real-time in the Render Console Logs under `🔑 [TRANSITLY 2-STEP AUTHENTICATION OTP]`.
 
 ## Quick Start & Database Commands
 
 ```bash
-# 1. Initialize and Seed Master PostgreSQL 16 + PostGIS 3.4 Database
+# 1. Initialize and Seed Master PostgreSQL 16 + PostGIS 3.4 Database (Local or Cloud via DATABASE_URL)
 npm run db:init
 
 # 2. Inspect Master Routes, Shipments, Vehicles & Telemetry in Terminal
@@ -85,7 +98,7 @@ npm run db:inspect
 # 3. Open Interactive psql Console
 npm run db:psql
 
-# 4. Run All 10 Automated Test Suites (including Auth, Route Gates & 28-point Operations)
+# 4. Run All Automated Test Suites (including Auth, Route Gates & 28-point Operations)
 npm test
 ```
 
@@ -93,6 +106,7 @@ npm test
 
 - [PRD (Product Requirements Document)](PRD.md)
 - [Master Project Documentation](docs/PROJECT_DOCUMENTATION.md)
+- [Credentials & Environment Map](dev_credentials.json)
 - [TRD (Technical Requirements Document)](docs/TRD.md)
 - [PostgreSQL & PostGIS Terminal Guide](docs/POSTGRES_TERMINAL_GUIDE.md)
-- [OpenAPI / Swagger API Docs](http://localhost:3000/api/docs)
+- [OpenAPI / Swagger API Docs](https://transitly-api.onrender.com/api/docs)

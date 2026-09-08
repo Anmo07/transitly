@@ -106,17 +106,16 @@ async function runTests() {
     assert.strictEqual(resGoodVerify.json.data.user.name, 'Alex Morgan');
     console.log('✔ Successful verification with JWT token issued.');
 
-    // 6. Test Master Dev Code Fallback
-    console.log('6. Testing POST /api/v1/auth/otp/verify master test code (482910)...');
+    // 6. Test Master Dev Code Fallback is removed / strictly rejected without prior dispatch
+    console.log('6. Testing POST /api/v1/auth/otp/verify rejection of arbitrary codes without active session...');
     const resMasterVerify = await request('POST', '/api/v1/auth/otp/verify', {
       identifier: 'alex@example.com',
-      otp: '482910',
+      otp: '123456',
       fullName: 'Alex Morgan',
       purpose: 'login'
     });
-    assert.strictEqual(resMasterVerify.status, 200, 'Expected 200 OK for master test code');
-    assert.ok(resMasterVerify.json.data.token, 'Expected JWT session token for master code');
-    console.log('✔ Master OTP test code verified successfully.');
+    assert.strictEqual(resMasterVerify.status, 400, 'Expected 400 rejection since auto-verifying master OTP has been removed');
+    console.log('✔ Arbitrary / unverified OTP correctly rejected.');
 
     // 6a. Purpose-Binding Enforcement
     console.log('6a. Testing Purpose-Binding: OTP generated for login cannot be verified for signup...');
