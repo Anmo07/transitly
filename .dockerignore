@@ -36,6 +36,9 @@ coverage/
 .env
 .env.local
 .env.*.local
+dev_credentials.json
+*credential*
+.neon
 nodemon.json
 
 # Agent & IDE internal paths

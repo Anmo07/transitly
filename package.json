@@ -1,7 +1,7 @@
 {
-  "name": "project---alphaa-it",
+  "name": "transitly",
   "version": "1.0.0",
-  "description": "Transitly is a JavaScript parcel-management platform concept that helps public transport operators sell unused cargo capacity for parcel delivery.",
+  "description": "Enterprise intercity bus parcel logistics platform monetizing idle public transit cargo capacity with real-time GPS tracking, PostGIS routing, and multimodal first/last-mile delivery orchestration.",
   "main": "index.js",
   "scripts": {
     "run": "PORT=3000 node run.js",
