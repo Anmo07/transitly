@@ -451,7 +451,7 @@
     } catch (_) {}
     return {
       name: 'Anmol',
-      email: 'anmolrajotiy@gmail.com',
+      email: 'anmolrajotiya@gmail.com',
       phone: '+91 7988342544',
       avatarUrl: localStorage.getItem('transitly_user_avatar') || getCookie('transitly_user_avatar') || 'https://lh3.googleusercontent.com/aida-public/AB6AXuBzAACyzyleKmM4JQVt8Aa-jr70QVcpj9loY9wKp5o9O4E4p6Pw4_DrVmOHt4kkJfjfzprBQFcotrP67UIXwwodZ_N8y_NQMBXmYt1FUgmWEZU3RkLHv9mtX5_jewodrd3AC22FofPIl1pDv6bTKcqN63TR8-Ce6clfaRjIaxwp6CeKnOIoGAZdfBFJX_YfrWG4DCAk26zr7uiOS6j2JNkj4E16URTfm8orQCRZ5X_7hBMsGpV5UeKJ'
     };

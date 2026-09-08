@@ -80,8 +80,7 @@ Transitly is configured and deployed across free-tier serverless cloud infrastru
 - **Core API & WebSocket Gateway (Render):** [https://transitly-api.onrender.com](https://transitly-api.onrender.com)
 - **API Health Monitor:** [https://transitly-api.onrender.com/health](https://transitly-api.onrender.com/health)
 - **Swagger / OpenAPI Documentation:** [https://transitly-api.onrender.com/api/docs](https://transitly-api.onrender.com/api/docs)
-- **Cloud Database (Neon):** PostgreSQL 16 + PostGIS 3.6 (Project `muddy-mountain-78061291`)
-- **Credentials & Connection Map:** Refer to [dev_credentials.json](dev_credentials.json)
+- **Credentials & Connection Map:** Refer to local `dev_credentials.json` (git-ignored) or `.env`
 
 > [!NOTE]
 > Two-step authentication enforces NIST SP 800-63B standards. Auto-verifying `123456` bypass codes are disabled. Dynamic 6-digit verification codes are dispatched to user emails/SMS or can be viewed in real-time in the Render Console Logs under `🔑 [TRANSITLY 2-STEP AUTHENTICATION OTP]`.

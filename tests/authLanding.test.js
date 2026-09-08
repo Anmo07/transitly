@@ -283,7 +283,7 @@ async function runTests() {
     assert.strictEqual(resGoogle.status, 200, 'Expected 200 for Google OAuth endpoint');
     assert.ok(resGoogle.body.includes('Sign in with Google') || resGoogle.body.includes('Choose an account'), 'Expected Google OAuth screen');
 
-    const resGoogleCb = await request('GET', '/api/v1/auth/google/callback?email=anmolrajotiy@gmail.com&name=Anmol%20Rajotiya');
+    const resGoogleCb = await request('GET', '/api/v1/auth/google/callback?email=anmolrajotiya@gmail.com&name=Anmol');
     assert.strictEqual(resGoogleCb.status, 200, 'Expected 200 for Google callback');
     assert.ok(resGoogleCb.body.includes('transitly_auth_token'), 'Expected auth token in callback HTML');
     console.log('✔ Google OAuth endpoints verified successfully.');

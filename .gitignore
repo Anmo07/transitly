@@ -11,6 +11,9 @@ yarn-error.log*
 .env.development.local
 .env.test.local
 .env.production.local
+dev_credentials.json
+dev-credentials.json
+*credential*
 
 # OS files
 .DS_Store

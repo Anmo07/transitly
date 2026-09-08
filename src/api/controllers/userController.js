@@ -256,7 +256,7 @@ const DEDICATED_DATABASE_USERS = Object.freeze([
   {
     id: 1,
     name: 'Anmol',
-    email: 'anmolrajotiy@gmail.com',
+    email: 'anmolrajotiya@gmail.com',
     phone: '+917988342544',
     role: 'CUSTOMER',
     avatarUrl: '',
@@ -962,8 +962,7 @@ class UserController {
 
     // High-Fidelity Interactive Google Account Picker
     const accounts = [
-      { name: 'Anmol Rajotiya', email: 'anmolrajotiy@gmail.com' },
-      { name: 'Alex Morgan', email: 'alex.morgan@transitly.in' }
+      { name: 'Anmol', email: 'anmolrajotiya@gmail.com' }
     ];
 
     const html = `<!DOCTYPE html>
@@ -1149,17 +1148,17 @@ class UserController {
     <div class="w-full bg-neutral-50 rounded-2xl p-4 my-6 border border-neutral-200/80 flex flex-col gap-3">
       <div class="flex items-center justify-between">
         <span class="text-xs font-semibold text-neutral-500 uppercase">Apple ID</span>
-        <span class="text-xs font-bold text-neutral-900">alex.morgan@icloud.com</span>
+        <span class="text-xs font-bold text-neutral-900">anmolrajotiya@gmail.com</span>
       </div>
       <div class="h-px bg-neutral-200"></div>
       <div class="flex items-center justify-between">
         <span class="text-xs font-semibold text-neutral-500 uppercase">Name</span>
-        <span class="text-xs font-bold text-neutral-900">Alex Morgan</span>
+        <span class="text-xs font-bold text-neutral-900">Anmol</span>
       </div>
     </div>
 
     <!-- Confirm Button -->
-    <a href="/api/v1/auth/apple/callback?email=alex.morgan@icloud.com&name=Alex%20Morgan&redirect=${encodeURIComponent(redirectParam)}&popup=${isPopup ? '1' : '0'}" class="w-full h-12 rounded-xl bg-black text-white font-bold text-sm flex items-center justify-center gap-2 hover:bg-neutral-800 transition-colors shadow-md active:scale-98">
+    <a href="/api/v1/auth/apple/callback?email=anmolrajotiya@gmail.com&name=Anmol&redirect=${encodeURIComponent(redirectParam)}&popup=${isPopup ? '1' : '0'}" class="w-full h-12 rounded-xl bg-black text-white font-bold text-sm flex items-center justify-center gap-2 hover:bg-neutral-800 transition-colors shadow-md active:scale-98">
       <span>Continue with Apple ID</span>
     </a>
 

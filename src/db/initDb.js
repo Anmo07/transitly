@@ -397,7 +397,7 @@ const initializeDatabase = async () => {
 
     const seedUsers = `
       INSERT INTO users (id, name, email, phone, role, avatar_url, preferences) VALUES
-      (1, 'Anmol', 'anmolrajotiy@gmail.com', '+917988342544', 'CUSTOMER', '', '{"pushNotifications": true, "emailUpdates": true, "locationServices": true, "biometrics": false, "language": "English (IN)"}'::jsonb),
+      (1, 'Anmol', 'anmolrajotiya@gmail.com', '+917988342544', 'CUSTOMER', '', '{"pushNotifications": true, "emailUpdates": true, "locationServices": true, "biometrics": false, "language": "English (IN)"}'::jsonb),
       (2, 'Delhi Transport Corporation', 'operator@dtc.delhi.gov.in', '+911123456789', 'OPERATOR', '', '{}'::jsonb),
       (3, 'Aarav Sharma', 'aarav.sharma@transitly.in', '+919876543210', 'CUSTOMER', '', '{}'::jsonb),
       (4, 'Rohan Verma', 'rohan.verma@transitly.in', '+919876543211', 'CUSTOMER', '', '{}'::jsonb),

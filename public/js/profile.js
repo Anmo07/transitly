@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let currentUser = {
     name: 'Anmol',
-    email: 'anmolrajotiy@gmail.com',
+    email: 'anmolrajotiya@gmail.com',
     phone: '+91 7988342544',
     avatarUrl: DEFAULT_AVATAR
   };
