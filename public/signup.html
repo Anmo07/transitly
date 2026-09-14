@@ -440,6 +440,9 @@
               localStorage.setItem('transitly_auth_token', data.data.token);
               if (typeof syncSessionCookie === 'function') syncSessionCookie(data.data.token);
             }
+            const activeRole = role || 'CUSTOMER';
+            localStorage.setItem('transitly_user_role', activeRole);
+            document.cookie = `transitly_user_role=${activeRole}; path=/; max-age=${30 * 24 * 60 * 60}; SameSite=Lax`;
             localStorage.setItem('transitly_user_name', data.data?.user?.name || fullName);
             localStorage.setItem('transitly_user_email', data.data?.user?.email || email);
             localStorage.setItem('transitly_user_phone', data.data?.user?.phone || phone);
@@ -448,8 +451,9 @@
               detail: { name: fullName, email, phone }
             }));
 
+            // Strict Role-Based Redirect: Delivery Partners NEVER merge into customer section
             setTimeout(() => {
-              if (role === 'DELIVERY_PARTNER') {
+              if (activeRole === 'DELIVERY_PARTNER') {
                 window.location.href = '/rider-dashboard.html';
               } else {
                 window.location.href = '/';

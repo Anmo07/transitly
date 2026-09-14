@@ -140,6 +140,28 @@ const requirePageAuth = (req, res, next) => {
   return res.redirect(`/login?redirect=${redirectPath}`);
 };
 
+/**
+ * Strict Role-Based Route Gatekeeper:
+ * Hard-codes complete separation between Customer and Delivery Partner sections.
+ */
+const requireRole = (allowedRole, redirectFallback) => {
+  return (req, res, next) => {
+    // Check cookie fallback if not in token
+    let userRole = req.user?.role;
+    if (!userRole) {
+      const cookieHeader = req.headers.cookie || '';
+      const match = cookieHeader.match(/(?:^|;\s*)transitly_user_role=([^;]+)/);
+      if (match && match[1]) userRole = decodeURIComponent(match[1]);
+    }
+    userRole = userRole || 'CUSTOMER';
+
+    if (userRole !== allowedRole) {
+      return res.redirect(redirectFallback);
+    }
+    next();
+  };
+};
+
 // =========================================================================
 // Public Routes — Accessible Without Authentication
 // =========================================================================
@@ -154,29 +176,28 @@ app.get(['/faq', '/faqs'], (req, res) => res.sendFile(path.join(publicDir, 'faq.
 app.get(['/visual-sitemap', '/sitemap'], (req, res) => res.sendFile(path.join(publicDir, 'visual-sitemap.html')));
 
 // =========================================================================
-// Protected Routes — Require Valid Session Token
+// Protected Routes — Strict Role-Isolated Domains
 // =========================================================================
-// Homepage / Dashboard (redirects to login if no session)
-app.get(['/', '/deliver'], requirePageAuth, (req, res) => res.sendFile(path.join(publicDir, 'index.html')));
-
-// Core App Screens
-app.get('/tracking', requirePageAuth, (req, res) => res.sendFile(path.join(publicDir, 'tracking.html')));
-app.get('/services', requirePageAuth, (req, res) => res.sendFile(path.join(publicDir, 'services.html')));
-app.get('/history', requirePageAuth, (req, res) => res.sendFile(path.join(publicDir, 'history.html')));
-app.get('/profile', requirePageAuth, (req, res) => res.sendFile(path.join(publicDir, 'profile.html')));
-app.get('/saved-addresses', requirePageAuth, (req, res) => res.sendFile(path.join(publicDir, 'saved-addresses.html')));
-app.get('/payment-methods', requirePageAuth, (req, res) => res.sendFile(path.join(publicDir, 'payment-methods.html')));
-app.get('/settings', requirePageAuth, (req, res) => res.sendFile(path.join(publicDir, 'settings.html')));
-app.get('/help-support', requirePageAuth, (req, res) => res.sendFile(path.join(publicDir, 'help-support.html')));
-app.get('/notifications', requirePageAuth, (req, res) => res.sendFile(path.join(publicDir, 'notifications.html')));
+// 1. Customer Parcel Logistics Domain (Delivery Partners strictly prohibited)
+app.get(['/', '/deliver'], requirePageAuth, requireRole('CUSTOMER', '/rider-dashboard'), (req, res) => res.sendFile(path.join(publicDir, 'index.html')));
+app.get('/tracking', requirePageAuth, requireRole('CUSTOMER', '/rider-dashboard'), (req, res) => res.sendFile(path.join(publicDir, 'tracking.html')));
+app.get('/services', requirePageAuth, requireRole('CUSTOMER', '/rider-dashboard'), (req, res) => res.sendFile(path.join(publicDir, 'services.html')));
+app.get('/history', requirePageAuth, requireRole('CUSTOMER', '/rider-dashboard'), (req, res) => res.sendFile(path.join(publicDir, 'history.html')));
+app.get('/profile', requirePageAuth, requireRole('CUSTOMER', '/rider-dashboard'), (req, res) => res.sendFile(path.join(publicDir, 'profile.html')));
+app.get('/saved-addresses', requirePageAuth, requireRole('CUSTOMER', '/rider-dashboard'), (req, res) => res.sendFile(path.join(publicDir, 'saved-addresses.html')));
+app.get('/payment-methods', requirePageAuth, requireRole('CUSTOMER', '/rider-dashboard'), (req, res) => res.sendFile(path.join(publicDir, 'payment-methods.html')));
+app.get('/settings', requirePageAuth, requireRole('CUSTOMER', '/rider-dashboard'), (req, res) => res.sendFile(path.join(publicDir, 'settings.html')));
+app.get('/help-support', requirePageAuth, requireRole('CUSTOMER', '/rider-dashboard'), (req, res) => res.sendFile(path.join(publicDir, 'help-support.html')));
+app.get('/notifications', requirePageAuth, requireRole('CUSTOMER', '/rider-dashboard'), (req, res) => res.sendFile(path.join(publicDir, 'notifications.html')));
 app.get('/admin', requirePageAuth, (req, res) => res.sendFile(path.join(publicDir, 'admin.html')));
 
-// Delivery Partner Cockpit & Rider Mobile App Screens
-app.get('/rider-dashboard', requirePageAuth, (req, res) => res.sendFile(path.join(publicDir, 'rider-dashboard.html')));
-app.get('/rider-map-trips', requirePageAuth, (req, res) => res.sendFile(path.join(publicDir, 'rider-map-trips.html')));
-app.get('/rider-requests', requirePageAuth, (req, res) => res.sendFile(path.join(publicDir, 'rider-requests.html')));
-app.get('/rider-earnings', requirePageAuth, (req, res) => res.sendFile(path.join(publicDir, 'rider-earnings.html')));
-app.get('/delivery-partner', requirePageAuth, (req, res) => res.sendFile(path.join(publicDir, 'delivery-partner.html')));
+// 2. Delivery Partner Cockpit Domain (Customers strictly prohibited)
+app.get('/rider-dashboard', requirePageAuth, requireRole('DELIVERY_PARTNER', '/'), (req, res) => res.sendFile(path.join(publicDir, 'rider-dashboard.html')));
+app.get('/rider-map-trips', requirePageAuth, requireRole('DELIVERY_PARTNER', '/'), (req, res) => res.sendFile(path.join(publicDir, 'rider-map-trips.html')));
+app.get('/rider-requests', requirePageAuth, requireRole('DELIVERY_PARTNER', '/'), (req, res) => res.sendFile(path.join(publicDir, 'rider-requests.html')));
+app.get('/rider-earnings', requirePageAuth, requireRole('DELIVERY_PARTNER', '/'), (req, res) => res.sendFile(path.join(publicDir, 'rider-earnings.html')));
+app.get('/rider-profile', requirePageAuth, requireRole('DELIVERY_PARTNER', '/'), (req, res) => res.sendFile(path.join(publicDir, 'rider-profile.html')));
+app.get('/delivery-partner', requirePageAuth, requireRole('DELIVERY_PARTNER', '/'), (req, res) => res.sendFile(path.join(publicDir, 'delivery-partner.html')));
 
 // Custom 404 Handler for Unmatched Routes (Prevents Soft 404 SEO penalties)
 app.use((req, res) => {

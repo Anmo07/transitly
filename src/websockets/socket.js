@@ -45,26 +45,56 @@ const initializeSocket = (server) => {
     socket.on('rider:location_ping', async (data) => {
       try {
         const RiderModel = require('../models/RiderModel');
-        const updated = await RiderModel.updateLocation(data.riderId || 1, {
+        await RiderModel.updateLocation(data.riderId || 1, {
           latitude: parseFloat(data.lat || data.latitude || 28.6315),
           longitude: parseFloat(data.lng || data.longitude || 77.2167),
-          speed: data.speed,
-          heading: data.heading
+          speed: data.speed || 38,
+          heading: data.heading || 45
         });
-        io.emit(`rider:location_${data.riderId || 1}`, {
+
+        const telemetryPayload = {
           riderId: data.riderId || 1,
-          lat: data.lat || data.latitude,
-          lng: data.lng || data.longitude,
-          speed: data.speed,
-          heading: data.heading,
+          orderId: data.orderId || 1,
+          trackingCode: data.trackingCode || '#TRZ-4820',
+          lat: parseFloat(data.lat || data.latitude || 28.6315),
+          lng: parseFloat(data.lng || data.longitude || 77.2167),
+          speed: data.speed || 38,
+          heading: data.heading || 45,
+          distanceKm: data.distanceKm || 2.8,
+          etaMinutes: data.etaMinutes || 11,
           timestamp: new Date().toISOString()
-        });
+        };
+
+        io.emit(`rider:location_${data.riderId || 1}`, telemetryPayload);
+        io.emit('rider:location_updated', telemetryPayload);
       } catch (err) {
         socket.emit('error', { message: `Rider telemetry ping failed: ${err.message}` });
       }
     });
 
-    // 2. Delivery Partner Duty Mode Toggle
+    // 2. Delivery Partner Disruption / Delay Alert
+    socket.on('rider:disruption_report', (data) => {
+      io.emit('rider:disruption_alert', {
+        orderId: data.orderId || 1,
+        trackingCode: data.trackingCode || '#TRZ-4820',
+        issueType: data.issueType || 'Traffic Congestion',
+        note: data.note || '',
+        delayMinutes: data.delayMinutes || 15,
+        ticketId: data.ticketId || `INC-${Date.now().toString().slice(-5)}`,
+        timestamp: new Date().toISOString()
+      });
+    });
+
+    // 3. Recipient & Partner In-Transit Messaging
+    socket.on('chat:send_message', (data) => {
+      io.emit(`chat:message_${data.orderId || 1}`, {
+        sender: data.sender || 'RIDER',
+        text: data.text,
+        timestamp: new Date().toISOString()
+      });
+    });
+
+    // 4. Delivery Partner Duty Mode Toggle
     socket.on('rider:toggle_duty', async (data) => {
       try {
         const RiderModel = require('../models/RiderModel');

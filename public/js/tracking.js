@@ -59,6 +59,39 @@ document.addEventListener('DOMContentLoaded', () => {
   const trackNextHandoff = document.getElementById('trackNextHandoff');
   const stopsTimelineContainer = document.getElementById('stopsTimelineContainer');
 
+  // Allocated Delivery Partner & Recipient PIN Card Elements
+  const partnerHandoffCard = document.getElementById('partnerHandoffCard');
+  const partnerName = document.getElementById('partnerName');
+  const partnerVehicle = document.getElementById('partnerVehicle');
+  const btnCallPartner = document.getElementById('btnCallPartner');
+  const recipientDeliveryPin = document.getElementById('recipientDeliveryPin');
+  const btnCopyPin = document.getElementById('btnCopyPin');
+  const copyPinLabel = document.getElementById('copyPinLabel');
+  const partnerRecipientName = document.getElementById('partnerRecipientName');
+  const partnerRecipientPhone = document.getElementById('partnerRecipientPhone');
+  const partnerLiveSpeed = document.getElementById('partnerLiveSpeed');
+  const partnerLiveDist = document.getElementById('partnerLiveDist');
+  const partnerLiveEta = document.getElementById('partnerLiveEta');
+  const partnerLivePingStatus = document.getElementById('partnerLivePingStatus');
+  const partnerStatusPill = document.getElementById('partnerStatusPill');
+
+  let partnerMarker = null;
+  const socket = (typeof io !== 'undefined') ? io() : null;
+
+  if (btnCopyPin && recipientDeliveryPin) {
+    btnCopyPin.addEventListener('click', () => {
+      const pin = recipientDeliveryPin.textContent.trim();
+      navigator.clipboard.writeText(pin).then(() => {
+        if (copyPinLabel) copyPinLabel.textContent = 'Copied!';
+        setTimeout(() => {
+          if (copyPinLabel) copyPinLabel.textContent = 'Copy PIN';
+        }, 2000);
+      }).catch(() => {
+        if (copyPinLabel) copyPinLabel.textContent = pin;
+      });
+    });
+  }
+
   /**
    * Helper: Calculate the Unobstructed Center for Leaflet Map
    * Dynamically measures top obstruction (Header & Floating Search Bar)
@@ -517,6 +550,129 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   /**
+   * Update Delivery Partner Marker & Live Telemetry on Leaflet Map
+   */
+  const updatePartnerOnMap = (coords, telemetry = {}) => {
+    if (!map && window.L) {
+      initLeafletMap(coords);
+    }
+    if (!map) return;
+
+    const heading = telemetry.heading || 45;
+    const speed = telemetry.speed || 38;
+    const name = telemetry.riderName || 'Rohan Sharma';
+
+    const partnerIconHtml = `
+      <div class="relative flex items-center justify-center">
+        <div class="absolute w-12 h-12 rounded-full bg-primary/25 animate-ping"></div>
+        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-primary to-primary-container text-white shadow-2xl border-2 border-white flex items-center justify-center transition-transform duration-300" style="transform: rotate(${heading}deg);">
+          <span class="material-symbols-outlined text-[20px]">electric_moped</span>
+        </div>
+        <div class="absolute -top-7 left-1/2 transform -translate-x-1/2 bg-slate-900/90 text-white text-[10px] font-bold px-2 py-0.5 rounded-md shadow-md whitespace-nowrap border border-white/20">
+          🛵 ${name} • ${speed} km/h
+        </div>
+      </div>
+    `;
+
+    const customPartnerIcon = L.divIcon({
+      html: partnerIconHtml,
+      className: 'live-partner-pin',
+      iconSize: [40, 40],
+      iconAnchor: [20, 20]
+    });
+
+    if (partnerMarker) {
+      partnerMarker.setLatLng(coords);
+      partnerMarker.setIcon(customPartnerIcon);
+    } else {
+      partnerMarker = L.marker(coords, { icon: customPartnerIcon, zIndexOffset: 1500 }).addTo(map);
+    }
+
+    // Update partner handoff card metrics in real time
+    if (partnerLiveSpeed) partnerLiveSpeed.textContent = `${speed} km/h`;
+    if (telemetry.distanceKm && partnerLiveDist) partnerLiveDist.textContent = `${telemetry.distanceKm} km`;
+    if (telemetry.etaMinutes && partnerLiveEta) partnerLiveEta.textContent = `${telemetry.etaMinutes} min`;
+    if (partnerLivePingStatus) {
+      const now = new Date();
+      partnerLivePingStatus.textContent = `Live GPS • ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`;
+    }
+    if (hudSpeed) hudSpeed.textContent = `${speed} km/h • Urban Transit`;
+    if (hudCoords) hudCoords.textContent = `${coords[0].toFixed(4)}° N, ${coords[1].toFixed(4)}° E`;
+
+    if (!userInteractedWithMap) {
+      centerMapOnVehicle(coords, 15, { duration: 0.8 });
+    }
+  };
+
+  const showToastNotification = (msg, tone = 'blue') => {
+    let toast = document.getElementById('trackingLiveToast');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.id = 'trackingLiveToast';
+      document.body.appendChild(toast);
+    }
+    if (tone === 'amber') {
+      toast.className = 'fixed top-20 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-md px-4 py-3 rounded-2xl shadow-2xl border border-amber-400 bg-amber-500/95 text-white text-xs font-bold transition-all duration-300 flex items-center gap-2.5 animate-slide-down';
+    } else {
+      toast.className = 'fixed top-20 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-md px-4 py-3 rounded-2xl shadow-2xl border border-primary/30 bg-primary/95 text-white text-xs font-bold transition-all duration-300 flex items-center gap-2.5 animate-slide-down';
+    }
+    toast.innerHTML = `<span class="material-symbols-outlined text-[20px]">notifications_active</span><span>${msg}</span>`;
+    toast.classList.remove('hidden');
+    setTimeout(() => {
+      toast.classList.add('hidden');
+    }, 6000);
+  };
+
+  // Socket.io Real-Time Telemetry & Dispatch Handlers
+  if (socket) {
+    socket.on('rider:location_updated', (telemetry) => {
+      if (!telemetry || !telemetry.lat || !telemetry.lng) return;
+      const coords = [parseFloat(telemetry.lat), parseFloat(telemetry.lng)];
+      
+      // Auto-reveal active view if currently empty
+      if (trackingEmptyView && !trackingEmptyView.classList.contains('hidden')) {
+        trackingEmptyView.classList.add('hidden');
+        if (trackingActiveView) trackingActiveView.classList.remove('hidden');
+        if (telematicsHud) telematicsHud.classList.remove('hidden');
+      }
+      if (partnerHandoffCard) partnerHandoffCard.classList.remove('hidden');
+
+      updatePartnerOnMap(coords, telemetry);
+    });
+
+    socket.on('order:accepted', (orderData) => {
+      if (partnerHandoffCard) partnerHandoffCard.classList.remove('hidden');
+      if (partnerName && orderData.rider) partnerName.textContent = orderData.rider.name;
+      if (partnerVehicle && orderData.rider) partnerVehicle.textContent = orderData.rider.vehicle;
+      if (btnCallPartner && orderData.rider) btnCallPartner.href = `tel:${orderData.rider.phone.replace(/[^0-9+]/g, '')}`;
+      if (recipientDeliveryPin && orderData.deliveryPin) recipientDeliveryPin.textContent = orderData.deliveryPin;
+      if (partnerRecipientName && orderData.recipient) partnerRecipientName.textContent = orderData.recipient.name;
+      if (partnerRecipientPhone && orderData.recipient) partnerRecipientPhone.textContent = orderData.recipient.phone;
+      if (partnerStatusPill) {
+        partnerStatusPill.className = 'px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-extrabold flex items-center gap-1';
+        partnerStatusPill.innerHTML = '<span class="material-symbols-outlined text-[14px]">near_me</span> En-Route';
+      }
+      showToastNotification(`🛵 Delivery Partner Allocated: ${orderData.rider?.name || 'Rohan Sharma'} accepted your delivery!`);
+    });
+
+    socket.on('order:delivered', (delData) => {
+      if (partnerStatusPill) {
+        partnerStatusPill.className = 'px-2.5 py-1 rounded-full bg-emerald-600 text-white text-[11px] font-extrabold flex items-center gap-1';
+        partnerStatusPill.innerHTML = '<span class="material-symbols-outlined text-[14px]">task_alt</span> Delivered';
+      }
+      if (trackedBusBadge) {
+        trackedBusBadge.textContent = 'DELIVERED';
+        trackedBusBadge.className = 'bg-emerald-100 text-emerald-800 text-[11px] font-bold px-2 py-0.5 rounded-full';
+      }
+      showToastNotification(`✅ Parcel Delivered Successfully! Verified with Delivery PIN ${delData.otp || '4820'}.`);
+    });
+
+    socket.on('rider:disruption_alert', (alertData) => {
+      showToastNotification(`⚠️ Partner Alert: Delay of ~${alertData.delayMinutes || 15}m reported due to ${alertData.issueType || 'Traffic'}.`, 'amber');
+    });
+  }
+
+  /**
    * Update HUD and Bottom Sheet UI
    */
   const updateUI = (data, parcelContext = null) => {
@@ -548,6 +704,13 @@ document.addEventListener('DOMContentLoaded', () => {
         : `Cargo Bay Available: ${data.availableCapacityKg} kg / ${data.cargoCapacityKg} kg`;
     }
     if (trackEta) trackEta.textContent = data.eta || '14:30';
+
+    // Show or hide Partner Handoff Card
+    if (partnerHandoffCard) {
+      if (data.isPartnerDrop || (trackingCode && trackingCode.includes('4820'))) {
+        partnerHandoffCard.classList.remove('hidden');
+      }
+    }
 
     // Render Timeline Stops
     if (stopsTimelineContainer && data.stops && data.stops.length > 0) {
@@ -650,6 +813,53 @@ document.addEventListener('DOMContentLoaded', () => {
       if (localActive && (localActive.trackingId === cleanQuery || cleanQuery.toUpperCase().startsWith('TRK'))) {
         parcelContext = localActive;
       }
+    }
+
+    // Check if query is for the Live Delivery Partner last-mile order (#TRZ-4820 or 4820 or RIDER)
+    const isPartnerDrop = cleanQuery.toUpperCase().includes('TRZ-4820') || 
+                          cleanQuery === '4820' || 
+                          cleanQuery.toUpperCase().includes('RIDER') || 
+                          cleanQuery.toUpperCase().includes('PARTNER');
+    if (isPartnerDrop) {
+      hideBusAlert();
+      if (trackingEmptyView) trackingEmptyView.classList.add('hidden');
+      if (trackingActiveView) trackingActiveView.classList.remove('hidden');
+      if (telematicsHud) telematicsHud.classList.remove('hidden');
+      if (partnerHandoffCard) partnerHandoffCard.classList.remove('hidden');
+
+      const partnerDeliveryData = {
+        busNumber: 'Hero Electric Nyx (HR-26-EQ-4412)',
+        operatorName: 'Rohan Sharma (Delivery Partner)',
+        corridorName: 'Metro Express Locker ➔ Apt 4B, Sector 17, Chandigarh',
+        isPartnerDrop: true,
+        currentLocation: {
+          latitude: 28.6315,
+          longitude: 77.2167,
+          speedKmh: 38
+        },
+        eta: '11 mins',
+        stops: [
+          { name: 'Metro Express Parcel Locker', coords: [28.6289, 77.2065], milestone: 'Order Picked Up & Dispatched' },
+          { name: 'Connaught Place Outer Circle', coords: [28.6300, 77.2110], milestone: 'En-Route Telemetry Point' },
+          { name: '104 Maple Blvd, Apt 4B', coords: [28.6315, 77.2167], milestone: 'Doorstep Dropoff Target' }
+        ]
+      };
+
+      currentActiveBus = partnerDeliveryData;
+      renderBusOnMap(partnerDeliveryData);
+      updateUI(partnerDeliveryData, {
+        trackingId: '#TRZ-4820',
+        corridor: 'Metro Express Locker ➔ Apt 4B, Sector 17, Chandigarh'
+      });
+
+      updatePartnerOnMap([28.6305, 77.2130], {
+        riderName: 'Rohan Sharma',
+        speed: 38,
+        heading: 65,
+        distanceKm: 2.8,
+        etaMinutes: 11
+      });
+      return;
     }
 
     try {

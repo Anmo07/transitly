@@ -131,11 +131,26 @@ class ParcelOrderModel {
     const WalletLedgerModel = require('./WalletLedgerModel');
     const ledgerEntry = await WalletLedgerModel.settleOrderDelivery(riderId, order);
 
+    try {
+      const { getIo } = require('../websockets/socket');
+      const io = getIo();
+      io.emit('order:delivered', {
+        orderId: order.id,
+        trackingCode: order.tracking_code,
+        status: 'DELIVERED',
+        recipientName: order.recipient_name || 'Rohan Verma',
+        totalCredited: parseFloat(order.total_payout || 14.80),
+        currency: 'INR',
+        timestamp: new Date().toISOString()
+      });
+    } catch (_) {}
+
     return {
       success: true,
       orderId: order.id,
       trackingCode: order.tracking_code,
       status: 'DELIVERED',
+      currency: 'INR',
       payout: {
         baseFare: parseFloat(order.base_fare || 11.80),
         surgeBonus: parseFloat(order.surge_fare || 3.00),

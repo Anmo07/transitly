@@ -29,11 +29,13 @@ const syncSessionCookie = (token) => {
  */
 window.transitlyLogout = () => {
   localStorage.removeItem('transitly_auth_token');
+  localStorage.removeItem('transitly_user_role');
   localStorage.removeItem('transitly_user_name');
   localStorage.removeItem('transitly_user_email');
   localStorage.removeItem('transitly_user_phone');
   localStorage.removeItem('transitly_user_avatar');
   document.cookie = 'transitly_session=; path=/; max-age=0; SameSite=Lax';
+  document.cookie = 'transitly_user_role=; path=/; max-age=0; SameSite=Lax';
   window.location.href = '/login';
 };
 
@@ -50,6 +52,23 @@ if (existingToken) {
   if (!isPublic && !existingToken) {
     const redirectParam = encodeURIComponent(window.location.pathname + window.location.search);
     window.location.replace(`/login?redirect=${redirectParam}`);
+    return;
+  }
+
+  // Strict Domain Isolation: Delivery Partners stay in Partner section; Customers stay in Customer section
+  const userRole = localStorage.getItem('transitly_user_role') || (document.cookie.match(/(?:^|;\s*)transitly_user_role=([^;]+)/)?.[1]);
+  if (userRole === 'DELIVERY_PARTNER') {
+    const customerPages = ['/', '/index', '/deliver', '/tracking', '/services', '/history', '/profile', '/saved-addresses', '/payment-methods', '/settings', '/help-support', '/notifications'];
+    if (customerPages.some(cp => currentPath === cp || currentPath.startsWith(cp + '/'))) {
+      window.location.replace('/rider-dashboard.html');
+      return;
+    }
+  } else if (userRole === 'CUSTOMER') {
+    const partnerPages = ['/rider-dashboard', '/rider-map-trips', '/rider-requests', '/rider-earnings', '/rider-profile', '/delivery-partner'];
+    if (partnerPages.some(pp => currentPath === pp || currentPath.startsWith(pp + '/'))) {
+      window.location.replace('/deliver');
+      return;
+    }
   }
 })();
 

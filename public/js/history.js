@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
       receiver: 'Amit Roy • +91 97881 22334',
       weight: '3.2 kg',
       serviceTier: 'Door-to-Door Standard',
-      fare: '$12.50 (₹380.00)',
+      fare: '₹380.00 (Prepaid UPI)',
       date: 'Oct 24, 2023',
       securityText: 'Delivered to Doorstep • Verified with OTP (882194)',
       timeline: [
@@ -90,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
       receiver: 'Tech Innovations Ltd • +91 98222 33445',
       weight: '1.5 kg',
       serviceTier: 'Express Bus Cargo',
-      fare: '$8.00 (₹240.00)',
+      fare: '₹240.00 (Prepaid UPI)',
       date: 'Oct 21, 2023',
       securityText: 'Delivered • Proof of Delivery archived in system',
       timeline: [
@@ -114,7 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
       receiver: 'Simran Kaur • +91 98555 66778',
       weight: '4.8 kg',
       serviceTier: 'Standard Transit',
-      fare: '$15.75 (₹420.00)',
+      fare: '₹420.00 (Prepaid UPI)',
       date: 'Sep 15, 2023',
       securityText: 'Delivered • Verified OTP and photo proof captured',
       timeline: [
@@ -138,7 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
       receiver: 'Vikram Joshi • +91 98777 88990',
       weight: '2.0 kg',
       serviceTier: 'Standard Delivery',
-      fare: '$9.00 (₹250.00 - Refunded)',
+      fare: '₹250.00 (Full Refund Processed)',
       date: 'Sep 02, 2023',
       securityText: 'Order cancelled before bus departure • 100% refund credited',
       timeline: [

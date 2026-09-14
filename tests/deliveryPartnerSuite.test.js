@@ -6,6 +6,8 @@ const RiderModel = require('../src/models/RiderModel');
 const ParcelOrderModel = require('../src/models/ParcelOrderModel');
 const WalletLedgerModel = require('../src/models/WalletLedgerModel');
 const dispatchEngine = require('../src/services/dispatchEngine');
+const jwt = require('jsonwebtoken');
+const AUTH_SECRET = process.env.AUTH_SECRET || 'transitly-jwt-secret-key-2026';
 
 console.log('=== Running Delivery Partner Infrastructure & Microservices Test Suite ===\n');
 
@@ -157,6 +159,72 @@ async function runSuite() {
     assert.strictEqual(resPayout2.json.data.payoutId, resPayout1.json.data.payoutId);
     assert.strictEqual(resPayout2.json.data.remainingBalance, resPayout1.json.data.remainingBalance);
     console.log('✔ Instant cash-out payout gateway and strict financial idempotency verified.');
+
+    // 8. Test Strict Role Isolation & Domain Boundary Protection
+    console.log('8. Testing Strict Domain Boundary & Role-Based Isolation Enforcement...');
+    const customerToken = jwt.sign({ userId: 101, email: 'customer@test.com', role: 'CUSTOMER' }, AUTH_SECRET);
+    const partnerToken = jwt.sign({ userId: 202, email: 'rider@test.com', role: 'DELIVERY_PARTNER' }, AUTH_SECRET);
+
+    // 8a. Unauthenticated visitor redirect to login
+    const resUnauth = await request('GET', '/rider-dashboard');
+    assert.strictEqual(resUnauth.status, 302);
+    assert.ok(resUnauth.headers.location.startsWith('/login'));
+
+    // 8b. Customer attempting to access Delivery Partner Cockpit -> Redirected to /
+    const resCustOnDash = await request('GET', '/rider-dashboard', null, {
+      'Cookie': `transitly_session=${customerToken}; transitly_user_role=CUSTOMER`
+    });
+    assert.strictEqual(resCustOnDash.status, 302);
+    assert.strictEqual(resCustOnDash.headers.location, '/');
+
+    const resCustOnReqs = await request('GET', '/rider-requests', null, {
+      'Cookie': `transitly_session=${customerToken}; transitly_user_role=CUSTOMER`
+    });
+    assert.strictEqual(resCustOnReqs.status, 302);
+    assert.strictEqual(resCustOnReqs.headers.location, '/');
+
+    const resCustOnProf = await request('GET', '/rider-profile', null, {
+      'Cookie': `transitly_session=${customerToken}; transitly_user_role=CUSTOMER`
+    });
+    assert.strictEqual(resCustOnProf.status, 302);
+    assert.strictEqual(resCustOnProf.headers.location, '/');
+
+    // 8c. Delivery Partner attempting to access Customer portal -> Redirected to /rider-dashboard
+    const resPartnerOnHome = await request('GET', '/', null, {
+      'Cookie': `transitly_session=${partnerToken}; transitly_user_role=DELIVERY_PARTNER`
+    });
+    assert.strictEqual(resPartnerOnHome.status, 302);
+    assert.strictEqual(resPartnerOnHome.headers.location, '/rider-dashboard');
+
+    const resPartnerOnCustProf = await request('GET', '/profile', null, {
+      'Cookie': `transitly_session=${partnerToken}; transitly_user_role=DELIVERY_PARTNER`
+    });
+    assert.strictEqual(resPartnerOnCustProf.status, 302);
+    assert.strictEqual(resPartnerOnCustProf.headers.location, '/rider-dashboard');
+
+    // 8d. Delivery Partner accessing Partner routes -> 200 OK
+    const resPartnerOnDash = await request('GET', '/rider-dashboard', null, {
+      'Cookie': `transitly_session=${partnerToken}; transitly_user_role=DELIVERY_PARTNER`
+    });
+    assert.strictEqual(resPartnerOnDash.status, 200);
+
+    const resPartnerOnPartnerProf = await request('GET', '/rider-profile', null, {
+      'Cookie': `transitly_session=${partnerToken}; transitly_user_role=DELIVERY_PARTNER`
+    });
+    assert.strictEqual(resPartnerOnPartnerProf.status, 200);
+
+    const resPartnerOnDeliveryPartner = await request('GET', '/delivery-partner', null, {
+      'Cookie': `transitly_session=${partnerToken}; transitly_user_role=DELIVERY_PARTNER`
+    });
+    assert.strictEqual(resPartnerOnDeliveryPartner.status, 200);
+
+    // 8e. Customer accessing Customer routes -> 200 OK
+    const resCustOnHome = await request('GET', '/', null, {
+      'Cookie': `transitly_session=${customerToken}; transitly_user_role=CUSTOMER`
+    });
+    assert.strictEqual(resCustOnHome.status, 200);
+
+    console.log('✔ Strict bidirectional domain isolation (Zero cross-leakage between Customer and Partner) verified.');
 
     console.log('\nAll Delivery Partner Infrastructure & Microservices tests passed successfully!\n');
     server.close();

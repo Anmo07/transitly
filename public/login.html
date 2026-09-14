@@ -792,6 +792,9 @@
               // Sync session cookie for server-side route protection
               if (typeof syncSessionCookie === 'function') syncSessionCookie(data.data.token);
             }
+            const activeRole = userState.role || 'CUSTOMER';
+            localStorage.setItem('transitly_user_role', activeRole);
+            document.cookie = `transitly_user_role=${activeRole}; path=/; max-age=${30 * 24 * 60 * 60}; SameSite=Lax`;
             localStorage.setItem('transitly_user_name', userState.fullName);
             localStorage.setItem('transitly_user_email', userState.identifier.includes('@') ? userState.identifier : 'alex@example.com');
             localStorage.setItem('transitly_user_phone', !userState.identifier.includes('@') ? userState.identifier : '+91 98765 43210');
@@ -800,13 +803,17 @@
               detail: data.data.user
             }));
 
-            // Redirect back to Deliver / Home
+            // Strict Role-Based Redirect: Delivery Partners NEVER merge into customer section
             setTimeout(() => {
-              if (userState.role === 'DELIVERY_PARTNER') {
+              if (activeRole === 'DELIVERY_PARTNER') {
                 window.location.href = '/rider-dashboard.html';
               } else {
                 const params = new URLSearchParams(window.location.search);
-                const redirect = params.get('redirect') || '/';
+                let redirect = params.get('redirect') || '/';
+                // Prevent customer from being redirected to rider pages
+                if (redirect.includes('rider-') || redirect.includes('delivery-partner')) {
+                  redirect = '/';
+                }
                 window.location.href = redirect;
               }
             }, 800);

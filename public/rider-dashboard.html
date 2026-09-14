@@ -8,7 +8,10 @@
   <link rel="canonical" href="https://transitly.in/rider-dashboard.html">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+  <link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet"/>
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Strict Domain Separation Guard -->
+  <script src="/js/rider-guard.js"></script>
   <script id="tailwind-config">
     tailwind.config = {
       darkMode: "class",
@@ -99,14 +102,17 @@
           <span id="duty-pulse" class="w-2.5 h-2.5 rounded-full bg-primary-container animate-pulse"></span>
           <span id="duty-status-text" class="font-label-sm text-label-sm text-on-surface">Online</span>
         </div>
-        <a href="/rider-earnings" class="flex items-center gap-1 bg-surface-container-lowest px-stack-md py-1.5 rounded-full shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-md transition">
+        <a href="/rider-earnings.html" class="flex items-center gap-1 bg-surface-container-lowest px-stack-md py-1.5 rounded-full shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-md transition">
           <span class="material-symbols-outlined text-primary text-[16px]">payments</span>
-          <span id="header-wallet-balance" class="font-label-sm text-label-sm text-on-surface">$148.50</span>
+          <span id="header-wallet-balance" class="font-label-sm text-label-sm text-on-surface">₹148.50</span>
         </a>
       </div>
-      <div class="flex items-center gap-stack-md">
+      <div class="flex items-center gap-2">
         <h1 class="hidden font-headline-md text-headline-md text-on-surface">Dashboard</h1>
-        <a class="min-w-[44px] min-h-[44px] flex items-center justify-center" href="/profile">
+        <button id="btn-sos-trigger" type="button" class="w-8 h-8 rounded-full bg-red-50 text-red-600 border border-red-200 flex items-center justify-center hover:bg-red-100 transition shadow-sm" title="Emergency Dispatch SOS">
+          <span class="material-symbols-outlined text-[17px]">sos</span>
+        </button>
+        <a class="min-w-[36px] min-h-[36px] flex items-center justify-center" href="/rider-profile.html" title="Delivery Partner Profile">
           <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shadow-[0_2px_8px_rgba(0,102,255,0.25)]">
             <span class="material-symbols-outlined text-on-primary text-[18px]">person</span>
           </div>
@@ -169,7 +175,7 @@
             </div>
           </div>
           <div>
-            <div id="kpi-today-total" class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface font-bold">$84.50</div>
+            <div id="kpi-today-total" class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface font-bold">₹84.50</div>
             <div class="flex items-center gap-1 font-label-sm text-label-sm text-primary font-medium">
               <span id="kpi-orders-count">8 orders completed</span>
             </div>
@@ -259,15 +265,19 @@
 
         <!-- Quick Action Buttons -->
         <div class="grid grid-cols-2 gap-stack-md pt-2">
-          <a class="h-14 rounded-xl bg-primary-container text-on-primary font-label-md text-label-md flex items-center justify-center gap-2 shadow-[0_4px_12px_rgba(0,102,255,0.2)] hover:opacity-95 transition-opacity" href="/rider-map-trips">
+          <a class="h-14 rounded-xl bg-primary-container text-on-primary font-label-md text-label-md flex items-center justify-center gap-2 shadow-[0_4px_12px_rgba(0,102,255,0.2)] hover:opacity-95 transition-opacity" href="/rider-map-trips.html">
             <span class="material-symbols-outlined text-[20px]">directions</span>
             <span>Navigate</span>
           </a>
-          <a id="btn-call-sender" class="h-14 rounded-xl bg-surface-container-low text-primary font-label-md text-label-md flex items-center justify-center gap-2 hover:bg-surface-container transition-colors" href="tel:5550192">
+          <button id="btn-call-sender" type="button" class="h-14 rounded-xl bg-surface-container-low text-primary font-label-md text-label-md flex items-center justify-center gap-2 hover:bg-surface-container transition-colors">
             <span class="material-symbols-outlined text-[20px]">call</span>
             <span>Call Sender</span>
-          </a>
+          </button>
         </div>
+        <button id="btn-cargo-custody" type="button" class="w-full mt-2 py-3 rounded-xl border border-primary/30 bg-primary/5 hover:bg-primary/10 text-primary font-bold text-xs flex items-center justify-center gap-2 transition">
+          <span class="material-symbols-outlined text-[18px]" id="cargo-custody-icon">check_box</span>
+          <span id="cargo-custody-label">Mark Arrived &amp; Cargo In Custody</span>
+        </button>
       </div>
 
       <!-- Heatmap / Dynamic Surge Snippet -->
@@ -279,16 +289,17 @@
           </div>
           <span class="font-label-sm text-label-sm px-2.5 py-1 rounded-full bg-tertiary-fixed text-tertiary font-bold">+15% Surge Bonus</span>
         </div>
-        <!-- Visual Heatmap Static Map Canvas -->
-        <div class="relative w-full h-44 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=800&q=80');">
-          <div class="absolute inset-0 bg-gradient-to-t from-surface-container-lowest via-transparent to-transparent"></div>
+        <!-- Visual Heatmap Google Maps Canvas -->
+        <div class="relative w-full h-44 bg-surface-container-low overflow-hidden">
+          <div id="hotspotMap" class="w-full h-full z-0"></div>
+          <div class="absolute inset-0 bg-gradient-to-t from-surface-container-lowest/80 via-transparent to-transparent pointer-events-none z-10"></div>
           <!-- Overlay Floating Badge on Map -->
-          <a href="/rider-requests" class="absolute bottom-3 left-4 right-4 bg-surface-container-lowest/90 backdrop-blur-md p-2.5 rounded-xl flex items-center justify-between shadow-sm hover:bg-surface-container-lowest transition">
+          <a href="/rider-requests.html" class="absolute bottom-3 left-4 right-4 bg-surface-container-lowest/95 backdrop-blur-md p-2.5 rounded-xl flex items-center justify-between shadow-md hover:bg-surface-container-lowest transition z-20 border border-surface-container">
             <div class="flex items-center gap-2">
               <span class="material-symbols-outlined text-tertiary text-[20px]">local_fire_department</span>
               <div>
                 <p class="font-label-sm text-label-sm font-bold text-on-surface">Downtown Logistics Center</p>
-                <p class="font-label-sm text-label-sm text-on-surface-variant">Est. 18 new requests in queue</p>
+                <p class="font-label-sm text-label-sm text-on-surface-variant">Est. 18 new requests in queue • +₹30 Avg Surge</p>
               </div>
             </div>
             <span class="material-symbols-outlined text-primary text-[20px]">arrow_forward_ios</span>
@@ -342,7 +353,7 @@
       <div class="flex flex-col gap-stack-md">
         <div class="flex items-center justify-between">
           <h3 class="font-headline-md text-headline-md text-on-surface">Recent Deliveries</h3>
-          <a class="font-label-sm text-label-sm text-primary font-bold" href="/rider-earnings">View Ledger</a>
+          <a class="font-label-sm text-label-sm text-primary font-bold" href="/rider-earnings.html">View Ledger</a>
         </div>
 
         <!-- Trip Item 1 -->
@@ -352,14 +363,14 @@
           </div>
           <div class="flex-1 min-w-0">
             <div class="flex items-center gap-1.5">
-              <span class="font-label-md text-label-md text-on-surface font-semibold truncate">Oakwood Pharmacy</span>
-              <span class="px-1.5 py-0.5 rounded bg-tertiary-fixed text-tertiary font-label-sm text-[10px] font-bold">+$2 Tip</span>
+              <p class="font-label-md text-label-md text-on-surface font-bold">Oakwood Pharmacy</p>
+              <span class="px-1.5 py-0.5 rounded bg-tertiary-fixed text-tertiary font-label-sm text-[10px] font-bold">+₹20 Tip</span>
             </div>
-            <p class="font-label-sm text-label-sm text-on-surface-variant truncate">0.6 kg Cold Chain • 24 mins ago</p>
+            <p class="font-label-sm text-label-sm text-on-surface-variant">Order #TRZ-4820 • 0.6 kg Cold Chain</p>
           </div>
           <div class="text-right shrink-0">
-            <span class="font-label-md text-label-md text-on-surface font-bold block">$11.20</span>
-            <span class="font-label-sm text-label-sm text-primary">Completed</span>
+            <span class="font-label-md text-label-md text-on-surface font-bold block">₹11.20</span>
+            <span class="font-label-sm text-label-sm text-on-surface-variant">4 mins ago</span>
           </div>
         </div>
 
@@ -369,12 +380,12 @@
             <span class="material-symbols-outlined text-on-surface-variant text-[20px]">inventory</span>
           </div>
           <div class="flex-1 min-w-0">
-            <span class="font-label-md text-label-md text-on-surface font-semibold truncate block">Riverside Office Park</span>
-            <p class="font-label-sm text-label-sm text-on-surface-variant truncate">3.2 kg Documents • 1h 05m ago</p>
+            <p class="font-label-md text-label-md text-on-surface font-bold">Riverside Office Park</p>
+            <p class="font-label-sm text-label-sm text-on-surface-variant">Order #TRZ-4819 • 3.2 kg Documents</p>
           </div>
           <div class="text-right shrink-0">
-            <span class="font-label-md text-label-md text-on-surface font-bold block">$9.50</span>
-            <span class="font-label-sm text-label-sm text-primary">Completed</span>
+            <span class="font-label-md text-label-md text-on-surface font-bold block">₹9.50</span>
+            <span class="font-label-sm text-label-sm text-on-surface-variant">42 mins ago</span>
           </div>
         </div>
       </div>
@@ -382,30 +393,85 @@
     </div>
   </main>
 
-  <!-- Bottom Navigation Bar -->
-  <nav class="fixed bottom-0 w-full z-50 pb-safe bg-surface/80 backdrop-blur-xl shadow-[0_-2px_12px_rgba(0,0,0,0.04)]">
-    <div class="flex justify-around items-center h-16 px-container-margin">
-      <a aria-current="page" class="flex flex-col items-center justify-center gap-1 min-w-[44px] min-h-[44px] text-primary-container font-label-md" href="/rider-dashboard">
+  <!-- Dedicated Delivery Partner Bottom Navigation Bar -->
+  <nav class="fixed bottom-0 w-full z-50 pb-safe bg-surface/90 backdrop-blur-xl border-t border-surface-container shadow-[0_-2px_12px_rgba(0,0,0,0.04)]">
+    <div class="flex justify-around items-center h-16 px-container-margin max-w-xl mx-auto">
+      <a aria-current="page" class="flex flex-col items-center justify-center gap-1 min-w-[44px] min-h-[44px] text-primary-container font-label-md" href="/rider-dashboard.html">
         <span class="material-symbols-outlined text-[24px]">speed</span>
-        <span class="font-label-sm text-label-sm">Dashboard</span>
+        <span class="font-label-sm text-label-sm font-bold">Cockpit</span>
       </a>
-      <a class="flex flex-col items-center justify-center gap-1 min-w-[44px] min-h-[44px] text-on-surface-variant hover:text-on-surface" href="/rider-map-trips">
+      <a class="flex flex-col items-center justify-center gap-1 min-w-[44px] min-h-[44px] text-on-surface-variant hover:text-on-surface transition-colors" href="/rider-map-trips.html">
         <span class="material-symbols-outlined text-[24px]">navigation</span>
         <span class="font-label-sm text-label-sm">Map &amp; Trips</span>
       </a>
-      <a class="relative flex flex-col items-center justify-center gap-1 min-w-[44px] min-h-[44px] text-on-surface-variant hover:text-on-surface" href="/rider-requests">
+      <a class="relative flex flex-col items-center justify-center gap-1 min-w-[44px] min-h-[44px] text-on-surface-variant hover:text-on-surface transition-colors" href="/rider-requests.html">
         <div class="relative flex items-center justify-center">
           <span class="material-symbols-outlined text-[24px]">local_shipping</span>
-          <span class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-primary-container rounded-full ring-2 ring-surface"></span>
+          <span class="absolute -top-1 -right-1 w-2 h-2 bg-primary-container rounded-full"></span>
         </div>
         <span class="font-label-sm text-label-sm">Requests</span>
       </a>
-      <a class="flex flex-col items-center justify-center gap-1 min-w-[44px] min-h-[44px] text-on-surface-variant hover:text-on-surface" href="/rider-earnings">
+      <a class="flex flex-col items-center justify-center gap-1 min-w-[44px] min-h-[44px] text-on-surface-variant hover:text-on-surface transition-colors" href="/rider-earnings.html">
         <span class="material-symbols-outlined text-[24px]">account_balance_wallet</span>
         <span class="font-label-sm text-label-sm">Earnings</span>
       </a>
+      <a class="flex flex-col items-center justify-center gap-1 min-w-[44px] min-h-[44px] text-on-surface-variant hover:text-on-surface transition-colors" href="/rider-profile.html">
+        <span class="material-symbols-outlined text-[24px]">person</span>
+        <span class="font-label-sm text-label-sm">Profile</span>
+      </a>
     </div>
   </nav>
+
+  <!-- Sender Call Modal -->
+  <div id="modal-call-sender" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl border border-slate-100">
+      <div class="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center mx-auto mb-3">
+        <span class="material-symbols-outlined text-[26px]">call</span>
+      </div>
+      <h3 class="font-bold text-center text-slate-900 text-base">Contact Sender</h3>
+      <p class="text-xs text-slate-500 text-center mt-1">Terminal 4 Central Hub Dispatch Desk</p>
+      
+      <div class="my-4 p-3 bg-slate-50 rounded-xl text-center font-mono font-bold text-slate-800 text-sm">
+        +91 98765 01920
+      </div>
+
+      <div class="space-y-2">
+        <a href="tel:+919876501920" class="w-full py-3 bg-primary text-white rounded-xl font-bold text-xs flex items-center justify-center gap-2 hover:bg-primary/95 transition">
+          <span class="material-symbols-outlined text-[16px]">call</span>
+          <span>Dial Phone Number</span>
+        </a>
+        <button id="btn-close-call-modal" type="button" class="w-full py-2.5 border border-slate-200 text-slate-600 rounded-xl font-semibold text-xs hover:bg-slate-50 transition">
+          Dismiss
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SOS Alert Modal -->
+  <div id="modal-sos-alert" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl border border-red-200">
+      <div class="w-12 h-12 rounded-full bg-red-100 text-red-600 flex items-center justify-center mx-auto mb-3">
+        <span class="material-symbols-outlined text-[28px]">emergency</span>
+      </div>
+      <h3 class="font-bold text-center text-slate-900 text-base">Emergency SOS Dispatch</h3>
+      <p class="text-xs text-slate-600 text-center mt-1">Need immediate assistance on road or route disruption?</p>
+
+      <div class="space-y-2 my-4">
+        <a href="tel:112" class="w-full py-3 bg-red-600 text-white rounded-xl font-bold text-xs flex items-center justify-center gap-2 shadow-md hover:bg-red-700 transition">
+          <span class="material-symbols-outlined text-[18px]">local_police</span>
+          <span>Call Emergency Services (112)</span>
+        </a>
+        <a href="tel:+911123456789" class="w-full py-3 bg-slate-900 text-white rounded-xl font-bold text-xs flex items-center justify-center gap-2 hover:bg-slate-800 transition">
+          <span class="material-symbols-outlined text-[18px]">support_agent</span>
+          <span>Fleet Supervisor Hotline</span>
+        </a>
+      </div>
+
+      <button id="btn-close-sos" type="button" class="w-full py-2.5 border border-slate-200 text-slate-600 rounded-xl font-semibold text-xs hover:bg-slate-50 transition">
+        Cancel
+      </button>
+    </div>
+  </div>
 
   <!-- Dashboard Telemetry & Controller Script -->
   <script>
@@ -479,6 +545,62 @@
         });
       }
 
+      // Interactive Modals
+      const callModal = document.getElementById('modal-call-sender');
+      const btnCall = document.getElementById('btn-call-sender');
+      const btnCloseCall = document.getElementById('btn-close-call-modal');
+      if (btnCall && callModal) {
+        btnCall.addEventListener('click', () => callModal.classList.remove('hidden'));
+      }
+      if (btnCloseCall && callModal) {
+        btnCloseCall.addEventListener('click', () => callModal.classList.add('hidden'));
+      }
+
+      const sosModal = document.getElementById('modal-sos-alert');
+      const btnSos = document.getElementById('btn-sos-trigger');
+      const btnCloseSos = document.getElementById('btn-close-sos');
+      if (btnSos && sosModal) {
+        btnSos.addEventListener('click', () => sosModal.classList.remove('hidden'));
+      }
+      if (btnCloseSos && sosModal) {
+        btnCloseSos.addEventListener('click', () => sosModal.classList.add('hidden'));
+      }
+
+      // Cargo In-Custody Toggle
+      const btnCustody = document.getElementById('btn-cargo-custody');
+      const custodyIcon = document.getElementById('cargo-custody-icon');
+      const custodyLabel = document.getElementById('cargo-custody-label');
+      let inCustody = false;
+
+      if (btnCustody) {
+        btnCustody.addEventListener('click', () => {
+          inCustody = !inCustody;
+          if (inCustody) {
+            btnCustody.className = 'w-full mt-2 py-3 rounded-xl border border-emerald-300 bg-emerald-50 text-emerald-700 font-bold text-xs flex items-center justify-center gap-2 transition';
+            custodyIcon.textContent = 'verified';
+            custodyIcon.className = 'material-symbols-outlined text-[18px] text-emerald-600';
+            custodyLabel.textContent = '✔ Cargo In Custody — Ready for Dropoff Navigation';
+          } else {
+            btnCustody.className = 'w-full mt-2 py-3 rounded-xl border border-primary/30 bg-primary/5 hover:bg-primary/10 text-primary font-bold text-xs flex items-center justify-center gap-2 transition';
+            custodyIcon.textContent = 'check_box';
+            custodyIcon.className = 'material-symbols-outlined text-[18px]';
+            custodyLabel.textContent = 'Mark Arrived & Cargo In Custody';
+          }
+        });
+      }
+
+      // Live Dynamic Shift Timer
+      let shiftSeconds = 131 * 3600 + 34 * 60;
+      setInterval(() => {
+        shiftSeconds++;
+        const h = Math.floor(shiftSeconds / 3600);
+        const m = Math.floor((shiftSeconds % 3600) / 60);
+        const s = shiftSeconds % 60;
+        const formatted = `${h}h ${m}m ${s < 10 ? '0' : ''}${s}s`;
+        const shiftEl = document.getElementById('kpi-shift-time');
+        if (shiftEl) shiftEl.textContent = formatted;
+      }, 1000);
+
       // Initial Dashboard Data Fetch
       async function loadDashboard() {
         try {
@@ -490,12 +612,11 @@
               renderDutyState(d.isOnline);
               if (autoAcceptInput) autoAcceptInput.checked = d.autoAccept;
               if (d.walletBalance) {
-                document.getElementById('header-wallet-balance').textContent = '$' + d.walletBalance.toFixed(2);
+                document.getElementById('header-wallet-balance').textContent = '₹' + d.walletBalance.toFixed(2);
               }
               if (d.shift) {
-                document.getElementById('kpi-today-total').textContent = '$' + d.shift.todayTotal.toFixed(2);
+                document.getElementById('kpi-today-total').textContent = '₹' + d.shift.todayTotal.toFixed(2);
                 document.getElementById('kpi-orders-count').textContent = d.shift.ordersCompleted + ' orders completed';
-                document.getElementById('kpi-shift-time').textContent = d.shift.shiftTimeFormatted;
                 document.getElementById('kpi-login-time').textContent = 'Logged in ' + d.shift.loginTimeFormatted;
               }
               if (d.rating) document.getElementById('kpi-rating').textContent = d.rating.toFixed(2);
@@ -515,7 +636,44 @@
       }
 
       loadDashboard();
+
+      // Initialize Demand Hotspot Google Maps Preview
+      try {
+        if (typeof L !== 'undefined' && document.getElementById('hotspotMap')) {
+          const hMap = L.map('hotspotMap', {
+            zoomControl: false,
+            attributionControl: false,
+            dragging: false,
+            touchZoom: false,
+            scrollWheelZoom: false,
+            doubleClickZoom: false
+          }).setView([30.7333, 76.7794], 13);
+
+          L.tileLayer('https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+            maxZoom: 20,
+            subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+          }).addTo(hMap);
+
+          // Glowing Surge Radius Circle
+          L.circle([30.7333, 76.7794], {
+            radius: 1200,
+            color: '#cc4204',
+            fillColor: '#cc4204',
+            fillOpacity: 0.25,
+            weight: 2
+          }).addTo(hMap);
+
+          L.circleMarker([30.7333, 76.7794], {
+            radius: 6,
+            color: '#ffffff',
+            fillColor: '#cc4204',
+            fillOpacity: 1,
+            weight: 2
+          }).addTo(hMap);
+        }
+      } catch (_) {}
     })();
   </script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </body>
 </html>
