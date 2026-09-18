@@ -405,9 +405,8 @@ const initializeDatabase = async () => {
       (6, 'Rajesh Kumar', 'rajesh.driver@transitly.in', '+919876543213', 'DRIVER', '', '{}'::jsonb),
       (10, 'Haryana Roadways', 'contact@haryanaroadways.gov.in', '+911722704014', 'OPERATOR', '', '{}'::jsonb),
       (11, 'Rajesh Kumar', 'rider1@transitly.com', '+919988776655', 'DELIVERY_PARTNER', '', '{}'::jsonb)
-      ON CONFLICT (id) DO UPDATE SET
+      ON CONFLICT (email) DO UPDATE SET
         name = EXCLUDED.name,
-        email = EXCLUDED.email,
         phone = EXCLUDED.phone,
         avatar_url = EXCLUDED.avatar_url,
         preferences = EXCLUDED.preferences;

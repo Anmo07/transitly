@@ -351,29 +351,55 @@ app.get(['/', '/{*splat}'], (req, res) => {
         list.innerHTML = '<div class="p-4 text-xs text-slate-500 text-center">No tables found</div>';
         return;
       }
-      list.innerHTML = tables.map(t => \`
-        <button onclick="loadTable('\${t.table_name}')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-mono flex items-center justify-between transition hover:bg-slate-800/80 group">
-          <span class="text-slate-300 group-hover:text-white truncate font-medium">\${t.table_name}</span>
-          <span class="text-[10px] text-slate-500 bg-slate-800 px-1.5 py-0.5 rounded font-mono shrink-0">\${t.estimated_rows}</span>
-        </button>
-      \`).join('');
+
+      const views = tables.filter(t => t.table_type === 'VIEW' || t.table_name.startsWith('view_'));
+      const baseTables = tables.filter(t => t.table_type !== 'VIEW' && !t.table_name.startsWith('view_'));
+
+      let html = '';
+
+      if (views.length > 0) {
+        html += '<div class="px-2 py-1 text-[10px] uppercase font-bold tracking-wider text-emerald-400 flex items-center gap-1.5 mt-1"><span>🌟</span> Business Views (Joined)</div>';
+        html += views.map(t => \`
+          <button onclick="loadTable('\${t.table_name}')" class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-mono flex items-center justify-between transition hover:bg-emerald-950/30 border border-transparent hover:border-emerald-500/30 group" title="\${t.table_comment || t.table_name}">
+            <div class="flex items-center gap-1.5 truncate">
+              <span class="text-emerald-400 text-[11px]">👁️</span>
+              <span class="text-slate-200 group-hover:text-emerald-300 truncate font-medium text-[11px]">\${t.table_name}</span>
+            </div>
+            <span class="text-[9px] text-emerald-500/80 bg-emerald-950/50 px-1 py-0.2 rounded font-mono shrink-0">VIEW</span>
+          </button>
+        \`).join('');
+      }
+
+      if (baseTables.length > 0) {
+        html += '<div class="px-2 py-1 text-[10px] uppercase font-bold tracking-wider text-slate-400 flex items-center gap-1.5 mt-3 border-t border-slate-800/80 pt-2.5"><span>🗄️</span> Relational Base Tables</div>';
+        html += baseTables.map(t => \`
+          <button onclick="loadTable('\${t.table_name}')" class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-mono flex items-center justify-between transition hover:bg-slate-800/80 group" title="\${t.table_comment || t.table_name}">
+            <span class="text-slate-300 group-hover:text-white truncate font-medium text-[11px]">\${t.table_name}</span>
+            <span class="text-[10px] text-slate-500 bg-slate-800 px-1.5 py-0.5 rounded font-mono shrink-0">\${t.estimated_rows}</span>
+          </button>
+        \`).join('');
+      }
+
+      list.innerHTML = html;
     }
 
     function filterTables() {
       const q = document.getElementById('tableSearch').value.toLowerCase();
-      const filtered = currentTables.filter(t => t.table_name.toLowerCase().includes(q));
+      const filtered = currentTables.filter(t => t.table_name.toLowerCase().includes(q) || (t.table_comment && t.table_comment.toLowerCase().includes(q)));
       renderTableList(filtered);
     }
 
     async function loadTable(tableName) {
       document.getElementById('activeTableTitle').textContent = tableName;
       document.getElementById('rowCountBadge').textContent = 'Loading...';
+      document.getElementById('activeTableDesc').textContent = '';
       
       const res = await fetch('/api/tables/' + tableName);
       const data = await res.json();
       currentTableData = { tableName, ...data };
 
       document.getElementById('rowCountBadge').textContent = \`\${data.rows.length} rows loaded\`;
+      document.getElementById('activeTableDesc').textContent = data.tableComment || (tableName.startsWith('view_') ? 'High-level business view combining related relational tables for human readability.' : '');
       document.getElementById('viewToggleGroup').style.display = data.hasGeometry ? 'flex' : 'none';
 
       renderGridView(data);
@@ -390,12 +416,19 @@ app.get(['/', '/{*splat}'], (req, res) => {
         return;
       }
 
-      const cols = data.columns.map(c => c.column_name);
+      const cols = data.columns;
 
       let html = '<div class="overflow-x-auto rounded-xl border border-slate-800"><table class="w-full text-left text-xs font-mono divide-y divide-slate-800">';
       html += '<thead class="bg-[#111827] sticky top-0 text-slate-400 font-semibold uppercase text-[10px] tracking-wider"><tr>';
       cols.forEach(c => {
-        html += \`<th class="px-4 py-3 whitespace-nowrap">\${c}</th>\`;
+        const tooltip = c.column_comment ? \`\${c.column_comment} (\${c.data_type})\` : \`\${c.data_type} (nullable: \${c.is_nullable})\`;
+        html += \`<th class="px-4 py-2.5 whitespace-nowrap cursor-help hover:text-white transition" title="\${tooltip}">
+          <div class="flex items-center gap-1">
+            <span>\${c.column_name}</span>
+            \${c.column_comment ? '<span class="text-[10px] text-blue-400">ℹ️</span>' : ''}
+          </div>
+          <span class="text-[9px] text-slate-500 font-normal lowercase block">\${c.data_type}</span>
+        </th>\`;
       });
       html += '</tr></thead>';
 
@@ -403,7 +436,7 @@ app.get(['/', '/{*splat}'], (req, res) => {
       data.rows.forEach(r => {
         html += '<tr class="hover:bg-slate-800/40 transition">';
         cols.forEach(c => {
-          let val = r[c];
+          let val = r[c.column_name];
           if (val === null || val === undefined) {
             html += '<td class="px-4 py-2.5 text-slate-600 italic">null</td>';
           } else if (typeof val === 'object') {
