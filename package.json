@@ -17,6 +17,9 @@
     "3d:scan": "node scripts/generate-3d-scrubbers.js",
     "3d:frames": "node scripts/generate-demo-frames.js",
     "3d:ingest": "node scripts/ingest-higgsfield-video.js",
+    "dev:react": "vite",
+    "build:react": "vite build",
+    "preview:react": "vite preview",
     "test": "node tests/security.test.js && node tests/architecture.test.js && node tests/lastMile.test.js && node tests/whatsapp.test.js && node tests/telemetry.test.js && node tests/schema.test.js && node tests/haryanaRoadways.test.js && node tests/legalAndSeoRoutes.test.js && node tests/authLanding.test.js && node tests/proofOfDelivery.test.js && node tests/riderWorkflow.test.js && node tests/deliveryPartnerSuite.test.js && node tests/trackingAndNotificationInTransit.test.js"
   },
   "keywords": [],
@@ -38,15 +41,20 @@
     "morgan": "^1.11.0",
     "nodemailer": "^9.1.0",
     "pg": "^8.23.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "react-router-dom": "^7.18.4",
     "socket.io": "^4.8.3",
     "swagger-ui-express": "^5.0.1",
     "yamljs": "^0.3.0"
   },
   "devDependencies": {
+    "@vitejs/plugin-react": "^6.1.1",
     "autoprefixer": "^10.5.4",
     "neon": "^4.14.3",
     "nodemon": "^3.1.14",
     "postcss": "^8.5.26",
-    "tailwindcss": "^3.4.19"
+    "tailwindcss": "^3.4.19",
+    "vite": "^8.3.0"
   }
 }

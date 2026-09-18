@@ -142,6 +142,12 @@ async function runSuite() {
     assert.strictEqual(resNoKey.status, 400);
     assert.ok(resNoKey.json.message.includes('Idempotency-Key'));
 
+    // Ensure sufficient balance for payout test idempotency
+    const currentBal = await WalletLedgerModel.getBalance(1);
+    if (currentBal < 50) {
+      await WalletLedgerModel.settleOrderDelivery(1, { id: 1, total_payout: 150.00, tracking_code: '#SEED-TEST', package_type: 'Test Seed Credit' });
+    }
+
     // 7b. Valid Payout Execution
     const testIdempotencyKey = `idemp_test_${Date.now()}`;
     const resPayout1 = await request('POST', '/api/v1/riders/payout', { amount: 25.00 }, {

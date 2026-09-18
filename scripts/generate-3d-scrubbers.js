@@ -13,6 +13,7 @@ const fs = require('fs');
 const path = require('path');
 
 const PUBLIC_DIR = path.join(__dirname, '../public');
+const PAGES_DIR = fs.existsSync(path.join(PUBLIC_DIR, 'pages')) ? path.join(PUBLIC_DIR, 'pages') : PUBLIC_DIR;
 const OUTPUT_MANIFEST_PATH = path.join(PUBLIC_DIR, 'js/scrubber-manifest.json');
 
 // Operational mapping patterns: maps HTML patterns to Higgsfield 3D operational sequences
@@ -89,13 +90,13 @@ function analyzeHtmlFiles() {
   console.log('║       TRANSITLY 3D AGENTIC SCANNER & SCRUBBER BUILDER              ║');
   console.log('╚════════════════════════════════════════════════════════════════════╝\n');
 
-  if (!fs.existsSync(PUBLIC_DIR)) {
-    console.error(`Error: public directory not found at ${PUBLIC_DIR}`);
+  if (!fs.existsSync(PAGES_DIR)) {
+    console.error(`Error: pages directory not found at ${PAGES_DIR}`);
     process.exit(1);
   }
 
-  const files = fs.readdirSync(PUBLIC_DIR).filter(f => f.endsWith('.html'));
-  console.log(`Discovered ${files.length} HTML template pages in public/.\n`);
+  const files = fs.readdirSync(PAGES_DIR).filter(f => f.endsWith('.html'));
+  console.log(`Discovered ${files.length} HTML template pages in ${PAGES_DIR}.\n`);
 
   const manifest = {
     generatedAt: new Date().toISOString(),
@@ -114,7 +115,7 @@ function analyzeHtmlFiles() {
   let totalInteractiveElements = 0;
 
   for (const file of files) {
-    const filePath = path.join(PUBLIC_DIR, file);
+    const filePath = path.join(PAGES_DIR, file);
     const content = fs.readFileSync(filePath, 'utf8');
     const { ids, buttonCount, inputCount, cardCount } = extractElements(content);
     totalInteractiveElements += (buttonCount + inputCount + cardCount);

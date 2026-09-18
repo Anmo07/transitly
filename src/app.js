@@ -78,6 +78,8 @@ app.use('/api', (req, res) => {
 
 // SEO & Crawler Directives — SVG Vector & Mermaid Text Sitemaps
 const publicDir = path.join(__dirname, '../public');
+const pagesDir = path.join(publicDir, 'pages');
+
 app.get('/sitemap.svg', (req, res) => {
   res.sendFile(path.join(publicDir, 'sitemap.svg'), {
     headers: { 'Content-Type': 'image/svg+xml; charset=utf-8' }
@@ -166,43 +168,53 @@ const requireRole = (allowedRole, redirectFallback) => {
 // Public Routes — Accessible Without Authentication
 // =========================================================================
 // Login, Signup, and Verification pages (must be accessible unauthenticated)
-app.get(['/login', '/auth', '/signin', '/verify'], (req, res) => res.sendFile(path.join(publicDir, 'login.html')));
-app.get(['/signup', '/register', '/create-account'], (req, res) => res.sendFile(path.join(publicDir, 'signup.html')));
+app.get(['/login', '/auth', '/signin', '/verify'], (req, res) => res.sendFile(path.join(pagesDir, 'login.html')));
+app.get(['/signup', '/register', '/create-account'], (req, res) => res.sendFile(path.join(pagesDir, 'signup.html')));
 
 // Legal & Informational pages (publicly accessible for SEO and compliance)
-app.get(['/privacy', '/privacy-policy'], (req, res) => res.sendFile(path.join(publicDir, 'privacy-policy.html')));
-app.get(['/terms', '/terms-and-conditions', '/terms-of-use'], (req, res) => res.sendFile(path.join(publicDir, 'terms.html')));
-app.get(['/faq', '/faqs'], (req, res) => res.sendFile(path.join(publicDir, 'faq.html')));
-app.get(['/visual-sitemap', '/sitemap'], (req, res) => res.sendFile(path.join(publicDir, 'visual-sitemap.html')));
+app.get(['/privacy', '/privacy-policy'], (req, res) => res.sendFile(path.join(pagesDir, 'privacy-policy.html')));
+app.get(['/terms', '/terms-and-conditions', '/terms-of-use'], (req, res) => res.sendFile(path.join(pagesDir, 'terms.html')));
+app.get(['/faq', '/faqs'], (req, res) => res.sendFile(path.join(pagesDir, 'faq.html')));
+app.get(['/visual-sitemap', '/sitemap'], (req, res) => res.sendFile(path.join(pagesDir, 'visual-sitemap.html')));
 
 // =========================================================================
 // Protected Routes — Strict Role-Isolated Domains
 // =========================================================================
 // 1. Customer Parcel Logistics Domain (Delivery Partners strictly prohibited)
-app.get(['/', '/deliver'], requirePageAuth, requireRole('CUSTOMER', '/rider-dashboard'), (req, res) => res.sendFile(path.join(publicDir, 'index.html')));
-app.get('/tracking', requirePageAuth, requireRole('CUSTOMER', '/rider-dashboard'), (req, res) => res.sendFile(path.join(publicDir, 'tracking.html')));
-app.get('/services', requirePageAuth, requireRole('CUSTOMER', '/rider-dashboard'), (req, res) => res.sendFile(path.join(publicDir, 'services.html')));
-app.get('/history', requirePageAuth, requireRole('CUSTOMER', '/rider-dashboard'), (req, res) => res.sendFile(path.join(publicDir, 'history.html')));
-app.get('/profile', requirePageAuth, requireRole('CUSTOMER', '/rider-dashboard'), (req, res) => res.sendFile(path.join(publicDir, 'profile.html')));
-app.get('/saved-addresses', requirePageAuth, requireRole('CUSTOMER', '/rider-dashboard'), (req, res) => res.sendFile(path.join(publicDir, 'saved-addresses.html')));
-app.get('/payment-methods', requirePageAuth, requireRole('CUSTOMER', '/rider-dashboard'), (req, res) => res.sendFile(path.join(publicDir, 'payment-methods.html')));
-app.get('/settings', requirePageAuth, requireRole('CUSTOMER', '/rider-dashboard'), (req, res) => res.sendFile(path.join(publicDir, 'settings.html')));
-app.get('/help-support', requirePageAuth, requireRole('CUSTOMER', '/rider-dashboard'), (req, res) => res.sendFile(path.join(publicDir, 'help-support.html')));
-app.get('/notifications', requirePageAuth, requireRole('CUSTOMER', '/rider-dashboard'), (req, res) => res.sendFile(path.join(publicDir, 'notifications.html')));
+app.get(['/', '/deliver'], requirePageAuth, requireRole('CUSTOMER', '/rider-dashboard'), (req, res) => res.sendFile(path.join(pagesDir, 'index.html')));
+app.get('/tracking', requirePageAuth, requireRole('CUSTOMER', '/rider-dashboard'), (req, res) => res.sendFile(path.join(pagesDir, 'tracking.html')));
+app.get('/services', requirePageAuth, requireRole('CUSTOMER', '/rider-dashboard'), (req, res) => res.sendFile(path.join(pagesDir, 'services.html')));
+app.get('/history', requirePageAuth, requireRole('CUSTOMER', '/rider-dashboard'), (req, res) => res.sendFile(path.join(pagesDir, 'history.html')));
+app.get('/profile', requirePageAuth, requireRole('CUSTOMER', '/rider-dashboard'), (req, res) => res.sendFile(path.join(pagesDir, 'profile.html')));
+app.get('/saved-addresses', requirePageAuth, requireRole('CUSTOMER', '/rider-dashboard'), (req, res) => res.sendFile(path.join(pagesDir, 'saved-addresses.html')));
+app.get('/payment-methods', requirePageAuth, requireRole('CUSTOMER', '/rider-dashboard'), (req, res) => res.sendFile(path.join(pagesDir, 'payment-methods.html')));
+app.get('/settings', requirePageAuth, requireRole('CUSTOMER', '/rider-dashboard'), (req, res) => res.sendFile(path.join(pagesDir, 'settings.html')));
+app.get('/help-support', requirePageAuth, requireRole('CUSTOMER', '/rider-dashboard'), (req, res) => res.sendFile(path.join(pagesDir, 'help-support.html')));
+app.get('/notifications', requirePageAuth, requireRole('CUSTOMER', '/rider-dashboard'), (req, res) => res.sendFile(path.join(pagesDir, 'notifications.html')));
 
 // 2. Delivery Partner Cockpit Domain (Customers strictly prohibited)
-app.get('/rider-dashboard', requirePageAuth, requireRole('DELIVERY_PARTNER', '/'), (req, res) => res.sendFile(path.join(publicDir, 'rider-dashboard.html')));
-app.get('/rider-map-trips', requirePageAuth, requireRole('DELIVERY_PARTNER', '/'), (req, res) => res.sendFile(path.join(publicDir, 'rider-map-trips.html')));
-app.get('/rider-requests', requirePageAuth, requireRole('DELIVERY_PARTNER', '/'), (req, res) => res.sendFile(path.join(publicDir, 'rider-requests.html')));
-app.get('/rider-earnings', requirePageAuth, requireRole('DELIVERY_PARTNER', '/'), (req, res) => res.sendFile(path.join(publicDir, 'rider-earnings.html')));
-app.get('/rider-profile', requirePageAuth, requireRole('DELIVERY_PARTNER', '/'), (req, res) => res.sendFile(path.join(publicDir, 'rider-profile.html')));
-app.get('/delivery-partner', requirePageAuth, requireRole('DELIVERY_PARTNER', '/'), (req, res) => res.sendFile(path.join(publicDir, 'delivery-partner.html')));
+app.get('/rider-dashboard', requirePageAuth, requireRole('DELIVERY_PARTNER', '/'), (req, res) => res.sendFile(path.join(pagesDir, 'rider-dashboard.html')));
+app.get('/rider-map-trips', requirePageAuth, requireRole('DELIVERY_PARTNER', '/'), (req, res) => res.sendFile(path.join(pagesDir, 'rider-map-trips.html')));
+app.get('/rider-requests', requirePageAuth, requireRole('DELIVERY_PARTNER', '/'), (req, res) => res.sendFile(path.join(pagesDir, 'rider-requests.html')));
+app.get('/rider-earnings', requirePageAuth, requireRole('DELIVERY_PARTNER', '/'), (req, res) => res.sendFile(path.join(pagesDir, 'rider-earnings.html')));
+app.get('/rider-profile', requirePageAuth, requireRole('DELIVERY_PARTNER', '/'), (req, res) => res.sendFile(path.join(pagesDir, 'rider-profile.html')));
+app.get('/delivery-partner', requirePageAuth, requireRole('DELIVERY_PARTNER', '/'), (req, res) => res.sendFile(path.join(pagesDir, 'delivery-partner.html')));
+
+// React Single Page Application Entry (/app/*splat)
+app.get(['/app', '/app/*splat'], (req, res) => {
+  const distHtml = path.join(publicDir, 'dist/index.html');
+  if (fs.existsSync(distHtml)) {
+    res.sendFile(distHtml);
+  } else {
+    res.sendFile(path.join(pagesDir, 'index.html'));
+  }
+});
 
 // Custom 404 Handler for Unmatched Routes (Prevents Soft 404 SEO penalties)
 app.use((req, res) => {
   res.status(404);
   if (req.accepts('html')) {
-    res.sendFile(path.join(publicDir, '404.html'));
+    res.sendFile(path.join(pagesDir, '404.html'));
   } else if (req.accepts('json')) {
     res.json({ error: 'Route Not Found', code: 404 });
   } else {

@@ -2,7 +2,8 @@
 module.exports = {
   content: [
     "./public/**/*.{html,js}",
-    "./src/**/*.{html,js}"
+    "./src/**/*.{html,js}",
+    "./client/**/*.{html,js,jsx,ts,tsx}"
   ],
   darkMode: "class",
   theme: {

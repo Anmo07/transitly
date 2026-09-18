@@ -34,7 +34,7 @@ async function runTests() {
   try {
     // 1. Verify tracking.html structure: Empty state, hidden HUD, empty default input
     console.log('1. Verifying tracking.html DOM markup for non-persistent in-transit display...');
-    const trackingHtmlPath = path.join(__dirname, '../public/tracking.html');
+    const trackingHtmlPath = path.join(__dirname, '../public/pages/tracking.html');
     const trackingHtml = fs.readFileSync(trackingHtmlPath, 'utf8');
 
     assert.ok(trackingHtml.includes('id="trackingEmptyView"'), 'Expected #trackingEmptyView to exist in tracking.html');
@@ -46,7 +46,7 @@ async function runTests() {
 
     // 2. Verify notifications.html & notifications.js
     console.log('2. Verifying notifications defaults (No in_transit alerts without sent parcel)...');
-    const notifHtmlPath = path.join(__dirname, '../public/notifications.html');
+    const notifHtmlPath = path.join(__dirname, '../public/pages/notifications.html');
     const notifHtml = fs.readFileSync(notifHtmlPath, 'utf8');
     assert.ok(notifHtml.includes('id="tabCountTransit"') && notifHtml.includes('>0<'), 'Expected initial in_transit tab count to be 0');
 
@@ -59,7 +59,7 @@ async function runTests() {
 
     // 3. Verify index.html drawer alert card
     console.log('3. Verifying notifications drawer in index.html...');
-    const indexHtmlPath = path.join(__dirname, '../public/index.html');
+    const indexHtmlPath = path.join(__dirname, '../public/pages/index.html');
     const indexHtml = fs.readFileSync(indexHtmlPath, 'utf8');
     assert.ok(indexHtml.includes('id="drawerInTransitCard" class="hidden'), 'Expected drawer in-transit card to be hidden by default');
     console.log('✔ index.html notifications drawer hides in-transit card by default.');

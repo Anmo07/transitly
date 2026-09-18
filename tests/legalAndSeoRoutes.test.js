@@ -121,11 +121,12 @@ async function runTests() {
     // 7. Canonical Tags and Meta Descriptions on all HTML files
     console.log('7. Verifying Canonical Tags and Meta Descriptions on all HTML files...');
     const publicDir = path.join(__dirname, '../public');
-    const htmlFiles = fs.readdirSync(publicDir).filter(f => f.endsWith('.html'));
+    const pagesDir = fs.existsSync(path.join(publicDir, 'pages')) ? path.join(publicDir, 'pages') : publicDir;
+    const htmlFiles = fs.readdirSync(pagesDir).filter(f => f.endsWith('.html'));
 
-    assert.ok(htmlFiles.length >= 12, 'Expected at least 12 HTML files in public directory');
+    assert.ok(htmlFiles.length >= 12, 'Expected at least 12 HTML files in pages directory');
     for (const file of htmlFiles) {
-      const content = fs.readFileSync(path.join(publicDir, file), 'utf8');
+      const content = fs.readFileSync(path.join(pagesDir, file), 'utf8');
       assert.ok(content.includes('rel="canonical"'), `${file} is missing <link rel="canonical">`);
       assert.ok(content.includes('name="description"'), `${file} is missing <meta name="description">`);
     }
