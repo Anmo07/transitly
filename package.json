@@ -18,6 +18,8 @@
     "db:inspect:local": "DATABASE_URL=\"postgresql://postgres@localhost:5432/transitly_telemetry\" POSTGRES_SSL=\"false\" node src/db/viewDb.js",
     "db:visualize": "node scripts/db-studio.js",
     "db:studio": "node scripts/db-studio.js",
+    "db:tableplus": "open -a TablePlus \"postgresql://postgres@localhost:5432/transitly_telemetry?name=Transitly%20Local&statusColor=007AFF&env=local\"",
+    "db:tableplus:cloud": "open -a TablePlus \"$DATABASE_URL\"",
     "3d:scan": "node scripts/generate-3d-scrubbers.js",
     "3d:frames": "node scripts/generate-demo-frames.js",
     "3d:ingest": "node scripts/ingest-higgsfield-video.js",

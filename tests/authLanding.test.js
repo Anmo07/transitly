@@ -326,7 +326,7 @@ async function runTests() {
     const resCreate = await request('POST', '/api/v1/auth/signup', {
       fullName: 'Vikram Malhotra',
       email: testNewEmail,
-      phone: '+919811223344',
+      phone: `+9198${Date.now().toString().slice(-8)}`,
       accountType: 'business'
     });
     assert.strictEqual(resCreate.status, 201, 'Expected 201 Created for new user');
@@ -430,7 +430,9 @@ async function runTests() {
   }
 }
 
-runTests().catch((err) => {
+runTests().then(() => {
+  process.exit(0);
+}).catch((err) => {
   console.error('Test execution failed:', err);
   process.exit(1);
 });
