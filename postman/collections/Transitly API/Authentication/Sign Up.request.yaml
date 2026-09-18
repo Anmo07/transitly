@@ -1,0 +1,16 @@
+$kind: http-request
+method: POST
+url: '{{baseUrl}}/auth/signup'
+order: 3000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "fullName": "Vikram Malhotra",
+      "email": "vikram@transitly.in",
+      "phone": "+919811223344",
+      "accountType": "personal"
+    }

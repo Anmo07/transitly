@@ -1,0 +1,8 @@
+$kind: collection
+name: Transitly API
+description: Enterprise API for intercity public transport cargo capacity monetization, distributed Sagas, real-time Redis telemetry, PostGIS spatial tracking, last-mile dual feasibility matrix, and WhatsApp parcel assistant.
+variables:
+  - key: baseUrl
+    value: 'http://localhost:3000/api/v1'
+  - key: authToken
+    value: ''

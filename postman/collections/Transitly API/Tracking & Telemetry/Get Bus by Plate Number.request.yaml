@@ -1,0 +1,7 @@
+$kind: http-request
+method: GET
+url: '{{baseUrl}}/tracking/bus/:plateNumber'
+order: 4000
+pathVariables:
+  - key: plateNumber
+    value: DL-01-AB-1234

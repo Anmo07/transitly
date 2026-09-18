@@ -1,0 +1,19 @@
+$kind: http-request
+method: POST
+url: '{{baseUrl}}/shipments/:id/transition'
+order: 4000
+headers:
+  - key: Authorization
+    value: 'Bearer {{authToken}}'
+  - key: Content-Type
+    value: application/json
+pathVariables:
+  - key: id
+    value: shipment_id_here
+body:
+  type: json
+  content: |-
+    {
+      "status": "in_transit",
+      "note": "Picked up from sender"
+    }

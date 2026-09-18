@@ -1,0 +1,20 @@
+$kind: http-request
+method: POST
+url: '{{baseUrl}}/addresses'
+order: 2000
+headers:
+  - key: Authorization
+    value: 'Bearer {{authToken}}'
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "label": "Home",
+      "line1": "Connaught Place",
+      "city": "New Delhi",
+      "pincode": "110001",
+      "latitude": 28.6315,
+      "longitude": 77.2167
+    }

@@ -1,0 +1,10 @@
+$kind: http-request
+method: DELETE
+url: '{{baseUrl}}/addresses/:id'
+order: 4000
+headers:
+  - key: Authorization
+    value: 'Bearer {{authToken}}'
+pathVariables:
+  - key: id
+    value: address_id_here

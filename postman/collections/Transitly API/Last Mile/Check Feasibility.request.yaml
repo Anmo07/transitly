@@ -1,0 +1,33 @@
+$kind: http-request
+method: POST
+url: '{{baseUrl}}/lastmile/feasibility'
+order: 1000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "senderAddress": {
+        "latitude": 28.6315,
+        "longitude": 77.2167
+      },
+      "receiverAddress": {
+        "latitude": 26.8530,
+        "longitude": 75.8150
+      },
+      "originTerminal": {
+        "name": "ISBT Kashmere Gate",
+        "latitude": 28.6675,
+        "longitude": 77.2285
+      },
+      "destinationTerminal": {
+        "name": "Sindhi Camp, Jaipur",
+        "latitude": 26.9124,
+        "longitude": 75.7873
+      },
+      "parcel": {
+        "weightKg": 8.0
+      }
+    }

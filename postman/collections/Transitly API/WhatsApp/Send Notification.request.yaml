@@ -1,0 +1,17 @@
+$kind: http-request
+method: POST
+url: '{{baseUrl}}/whatsapp/send'
+order: 3000
+headers:
+  - key: Authorization
+    value: 'Bearer {{authToken}}'
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "to": "+919876543210",
+      "templateName": "shipment_update",
+      "params": ["TRK-DEL-JAI-9876", "In Transit"]
+    }

@@ -1,0 +1,15 @@
+$kind: http-request
+method: PATCH
+url: '{{baseUrl}}/riders/duty'
+order: 1000
+headers:
+  - key: Authorization
+    value: 'Bearer {{authToken}}'
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "onDuty": true
+    }

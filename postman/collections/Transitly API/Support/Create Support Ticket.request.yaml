@@ -1,0 +1,17 @@
+$kind: http-request
+method: POST
+url: '{{baseUrl}}/support/tickets'
+order: 2000
+headers:
+  - key: Authorization
+    value: 'Bearer {{authToken}}'
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "subject": "Parcel not delivered",
+      "description": "My parcel TRK-DEL-JAI-9876 has not been delivered yet.",
+      "trackingId": "TRK-DEL-JAI-9876"
+    }

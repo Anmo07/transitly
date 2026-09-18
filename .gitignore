@@ -36,3 +36,7 @@ logs/
 scratch/
 .system_generated/
 .neon
+
+# Build outputs
+public/dist/
+dist/

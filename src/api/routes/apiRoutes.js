@@ -12,7 +12,7 @@ const supportController = require('../controllers/supportController');
 const riderRoutes = require('./riderRoutes');
 const { pool } = require('../../config/postgres');
 
-const router = express.Router();
+const router = express.Router();                         
 
 
 // 0.1 User Authentication & OTP Verification

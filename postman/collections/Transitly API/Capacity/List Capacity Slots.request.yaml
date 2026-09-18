@@ -1,0 +1,9 @@
+$kind: http-request
+method: GET
+url: '{{baseUrl}}/capacity/slots?routeId=64b1f234567890abcdef5678&date=2026-09-20'
+order: 1000
+queryParams:
+  - key: routeId
+    value: 64b1f234567890abcdef5678
+  - key: date
+    value: '2026-09-20'

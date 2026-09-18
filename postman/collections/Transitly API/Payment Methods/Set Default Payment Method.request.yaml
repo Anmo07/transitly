@@ -1,0 +1,10 @@
+$kind: http-request
+method: PATCH
+url: '{{baseUrl}}/payment-methods/:id/default'
+order: 3000
+headers:
+  - key: Authorization
+    value: 'Bearer {{authToken}}'
+pathVariables:
+  - key: id
+    value: payment_method_id_here

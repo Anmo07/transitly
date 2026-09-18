@@ -1,0 +1,18 @@
+$kind: http-request
+method: POST
+url: '{{baseUrl}}/riders/location'
+order: 7000
+headers:
+  - key: Authorization
+    value: 'Bearer {{authToken}}'
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "latitude": 28.6315,
+      "longitude": 77.2167,
+      "heading": 90,
+      "speedKmh": 30
+    }

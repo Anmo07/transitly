@@ -1,0 +1,18 @@
+$kind: http-request
+method: POST
+url: '{{baseUrl}}/custody/handoff'
+order: 1000
+headers:
+  - key: Authorization
+    value: 'Bearer {{authToken}}'
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "trackingId": "TRK-DEL-JAI-9876",
+      "fromParty": "sender",
+      "toParty": "bus_operator",
+      "location": "ISBT Kashmere Gate"
+    }

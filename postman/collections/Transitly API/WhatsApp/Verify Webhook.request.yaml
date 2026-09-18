@@ -1,0 +1,11 @@
+$kind: http-request
+method: GET
+url: '{{baseUrl}}/whatsapp/webhook?hub.mode=subscribe&hub.verify_token=your_token&hub.challenge=challenge_string'
+order: 1000
+queryParams:
+  - key: hub.mode
+    value: subscribe
+  - key: hub.verify_token
+    value: your_token
+  - key: hub.challenge
+    value: challenge_string

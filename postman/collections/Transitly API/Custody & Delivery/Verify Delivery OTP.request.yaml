@@ -1,0 +1,17 @@
+$kind: http-request
+method: POST
+url: '{{baseUrl}}/custody/verify-otp'
+order: 2000
+headers:
+  - key: Authorization
+    value: 'Bearer {{authToken}}'
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "trackingId": "TRK-DEL-JAI-9876",
+      "inputOtp": "492817",
+      "recipientName": "Rohan Verma"
+    }

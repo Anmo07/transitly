@@ -1,0 +1,18 @@
+$kind: http-request
+method: POST
+url: '{{baseUrl}}/riders/tasks/:id/status'
+order: 9000
+headers:
+  - key: Authorization
+    value: 'Bearer {{authToken}}'
+  - key: Content-Type
+    value: application/json
+pathVariables:
+  - key: id
+    value: task_id_here
+body:
+  type: json
+  content: |-
+    {
+      "status": "completed"
+    }

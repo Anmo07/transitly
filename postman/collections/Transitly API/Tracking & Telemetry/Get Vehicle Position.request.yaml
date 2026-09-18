@@ -1,0 +1,7 @@
+$kind: http-request
+method: GET
+url: '{{baseUrl}}/tracking/vehicles/:vehicleId/position'
+order: 3000
+pathVariables:
+  - key: vehicleId
+    value: DL-01-AB-1234

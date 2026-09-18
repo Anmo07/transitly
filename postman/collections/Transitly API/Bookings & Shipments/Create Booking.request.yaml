@@ -1,0 +1,28 @@
+$kind: http-request
+method: POST
+url: '{{baseUrl}}/bookings'
+order: 1000
+headers:
+  - key: Authorization
+    value: 'Bearer {{authToken}}'
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "operatorId": "64b1f234567890abcdef1234",
+      "routeId": "64b1f234567890abcdef5678",
+      "capacitySlotId": "64b1f234567890abcdef9012",
+      "sender": {
+        "name": "Aarav Sharma",
+        "phone": "+919876543210",
+        "address": "Connaught Place, New Delhi"
+      },
+      "recipient": {
+        "name": "Rohan Verma",
+        "phone": "+919876543211",
+        "address": "Malviya Nagar, Jaipur"
+      },
+      "weightKg": 12.5
+    }

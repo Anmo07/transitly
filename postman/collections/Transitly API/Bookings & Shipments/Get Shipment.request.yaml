@@ -1,0 +1,10 @@
+$kind: http-request
+method: GET
+url: '{{baseUrl}}/shipments/:trackingId'
+order: 3000
+headers:
+  - key: Authorization
+    value: 'Bearer {{authToken}}'
+pathVariables:
+  - key: trackingId
+    value: TRK-DEL-JAI-9876

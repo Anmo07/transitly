@@ -1,0 +1,18 @@
+$kind: http-request
+method: POST
+url: '{{baseUrl}}/tracking/telemetry'
+order: 1000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "vehicleId": "DL-01-AB-1234",
+      "operatorId": "DTC-01",
+      "latitude": 28.6320,
+      "longitude": 77.2180,
+      "speedKmh": 54.0,
+      "heading": 180.0
+    }

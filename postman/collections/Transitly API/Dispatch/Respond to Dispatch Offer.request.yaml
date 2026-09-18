@@ -1,0 +1,18 @@
+$kind: http-request
+method: POST
+url: '{{baseUrl}}/dispatch/orders/:id/respond'
+order: 2000
+headers:
+  - key: Authorization
+    value: 'Bearer {{authToken}}'
+  - key: Content-Type
+    value: application/json
+pathVariables:
+  - key: id
+    value: order_id_here
+body:
+  type: json
+  content: |-
+    {
+      "response": "accept"
+    }

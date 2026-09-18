@@ -1,0 +1,10 @@
+$kind: http-request
+method: DELETE
+url: '{{baseUrl}}/payment-methods/:id'
+order: 4000
+headers:
+  - key: Authorization
+    value: 'Bearer {{authToken}}'
+pathVariables:
+  - key: id
+    value: payment_method_id_here

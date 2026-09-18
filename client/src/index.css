@@ -15,14 +15,21 @@
     --amber-warning: #cc4204;
   }
 
-  html, body {
+  html,
+  body {
     width: 100%;
     min-height: 100%;
     margin: 0;
     padding: 0;
     background-color: var(--surface);
     color: var(--on-surface);
-    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family:
+      "Plus Jakarta Sans",
+      -apple-system,
+      BlinkMacSystemFont,
+      "Segoe UI",
+      Roboto,
+      sans-serif;
     -webkit-tap-highlight-color: transparent;
   }
 
@@ -38,15 +45,15 @@
 /* Glassmorphism primitives */
 .glass-panel {
   background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
   border: 1px solid rgba(236, 237, 250, 0.8);
 }
 
 .glass-panel-dark {
   background: rgba(25, 27, 36, 0.85);
-  backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 

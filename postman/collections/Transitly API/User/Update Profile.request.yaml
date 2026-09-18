@@ -1,0 +1,16 @@
+$kind: http-request
+method: PUT
+url: '{{baseUrl}}/profile'
+order: 2000
+headers:
+  - key: Authorization
+    value: 'Bearer {{authToken}}'
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "fullName": "Vikram Malhotra",
+      "email": "vikram@transitly.in"
+    }

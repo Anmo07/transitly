@@ -1,0 +1,11 @@
+$kind: http-request
+method: GET
+url: '{{baseUrl}}/tracking/nearby?lat=28.6320&lon=77.2180&radius=5000'
+order: 2000
+queryParams:
+  - key: lat
+    value: '28.6320'
+  - key: lon
+    value: '77.2180'
+  - key: radius
+    value: '5000'

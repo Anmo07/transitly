@@ -109,8 +109,8 @@ try {
   logWarn(`Port cleanup notice: ${err.message}`);
 }
 
-// Step 3: Compile and Optimize Production CSS Assets
-logStep('3/5', 'Compiling and optimizing Tailwind CSS bundle...');
+// Step 3: Compile and Optimize Production CSS Assets & React SPA
+logStep('3/5', 'Compiling and optimizing Tailwind CSS bundle & React SPA...');
 try {
   execSync('npm run build:css:min', { cwd: ROOT_DIR, stdio: 'pipe' });
   logSuccess('Tailwind CSS compiled and minified to public/css/style.css');
@@ -122,6 +122,18 @@ try {
   } catch (fallbackErr) {
     logWarn(`CSS Build notice: ${fallbackErr.message}`);
   }
+}
+
+try {
+  if (!fs.existsSync(path.join(ROOT_DIR, 'public', 'dist', 'index.html'))) {
+    logInfo('Building React Single Page Application...');
+    execSync('npm run build:react', { cwd: ROOT_DIR, stdio: 'pipe' });
+    logSuccess('React SPA compiled to public/dist/');
+  } else {
+    logSuccess('React SPA distribution bundle ready.');
+  }
+} catch (reactErr) {
+  logWarn(`React build notice: ${reactErr.message}`);
 }
 
 // Step 4: Optional Database Verification / Schema Seed

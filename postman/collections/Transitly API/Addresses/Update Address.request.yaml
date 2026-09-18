@@ -1,0 +1,20 @@
+$kind: http-request
+method: PUT
+url: '{{baseUrl}}/addresses/:id'
+order: 3000
+headers:
+  - key: Authorization
+    value: 'Bearer {{authToken}}'
+  - key: Content-Type
+    value: application/json
+pathVariables:
+  - key: id
+    value: address_id_here
+body:
+  type: json
+  content: |-
+    {
+      "label": "Office",
+      "line1": "Cyber City",
+      "city": "Gurgaon"
+    }
