@@ -421,3 +421,36 @@ Transitly establishes `/login` as the foremost entry point. Direct surfing to in
 - **Public Legal Pages**: Dedicated `/privacy-policy`, `/terms`, and `/faq` routes with clear Call-to-Actions (CTAs).
 - **Search Engine Optimization**: Strict canonical URL tags (`<link rel="canonical" href="https://transitly.in/...">`), OpenGraph meta tags, and interactive multi-format sitemaps (`sitemap.svg` & `sitemap.mmd`) listing all priority routes.
 - **Cookie Consent**: GDPR/DPDP-compliant banner pop-up managing categorized consents (`essential`, `analytics`, `marketing`) persisted in `localStorage`.
+
+---
+
+## 14. Modern Frontend Architecture & Atomic Design Specifications
+
+### 14.1 Runtime Stack & Build Pipeline
+- **Runtime & Language:** React 18.2 (Concurrent Mode, zero-reflow hooks) + ES2022.
+- **Bundler & Tooling:** Vite 6 with dynamic base path (`/app` mount point with root fallback) and Rollup code-splitting.
+- **Styling Architecture:** Tailwind CSS v3 with custom glassmorphism utilities (`.glass-panel`) and layout containment (`.contain-3d`).
+- **Real-Time Client:** Socket.io client subscribing to highway bus telemetry rooms (`bus:<carrier_plate>`).
+- **Mapping Cartography:** Leaflet 1.9.4 with Google Maps tile layers and dynamic PostGIS geometries.
+
+### 14.2 Atomic Design Component Hierarchy
+```
+Atoms (5)        ──► Button3D, Input3D, Icon, Badge, Card3D
+Molecules (8)    ──► DutyToggle, SearchBar, CorridorTimeline, CargoBayModal,
+                     DispatchQueue, OtpPinInput, SwipeConfirm, TelematicsHud
+Organisms (2)    ──► WebGLScrubber, LiveMap
+Layouts (3)      ──► CustomerLayout, PartnerLayout, AuthLayout
+Pages (23)       ──► 10 Customer Views, 5 Delivery Partner Views, 8 Public & Auth Views
+```
+
+### 14.3 Micro3D Physics & 60 FPS Performance Budget
+- **Frame Budget:** $\le 16.67\text{ ms}$ per animation frame (60 FPS guaranteed).
+- **Zero Reflow Invariant:** All pointer perspective tilt is applied via `transform: perspective(500px) rotateX(...) rotateY(...) scale3d(...)` with `will-change: transform, filter`. No layout, width, height, or margin properties are modified during pointer movement.
+- **Deflection Limits:** Maximum Cartesian deflection angle $\theta_{\max} = \pm 6^\circ$. Press scale contraction $s_{\text{press}} = 0.97$.
+- **Haptic Specifications:** Single tap $8\text{ ms}$; state switch $[15, 30, 15]\text{ ms}$; delivery completion $[10, 50, 20]\text{ ms}$.
+- **Accessibility:** Mandatory `prefers-reduced-motion` media query detection deactivates all matrix transforms and particle emitters.
+
+### 14.4 Role Gatekeeper & Security Contracts
+- **Client Route Isolation:** `<RoleRoute>` checks active identity role. Unauthenticated requests are directed to `/login`. Cross-domain route attempts (e.g. customer requesting `/rider-dashboard`) are redirected to domain root without exposing state.
+- **Token Synchronization:** Session JWT is stored in `localStorage` and synchronized with `transitly_session` cookie for seamless server-side middleware validation.
+

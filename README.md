@@ -89,13 +89,23 @@ npm install
 cp .env.example .env
 ```
 
-### 3. Database Initialization & Seeding
+### 3. Database Initialization, Seeding & Visualizers
 ```bash
-# Initialize schema, PostGIS extensions, and seed master routes & users
+# Initialize schema, PostGIS extensions, and seed master routes & users (Cloud Neon)
 npm run db:init
+
+# Initialize local Postgres.app instance (localhost:5432)
+npm run db:init:local
 
 # Inspect tables, multimodal shipments, and spatial geometries in terminal
 npm run db:inspect
+
+# Launch native TablePlus connected to Local DB (or :cloud for Neon)
+npm run db:tableplus
+npm run db:tableplus:cloud
+
+# Launch browser-based Transitly Database Studio & Leaflet map (Port 5050)
+npm run db:visualize
 ```
 
 ### 4. Run Development Server
@@ -103,11 +113,14 @@ npm run db:inspect
 # Start backend server with nodemon (Port 4000)
 npm run dev
 
+# Start modern React.js SPA frontend (Port 5173 / Vite)
+npm run dev:react
+
 # Or run the unified process orchestrator (compiles Tailwind, verifies DB, binds server)
 npm start
 ```
 
-Visit the local application at **`http://localhost:4000`** (or `http://localhost:3000`).
+Visit the local application at **`http://localhost:4000`** (Express API & Pages) or **`http://localhost:5173`** (React SPA).
 
 ---
 
@@ -157,6 +170,7 @@ npm test
 * **[Master Technical Documentation](docs/PROJECT_DOCUMENTATION.md)**
 * **[Technical Requirements Document (TRD)](docs/TRD.md)**
 * **[PostgreSQL & PostGIS Terminal Operations Guide](docs/POSTGRES_TERMINAL_GUIDE.md)**
+* **[Postman Secure & Encrypted API Workflows Guide](docs/POSTMAN_SECURITY_WORKFLOWS.md)**
 * **[Interactive Swagger API Documentation](https://transitly-api.onrender.com/api/docs)**
 
 ---

@@ -22,6 +22,10 @@
 10. [Deployment, Infrastructure & Containerization](#10-deployment-infrastructure--containerization)
 11. [Quality Assurance & Verification Standards](#11-quality-assurance--verification-standards)
 12. [Master Knowledge Graph & Operations Matrix](#12-master-knowledge-graph--operations-matrix)
+13. [Modern Frontend Evolution — React.js SPA & 3D Architecture](#13-modern-frontend-evolution--reactjs-spa--3d-architecture)
+14. [Encrypted & Secure Postman API Workflows](#14-encrypted--secure-postman-api-workflows)
+15. [Database Visualization & Multi-Target Studio](#15-database-visualization--multi-target-studio)
+16. [Expressive Domain Views & Schema Self-Documentation](#16-expressive-domain-views--schema-self-documentation)
 
 ---
 
@@ -130,141 +134,232 @@ graph TB
 
 ## 4. Complete Codebase Directory Structure
 
+Transitly is architected as a **high-performance, dual-engine monorepo** uniting a **React 18 Single Page Application (SPA)**, an **Express.js & PostGIS backend**, **Leaflet cartography**, **Higgsfield 3D WebGL2 scrubbers**, and **Postman Cloud encrypted API workflows**:
+
 ```
 Transitly/
 ├── Dockerfile                           # Multi-stage production container build (deps -> runner)
-├── docker-compose.yml                   # Container stack (app, db-init, redis, postgis)
-├── package.json                         # Node.js dependencies, 9 test suites, CSS build scripts
+├── docker-compose.yml                   # Multi-container orchestration (app, db-init, redis, postgis)
+├── netlify.toml                         # Netlify edge deployment configuration & SPA redirects
+├── package.json                         # Node.js dependencies, 16 automated test suites, DB & 3D scripts
 ├── postcss.config.js                    # PostCSS pipeline for Tailwind CSS & Autoprefixer
-├── tailwind.config.js                   # Google Stitch design tokens (colors, fonts, shadows)
+├── render.yaml                          # Render cloud infrastructure-as-code specification
+├── tailwind.config.js                   # Google Stitch design tokens (colors, fonts, 3D shadows)
+├── vite.config.js                       # Vite 6 bundler config with dynamic base path resolution (/app)
 ├── PRD.md                               # Canonical Product Requirements Document
-├── README.md                            # High-level architecture & repository guide
+├── README.md                            # High-level architecture, quickstart & repository guide
 │
-├── docs/                                # Technical & Architectural Documentation
-│   ├── PROJECT_DOCUMENTATION.md         # Master detailed project documentation (this document)
-│   ├── TRD.md                           # Technical Requirements Document
-│   ├── POSTGRES_TERMINAL_GUIDE.md       # Interactive PostgreSQL & PostGIS terminal guide
-│   └── stitch_design_prompts.md         # UI/UX design specifications & prompt catalog
+├── client/                              # Modern React 18 Single Page Application (SPA)
+│   ├── index.html                       # Vite HTML entrypoint with viewport & font imports
+│   └── src/
+│       ├── App.jsx                      # 23-route application router with <RoleRoute> gatekeeping
+│       ├── index.css                    # Tailwind directives, glassmorphic styles & 3D layout containment
+│       ├── main.jsx                     # React 18 concurrent root with BrowserRouter & AuthProvider
+│       │
+│       ├── components/                  # Atomic Design Component Hierarchy
+│       │   ├── atoms/                   # Indivisible primitive UI elements with 3D tactile physics
+│       │   │   ├── Badge.jsx            # Status pills (Online, In-Transit, Surge, Neutral) with pulse
+│       │   │   ├── Button3D.jsx         # Tactile 3D button with variant styles & haptic depression
+│       │   │   ├── Card3D.jsx           # Glassmorphic card with CSS layout containment & reactive tilt
+│       │   │   ├── Icon.jsx             # Material Symbols Outlined wrapper with fill & badge support
+│       │   │   └── Input3D.jsx          # Animated floating-label inputs with glowing focus borders
+│       │   │
+│       │   ├── molecules/               # Multi-atom functional composites
+│       │   │   ├── CargoBayModal.jsx    # Undercarriage 3D stowage schematic & tamper seal inspector
+│       │   │   ├── CorridorTimeline.jsx # Visual highway corridor stage sequence & real-time checkpoints
+│       │   │   ├── DispatchQueue.jsx    # Spatial dispatch offer with 30s countdown TTL bar
+│       │   │   ├── DutyToggle.jsx       # Driver ONLINE/OFFLINE state machine switch with haptics
+│       │   │   ├── OtpPinInput.jsx      # 4-digit auto-advancing delivery PIN keypad with haptics
+│       │   │   ├── SearchBar.jsx        # Terminal auto-suggest with HTML5 Geolocation API integration
+│       │   │   ├── SwipeConfirm.jsx     # Touch & drag swipe-to-confirm delivery slider with haptics
+│       │   │   └── TelematicsHud.jsx    # Live highway cruiser HUD, speed gauge, and progress bar
+│       │   │
+│       │   ├── organisms/               # Complex autonomous domain widgets
+│       │   │   ├── LiveMap.jsx          # Leaflet cartography with Google tiles & PostGIS vehicle pins
+│       │   │   └── WebGLScrubber.jsx    # 60 FPS hardware-accelerated canvas cargo-bay frame scrubber
+│       │   │
+│       │   └── layouts/                 # Structural templates with slot injection
+│       │       ├── AuthLayout.jsx       # Public auth layout with mesh background & branding card
+│       │       ├── CustomerLayout.jsx   # Top header, main slot, and bottom 5-tab customer navigation
+│       │       └── PartnerLayout.jsx    # Cockpit header (online pill + wallet) & 5-tab rider dock
+│       │
+│       ├── hooks/                       # Custom React Sensory & Telemetry Hooks
+│       │   ├── useAuth.jsx              # Session state, JWT storage, role gatekeeping & switchRole()
+│       │   ├── useMicro3D.js            # ±6° perspective tilt, zero-reflow transforms & particle emitter
+│       │   ├── useScrubber.js           # WebGL2 requestAnimationFrame 60 FPS frame interpolation
+│       │   └── useSocket.js             # Socket.io client subscribing to highway bus telemetry rooms
+│       │
+│       └── pages/                       # Complete 23 Application Domain Views
+│           ├── Customer Domain (Protected)
+│           │   ├── Home.jsx             # Instant booking, weight calculator & corridor selection
+│           │   ├── Tracking.jsx         # Live highway telematics radar, HUD & PIN delivery modal
+│           │   ├── Services.jsx         # Express corridor rate tiers & volume discounts
+│           │   ├── History.jsx          # Consignment ledger, status filters & tax invoices
+│           │   ├── Profile.jsx          # KYC credentials, emergency contact & preferences
+│           │   ├── SavedAddresses.jsx   # Saved delivery addresses & bus terminals
+│           │   ├── PaymentMethods.jsx   # Transitly Wallet, UPI VPAs & card tokens
+│           │   ├── Notifications.jsx    # Live telematics feed & arrival notifications
+│           │   ├── HelpSupport.jsx      # 24/7 helpline, ticket submission & FAQ modal
+│           │   └── Settings.jsx         # DPDP Act (2023) privacy consent & data controls
+│           ├── Delivery Partner Domain (Protected)
+│           │   ├── RiderDashboard.jsx   # Driver cockpit, duty switch, battery & earnings HUD
+│           │   ├── RiderMapTrips.jsx    # Active navigation, turn-by-turn routing & geofenced PIN
+│           │   ├── RiderRequests.jsx    # Spatial dispatch queue & high-payout priority offers
+│           │   ├── RiderEarnings.jsx    # Double-entry partner wallet & instant IMPS cash-out
+│           │   └── RiderProfile.jsx     # Vehicle credentials, safety checklist & SOS trigger
+│           └── Public & Authentication Domain
+│               ├── DeliveryPartnerLanding.jsx # Partner recruitment portal & vehicle earnings estimator
+│               ├── Login.jsx            # Two-step passcode & SMS verification flow
+│               ├── Signup.jsx           # User profile registration & role selection
+│               ├── Faq.jsx              # Accordion knowledge base
+│               ├── PrivacyPolicy.jsx    # DPDP Act (2023) privacy conditions
+│               ├── Terms.jsx            # Conditions of carriage & prohibited cargo
+│               ├── NotFound.jsx         # 404 error page
+│               └── VisualSitemap.jsx    # Interactive 23-view architecture sitemap
 │
-├── public/                              # Modular Static Frontend (Google Stitch Design)
-│   ├── login.html                       # Foremost Landing Page & Two-Step Verification (/login and /auth)
-│   ├── signup.html                      # Create Account & Dedicated User Registration (/signup)
-│   ├── index.html                       # Deliver / Home Screen (/ and /deliver - Auth Protected)
-│   ├── tracking.html                    # Live Telematics & Tracking Screen (/tracking - Auth Protected)
-│   ├── services.html                    # All Cargo & Transit Services Bento (/services - Auth Protected)
-│   ├── history.html                     # Delivery History Screen (/history - Auth Protected)
-│   ├── profile.html                     # Profile Hub Screen (/profile - Auth Protected)
-│   ├── saved-addresses.html             # Saved Addresses Sub-screen (/saved-addresses - Auth Protected)
-│   ├── payment-methods.html             # Payment Methods Sub-screen (/payment-methods - Auth Protected)
-│   ├── settings.html                    # Settings Sub-screen (/settings - Auth Protected)
-│   ├── help-support.html                # Help & Support Sub-screen (/help-support - Auth Protected)
-│   ├── privacy-policy.html              # Privacy Policy & Data Processing (/privacy-policy - Public)
-│   ├── terms.html                       # Terms of Service & Shipper Conditions (/terms - Public)
-│   ├── faq.html                         # Interactive FAQ Hub & WhatsApp Deep-Links (/faq - Public)
-│   ├── sitemap.svg                      # Scalable Vector Graphics Topology Sitemap (/sitemap.svg)
-│   ├── sitemap.mmd                      # Mermaid Text Specification Sitemap (/sitemap.mmd)
-│   │
-│   ├── css/                             # Dedicated Screen Stylesheets
-│   │   ├── style.css                    # Minified production compiled Tailwind CSS bundle
-│   │   ├── common.css                   # Global tokens, glassmorphism, normalization
-│   │   ├── deliver.css                  # Home hero banner, pin animation, corridor cards
-│   │   ├── tracking.css                 # Map canvas, 30s countdown badge, radar pulse
-│   │   ├── services.css                 # Bento grid card hover & elevations
-│   │   ├── history.css                  # History search & filter chip transitions
-│   │   ├── profile.css                  # Profile card & bento option interactions
-│   │   ├── saved-addresses.css          # Address card layout & hover states
-│   │   ├── payment-methods.css          # Payment cards & active card halo
-│   │   ├── settings.css                 # Custom animated toggle switches
-│   │   └── help-support.css             # FAQ cards & WhatsApp action styles
-│   │
-│   └── js/                              # Dedicated Screen Controllers
-│       ├── common.js                    # Nav active detection, client auth gate, session cookie sync
-│       ├── cookie-consent.js            # GDPR/DPDP compliant categorized cookie consent banner
-│       ├── i18n.js                      # Multi-language localization dictionary
-│       ├── deliver.js                   # Homepage quick search & corridor triggers
-│       ├── tracking.js                  # Leaflet map engine, 30s auto-refresh, insights catalog
-│       ├── services.js                  # Bento card click handlers & modal pre-fill
-│       ├── history.js                   # Real-time search & status chip filtering
-│       ├── profile.js                   # Profile options & session logout
-│       ├── saved-addresses.js           # Address pre-filling for booking modal
-│       ├── payment-methods.js           # Active card selection switcher
-│       ├── settings.js                  # Settings toggle event handlers
-│       └── help-support.js              # FAQ accordion & WhatsApp deep-link trigger
+├── docs/                                # Enterprise Technical Documentation & API Specifications
+│   ├── PROJECT_DOCUMENTATION.md         # Master architectural documentation & operations manual (this file)
+│   ├── TRD.md                           # Technical Requirements Document & engineering constraints
+│   ├── POSTMAN_SECURITY_WORKFLOWS.md    # Postman Cloud encrypted workflow specification & guide
+│   ├── POSTGRES_TERMINAL_GUIDE.md       # Interactive PostgreSQL & PostGIS CLI terminal runbook
+│   ├── stitch_design_prompts.md         # Google Stitch UI/UX design specifications & prompt catalog
+│   ├── transitly_postman_collection.json # Versioned Postman v2.1.0 Collection (32 encrypted requests)
+│   └── transitly_postman_environment.json # Versioned Postman Environment (secret variables)
 │
-├── src/                                 # Backend Source Code
-│   ├── app.js                           # Express application setup, compression, static routes
-│   ├── server.js                        # HTTP & WebSocket server entrypoint
+├── public/                              # Static Frontend Fallback & Production Distribution
+│   ├── _redirects                       # Netlify SPA routing rules & API proxying
+│   ├── robots.txt                       # Search engine crawler policies
+│   ├── sitemap.mmd                      # Mermaid format visual sitemap
+│   ├── sitemap.svg                      # Scalable Vector Graphics platform topology diagram
 │   │
-│   ├── api/                             # REST API Layer
-│   │   ├── swagger.yaml                 # OpenAPI 3.0 canonical specification
+│   ├── assets/                          # Static Media & 3D Assets
+│   │   └── 3d/                          # Pre-rendered Higgsfield WebGL2 frame sequences
+│   │       ├── 3d-bus-highway/          # 75 WebP frames (1080p highway cruiser sweep)
+│   │       ├── 3d-cargo-bay/            # 75 WebP frames (undercarriage bay inspection)
+│   │       ├── 3d-delivery-van/         # 75 WebP frames (electric cargo van rotation)
+│   │       └── 3d-terminal-hub/         # 75 WebP frames (ISBT Kashmiri Gate terminal sweep)
+│   │
+│   ├── dist/                            # Production Vite React SPA compiled distribution
+│   │   ├── index.html                   # Compiled root HTML mount point
+│   │   └── assets/                      # Production minified JS bundles & CSS bundles
+│   │
+│   ├── pages/                           # 23 Static Semantic HTML Templates (SSR Fallback)
+│   │   ├── 404.html                     # Error 404 fallback page
+│   │   ├── delivery-partner.html        # Partner recruitment landing
+│   │   ├── faq.html                     # Interactive FAQ hub
+│   │   ├── help-support.html            # Customer support & ticketing
+│   │   ├── history.html                 # Delivery history ledger
+│   │   ├── index.html                   # Primary booking & delivery screen
+│   │   ├── login.html                   # Hardened OTP login
+│   │   ├── notifications.html           # Live telematics notification feed
+│   │   ├── payment-methods.html         # Saved cards & UPI VPAs
+│   │   ├── privacy-policy.html          # DPDP Act privacy terms
+│   │   ├── profile.html                 # Customer identity & preferences
+│   │   ├── rider-dashboard.html         # Driver cockpit
+│   │   ├── rider-earnings.html          # Driver earnings ledger
+│   │   ├── rider-map-trips.html         # Active driver navigation
+│   │   ├── rider-profile.html           # Driver vehicle & KYC profile
+│   │   ├── rider-requests.html          # Spatial dispatch queue
+│   │   ├── saved-addresses.html         # Saved customer addresses
+│   │   ├── services.html                # Cargo services bento grid
+│   │   ├── settings.html                # App preferences & consent
+│   │   ├── signup.html                  # User account creation
+│   │   ├── terms.html                   # Shipper terms & conditions
+│   │   ├── tracking.html                # Telematics radar & tracking
+│   │   └── visual-sitemap.html          # Visual platform topology
+│   │
+│   ├── css/                             # Modular CSS stylesheets for static pages
+│   └── js/                              # Modular ES controllers for static pages
+│
+├── scripts/                             # Operational CLI & Developer Automation Tooling
+│   ├── db-studio.js                     # Browser-based DB Studio (Local Postgres + Neon Cloud switcher)
+│   ├── generate-3d-scrubbers.js         # Video-to-frame WebGL2 sequence generator
+│   ├── generate-demo-frames.js          # Procedural canvas frame generator for 3D scrubber demos
+│   ├── generate-postman-artifacts.js    # Postman Cloud SDK synchronizer & artifact exporter
+│   └── ingest-higgsfield-video.js       # Higgsfield AI video frame-extraction pipeline
+│
+├── src/                                 # Enterprise Express & PostGIS Backend
+│   ├── app.js                           # Express application setup, security headers, compression & static routing
+│   ├── server.js                        # HTTP & WebSocket (Socket.io) server entrypoint
+│   │
+│   ├── api/                             # REST API Specification & Controller Layer
+│   │   ├── swagger.yaml                 # OpenAPI 3.0 canonical specification (/api/docs)
 │   │   └── routes/
-│   │       └── apiRoutes.js             # Consolidated /api/v1 endpoints
+│   │       └── apiRoutes.js             # Consolidated /api/v1 endpoints across 8 business domains
 │   │
-│   ├── config/                          # Configuration Management
-│   │   ├── postgres.js                  # PostgreSQL/PostGIS connection pool (pg.Pool)
-│   │   └── redis.js                     # Redis client initialization (ioredis)
+│   ├── config/                          # Centralized Infrastructure Connection Pools
+│   │   ├── postgres.js                  # PostgreSQL/PostGIS connection pool (pg.Pool with SSL configuration)
+│   │   └── redis.js                     # Redis client connection (ioredis Fast Path stream manager)
 │   │
-│   ├── db/                              # Database Initialization & Migrations
-│   │   ├── initDb.js                    # Database initializer & automated migration runner
-│   │   ├── viewDb.js                    # CLI diagnostic database inspector
+│   ├── db/                              # Database Initialization, Migrations & Seed Corridors
+│   │   ├── initDb.js                    # Automated migration runner for Local and Cloud Neon
+│   │   ├── viewDb.js                    # CLI diagnostic schema & data inspector
 │   │   ├── migrations/
 │   │   │   ├── 000_master_schema.sql    # Base relational DDL & initial table definitions
-│   │   │   └── 001_master_schema.sql    # DDD evolution: operators, terminals, quotes, consents, audit logs
+│   │   │   ├── 001_master_schema.sql    # DDD evolution: operators, terminals, quotes, consents, audit logs
+│   │   │   ├── 002_delivery_partner_schema.sql # Driver shifts, vehicle specs, payouts & geofenced PINs
+│   │   │   └── 003_expressive_views_and_metadata.sql # 7 business views & schema self-documentation
 │   │   ├── queries/
-│   │   │   └── inspection_queries.sql   # Comprehensive PostgreSQL terminal query & diagnostic suite
+│   │   │   └── inspection_queries.sql   # Diagnostic SQL suite with PostGIS spatial calculations
 │   │   └── seeds/
-│   │       ├── 001_seed_master_data.sql # Seed data: sample users, addresses, DTC vehicles & routes
+│   │       ├── 001_seed_master_data.sql # Seed data: users, addresses, DTC vehicles & routes
 │   │       └── 002_haryana_roadways_routes.sql # Official Haryana Roadways 5 intercity corridors & stops
 │   │
-│   ├── events/                          # Event Contracts & Envelopes
-│   │   ├── contracts.js                 # Event schema definitions (v1)
-│   │   └── eventEnvelope.js             # Envelope generator & validation
+│   ├── events/                          # Event-Driven Architecture Contracts
+│   │   ├── contracts.js                 # Canonical event schema definitions (v1)
+│   │   └── eventEnvelope.js             # CloudEvents-compliant event envelope generator & validator
 │   │
-│   ├── models/                          # PostgreSQL Data Access Objects (DAOs)
+│   ├── models/                          # PostgreSQL Data Access Objects (DAOs) with PostGIS
 │   │   ├── Shipment.js                  # Master Shipment Aggregate Root (OCC + PostGIS)
-│   │   ├── ShipmentLeg.js               # Multi-modal child legs (Pickup, Transit, Delivery)
+│   │   ├── ShipmentLeg.js               # Multi-modal child legs (Pickup, Highway Transit, Last-Mile Delivery)
 │   │   ├── CapacitySlot.js              # Cargo capacity reservation model (Atomic OCC)
-│   │   ├── RouteTransaction.js          # Route versioning & corridor geometries
-│   │   ├── CustodyHandoff.js            # Immutable chain of custody records
-│   │   ├── ProofOfDelivery.js           # Digital POD evidence & OTP verification
-│   │   ├── TransactionSnapshot.js       # Closed transaction immutable archive
-│   │   ├── LedgerEntry.js               # Double-entry accounting journal
-│   │   ├── User.js                      # Multi-tenant user & identity model
-│   │   ├── Vehicle.js                   # Fleet bus registration & cargo specs
-│   │   ├── Address.js                   # User saved addresses with PostGIS Point
-│   │   ├── PaymentMethod.js             # User saved payment methods
-│   │   └── SupportTicket.js             # Support tickets & claims
+│   │   ├── RouteTransaction.js          # Route versioning & PostGIS LineString corridor geometries
+│   │   ├── CustodyHandoff.js            # Immutable chain of custody records with tamper seal codes
+│   │   ├── ProofOfDelivery.js           # Digital POD evidence, photos & timing-safe OTP verification
+│   │   ├── TransactionSnapshot.js       # Closed transaction immutable SHA-256 archive
+│   │   ├── LedgerEntry.js               # Double-entry accounting journal for rider payouts & platform take
+│   │   ├── User.js                      # Multi-tenant user & identity model (Customer, Partner, Operator)
+│   │   ├── Vehicle.js                   # Fleet bus registration & undercarriage cargo specs
+│   │   ├── Address.js                   # User saved addresses with PostGIS Point geometries
+│   │   ├── PaymentMethod.js             # User saved payment methods & tokenized cards
+│   │   ├── Rider.js                     # Delivery partner cockpit telemetry, rating & shifts
+│   │   └── SupportTicket.js             # Customer support tickets, claims & resolutions
 │   │
-│   ├── modules/                         # Business Logic Domains
-│   │   ├── bookings/                    # Booking validation & state machine
-│   │   ├── capacity/                    # Slot management & OCC reservation
-│   │   ├── lastMile/                    # LastMileOrchestrator & provider adapters
-│   │   ├── pricing/                     # DynamicPricingService & fare calculation
-│   │   ├── tracking/                    # TelemetryService (Fast/Slow paths) & routes
-│   │   ├── whatsapp/                    # WhatsAppService, bot intents, Cloud API
-│   │   └── settlements/                 # Financial ledger & revenue calculations
+│   ├── modules/                         # Modular Business Logic Domains
+│   │   ├── bookings/                    # Booking validation & state machine transitions
+│   │   ├── capacity/                    # Slot management & OCC capacity reservation
+│   │   ├── lastMile/                    # LastMileOrchestrator & provider adapters (Uber, Rapido, inDrive)
+│   │   ├── pricing/                     # DynamicPricingService & multimodal fare calculation
+│   │   ├── tracking/                    # TelemetryService (Fast Path Redis + PostGIS Slow Path)
+│   │   ├── whatsapp/                    # WhatsAppService, bot intents & Meta Cloud API webhooks
+│   │   └── settlements/                 # Financial ledger & idempotent partner payouts
 │   │
 │   ├── sagas/                           # Distributed Workflow Sagas
-│   │   └── bookingSaga.js               # Multimodal booking saga with compensation
+│   │   └── bookingSaga.js               # Multimodal booking saga with automated compensation rollback
 │   │
-│   ├── utils/                           # Utility & Security Helpers
-│   │   └── security.js                  # QR seal generator, OTP verify, geofencing
+│   ├── utils/                           # Security, Cryptography & Geofence Utilities
+│   │   └── security.js                  # HMAC-SHA256 QR seals, constant-time OTP verify, PostGIS geofencing
 │   │
-│   └── websockets/                      # Real-time WebSocket Layer
-│       └── trackingSocket.js            # Live GPS broadcast via Redis pub/sub
+│   └── websockets/                      # Real-time WebSocket Telemetry Layer
+│       └── trackingSocket.js            # Live GPS broadcast via Redis pub/sub to room channels
 │
-└── tests/                               # Comprehensive Automated Test Suites (11 Master Suites)
-    ├── security.test.js                 # OTP, QR Seal, and Geofence tests
-    ├── architecture.test.js             # OCC, State Machine, and Saga tests
-    ├── lastMile.test.js                 # Provider adapters & Feasibility Matrix tests
-    ├── whatsapp.test.js                 # WhatsApp templates, bot intents, redaction
-    ├── telemetry.test.js                # Fast Path, PostGIS bulk SQL, stream consumer
-    ├── schema.test.js                   # PostGIS DDL, spatial columns, GIST indexing
-    ├── haryanaRoadways.test.js          # Intercity Express routes & Meta Webhooks
-    ├── adminAuth.test.js                # Admin Master Password & Biometric auth
-    ├── legalAndSeoRoutes.test.js        # Privacy, Terms, FAQ, Sitemap, Cookie consent & SEO
-    ├── authLanding.test.js              # Two-step OTP hardening, route gates, SSO, anti-injection
-    └── databaseOperations.test.js       # 28-point end-to-end PostgreSQL + PostGIS operations suite
+└── tests/                               # Comprehensive Automated Test Suites (16 Master Suites)
+    ├── security.test.js                 # HMAC-SHA256 OTP, QR seal, and Haversine geofence tests
+    ├── architecture.test.js             # Optimistic Concurrency Control, State Machine, and Saga tests
+    ├── lastMile.test.js                 # Provider adapters & Last-Mile Feasibility Matrix tests
+    ├── whatsapp.test.js                 # WhatsApp templates, conversational bot intents & PII redaction
+    ├── telemetry.test.js                # Fast Path Redis stream, PostGIS bulk SQL & durable consumers
+    ├── schema.test.js                   # PostGIS DDL, spatial columns & GIST spatial indexing
+    ├── haryanaRoadways.test.js          # Haryana Roadways Express corridors & Meta webhook handshakes
+    ├── adminAuth.test.js                # Authentication security & RBAC route gates
+    ├── legalAndSeoRoutes.test.js        # Privacy, Terms, FAQ, Sitemap, Cookie consent & SEO canonicals
+    ├── authLanding.test.js              # Two-step OTP hardening, route gates, SSO & anti-injection
+    ├── proofOfDelivery.test.js          # Digital Proof of Delivery, signatures, photos & PostGIS coordinates
+    ├── riderWorkflow.test.js            # Driver duty state machine, GPS updates & assigned tasks
+    ├── deliveryPartnerSuite.test.js     # Cockpit metrics, 30s TTL dispatch, 4-digit PIN & IMPS payouts
+    ├── trackingAndNotificationInTransit.test.js # In-transit notification suppression & map recalibration
+    ├── reactMigrationVerification.test.js # React SPA mounting, deep routing, 23 views & 3D CSS
+    └── postmanWorkflow.test.js          # Postman Cloud 32-request synchronization & security assertions
 ```
 
 ---
@@ -1211,4 +1306,640 @@ sequenceDiagram
   Worker->>PostGIS: Multi-row SQL: INSERT INTO gps_telemetry_points (geom=ST_SetSRID(ST_MakePoint(lng,lat),4326))
   Worker->>Redis: XACK stream:telemetry:gps cg:telemetry:durable (Zero Data Loss)
 ```
+
+---
+
+## 13. Modern Frontend Evolution — React.js SPA & 3D Architecture
+
+### 13.1 Overview & Technology Stack
+
+The Transitly user experience has evolved into a high-performance, component-driven **React.js (v18.2) + Vite 6 + Tailwind CSS v3** Single Page Application (SPA), fully integrated alongside the static SSR HTML fallback templates:
+
+- **Component Engine:** React 18.2 with Concurrent Mode, declarative component lifecycles, and custom hooks (`useMicro3D`, `useScrubber`, `useAuth`, `useSocket`).
+- **Build & Development Pipeline:** Vite 6 with dynamic base path resolution (`/app` mount point with root fallback), instant Hot Module Replacement (HMR), and automated chunk splitting.
+- **Styling & Design System:** Tailwind CSS v3 with glassmorphic layers, custom CSS layout containment (`contain: layout style`), hardware-accelerated 3D transforms, and custom design tokens.
+- **Routing & Gatekeeping:** `react-router-dom` v7 with role-aware route isolation (`<RoleRoute>`) protecting Customer and Delivery Partner domains.
+- **Real-Time Telematics:** Socket.io client subscribing to highway bus rooms (`bus:HR-68-A-1001`) with low-latency state synchronization.
+- **Spatial GIS Mapping:** Leaflet 1.9.4 with Google Maps tile layer, PostGIS live vehicle point rendering, and dynamic surge radius overlays.
+- **Interactive 3D Hardware Canvas:** WebGL2 frame-scrubbing engine executing a 60 FPS `requestAnimationFrame` loop for undercarriage bus cargo inspection.
+- **Sensory & Haptic Micro-Physics:** Custom `useMicro3D` pointer engine with $\pm 6^\circ$ zero-reflow 3D perspective tilt, canvas particle bursts, and Web Vibration API pulses.
+
+---
+
+### 13.2 Complete Frontend Directory Structure (`client/`)
+
+The entire React SPA source code is partitioned cleanly under `client/`, enforcing Brad Frost's Atomic Design principles:
+
+```
+client/
+├── index.html                           # Single Page Application HTML mount template
+├── package.json                         # Client-specific scripts and dependencies
+│
+└── src/
+    ├── main.jsx                         # React 18 root mounting with BrowserRouter & AuthProvider
+    ├── App.jsx                          # 23-route router with <RoleRoute> domain gatekeeping
+    ├── index.css                        # Tailwind directives, glassmorphic styles & 3D containment
+    │
+    ├── components/                      # Atomic Design Component Hierarchy
+    │   ├── atoms/                       # Indivisible primitive UI elements
+    │   │   ├── Badge.jsx                # Status pill (Online, In-Transit, Surge, Neutral) with optional pulse
+    │   │   ├── Button3D.jsx             # Tactile 3D button with variant styles & haptic depression
+    │   │   ├── Card3D.jsx               # Glassmorphic card with CSS layout containment & reactive tilt
+    │   │   ├── Icon.jsx                 # Material Symbols Outlined wrapper with fill & notification badges
+    │   │   └── Input3D.jsx              # Animated floating-label text/number input with glowing focus ring
+    │   │
+    │   ├── molecules/                   # Multi-atom functional composites
+    │   │   ├── CargoBayModal.jsx        # Undercarriage 3D stowage schematic & tamper seal inspector
+    │   │   ├── CorridorTimeline.jsx     # Visual highway corridor stage sequence & real-time checkpoints
+    │   │   ├── DispatchQueue.jsx        # Spatial dispatch offer card with 30s countdown TTL progress bar
+    │   │   ├── DutyToggle.jsx           # Driver ONLINE/OFFLINE state machine switch with haptic feedback
+    │   │   ├── OtpPinInput.jsx          # 4-digit auto-advancing delivery PIN keypad with haptics
+    │   │   ├── SearchBar.jsx            # Terminal auto-suggest with HTML5 Geolocation API integration
+    │   │   ├── SwipeConfirm.jsx         # Touch & drag swipe-to-confirm delivery slider with haptic trigger
+    │   │   └── TelematicsHud.jsx        # Live highway cruiser HUD, speed gauge, and progress bar
+    │   │
+    │   ├── organisms/                   # Complex autonomous domain widgets
+    │   │   ├── LiveMap.jsx              # Leaflet spatial cartography with Google tiles & PostGIS pins
+    │   │   └── WebGLScrubber.jsx        # 60 FPS hardware-accelerated canvas cargo-bay frame scrubber
+    │   │
+    │   └── layouts/                     # Structural templates with slot injection (<Outlet />)
+    │       ├── AuthLayout.jsx           # Public authentication layout with brand hero header
+    │       ├── CustomerLayout.jsx       # Top header, main slot, and bottom 5-tab customer navigation dock
+    │       └── PartnerLayout.jsx        # Cockpit header (online pill + wallet balance) & 5-tab rider dock
+    │
+    ├── hooks/                           # Custom React Sensory & Telemetry Hooks
+    │   ├── useAuth.jsx                  # Session state, JWT storage, role gatekeeping & switchRole()
+    │   ├── useMicro3D.js                # ±6° perspective tilt, zero-reflow transforms & particle emitter
+    │   ├── useScrubber.js               # WebGL2 requestAnimationFrame 60 FPS frame interpolation
+    │   └── useSocket.js                 # Socket.io client subscribing to highway bus telemetry rooms
+    │
+    └── pages/                           # Complete 23 Application Domain Views
+        ├── Customer Domain (Protected)
+        │   ├── Home.jsx                 # Instant booking, weight calculator & corridor selection
+        │   ├── Tracking.jsx             # Live highway telematics radar, HUD & PIN delivery modal
+        │   ├── Services.jsx             # Express corridor rate tiers & volume discounts
+        │   ├── History.jsx              # Consignment ledger, status filters & tax invoices
+        │   ├── Profile.jsx              # KYC credentials, emergency contact & preferences
+        │   ├── SavedAddresses.jsx       # Saved delivery addresses & bus terminals
+        │   ├── PaymentMethods.jsx       # Transitly Wallet, UPI VPAs & card tokens
+        │   ├── Notifications.jsx        # Live telematics feed & arrival notifications
+        │   ├── HelpSupport.jsx          # 24/7 helpline, ticket submission & FAQ modal
+        │   └── Settings.jsx             # DPDP Act (2023) privacy consent & data controls
+        │
+        ├── Delivery Partner Domain (Protected)
+        │   ├── RiderDashboard.jsx       # Driver cockpit, duty switch, battery & earnings HUD
+        │   ├── RiderMapTrips.jsx        # Active navigation, turn-by-turn routing & geofenced PIN
+        │   ├── RiderRequests.jsx        # Spatial dispatch queue & high-payout priority offers
+        │   ├── RiderEarnings.jsx        # Double-entry partner wallet & instant IMPS cash-out
+        │   └── RiderProfile.jsx         # Vehicle credentials, safety checklist & SOS trigger
+        │
+        └── Public & Authentication Domain
+            ├── DeliveryPartnerLanding.jsx # Partner recruitment portal & vehicle earnings estimator
+            ├── Login.jsx                # Two-step passcode & SMS verification flow
+            ├── Signup.jsx               # User profile registration & role selection
+            ├── Faq.jsx                  # Accordion knowledge base
+            ├── PrivacyPolicy.jsx        # DPDP Act (2023) privacy conditions
+            ├── Terms.jsx                # Conditions of carriage & prohibited cargo
+            ├── NotFound.jsx             # 404 error page
+            └── VisualSitemap.jsx        # Interactive 23-view architecture sitemap
+```
+
+---
+
+### 13.3 Frontend System Architecture & Reactive Data Flow
+
+```mermaid
+graph TD
+  subgraph Client_App ["Transitly React 18 SPA (client/)"]
+    Root["main.jsx (Root Mount)"]
+    AuthProvider["AuthProvider (useAuth Hook)"]
+    Router["react-router-dom v7 (<App />)"]
+    
+    subgraph Gatekeeper ["Domain Gatekeeper Layer"]
+      RoleGate["<RoleRoute allowedRole>"]
+    end
+
+    subgraph Layout_Templates ["Structural Layout Templates"]
+      CustLayout["CustomerLayout (Header + Bottom 5-Tab Dock)"]
+      PartLayout["PartnerLayout (Cockpit Header + Bottom 5-Tab Dock)"]
+      AuthLay["AuthLayout (Hero Header + Auth Container)"]
+    end
+
+    subgraph Sensory_Engines ["Sensory & Hardware Engines"]
+      Micro3D["useMicro3D (±6° Matrix Tilt + Particles + Haptics)"]
+      ScrubberEng["useScrubber (WebGL2 60 FPS requestAnimationFrame)"]
+      SocketHook["useSocket (Socket.io Bus Room Subscriber)"]
+    end
+
+    subgraph Component_Hierarchy ["Atomic Component Tree"]
+      Atoms["Atoms: Button3D, Input3D, Icon, Badge, Card3D"]
+      Molecules["Molecules: DutyToggle, SearchBar, Timeline, Queue, OtpPin, Swipe, Hud"]
+      Organisms["Organisms: WebGLScrubber, LiveMap (Leaflet)"]
+      Pages["23 Route Views (Customer / Partner / Public)"]
+    end
+  end
+
+  subgraph Backend_Sync ["Enterprise Synchronization Layer"]
+    ExpressAPI["Express 5 REST APIs (/api/v1/*)"]
+    SocketIO["WebSocket Gateway (Socket.io)"]
+    FastPath["Redis 7 Fast Path Streams"]
+    PostGIS["PostgreSQL 16 + PostGIS Relational Store"]
+  end
+
+  Root --> AuthProvider
+  AuthProvider --> Router
+  Router --> RoleGate
+  RoleGate --> CustLayout
+  RoleGate --> PartLayout
+  RoleGate --> AuthLay
+
+  CustLayout --> Pages
+  PartLayout --> Pages
+  AuthLay --> Pages
+
+  Pages --> Organisms
+  Pages --> Molecules
+  Molecules --> Atoms
+
+  Atoms -.-> Micro3D
+  Organisms -.-> ScrubberEng
+  Organisms -.-> SocketHook
+
+  SocketHook <==>|Real-Time Telematics| SocketIO
+  Pages <==>|Encrypted REST Calls| ExpressAPI
+  SocketIO <==> FastPath
+  ExpressAPI <==> PostGIS
+```
+
+---
+
+### 13.4 Atomic Design Methodology & Token System
+
+Transitly adapts Brad Frost's **Atomic Design methodology** to physical spatial logistics, combining rigid geometric design tokens with tactile depth:
+
+#### Design Token Architecture
+
+| Category | Token Identifier | CSS / Hex Specification | Usage & Semantic Purpose |
+|---|---|---|---|
+| **Brand Primary** | `color-primary` | `#0050cb` (HSL 216°, 100%, 40%) | Primary buttons, active tabs, brand accents, route lines |
+| **Brand Hover** | `color-primary-dark` | `#003fa4` | Button hover state, active navigation indicators |
+| **Brand Secondary** | `color-secondary-bg` | `#f2f3ff` | Secondary buttons, subtle badges, input backdrops |
+| **Brand Border** | `color-border-subtle` | `#ecedfa` / `#dae1ff` | Card borders, dividers, outline buttons |
+| **Emerald Highway** | `color-emerald` | `#10b981` (Hover: `#059669`) | Driver ONLINE duty, delivered consignments, success alerts |
+| **Tamper / Danger** | `color-danger` | `#ba1a1a` (Hover: `#93000a`) | Tamper seal alert, SOS button, form validation errors |
+| **Surge Warning** | `color-surge` | `#cc4204` | High-demand dispatch surge radius, 30s TTL expiry bar |
+| **Background Canvas** | `color-canvas` | `#faf8ff` (Light Slate Tint) | Global viewport background, prevents white blinding |
+| **Surface Card** | `color-surface` | `#ffffff` with 85% alpha backdrop | Glassmorphic floating cards and navigation bars |
+| **Text Primary** | `color-text-main` | `#191b24` (Deep Charcoal) | Headlines, body text, monetary figures |
+| **Text Secondary** | `color-text-muted` | `#64748b` (Slate Gray) | Timestamps, metadata, carrier license plates |
+
+#### Glassmorphism & Layout Containment Token
+```css
+/* Glassmorphism Surface Token */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(236, 237, 250, 0.8);
+  box-shadow: 0 10px 25px -5px rgba(0, 80, 203, 0.05);
+}
+
+/* 3D Hardware Containment Token */
+.contain-3d {
+  contain: layout style;
+  transform-style: preserve-3d;
+  will-change: transform, filter;
+}
+```
+
+---
+
+### 13.5 Complete Component Hierarchy (Mermaid Diagram)
+
+The following multi-tier component tree illustrates the exact composition of the Transitly React platform:
+
+```mermaid
+graph TD
+  subgraph Atoms ["1. Atoms (Primitive Elements with 3D Physics)"]
+    A1["<Button3D>"]
+    A2["<Input3D>"]
+    A3["<Icon>"]
+    A4["<Badge>"]
+    A5["<Card3D>"]
+  end
+
+  subgraph Molecules ["2. Molecules (Functional Composites)"]
+    M1["<DutyToggle>"]
+    M2["<SearchBar>"]
+    M3["<CorridorTimeline>"]
+    M4["<CargoBayModal>"]
+    M5["<DispatchQueue>"]
+    M6["<OtpPinInput>"]
+    M7["<SwipeConfirm>"]
+    M8["<TelematicsHud>"]
+  end
+
+  subgraph Organisms ["3. Organisms (Autonomous Complex Widgets)"]
+    O1["<WebGLScrubber>"]
+    O2["<LiveMap> (Leaflet GIS)"]
+  end
+
+  subgraph Layouts ["4. Layout Templates (<Outlet />)"]
+    L1["<CustomerLayout>"]
+    L2["<PartnerLayout>"]
+    L3["<AuthLayout>"]
+  end
+
+  subgraph Pages_Cust ["5. Customer Pages (10 Views)"]
+    P1["Home.jsx"]
+    P2["Tracking.jsx"]
+    P3["Services.jsx"]
+    P4["History.jsx"]
+    P5["Profile.jsx"]
+    P6["SavedAddresses.jsx"]
+    P7["PaymentMethods.jsx"]
+    P8["Notifications.jsx"]
+    P9["HelpSupport.jsx"]
+    P10["Settings.jsx"]
+  end
+
+  subgraph Pages_Rider ["6. Delivery Partner Pages (5 Views)"]
+    P11["RiderDashboard.jsx"]
+    P12["RiderMapTrips.jsx"]
+    P13["RiderRequests.jsx"]
+    P14["RiderEarnings.jsx"]
+    P15["RiderProfile.jsx"]
+  end
+
+  subgraph Pages_Public ["7. Public & Auth Pages (8 Views)"]
+    P16["Login.jsx"]
+    P17["Signup.jsx"]
+    P18["DeliveryPartnerLanding.jsx"]
+    P19["Faq.jsx"]
+    P20["PrivacyPolicy.jsx"]
+    P21["Terms.jsx"]
+    P22["NotFound.jsx"]
+    P23["VisualSitemap.jsx"]
+  end
+
+  %% Relationships: Atoms to Molecules
+  A1 --> M1
+  A3 --> M1
+  A3 --> M2
+  A3 --> M3
+  A1 --> M4
+  A3 --> M4
+  A5 --> M4
+  A1 --> M5
+  A3 --> M5
+  A4 --> M5
+  A5 --> M5
+  A3 --> M7
+  A3 --> M8
+  A4 --> M8
+
+  %% Relationships: Molecules & Organisms to Customer Pages
+  M2 --> P1
+  M4 --> P1
+  O1 --> P1
+  M8 --> P2
+  O2 --> P2
+  M6 --> P2
+  M3 --> P2
+  A5 --> P3
+  A5 --> P4
+  A1 --> P5
+  A5 --> P6
+  A5 --> P7
+  A4 --> P8
+  A1 --> P9
+  A1 --> P10
+
+  %% Relationships: Molecules & Organisms to Partner Pages
+  M1 --> P11
+  A5 --> P11
+  O2 --> P12
+  M7 --> P12
+  M6 --> P12
+  M5 --> P13
+  A5 --> P14
+  A1 --> P14
+  A5 --> P15
+
+  %% Relationships: Atoms to Public Pages
+  A1 --> P16
+  A2 --> P16
+  A1 --> P17
+  A2 --> P17
+  A1 --> P18
+  A5 --> P19
+
+  %% Layout Mappings
+  L1 --> P1
+  L1 --> P2
+  L1 --> P3
+  L1 --> P4
+  L1 --> P5
+  L1 --> P6
+  L1 --> P7
+  L1 --> P8
+  L1 --> P9
+  L1 --> P10
+  L1 --> P18
+  L1 --> P19
+  L1 --> P20
+  L1 --> P21
+  L1 --> P22
+  L1 --> P23
+
+  L2 --> P11
+  L2 --> P12
+  L2 --> P13
+  L2 --> P14
+  L2 --> P15
+
+  L3 --> P16
+  L3 --> P17
+```
+
+---
+
+### 13.6 Atomic Component Specifications & Props Matrix
+
+#### 13.6.1 Atoms Specification (`client/src/components/atoms/`)
+
+| Component | Props Interface | Visual Variants & Styles | Micro3D Tactile Behavior |
+|---|---|---|---|
+| **`<Button3D>`** | `children`: ReactNode<br>`variant`: `'primary' \| 'secondary' \| 'emerald' \| 'danger' \| 'ghost' \| 'dark'`<br>`size`: `'sm' \| 'md' \| 'lg' \| 'full'`<br>`icon`: string (Material icon name)<br>`onClick`: function<br>`loading`: boolean<br>`disabled`: boolean | - `primary`: Deep electric blue (`#0050cb`) with blue halo.<br>- `emerald`: Highway green (`#10b981`) with emerald glow.<br>- `danger`: Crimson red (`#ba1a1a`) with red shadow.<br>- `secondary`: Lavender border with blue text.<br>- `ghost`: Transparent hover.<br>- `dark`: Deep onyx black. | Attaches `useMicro3D` ref: tilts $\pm 6^\circ$ toward cursor; scales to `0.97` on press; triggers Web Vibration API (`8ms`); spawns 8 colored particles on release. |
+| **`<Input3D>`** | `label`: string<br>`error`: string<br>`icon`: string<br>`type`: string<br>`value`: string \| number<br>`onChange`: function<br>`disabled`: boolean<br>`placeholder`: string | Rounded-xl container with floating text label, soft background `#f2f3ff`, glowing border on focus (`#0050cb`), and validation error banner (`#ba1a1a`). | Hover brightness shift; micro-elevation on focus; prevents layout shift during validation transitions. |
+| **`<Icon>`** | `name`: string (Material Symbol)<br>`size`: `'xs' \| 'sm' \| 'md' \| 'lg' \| 'xl'`<br>`filled`: boolean<br>`color`: string<br>`badge`: number \| string<br>`className`: string | Wraps `material-symbols-outlined`. Font size scales from 16px (`xs`) to 36px (`xl`). Optional red badge counter in top-right. | Supports `font-variation-settings: 'FILL' 1` on active navigation state; zero-distortion scaling. |
+| **`<Badge>`** | `variant`: `'online' \| 'offline' \| 'transit' \| 'surge' \| 'neutral' \| 'success' \| 'danger'`<br>`pulse`: boolean<br>`children`: ReactNode | Pill badge with semantic colors:<br>- `online`: Emerald background (`#ecfdf5`) + green dot.<br>- `transit`: Blue background (`#eff6ff`) + blue dot.<br>- `surge`: Orange background (`#fff7ed`) + orange dot.<br>- `pulse`: Animates CSS ring expansion. | Static non-distracting rendering; pulse animation toggle for live status pings. |
+| **`<Card3D>`** | `children`: ReactNode<br>`hoverLift`: boolean<br>`className`: string | Glassmorphic white surface (`bg-white/85`), border `#ecedfa`, shadow elevation `shadow-lg shadow-blue-500/5`. | Hardware-accelerated CSS layout containment (`contain: layout style`); smooth hover elevation with zero reflow. |
+
+---
+
+#### 13.6.2 Molecules Specification (`client/src/components/molecules/`)
+
+| Component | Props Interface | Sub-Components Used | Functional State Machine & Callbacks |
+|---|---|---|---|
+| **`<DutyToggle>`** | `isOnline`: boolean<br>`onToggle`: `(nextState: boolean) => Promise<void>`<br>`autoAccept`: boolean<br>`onAutoAcceptToggle`: `(next: boolean) => void` | `<Icon>` | Manages driver duty mode (`ONLINE` $\leftrightarrow$ `OFFLINE`). Triggers haptic vibration `[15, 30, 15]ms`. Disables during network pending state. |
+| **`<SearchBar>`** | `placeholder`: string<br>`onSelect`: `(location: { title, lat, lng }) => void`<br>`initialValue`: string<br>`className`: string | `<Icon>` | Auto-suggest dropdown filtering 6 primary interstate hubs. Integrated with HTML5 Geolocation API (`navigator.geolocation.getCurrentPosition`). |
+| **`<CorridorTimeline>`** | `stages`: Array<{ title, desc, time, icon }><br>`currentStageIndex`: number (0-5) | `<Icon>` | Chronological highway transit pipeline: `Booking Confirmed` ➔ `First-Mile Complete` ➔ `Bus Cargo Bay Stowed` ➔ `Highway In-Transit` ➔ `Destination Arrival` ➔ `Doorstep Delivered`. |
+| **`<CargoBayModal>`** | `isOpen`: boolean<br>`onClose`: function<br>`busPlate`: string (`'HR-68-A-1001'`)<br>`bayId`: string (`'BAY-3B'`)<br>`sealCode`: string | `<Icon>`, `<Button3D>`, `<Card3D>` | 3D Bus Undercarriage visual schematic. Highlights 6 distinct bays (Refrigerated, General, Heavy, High Priority Sealed) and displays tamper seal hash. |
+| **`<DispatchQueue>`** | `order`: Object (dispatch item)<br>`onAccept`: `(id) => Promise<void>`<br>`onDecline`: `(id, reason) => void`<br>`autoAccept`: boolean | `<Card3D>`, `<Button3D>`, `<Icon>`, `<Badge>` | 30-Second TTL countdown timer. Progress bar shifts from Royal Blue to Danger Red at $t \le 10\text{s}$. Auto-declines on zero timeout. |
+| **`<OtpPinInput>`** | `length`: number (default: 4)<br>`value`: string<br>`onChange`: `(value: string) => void`<br>`onComplete`: `(value: string) => void` | DOM inputs | 4-digit auto-advancing verification boxes. Sanitizes non-digits, captures backspace to return focus, triggers haptic pulse on keydown. |
+| **`<SwipeConfirm>`** | `label`: string<br>`onConfirm`: function<br>`disabled`: boolean<br>`successText`: string | `<Icon>` | Touch & pointer swipe-to-confirm slider. Requires $\ge 90\%$ drag distance to trip confirmation threshold. Vibrates `[10, 50, 20]ms`. Springs back on cancel. |
+| **`<TelematicsHud>`** | `speed`: number (e.g. 78 km/h)<br>`distance`: string (`'42.8 km'` remaining)<br>`eta`: string (`'38 mins'`)<br>`carrierPlate`: string (`'HR-68-A-1001'`)<br>`corridor`: string<br>`progress`: number (0-100%)<br>`live`: boolean | `<Icon>`, `<Badge>` | Floating highway cruiser telemetry card with live GPS 3s ping pulse, real-time speedometer reading, and highway transit progress bar. |
+
+---
+
+#### 13.6.3 Organisms Specification (`client/src/components/organisms/`)
+
+| Component | Props Interface | Underlying Engines | Rendering Pipeline & Lifecycle |
+|---|---|---|---|
+| **`<WebGLScrubber>`** | `sequenceId`: string<br>`frameCount`: number (default: 75)<br>`framePath`: string (format: `/assets/3d/%s/frame_%d.webp`)<br>`aspectRatio`: string (`'16/9'`)<br>`children`: ReactNode (HUD overlay) | Canvas 2D / WebGL2, `useScrubber` Hook | Renders hardware-accelerated 60 FPS frame sequence. Manages pre-fetched image cache. Linearly interpolates frame index on pointer drag. Hosts interactive HUD overlay in foreground slot. |
+| **`<LiveMap>`** | `center`: [lat, lng] (default: `[30.7333, 76.7794]`)<br>`zoom`: number (default: 13)<br>`interactive`: boolean<br>`markers`: Array<{ lat, lng, title, icon }><br>`surgeRadius`: number (meters)<br>`className`: string | Leaflet.js 1.9.4, Google Maps Cartography Tiles | Initializes `L.map` inside container ref with custom touch controls. Renders vehicle GPS location pins with heading rotation. Plots surge demand circles (`#cc4204`) with auto-cleanup on unmount. |
+
+---
+
+#### 13.6.4 Structural Layout Templates (`client/src/components/layouts/`)
+
+1. **`<CustomerLayout>`**:
+   - **Header:** Sticky glassmorphic top header with Transitly logo, partner cockpit switcher (`switchRole('DELIVERY_PARTNER')`), and unread notification bell badge.
+   - **Main Content Slot:** `<Outlet />` wrapped in mobile-first centered container (`max-w-screen-md`).
+   - **Bottom Navigation Dock:** Fixed 5-tab glass dock (`Home`, `Tracking`, `Services`, `History`, `Profile`) with active icon fill transitions.
+2. **`<PartnerLayout>`**:
+   - **Cockpit Header:** Sticky cockpit bar showing interactive `ONLINE` / `OFFLINE` badge, instant wallet earnings pill (`₹148.50`), and `Customer Mode ➔` switcher.
+   - **Main Content Slot:** Full-bleed telemetry slot for active maps and dispatch queues.
+   - **Bottom Driver Dock:** Fixed 5-tab rider dock (`Cockpit`, `Live Trip`, `Queue`, `Earnings`, `Profile`).
+3. **`<AuthLayout>`**:
+   - Centered card container on slate canvas (`#faf8ff`), brand hero typography, and SSL encryption assurance footer.
+
+---
+
+#### 13.6.5 Complete 23 Application Pages Domain Matrix
+
+| # | Route URI | Domain | Access Guard | Primary Layout | Key Contained Components | Business Purpose & User Capabilities |
+|---|---|---|---|---|---|---|
+| 1 | `/` | Customer | `CUSTOMER` | `<CustomerLayout>` | `<SearchBar>`, `<WebGLScrubber>`, `<CargoBayModal>`, `<Button3D>` | **Home / Deliver Screen:** Corridor selector, parcel weight calculator, instant fare quote, and 3D cargo bay preview. |
+| 2 | `/tracking` | Customer | `CUSTOMER` | `<CustomerLayout>` | `<LiveMap>`, `<TelematicsHud>`, `<CorridorTimeline>`, `<OtpPinInput>` | **Live Tracking Radar:** Real-time bus GPS telematics, ETA countdown, highway milestone tracker, and 4-digit recipient PIN. |
+| 3 | `/services` | Customer | `CUSTOMER` | `<CustomerLayout>` | `<Card3D>`, `<Button3D>`, `<Badge>` | **Logistics Bento Grid:** Express intercity corridors, refrigerated medical cargo, heavy freight, and corporate bulk rates. |
+| 4 | `/history` | Customer | `CUSTOMER` | `<CustomerLayout>` | `<Card3D>`, `<Badge>`, `<Input3D>` | **Delivery Ledger:** Searchable consignment history, status filter chips (`Delivered`, `In Transit`), and GST tax invoices. |
+| 5 | `/profile` | Customer | `CUSTOMER` | `<CustomerLayout>` | `<Card3D>`, `<Button3D>`, `<Icon>` | **Customer Hub:** User identity details, KYC verified status, emergency contact, linked accounts, and session logout. |
+| 6 | `/saved-addresses` | Customer | `CUSTOMER` | `<CustomerLayout>` | `<Card3D>`, `<Button3D>`, `<Icon>` | **Address Book:** Stored home, office, and regional bus terminal locations with PostGIS spatial coordinates. |
+| 7 | `/payment-methods` | Customer | `CUSTOMER` | `<CustomerLayout>` | `<Card3D>`, `<Button3D>`, `<Badge>` | **Wallet & Payments:** Transitly Pre-paid Wallet balance, UPI Virtual Payment Addresses, and tokenized credit/debit cards. |
+| 8 | `/notifications` | Customer | `CUSTOMER` | `<CustomerLayout>` | `<Card3D>`, `<Badge>`, `<Icon>` | **Telematics Alert Feed:** Real-time bus departure announcements, terminal arrival notices, and delivery receipts. |
+| 9 | `/help-support` | Customer | `CUSTOMER` | `<CustomerLayout>` | `<Card3D>`, `<Button3D>`, `<Icon>` | **Customer Care:** 24/7 emergency toll-free hotline, automated WhatsApp support trigger, and ticket escalation form. |
+| 10 | `/settings` | Customer | `CUSTOMER` | `<CustomerLayout>` | `<Card3D>`, `<Button3D>` | **Preferences & DPDP:** Notification preferences, biometric login toggle, language selection, and DPDP consent controls. |
+| 11 | `/rider-dashboard` | Partner | `DELIVERY_PARTNER` | `<PartnerLayout>` | `<DutyToggle>`, `<Card3D>`, `<Button3D>`, `<Badge>` | **Driver Cockpit:** Online duty switcher, EV battery indicator (`82%`), shift time, customer rating (`4.94 ⭐`), and active assignment. |
+| 12 | `/rider-map-trips` | Partner | `DELIVERY_PARTNER` | `<PartnerLayout>` | `<LiveMap>`, `<SwipeConfirm>`, `<OtpPinInput>` | **Live Navigation Trip:** Turn-by-turn routing to bus terminal, customer contact shortcut, and geofenced (<150m) PIN validation. |
+| 13 | `/rider-requests` | Partner | `DELIVERY_PARTNER` | `<PartnerLayout>` | `<DispatchQueue>`, `<Card3D>`, `<Button3D>` | **Spatial Dispatch Queue:** 5 km radius incoming dispatch offers, 30s TTL timer, distance to pickup, and high-payout filter. |
+| 14 | `/rider-earnings` | Partner | `DELIVERY_PARTNER` | `<PartnerLayout>` | `<Card3D>`, `<Button3D>`, `<Badge>` | **Partner Earnings:** Real-time shift earnings, double-entry wallet ledger, weekly payout chart, and instant IMPS cash-out. |
+| 15 | `/rider-profile` | Partner | `DELIVERY_PARTNER` | `<PartnerLayout>` | `<Card3D>`, `<Button3D>`, `<Badge>` | **Driver Profile & Vehicle:** Driving license credentials, registered vehicle plate, pre-shift safety checklist, and SOS trigger. |
+| 16 | `/login` | Public | Public | `<AuthLayout>` | `<Input3D>`, `<Button3D>`, `<Icon>` | **Authentication Gateway:** Two-step mobile/passcode authentication, timing-safe verification, and demo account presets. |
+| 17 | `/signup` | Public | Public | `<AuthLayout>` | `<Input3D>`, `<Button3D>`, `<Icon>` | **Account Registration:** Multi-tenant profile creation, role selection (Customer vs Partner), and phone verification. |
+| 18 | `/delivery-partner` | Public | Public | `<CustomerLayout>` | `<Card3D>`, `<Button3D>`, `<Icon>` | **Partner Recruitment Landing:** Flexible earnings calculator, EV partner benefits, and rapid driver onboarding CTA. |
+| 19 | `/faq` | Public | Public | `<CustomerLayout>` | `<Card3D>`, `<Icon>` | **FAQ Knowledge Base:** Accordion question catalog covering bus cargo security, prohibited items, insurance, and tracking. |
+| 20 | `/privacy-policy` | Public | Public | `<CustomerLayout>` | `<Card3D>` | **Legal Privacy Policy:** Compliance with India's Digital Personal Data Protection (DPDP) Act (2023) and data deletion rights. |
+| 21 | `/terms` | Public | Public | `<CustomerLayout>` | `<Card3D>` | **Terms of Service:** Carrier contract, luggage liability limits (₹10,000), hazardous cargo restrictions, and claim windows. |
+| 22 | `/404` | Public | Public | `<CustomerLayout>` | `<Button3D>`, `<Card3D>` | **Not Found Fallback:** Clean error page with dynamic navigation redirect to home or partner cockpit based on active session. |
+| 23 | `/visual-sitemap` | Public | Public | `<CustomerLayout>` | `<Card3D>`, `<Badge>`, `<Icon>` | **Platform Topology Sitemap:** Interactive visual navigation grid displaying all 23 routes and their respective access tiers. |
+
+---
+
+### 13.7 Micro3D Tactile Physics Engine & WebGL Frame-Scrubbing Architecture
+
+#### 13.7.1 Micro3D Mathematical Dynamics & GPU Matrix Calculation
+The `useMicro3D` hook provides zero-reflow tactile tilt without triggering layout recalculations by calculating relative pointer displacement from the element's bounding center:
+
+$$\Delta x = x_{\text{pointer}} - \left(\text{rect.left} + \frac{\text{rect.width}}{2}\right)$$
+$$\Delta y = \left(\text{rect.top} + \frac{\text{rect.height}}{2}\right) - y_{\text{pointer}}$$
+
+The 3D tilt angles around the Cartesian axes are scaled by the maximum allowed deflection ($\theta_{\max} = 6^\circ$):
+
+$$\text{rotY} = \left(\frac{\Delta x}{\text{rect.width} / 2}\right) \times \theta_{\max}$$
+$$\text{rotX} = \left(\frac{\Delta y}{\text{rect.height} / 2}\right) \times \theta_{\max}$$
+
+The resulting hardware-accelerated transform matrix applied to `element.style.transform` is:
+
+$$\mathbf{T} = \text{perspective}(500\text{px}) \cdot \text{rotateX}(\text{rotX}^\circ) \cdot \text{rotateY}(\text{rotY}^\circ) \cdot \text{scale3d}(1.02, 1.02, 1.02)$$
+
+On pointer depression (`mousedown` or `touchstart`), the element contracts to `scale3d(0.97, 0.97, 0.97)` with `filter: brightness(0.95)`, producing a tangible mechanical click sensation.
+
+#### 13.7.2 Canvas Particle Emitter System
+Upon button release (`mouseup` or `touchend`), an overlaid full-screen zero-pointer-event canvas emits an 8-particle burst:
+- **Velocity Vectors:** $v_x = \cos(\alpha) \times s$, $v_y = \sin(\alpha) \times s$ where $\alpha \sim \mathcal{U}(0, 2\pi)$ and $s \sim \mathcal{U}(1.5, 5.0)$.
+- **Palette Array:** `['#0050cb', '#0066ff', '#10b981', '#ffffff']`.
+- **Decay Loop:** Rendered at 60 FPS via `requestAnimationFrame` with linear alpha fade until all active particles expire.
+
+#### 13.7.3 Mobile Sensory & Haptic Vibration Feedback
+Mobile interaction utilizes the HTML5 Web Vibration API:
+- **Button Press:** `navigator.vibrate(8)` (single 8ms haptic tick).
+- **Driver Duty Mode Switch:** `navigator.vibrate([15, 30, 15])` (double-notch haptic confirmation).
+- **Swipe Confirmation Delivery:** `navigator.vibrate([10, 50, 20])` (heavy completion pulse).
+- **Reduced Motion:** If `window.matchMedia('(prefers-reduced-motion: reduce)').matches`, all tilt and particle effects are automatically deactivated.
+
+#### 13.7.4 WebGL2 Hardware Frame Scrubbing & Memory Pooling
+The `<WebGLScrubber>` component renders 75 sequential WebP frames generated from the Higgsfield AI camera sweep pipeline:
+- **Memory Pool:** Frames are loaded into an in-memory `Image` array indexed `0` through `74`.
+- **Damping & Scrub Smoothing:** The target frame is updated via pointer scrub coordinates:
+  $$\text{frame}_{\text{current}} = \text{frame}_{\text{current}} + (\text{frame}_{\text{target}} - \text{frame}_{\text{current}}) \times 0.1$$
+- **Hardware Blitting:** `context.drawImage(frameImage, 0, 0, canvas.width, canvas.height)` executes within a `requestAnimationFrame` loop, guaranteeing a steady 60 FPS frame rate on all standard mobile GPUs.
+
+---
+
+### 13.8 Strict Domain Isolation & Role Gatekeeper
+
+The `<RoleRoute>` component in `client/src/App.jsx` enforces complete isolation between the **Customer** and **Delivery Partner** operational domains:
+
+```jsx
+const RoleRoute = ({ allowedRole, children }) => {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#faf8ff]">
+        <div className="w-8 h-8 border-3 border-[#0050cb] border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (user.role !== allowedRole) {
+    // Bi-directional redirect preventing domain leakage
+    return <Navigate to={user.role === 'DELIVERY_PARTNER' ? '/rider-dashboard' : '/'} replace />;
+  }
+
+  return children;
+};
+```
+
+- **Customer Shield:** An authenticated customer attempting to visit `/rider-dashboard`, `/rider-requests`, or `/rider-earnings` is immediately redirected to `/`.
+- **Partner Shield:** A delivery driver attempting to book personal parcels on `/` or browse `/services` is immediately redirected to `/rider-dashboard`.
+- **Role Switching:** The `switchRole(newRole)` method allows instant developer and demo toggling, updating the JWT token in `localStorage` and `transitly_session` cookie synchronously without dropping application state.
+
+---
+
+## 14. Encrypted & Secure Postman API Workflows
+
+Transitly APIs are fully synchronized with **Postman Cloud** and versioned as code in [`docs/`](file:///Users/anmol/Documents/Projects/transitly/docs).
+
+### 14.1 Cloud Deployment Metadata
+- **Workspace:** `Anmol's Workspace` (`a7fdfd4f-68ec-40e2-8dac-3953186a68ed`)
+- **Collection:** `Transitly Secure & Encrypted API Workflows`
+  - Collection ID: `9a066154-bfcf-4db6-a78a-2fc7d145614a`
+  - UID: `53197609-9a066154-bfcf-4db6-a78a-2fc7d145614a`
+- **Environment:** `Transitly Secure & Encrypted Environment`
+  - Environment ID: `c5ca1644-2f6f-40f0-abd0-ef1a9998da7f`
+  - UID: `53197609-c5ca1644-2f6f-40f0-abd0-ef1a9998da7f`
+- **Total Requests:** 32 Requests across 7 domain modules
+- **Test Assertion Coverage:** 100% of requests include automated test assertions
+
+### 14.2 Domain Workflow Modules
+1. **`01. Authentication & Session Security` (9 requests)**:
+   - Zero-touch 2-step verification (`/api/v1/auth/otp/send` ➔ `/api/v1/auth/otp/verify`).
+   - Constant-time hashing and single-use OTP invalidation.
+   - Dynamic secret chaining: automatically captures issued JWT into `{{jwt_token}}`.
+   - Root collection inherits `Authorization: Bearer {{jwt_token}}` and `Cookie: transitly_session={{jwt_token}}`.
+2. **`02. Intercity Parcel Logistics & Sagas` (5 requests)**:
+   - Distributed booking saga (`POST /api/v1/bookings`) dynamically capturing `{{tracking_id}}`.
+   - Multimodal shipment inspection, cargo bay capacity query, and spatial last-mile feasibility.
+3. **`03. Delivery Partner Cockpit & Geofenced Dispatch` (5 requests)**:
+   - Duty state machine toggling (`ONLINE` / `OFFLINE`).
+   - Spatial dispatch queue with auto-extraction of order ID into `{{order_id}}`.
+   - 30-second TTL priority offer acceptance.
+4. **`04. Custody Transfer & 4-Digit PIN Handoff` (3 requests)**:
+   - Active task lookup, terminal handoff logging, and geofenced (<150m) 4-digit PIN verification.
+5. **`05. Financial Ledger & Idempotent Payouts` (2 requests)**:
+   - Double-entry partner earnings ledger.
+   - Dynamic pre-request injection of cryptographically unique `Idempotency-Key` headers (`pay_<timestamp>_<uuid>`) to prevent duplicate payouts.
+6. **`06. Highway Telematics & PostGIS Routes` (5 requests)**:
+   - High-frequency GPS ping ingestion (FastPath).
+   - PostGIS radius search (`ST_DWithin`).
+   - Haryana Roadways official bus corridors and sequenced stops.
+7. **`07. Meta WhatsApp Assistant & Secure Webhooks` (3 requests)**:
+   - Meta webhook challenge verification (`hub.mode=subscribe` + `hub.challenge` handshake).
+   - Inbound conversational parcel intent processing and outbound template dispatch.
+
+### 14.3 Versioned Local Artifacts & Verification
+- Collection file: [`docs/transitly_postman_collection.json`](file:///Users/anmol/Documents/Projects/transitly/docs/transitly_postman_collection.json)
+- Environment file: [`docs/transitly_postman_environment.json`](file:///Users/anmol/Documents/Projects/transitly/docs/transitly_postman_environment.json)
+- Workflow guide: [`docs/POSTMAN_SECURITY_WORKFLOWS.md`](file:///Users/anmol/Documents/Projects/transitly/docs/POSTMAN_SECURITY_WORKFLOWS.md)
+- Automated verification: `node tests/postmanWorkflow.test.js` (100% passing across all 15 test suites).
+- Regeneration script: `npm run postman:generate`.
+
+---
+
+## 15. Database Visualization & Multi-Target Studio
+
+Transitly provides dual database visualization tools for local development and production observability:
+
+### 15.1 TablePlus Native Configuration
+TablePlus connection profiles are pre-configured in `~/Library/Application Support/com.tinyapp.TablePlus/Data/Connections.plist`:
+
+| Connection Name | Database Host | Port | Database Name | Username | Environment | Status Color |
+|---|---|---|---|---|---|---|
+| **Transitly Local (Postgres.app)** | `localhost` | `5432` | `transitly_telemetry` | `postgres` | `local` | 🔵 Apple Blue (`#007AFF`) |
+| **Transitly Cloud (Neon)** | `ep-blue-paper-b3m86way-pooler...neon.tech` | `5432` | `neondb` | `neondb_owner` | `production` | 🟢 Neon Green (`#34C759`) |
+
+#### One-Click Launch Commands
+```bash
+npm run db:tableplus        # Launch TablePlus connected to Local DB
+npm run db:tableplus:cloud  # Launch TablePlus connected to Neon Cloud DB
+```
+
+#### Native PostGIS Spatial Geometry Mapping
+1. Double-click **`Transitly Local (Postgres.app)`** in TablePlus.
+2. Select any spatial table in the sidebar (e.g. `route_stops`, `bus_telemetry`, `saved_addresses`).
+3. Click on any row with a spatial `geom` column, then click the **Map icon** in the bottom-right status toolbar.
+4. TablePlus renders an interactive world map with GPS pins plotted directly from PostGIS geometries.
+
+### 15.2 Transitly Database Studio
+A lightweight, browser-based database explorer is included in the project:
+```bash
+npm run db:visualize  # Starts studio on http://localhost:5050
+```
+- **Live Target Switching:** Switch between Local (`localhost:5432`) and Cloud Neon in 1 click without restarting.
+- **Categorized Sidebar:** Cleanly separates **🌟 Expressive Business Views** from **🗄️ Relational Base Tables**.
+- **Interactive Leaflet Cartography:** Embedded spatial map visualizes coordinates for any table containing `geom` or `latitude`/`longitude`.
+- **SQL Playground:** Execute arbitrary SQL statements with immediate tabular output.
+
+---
+
+## 16. Expressive Domain Views & Schema Self-Documentation
+
+To make the database instantly intuitive to new users, developers, and stakeholders, the relational schema is augmented with **7 high-level business views** and **comprehensive in-database comments**:
+
+### 16.1 Expressive Business Views (Resolved Foreign Keys)
+Instead of deciphering cryptic integer IDs (`capacity_slot_id: 101`, `operator_id: 10`), these views join and translate data into clear business narratives:
+
+| View Name | Business Meaning & Data Narrative | Underlying Joined Tables |
+|---|---|---|
+| **`view_parcel_delivery_overview`** | **Complete Consignment Dossier**: Tracking number (`TRK-88219`), status (`IN_TRANSIT`), sender & recipient contact info, pickup/dropoff addresses, assigned bus registration (`HR-68-A-1001`), operator (`Haryana Roadways`), corridor, fare (`₹450.00`), tamper seal code, and OTP status. | `shipments` ⟕ `vehicles` ⟕ `operators` ⟕ `route_transactions` |
+| **`view_intercity_bus_schedules`** | **Highway Departure & Cargo Bay Board**: Bus plate, route corridor, origin & destination bus stands, total cargo space (e.g. `500 kg`), booked weight (`80 kg`), remaining space (`420 kg`), and **cargo bay utilization %** (`16.0%`). | `capacity_slots` ⟕ `vehicles` ⟕ `route_transactions` ⟕ `operators` |
+| **`view_route_corridors_and_stops`** | **Corridor Stations & Highway Tolls**: Route corridor (`HR-DEL-CHD`), stop sequence (1 through 6), official bus station names, GPS coordinates, and transit travel time offsets in minutes. | `route_stops` ⟕ `route_transactions` |
+| **`view_delivery_partner_cockpit`** | **Rider Fleet Telemetry**: Rider full name (`Rajesh Kumar`), phone number, vehicle type (`Electric Scooter`), online duty state (`TRUE`), rating (`4.94 ⭐`), EV battery level (`82%`), live GPS coordinates, and shift earnings. | `riders` ⟕ `users` ⟕ `shifts` |
+| **`view_custody_transfer_timeline`** | **Chain-of-Custody Audit Log**: Chronological handover of packages (e.g. *Customer ➔ Last-Mile Rider ➔ Bus Driver at ISBT Kashmiri Gate*), security seal integrity, and geofence verification flag. | `custody_handoffs` ⟕ `users (from)` ⟕ `users (to)` |
+| **`view_customer_support_cases`** | **Support Helpdesk Queue**: Customer name, phone, email, related tracking number, inquiry category (e.g. *ETA inquiry*, *Invoice request*), and resolution status (`RESOLVED`/`CLOSED`). | `support_tickets` ⟕ `users` |
+| **`view_customer_profiles_and_accounts`** | **Customer Directory**: User UUID, name, email, phone, role, saved addresses count, and registered payment methods. | `users` ⟕ `saved_addresses` ⟕ `payment_methods` |
+
+### 16.2 In-Database Schema Documentation (`COMMENT ON TABLE` & `COLUMN`)
+Every core table and key column contains human-readable documentation visible in TablePlus **Structure** view and DB Studio column tooltips:
+- **`shipments`**: *"Master parcel consignments: Tracks packages from initial booking through highway transit to final delivery."*
+- **`route_transactions`**: *"Intercity bus route corridors and timetables operated by transit authorities like Haryana Roadways and DTC."*
+- **`capacity_slots`**: *"Cargo bay space allocations: Represents available and booked luggage capacity (in kg) on specific bus departures."*
+- **`custody_handoffs`**: *"Chain-of-custody transfer log: Records every handoff of a parcel between customer, delivery rider, and bus driver."*
+- **`proof_of_delivery`**: *"Cryptographic proof of completed delivery: Stores recipient signatures, geofence validations, OTP, and photos."*
+- **`riders`**: *"Real-time delivery partner cockpit telemetry: Battery level, live GPS coordinates, rating, and auto-accept state."*
+
+### 16.3 Database Migration Synchronization
+All views and comments are versioned in [`src/db/migrations/003_expressive_views_and_metadata.sql`](file:///Users/anmol/Documents/Projects/transitly/src/db/migrations/003_expressive_views_and_metadata.sql) and executed automatically via:
+```bash
+npm run db:init:local   # Synchronizes Local Postgres.app
+npm run db:init         # Synchronizes Cloud Neon
+```
+
 
