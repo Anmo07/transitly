@@ -6,14 +6,21 @@ yarn-error.log*
 
 # Environment & Secrets
 .env
-.env.local
-.env.docker
-.env.development.local
-.env.test.local
-.env.production.local
+.env.*
+!.env.example
+*.local
 dev_credentials.json
 dev-credentials.json
 *credential*
+*secret*
+*.pem
+*.key
+*.cert
+*.crt
+*.pfx
+*.p12
+id_rsa*
+id_ed25519*
 
 # OS files
 .DS_Store
@@ -29,6 +36,9 @@ Thumbs.db
 .dbeaver/
 *.dbeaver*
 .dbeaver-data-sources.xml
+Connections*.plist
+tableplus/
+dump.rdb
 
 # Temporary files & Logs
 logs/
