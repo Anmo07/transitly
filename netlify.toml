@@ -1,8 +1,8 @@
 [build]
-  command = "npm run build:css:min"
+  command = "npm run build:css:min && npm run build:react"
   publish = "public"
 
-# Enable Pretty URLs (maps /login to /login.html automatically)
+# Enable Pretty URLs
 [processing]
   skip_processing = false
 
@@ -15,3 +15,15 @@
   to = "https://transitly-api.onrender.com/api/:splat"
   status = 200
   force = true
+
+# React Single Page Application
+[[redirects]]
+  from = "/app/*"
+  to = "/dist/index.html"
+  status = 200
+
+# Root fallback to /pages/index.html
+[[redirects]]
+  from = "/"
+  to = "/pages/index.html"
+  status = 200

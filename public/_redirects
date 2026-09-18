@@ -1,22 +1,37 @@
-/rider-dashboard      /rider-dashboard.html      200
-/rider-map-trips      /rider-map-trips.html      200
-/rider-requests       /rider-requests.html       200
-/rider-earnings       /rider-earnings.html       200
-/rider-profile        /rider-profile.html        200
-/delivery-partner     /delivery-partner.html     200
-/deliver              /index.html                200
-/tracking             /tracking.html             200
-/services             /services.html             200
-/history              /history.html              200
-/profile              /profile.html              200
-/saved-addresses      /saved-addresses.html      200
-/payment-methods      /payment-methods.html      200
-/settings             /settings.html             200
-/help-support         /help-support.html         200
-/notifications        /notifications.html        200
-/login                /login.html                200
-/signup               /signup.html               200
-/privacy              /privacy-policy.html       200
-/terms                /terms.html                200
-/faq                  /faq.html                  200
-/visual-sitemap       /visual-sitemap.html       200
+# Production API Proxy to Render Backend
+/api/*  https://transitly-api.onrender.com/api/:splat  200!
+
+# React Single Page Application Client
+/app/*  /dist/index.html  200
+
+# HTML Views in /pages
+/                       /pages/index.html             200
+/deliver                /pages/index.html             200
+/rider-dashboard        /pages/rider-dashboard.html   200
+/rider-map-trips        /pages/rider-map-trips.html   200
+/rider-requests         /pages/rider-requests.html    200
+/rider-earnings         /pages/rider-earnings.html    200
+/rider-profile          /pages/rider-profile.html     200
+/delivery-partner       /pages/delivery-partner.html  200
+/tracking               /pages/tracking.html          200
+/services               /pages/services.html          200
+/history                /pages/history.html           200
+/profile                /pages/profile.html           200
+/saved-addresses        /pages/saved-addresses.html   200
+/payment-methods        /pages/payment-methods.html   200
+/settings               /pages/settings.html          200
+/help-support           /pages/help-support.html      200
+/notifications          /pages/notifications.html     200
+/login                  /pages/login.html             200
+/auth                   /pages/login.html             200
+/signup                 /pages/signup.html            200
+/register               /pages/signup.html            200
+/privacy                /pages/privacy-policy.html    200
+/privacy-policy         /pages/privacy-policy.html    200
+/terms                  /pages/terms.html             200
+/faq                    /pages/faq.html               200
+/visual-sitemap         /pages/visual-sitemap.html    200
+/sitemap                /pages/visual-sitemap.html    200
+
+# Fallback 404
+/*                      /pages/404.html               404
