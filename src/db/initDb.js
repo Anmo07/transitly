@@ -478,6 +478,18 @@ const initializeDatabase = async () => {
       (2, 1, 'TRK-88219', 'TRANSIT', 'HARYANA_ROADWAYS', NULL, 'IN_TRANSIT', 'ISBT Kashmiri Gate, Delhi', 'ISBT Sector 17, Chandigarh', 280.00),
       (3, 1, 'TRK-88219', 'DELIVERY_LAST_MILE', 'TRANSITLY_INTERNAL', 11, 'QUOTED', 'ISBT Sector 17, Chandigarh', 'Sector 17, Chandigarh', 85.00)
       ON CONFLICT (id) DO NOTHING;
+      INSERT INTO custody_handoffs (
+          id, shipment_id, tracking_id, from_user_id, to_user_id, from_role, to_role,
+          qr_seal_code, seal_status, handoff_type, is_within_geofence, notes
+      ) VALUES
+      (1, 1, 'TRK-88219', 1, 11, 'CUSTOMER', 'DELIVERY_PARTNER', 'SEAL-8F3A-9B21-4C10', 'INTACT', 'FIRST_MILE_PICKUP', TRUE, 'Package picked up from sender in Connaught Place'),
+      (2, 1, 'TRK-88219', 11, 6, 'DELIVERY_PARTNER', 'DRIVER', 'SEAL-8F3A-9B21-4C10', 'INTACT', 'BUS_STOWAGE', TRUE, 'Safely stowed into Haryana Roadways AC Volvo bus undercarriage at ISBT Kashmiri Gate')
+      ON CONFLICT (id) DO NOTHING;
+
+      INSERT INTO support_tickets (id, user_id, category, tracking_id, description, status) VALUES
+      (1, 1, 'DELIVERY_STATUS', 'TRK-88219', 'Customer requested live ETA update for Haryana Roadways bus transit.', 'RESOLVED'),
+      (2, 1, 'BILLING_INQUIRY', 'TRK-60912', 'Requested GST invoice receipt for completed intercity shipment.', 'CLOSED')
+      ON CONFLICT (id) DO NOTHING;
     `;
 
     await targetPool.query(seedUsers);
@@ -492,6 +504,8 @@ const initializeDatabase = async () => {
       SELECT setval('shipment_legs_id_seq', (SELECT COALESCE(MAX(id), 1) + 1 FROM shipment_legs));
       SELECT setval('saved_addresses_id_seq', (SELECT COALESCE(MAX(id), 1) + 1 FROM saved_addresses));
       SELECT setval('payment_methods_id_seq', (SELECT COALESCE(MAX(id), 1) + 1 FROM payment_methods));
+      SELECT setval('custody_handoffs_id_seq', (SELECT COALESCE(MAX(id), 1) + 1 FROM custody_handoffs));
+      SELECT setval('support_tickets_id_seq', (SELECT COALESCE(MAX(id), 1) + 1 FROM support_tickets));
     `);
     console.log('✔ Master seed data loaded & sequences synchronized.');
 
@@ -504,6 +518,17 @@ const initializeDatabase = async () => {
       console.log('✔ Delivery Partner Schema & Seeds applied (riders, shifts, parcel_orders, dispatch_offers, wallet_ledgers, quest_progress).');
     } catch (err) {
       console.warn('[Delivery Partner Migration Notice]', err.message);
+    }
+
+    // 6. Apply Expressive Domain Views & Schema Documentation (003_expressive_views_and_metadata.sql)
+    console.log(`\n6. Applying Expressive Domain Views & Metadata (003_expressive_views_and_metadata.sql)...`);
+    try {
+      const viewsMigrationPath = path.join(__dirname, 'migrations', '003_expressive_views_and_metadata.sql');
+      const viewsMigrationSQL = fs.readFileSync(viewsMigrationPath, 'utf-8');
+      await targetPool.query(viewsMigrationSQL);
+      console.log('✔ Expressive Domain Views and in-database Table/Column Comments applied successfully.');
+    } catch (err) {
+      console.warn('[Expressive Views Migration Notice]', err.message);
     }
 
     console.log('\n======================================================');

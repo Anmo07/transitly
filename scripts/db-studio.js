@@ -63,18 +63,23 @@ app.post('/api/switch-target', (req, res) => {
   res.json({ success: true, target: activeTarget });
 });
 
-// 3. API: List all tables & row counts
+// 3. API: List all tables & views with human comments
 app.get('/api/tables', async (req, res) => {
   const pool = getPool();
   try {
     const result = await pool.query(`
       SELECT 
         t.table_name,
+        t.table_type,
+        COALESCE(obj_description(c.oid, 'pg_class'), '') as table_comment,
         COALESCE(s.n_live_tup, 0) as estimated_rows
       FROM information_schema.tables t
+      LEFT JOIN pg_class c ON c.relname = t.table_name
       LEFT JOIN pg_stat_user_tables s ON s.relname = t.table_name
-      WHERE t.table_schema = 'public' AND t.table_name != 'spatial_ref_sys'
-      ORDER BY t.table_name ASC;
+      WHERE t.table_schema = 'public' AND t.table_name NOT IN ('spatial_ref_sys', 'geometry_columns', 'geography_columns')
+      ORDER BY 
+        CASE WHEN t.table_type = 'VIEW' THEN 0 ELSE 1 END,
+        t.table_name ASC;
     `);
     res.json(result.rows);
   } catch (err) {
@@ -84,19 +89,32 @@ app.get('/api/tables', async (req, res) => {
   }
 });
 
-// 4. API: Get Table Data & Schema
+// 4. API: Get Table Data & Schema with Comments
 app.get('/api/tables/:tableName', async (req, res) => {
   const { tableName } = req.params;
   const limit = parseInt(req.query.limit || '100', 10);
   const pool = getPool();
 
   try {
-    // Columns
+    // Table Comment
+    const commentRes = await pool.query(`
+      SELECT COALESCE(obj_description(c.oid, 'pg_class'), '') as table_comment
+      FROM pg_class c
+      WHERE c.relname = $1;
+    `, [tableName]);
+    const tableComment = commentRes.rows[0]?.table_comment || '';
+
+    // Columns with Comments
     const colsRes = await pool.query(`
-      SELECT column_name, data_type, is_nullable
-      FROM information_schema.columns
-      WHERE table_schema = 'public' AND table_name = $1
-      ORDER BY ordinal_position ASC;
+      SELECT 
+        c.column_name, 
+        c.data_type, 
+        c.is_nullable,
+        COALESCE(col_description(cl.oid, c.ordinal_position), '') as column_comment
+      FROM information_schema.columns c
+      LEFT JOIN pg_class cl ON cl.relname = c.table_name
+      WHERE c.table_schema = 'public' AND c.table_name = $1
+      ORDER BY c.ordinal_position ASC;
     `, [tableName]);
 
     // Detect geometry column
@@ -111,6 +129,7 @@ app.get('/api/tables/:tableName', async (req, res) => {
 
     res.json({
       columns: colsRes.rows,
+      tableComment,
       hasGeometry: Boolean(geomCol),
       geomColumn: geomCol ? geomCol.column_name : null,
       rows: dataRes.rows,
@@ -209,9 +228,12 @@ app.get(['/', '/{*splat}'], (req, res) => {
     <main class="flex-1 flex flex-col overflow-hidden bg-[#0b0f19]">
       <!-- Tab Bar -->
       <div class="bg-[#111827] px-6 py-2.5 border-b border-slate-800 flex items-center justify-between shrink-0">
-        <div class="flex items-center gap-4">
-          <span class="text-sm font-bold text-white font-mono" id="activeTableTitle">Select a table</span>
-          <span class="text-xs text-slate-400 font-mono" id="rowCountBadge"></span>
+        <div class="flex flex-col">
+          <div class="flex items-center gap-3">
+            <span class="text-sm font-bold text-white font-mono" id="activeTableTitle">Select a table</span>
+            <span class="text-xs text-slate-400 font-mono" id="rowCountBadge"></span>
+          </div>
+          <p class="text-xs text-emerald-400/90 font-sans mt-0.5 max-w-4xl" id="activeTableDesc"></p>
         </div>
         <div class="flex items-center gap-2" id="viewToggleGroup" style="display: none;">
           <button onclick="setViewMode('grid')" id="gridBtn" class="px-2.5 py-1 text-xs font-semibold rounded-md bg-blue-600 text-white">Table View</button>
