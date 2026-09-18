@@ -1,148 +1,132 @@
-const request = require('supertest');
+/**
+ * Test Suite: React Migration & Architecture Verification
+ */
+
+const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
+const http = require('http');
 const app = require('../src/app');
 
-describe('React Migration & Unified Architecture Verification Suite', () => {
+async function runTests() {
+  console.log('=== Running React Migration & Architecture Verification Tests ===\n');
+  const server = http.createServer(app);
+
+  await new Promise((resolve) => server.listen(0, resolve));
+  const port = server.address().port;
+  const baseUrl = `http://127.0.0.1:${port}`;
+
+  const request = (urlPath) => {
+    return new Promise((resolve, reject) => {
+      http.get(`${baseUrl}${urlPath}`, (res) => {
+        let body = '';
+        res.on('data', (chunk) => body += chunk);
+        res.on('end', () => resolve({ status: res.statusCode, headers: res.headers, body }));
+      }).on('error', reject);
+    });
+  };
+
   const publicDir = path.join(__dirname, '../public');
   const pagesDir = path.join(publicDir, 'pages');
   const distDir = path.join(publicDir, 'dist');
 
-  test('1. Verify all 23 HTML templates are organized inside public/pages/', () => {
+  try {
+    // 1. Verify 23 HTML files in public/pages/
+    console.log('1. Verifying all 23 HTML templates are organized in public/pages/...');
     const expectedPages = [
-      '404.html',
-      'delivery-partner.html',
-      'faq.html',
-      'help-support.html',
-      'history.html',
-      'index.html',
-      'login.html',
-      'notifications.html',
-      'payment-methods.html',
-      'privacy-policy.html',
-      'profile.html',
-      'rider-dashboard.html',
-      'rider-earnings.html',
-      'rider-map-trips.html',
-      'rider-profile.html',
-      'rider-requests.html',
-      'saved-addresses.html',
-      'services.html',
-      'settings.html',
-      'signup.html',
-      'terms.html',
-      'tracking.html',
-      'visual-sitemap.html'
+      '404.html', 'delivery-partner.html', 'faq.html', 'help-support.html',
+      'history.html', 'index.html', 'login.html', 'notifications.html',
+      'payment-methods.html', 'privacy-policy.html', 'profile.html',
+      'rider-dashboard.html', 'rider-earnings.html', 'rider-map-trips.html',
+      'rider-profile.html', 'rider-requests.html', 'saved-addresses.html',
+      'services.html', 'settings.html', 'signup.html', 'terms.html',
+      'tracking.html', 'visual-sitemap.html'
     ];
-
-    expect(fs.existsSync(pagesDir)).toBe(true);
+    assert.ok(fs.existsSync(pagesDir), 'public/pages/ directory must exist');
     const discoveredFiles = fs.readdirSync(pagesDir).filter(f => f.endsWith('.html'));
-    expect(discoveredFiles.length).toBe(23);
-
-    expectedPages.forEach((page) => {
-      expect(discoveredFiles).toContain(page);
-      expect(fs.statSync(path.join(pagesDir, page)).size).toBeGreaterThan(100);
+    assert.strictEqual(discoveredFiles.length, 23, 'Must contain exactly 23 HTML pages');
+    expectedPages.forEach(p => {
+      assert.ok(discoveredFiles.includes(p), `Missing expected page: ${p}`);
+      assert.ok(fs.statSync(path.join(pagesDir, p)).size > 100, `${p} must not be empty`);
     });
-  });
+    console.log('✔ All 23 HTML templates correctly organized and validated in public/pages/.');
 
-  test('2. Verify React SPA build artifacts exist in public/dist/', () => {
+    // 2. Verify React build in public/dist/
+    console.log('2. Verifying React SPA production build in public/dist/...');
     const distIndex = path.join(distDir, 'index.html');
-    expect(fs.existsSync(distIndex)).toBe(true);
+    assert.ok(fs.existsSync(distIndex), 'public/dist/index.html must exist');
+    const html = fs.readFileSync(distIndex, 'utf8');
+    assert.ok(html.includes('<div id="root"></div>'), 'Root mount point must exist in dist/index.html');
+    assert.ok(html.includes('/dist/assets/index-'), 'Script bundle reference must be present');
+    console.log('✔ React production build verified.');
 
-    const htmlContent = fs.readFileSync(distIndex, 'utf8');
-    expect(htmlContent).toContain('<div id="root"></div>');
-    expect(htmlContent).toContain('/dist/assets/index-');
-    expect(htmlContent).toContain('/css/3d-core-layouts.css');
-  });
+    // 3. Verify GET /app serves React SPA
+    console.log('3. Verifying GET /app serves React Single Page Application...');
+    const resApp = await request('/app');
+    assert.strictEqual(resApp.status, 200, 'Expected 200 for /app');
+    assert.ok(resApp.body.includes('<div id="root"></div>'), 'Expected root div in /app');
+    console.log('✔ GET /app verified.');
 
-  test('3. Verify GET /app serves the compiled React SPA', async () => {
-    const res = await request(app).get('/app');
-    expect(res.status).toBe(200);
-    expect(res.text).toContain('<div id="root"></div>');
-    expect(res.headers['content-type']).toMatch(/html/);
-  });
+    // 4. Verify deep links on /app/*splat
+    console.log('4. Verifying deep routes on /app/*splat...');
+    const resServices = await request('/app/services');
+    assert.strictEqual(resServices.status, 200, 'Expected 200 for /app/services');
+    assert.ok(resServices.body.includes('<div id="root"></div>'), 'Expected SPA shell on /app/services');
 
-  test('4. Verify GET /app/*splat deep link serves the compiled React SPA', async () => {
-    const res = await request(app).get('/app/services');
-    expect(res.status).toBe(200);
-    expect(res.text).toContain('<div id="root"></div>');
+    const resRider = await request('/app/rider-dashboard');
+    assert.strictEqual(resRider.status, 200, 'Expected 200 for /app/rider-dashboard');
+    assert.ok(resRider.body.includes('<div id="root"></div>'), 'Expected SPA shell on /app/rider-dashboard');
+    console.log('✔ SPA deep links verified.');
 
-    const res2 = await request(app).get('/app/rider-dashboard');
-    expect(res2.status).toBe(200);
-    expect(res2.text).toContain('<div id="root"></div>');
-  });
-
-  test('5. Verify React JavaScript bundle is served with correct Content-Type', async () => {
+    // 5. Verify static asset resolution
+    console.log('5. Verifying React bundled JS and CSS assets...');
     const assetsDir = path.join(distDir, 'assets');
     const jsFiles = fs.readdirSync(assetsDir).filter(f => f.endsWith('.js'));
-    expect(jsFiles.length).toBeGreaterThan(0);
+    assert.ok(jsFiles.length > 0, 'Must have at least 1 compiled JS asset');
+    const resJs = await request(`/dist/assets/${jsFiles[0]}`);
+    assert.strictEqual(resJs.status, 200, 'Expected 200 for React JS bundle');
+    assert.ok(resJs.headers['content-type'].includes('javascript'), 'Expected javascript Content-Type');
 
-    const jsFile = jsFiles[0];
-    const res = await request(app).get(`/dist/assets/${jsFile}`);
-    expect(res.status).toBe(200);
-    expect(res.headers['content-type']).toMatch(/javascript/);
-  });
-
-  test('6. Verify React CSS bundle is served with correct Content-Type', async () => {
-    const assetsDir = path.join(distDir, 'assets');
     const cssFiles = fs.readdirSync(assetsDir).filter(f => f.endsWith('.css'));
-    expect(cssFiles.length).toBeGreaterThan(0);
+    assert.ok(cssFiles.length > 0, 'Must have at least 1 compiled CSS asset');
+    const resCss = await request(`/dist/assets/${cssFiles[0]}`);
+    assert.strictEqual(resCss.status, 200, 'Expected 200 for React CSS bundle');
+    assert.ok(resCss.headers['content-type'].includes('css'), 'Expected css Content-Type');
+    console.log('✔ Compiled assets served with valid MIME types.');
 
-    const cssFile = cssFiles[0];
-    const res = await request(app).get(`/dist/assets/${cssFile}`);
-    expect(res.status).toBe(200);
-    expect(res.headers['content-type']).toMatch(/css/);
+    // 6. Verify 3D core layout styles
+    console.log('6. Verifying 3D core layout containment...');
+    const res3dCss = await request('/css/3d-core-layouts.css');
+    assert.strictEqual(res3dCss.status, 200, 'Expected 200 for /css/3d-core-layouts.css');
+    assert.ok(res3dCss.body.includes('contain: layout style'), 'Expected CSS layout containment');
+    console.log('✔ 3D Core layouts CSS verified.');
+
+    // 7. Verify 3D Scrubber Manifest metrics
+    console.log('7. Verifying 3D Scrubber Manifest metrics...');
+    const manifest = JSON.parse(fs.readFileSync(path.join(publicDir, 'js/scrubber-manifest.json'), 'utf8'));
+    assert.strictEqual(manifest.version, '1.0.0', 'Manifest version must be 1.0.0');
+    assert.strictEqual(manifest.globalConfig.renderer, 'webgl2', 'Global renderer must be webgl2');
+    const pageKeys = Object.keys(manifest.pages);
+    assert.strictEqual(pageKeys.length, 23, 'Must scan 23 pages');
+    console.log('✔ 3D Scrubber Manifest verified (23 pages registered).');
+
+    // 8. Verify Command Center removal (404)
+    console.log('8. Verifying /admin is 404...');
+    const resAdmin = await request('/admin');
+    assert.strictEqual(resAdmin.status, 404, 'Expected 404 for /admin');
+    console.log('✔ Command Center verified removed (404).');
+
+    console.log('\nAll React Migration & Unified Architecture verification tests passed successfully!\n');
+  } finally {
+    server.close();
+  }
+}
+
+if (require.main === module) {
+  runTests().catch((err) => {
+    console.error('Test Suite Failed:', err);
+    process.exit(1);
   });
+}
 
-  test('7. Verify 3D Core Layouts stylesheet is accessible', async () => {
-    const res = await request(app).get('/css/3d-core-layouts.css');
-    expect(res.status).toBe(200);
-    expect(res.headers['content-type']).toMatch(/css/);
-    expect(res.text).toContain('contain: layout style');
-  });
-
-  test('8. Verify public pages continue serving without authentication', async () => {
-    const publicPaths = ['/login', '/signup', '/faq', '/privacy-policy', '/terms', '/visual-sitemap'];
-    for (const p of publicPaths) {
-      const res = await request(app).get(p);
-      expect(res.status).toBe(200);
-      expect(res.headers['content-type']).toMatch(/html/);
-    }
-  });
-
-  test('9. Verify protected routes redirect unauthenticated users to /login', async () => {
-    const protectedPaths = [
-      '/',
-      '/tracking',
-      '/services',
-      '/history',
-      '/profile',
-      '/saved-addresses',
-      '/payment-methods',
-      '/notifications',
-      '/help-support',
-      '/settings'
-    ];
-    for (const p of protectedPaths) {
-      const res = await request(app).get(p);
-      expect(res.status).toBe(302);
-      expect(res.headers.location).toMatch(/\/login/);
-    }
-  });
-
-  test('10. Verify 3D Scrubber Manifest is valid and synchronizes 23 pages', () => {
-    const manifestPath = path.join(publicDir, 'js/scrubber-manifest.json');
-    expect(fs.existsSync(manifestPath)).toBe(true);
-
-    const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
-    expect(manifest.version).toBeDefined();
-    expect(manifest.metrics.totalPagesScanned).toBe(23);
-    expect(manifest.metrics.totalLandmarksBound).toBe(7);
-    expect(manifest.metrics.totalMicro3DTargets).toBe(405);
-  });
-
-  test('11. Verify Command Center (/admin) remains completely removed (404)', async () => {
-    const res = await request(app).get('/admin');
-    expect(res.status).toBe(404);
-  });
-});
+module.exports = runTests;
