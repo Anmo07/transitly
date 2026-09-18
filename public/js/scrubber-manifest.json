@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-18T20:36:21.220Z",
+  "generatedAt": "2026-09-18T20:49:25.373Z",
   "version": "1.0.0",
   "globalConfig": {
     "renderer": "webgl2",
@@ -178,18 +178,6 @@
       "has3DLandmarks": true,
       "landmarks": [
         {
-          "sequenceId": "3D-CARGO-SEAL",
-          "sequenceName": "Cryptographic QR Bay Stowage",
-          "targetContainerId": "btn-cargo-custody",
-          "targetContainerSelector": "#btn-cargo-custody",
-          "aspectRatio": "16/9",
-          "mobileAspectRatio": "1/1",
-          "recommendedFrameCount": 60,
-          "framePath": "/assets/3d/3d-cargo-seal/frame_%d.webp",
-          "scrubDelay": 0.1,
-          "higgsfieldPromptHint": "Macro 3D perspective of a ruggedized bus underbelly cargo bay sliding open. Robotic clamp places smart parcel into slot; holographic emerald laser projects pulsing QR seal (#10b981) locking shut."
-        },
-        {
           "sequenceId": "3D-RIDER-RADAR",
           "sequenceName": "Delivery Partner Telematics & Radar Dock",
           "targetContainerId": "hotspotMap",
@@ -224,8 +212,21 @@
         "cards": 9,
         "total": 34
       },
-      "has3DLandmarks": false,
-      "landmarks": []
+      "has3DLandmarks": true,
+      "landmarks": [
+        {
+          "sequenceId": "3D-RIDER-RADAR",
+          "sequenceName": "Delivery Partner Telematics & Radar Dock",
+          "targetContainerId": "riderLiveMap",
+          "targetContainerSelector": "#riderLiveMap",
+          "aspectRatio": "16/9",
+          "mobileAspectRatio": "4/3",
+          "recommendedFrameCount": 60,
+          "framePath": "/assets/3d/3d-rider-radar/frame_%d.webp",
+          "scrubDelay": 0.1,
+          "higgsfieldPromptHint": "Isometric view of urban electric scooter in cobalt and matte dark gray. 360-degree radar sonar pulse radiates across geometric street grid, docking seamlessly at a destination waypoint."
+        }
+      ]
     },
     "rider-profile.html": {
       "file": "rider-profile.html",

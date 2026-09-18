@@ -113,7 +113,11 @@ class TransitlyMicro3D {
 }
 
 if (typeof document !== 'undefined') {
-  document.addEventListener('DOMContentLoaded', () => {
-    window.transitlyMicro3D = new TransitlyMicro3D();
-  });
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!window.transitlyMicro3D) window.transitlyMicro3D = new TransitlyMicro3D();
+    });
+  } else {
+    if (!window.transitlyMicro3D) window.transitlyMicro3D = new TransitlyMicro3D();
+  }
 }

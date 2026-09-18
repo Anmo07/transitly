@@ -6,11 +6,14 @@
 .canvas-container-wrapper {
   position: relative;
   width: 100%;
-  aspect-ratio: 16 / 9;
-  /* Strict structural element isolation limits engine tracking passes and prevents CLS */
-  contain: layout size style;
+  /* Structural element isolation limits engine tracking passes and prevents CLS */
+  contain: layout style;
   background-color: #191b24;
   overflow: hidden;
+}
+
+.canvas-container-wrapper:not([class*="h-"]):not([style*="height"]) {
+  aspect-ratio: 16 / 9;
 }
 
 .canvas-container-wrapper.aspect-square {

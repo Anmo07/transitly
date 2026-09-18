@@ -31,7 +31,7 @@ const OPERATIONAL_LANDMARK_RULES = [
   {
     id: '3D-CARGO-SEAL',
     name: 'Cryptographic QR Bay Stowage',
-    targetPattern: /(id=["'](qrSealContainer|bayLockModal|tamperSealHud|bookingSuccessModal|btn-cargo-custody)["'])/i,
+    targetPattern: /(id=["'](qrSealContainer|bayLockModal|tamperSealHud|bookingSuccessModal|cargoCustodyModal|cargoSealContainer)["'])/i,
     fallbackSelector: '#qrSealContainer',
     aspectRatio: '16/9',
     mobileAspectRatio: '1/1',
@@ -42,7 +42,7 @@ const OPERATIONAL_LANDMARK_RULES = [
   {
     id: '3D-RIDER-RADAR',
     name: 'Delivery Partner Telematics & Radar Dock',
-    targetPattern: /(id=["'](radarContainer|riderMapTrips|dispatchCockpit|telematicsCard|hotspotMap|partnerHandoffCard)["'])/i,
+    targetPattern: /(id=["'](radarContainer|riderLiveMap|riderMapTrips|dispatchCockpit|telematicsCard|hotspotMap|partnerHandoffCard)["'])/i,
     fallbackSelector: '#radarContainer',
     aspectRatio: '16/9',
     mobileAspectRatio: '4/3',

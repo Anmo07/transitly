@@ -1,13 +1,29 @@
-# Higgsfield 3D Operational Prompt Synthesis Matrix
+# 3D Operational Prompt Synthesis Matrix (Universal Multi-Model)
 
 > **Transitly AI Generation Specification**  
-> *Production prompts, lighting profiles, physics parameters, and camera motion curves for generating 60 FPS loopable operational sequences with Higgsfield AI.*
+> *Production prompts, lighting profiles, physics parameters, and camera motion curves for generating 60 FPS loopable operational sequences with any modern video model or 3D tool.*
+
+---
+
+## 0. Multi-Model Compatibility (100% Model-Agnostic)
+
+The Transitly WebGL2 rendering pipeline is completely decoupled from the generation source. You can use any of the following free or freemium tools to generate the source MP4/MOV clips:
+
+| Tool / Model | Cost / Tier | Best Suited For | Website |
+| :--- | :--- | :--- | :--- |
+| **Kling AI** | **Free Daily Credits** (66 credits/day) | High-definition vehicle tracking, camera orbits, 1080p output | [klingai.com](https://klingai.com) |
+| **Hailuo AI (Minimax)** | **Free Tier Available** | Realistic physical motion, twilight highway reflections | [hailuoai.video](https://hailuoai.video) |
+| **Luma Dream Machine** | **Free Tier** (30 generations/mo) | Smooth camera keyframing, linear loops | [lumalabs.ai/dream-machine](https://lumalabs.ai/dream-machine) |
+| **Runway Gen-3 Alpha** | Free Trial Credits | Stylized cinematic lighting and camera sliders | [runwayml.com](https://runwayml.com) |
+| **Spline 3D** | **100% Free** | Interactive 3D object exports & turntable loops | [spline.design](https://spline.design) |
+| **Blender** | **100% Free & Open Source** | Exact, mathematical 60 FPS camera orbits with zero AI artifacting | [blender.org](https://blender.org) |
+| **Higgsfield AI** | Paid | Specialized commercial camera control | [higgsfield.ai](https://higgsfield.ai) |
 
 ---
 
 ## 1. Global Brand Aesthetic & Lighting Directives
 
-All Higgsfield generations must be grounded in Transitly’s established brand identity:
+All video generations must be grounded in Transitly’s established brand identity:
 
 ```
 Key Color Palette:
@@ -48,7 +64,7 @@ Cinematic ultra-smooth 60fps 3D tracking shot of a modern electric long-haul coa
 ## 3. Operational Sequence 2: `3D-CARGO-SEAL`
 
 * **Operational Flow:** Cryptographic QR Bay Stowage & Pneumatic Door Seal.
-* **Target DOM Landmarks:** `#bookingSuccessModal` (`index.html`), `#partnerHandoffCard` (`tracking.html`), `btn-cargo-custody` (`rider-dashboard.html`).
+* **Target DOM Landmarks:** `#bookingSuccessModal` (`index.html`), `#partnerHandoffCard` (`tracking.html`).
 * **Frame Target:** 60 frames @ 60 FPS (1.0s loop).
 * **Render Resolutions:** Desktop: `1920x1080` (16:9), Mobile: `1080x1080` (1:1 Square).
 

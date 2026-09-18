@@ -45,6 +45,12 @@
     const container = document.querySelector(landmark.targetContainerSelector);
     if (!container) return;
 
+    // Safety: only mount onto structural layout containers, not interactive controls
+    const tagName = container.tagName.toLowerCase();
+    if (['button', 'input', 'select', 'textarea', 'a'].includes(tagName)) {
+      return;
+    }
+
     // Check if canvas already mounted
     const canvasId = `canvas-${landmark.sequenceId.toLowerCase()}`;
     if (container.querySelector(`#${canvasId}`)) return;
