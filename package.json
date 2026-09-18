@@ -16,6 +16,8 @@
     "db:inspect": "node src/db/viewDb.js",
     "db:init:local": "DATABASE_URL=\"postgresql://postgres@localhost:5432/transitly_telemetry\" POSTGRES_SSL=\"false\" node src/db/initDb.js",
     "db:inspect:local": "DATABASE_URL=\"postgresql://postgres@localhost:5432/transitly_telemetry\" POSTGRES_SSL=\"false\" node src/db/viewDb.js",
+    "db:visualize": "node scripts/db-studio.js",
+    "db:studio": "node scripts/db-studio.js",
     "3d:scan": "node scripts/generate-3d-scrubbers.js",
     "3d:frames": "node scripts/generate-demo-frames.js",
     "3d:ingest": "node scripts/ingest-higgsfield-video.js",
