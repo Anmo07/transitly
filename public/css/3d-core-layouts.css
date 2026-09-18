@@ -1,0 +1,54 @@
+/* ========================================================================= */
+/* Transitly 3D Core Layouts & CLS Containment                               */
+/* public/css/3d-core-layouts.css                                            */
+/* ========================================================================= */
+
+.canvas-container-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  /* Strict structural element isolation limits engine tracking passes and prevents CLS */
+  contain: layout size style;
+  background-color: #191b24;
+  overflow: hidden;
+}
+
+.canvas-container-wrapper.aspect-square {
+  aspect-ratio: 1 / 1;
+}
+
+.canvas-container-wrapper.aspect-mobile {
+  aspect-ratio: 9 / 16;
+}
+
+.canvas-container-wrapper canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  will-change: transform;
+}
+
+.tracking-hud-overlay {
+  position: relative;
+  z-index: 5;
+  /* Restores standard element click functionality above target canvas rendering planes */
+  pointer-events: auto;
+}
+
+/* Fallback asset visibility strategy when browser context lacks WebGL capabilities */
+.canvas-container-wrapper.use-css-fallback {
+  background-image: url('/assets/3d/fallback/static-backup.webp');
+  background-size: cover;
+  background-position: center;
+}
+
+/* Interactive element hardware composite acceleration */
+[data-micro-3d],
+.micro-3d-active {
+  will-change: transform, filter;
+  transition: transform 0.15s cubic-bezier(0.25, 1, 0.5, 1), filter 0.15s ease;
+}

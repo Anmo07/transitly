@@ -1,0 +1,376 @@
+{
+  "generatedAt": "2026-09-18T20:36:21.220Z",
+  "version": "1.0.0",
+  "globalConfig": {
+    "renderer": "webgl2",
+    "maxDpr": 2,
+    "scrubFollowDelay": 0.1,
+    "containmentStyle": "contain: layout size style;",
+    "workerDecoder": "createImageBitmap"
+  },
+  "pages": {
+    "404.html": {
+      "file": "404.html",
+      "urlPath": "/404",
+      "interactiveElements": {
+        "buttons": 0,
+        "inputs": 0,
+        "cards": 2,
+        "total": 2
+      },
+      "has3DLandmarks": false,
+      "landmarks": []
+    },
+    "delivery-partner.html": {
+      "file": "delivery-partner.html",
+      "urlPath": "/delivery-partner",
+      "interactiveElements": {
+        "buttons": 3,
+        "inputs": 4,
+        "cards": 5,
+        "total": 12
+      },
+      "has3DLandmarks": false,
+      "landmarks": []
+    },
+    "faq.html": {
+      "file": "faq.html",
+      "urlPath": "/faq",
+      "interactiveElements": {
+        "buttons": 17,
+        "inputs": 1,
+        "cards": 14,
+        "total": 32
+      },
+      "has3DLandmarks": false,
+      "landmarks": []
+    },
+    "help-support.html": {
+      "file": "help-support.html",
+      "urlPath": "/help-support",
+      "interactiveElements": {
+        "buttons": 5,
+        "inputs": 4,
+        "cards": 1,
+        "total": 10
+      },
+      "has3DLandmarks": false,
+      "landmarks": []
+    },
+    "history.html": {
+      "file": "history.html",
+      "urlPath": "/history",
+      "interactiveElements": {
+        "buttons": 9,
+        "inputs": 1,
+        "cards": 5,
+        "total": 15
+      },
+      "has3DLandmarks": false,
+      "landmarks": []
+    },
+    "index.html": {
+      "file": "index.html",
+      "urlPath": "/",
+      "interactiveElements": {
+        "buttons": 31,
+        "inputs": 11,
+        "cards": 42,
+        "total": 84
+      },
+      "has3DLandmarks": true,
+      "landmarks": [
+        {
+          "sequenceId": "3D-BUS-HIGHWAY",
+          "sequenceName": "Intercity Bus Carrier Telemetry",
+          "targetContainerId": "homeMapContainer",
+          "targetContainerSelector": "#homeMapContainer",
+          "aspectRatio": "16/9",
+          "mobileAspectRatio": "9/16",
+          "recommendedFrameCount": 75,
+          "framePath": "/assets/3d/3d-bus-highway/frame_%d.webp",
+          "scrubDelay": 0.1,
+          "higgsfieldPromptHint": "Cinematic low-angle tracking shot of a modern intercity electric coach gliding over highway asphalt at twilight, cobalt blue underglow (#0050cb), aerodynamic wind trails."
+        },
+        {
+          "sequenceId": "3D-CARGO-SEAL",
+          "sequenceName": "Cryptographic QR Bay Stowage",
+          "targetContainerId": "bookingSuccessModal",
+          "targetContainerSelector": "#bookingSuccessModal",
+          "aspectRatio": "16/9",
+          "mobileAspectRatio": "1/1",
+          "recommendedFrameCount": 60,
+          "framePath": "/assets/3d/3d-cargo-seal/frame_%d.webp",
+          "scrubDelay": 0.1,
+          "higgsfieldPromptHint": "Macro 3D perspective of a ruggedized bus underbelly cargo bay sliding open. Robotic clamp places smart parcel into slot; holographic emerald laser projects pulsing QR seal (#10b981) locking shut."
+        }
+      ]
+    },
+    "login.html": {
+      "file": "login.html",
+      "urlPath": "/login",
+      "interactiveElements": {
+        "buttons": 6,
+        "inputs": 11,
+        "cards": 3,
+        "total": 20
+      },
+      "has3DLandmarks": false,
+      "landmarks": []
+    },
+    "notifications.html": {
+      "file": "notifications.html",
+      "urlPath": "/notifications",
+      "interactiveElements": {
+        "buttons": 6,
+        "inputs": 1,
+        "cards": 0,
+        "total": 7
+      },
+      "has3DLandmarks": false,
+      "landmarks": []
+    },
+    "payment-methods.html": {
+      "file": "payment-methods.html",
+      "urlPath": "/payment-methods",
+      "interactiveElements": {
+        "buttons": 7,
+        "inputs": 7,
+        "cards": 2,
+        "total": 16
+      },
+      "has3DLandmarks": false,
+      "landmarks": []
+    },
+    "privacy-policy.html": {
+      "file": "privacy-policy.html",
+      "urlPath": "/privacy-policy",
+      "interactiveElements": {
+        "buttons": 1,
+        "inputs": 0,
+        "cards": 11,
+        "total": 12
+      },
+      "has3DLandmarks": false,
+      "landmarks": []
+    },
+    "profile.html": {
+      "file": "profile.html",
+      "urlPath": "/profile",
+      "interactiveElements": {
+        "buttons": 10,
+        "inputs": 5,
+        "cards": 2,
+        "total": 17
+      },
+      "has3DLandmarks": false,
+      "landmarks": []
+    },
+    "rider-dashboard.html": {
+      "file": "rider-dashboard.html",
+      "urlPath": "/rider-dashboard",
+      "interactiveElements": {
+        "buttons": 6,
+        "inputs": 1,
+        "cards": 2,
+        "total": 9
+      },
+      "has3DLandmarks": true,
+      "landmarks": [
+        {
+          "sequenceId": "3D-CARGO-SEAL",
+          "sequenceName": "Cryptographic QR Bay Stowage",
+          "targetContainerId": "btn-cargo-custody",
+          "targetContainerSelector": "#btn-cargo-custody",
+          "aspectRatio": "16/9",
+          "mobileAspectRatio": "1/1",
+          "recommendedFrameCount": 60,
+          "framePath": "/assets/3d/3d-cargo-seal/frame_%d.webp",
+          "scrubDelay": 0.1,
+          "higgsfieldPromptHint": "Macro 3D perspective of a ruggedized bus underbelly cargo bay sliding open. Robotic clamp places smart parcel into slot; holographic emerald laser projects pulsing QR seal (#10b981) locking shut."
+        },
+        {
+          "sequenceId": "3D-RIDER-RADAR",
+          "sequenceName": "Delivery Partner Telematics & Radar Dock",
+          "targetContainerId": "hotspotMap",
+          "targetContainerSelector": "#hotspotMap",
+          "aspectRatio": "16/9",
+          "mobileAspectRatio": "4/3",
+          "recommendedFrameCount": 60,
+          "framePath": "/assets/3d/3d-rider-radar/frame_%d.webp",
+          "scrubDelay": 0.1,
+          "higgsfieldPromptHint": "Isometric view of urban electric scooter in cobalt and matte dark gray. 360-degree radar sonar pulse radiates across geometric street grid, docking seamlessly at a destination waypoint."
+        }
+      ]
+    },
+    "rider-earnings.html": {
+      "file": "rider-earnings.html",
+      "urlPath": "/rider-earnings",
+      "interactiveElements": {
+        "buttons": 9,
+        "inputs": 3,
+        "cards": 2,
+        "total": 14
+      },
+      "has3DLandmarks": false,
+      "landmarks": []
+    },
+    "rider-map-trips.html": {
+      "file": "rider-map-trips.html",
+      "urlPath": "/rider-map-trips",
+      "interactiveElements": {
+        "buttons": 15,
+        "inputs": 10,
+        "cards": 9,
+        "total": 34
+      },
+      "has3DLandmarks": false,
+      "landmarks": []
+    },
+    "rider-profile.html": {
+      "file": "rider-profile.html",
+      "urlPath": "/rider-profile",
+      "interactiveElements": {
+        "buttons": 7,
+        "inputs": 4,
+        "cards": 7,
+        "total": 18
+      },
+      "has3DLandmarks": false,
+      "landmarks": []
+    },
+    "rider-requests.html": {
+      "file": "rider-requests.html",
+      "urlPath": "/rider-requests",
+      "interactiveElements": {
+        "buttons": 9,
+        "inputs": 0,
+        "cards": 0,
+        "total": 9
+      },
+      "has3DLandmarks": false,
+      "landmarks": []
+    },
+    "saved-addresses.html": {
+      "file": "saved-addresses.html",
+      "urlPath": "/saved-addresses",
+      "interactiveElements": {
+        "buttons": 5,
+        "inputs": 5,
+        "cards": 0,
+        "total": 10
+      },
+      "has3DLandmarks": false,
+      "landmarks": []
+    },
+    "services.html": {
+      "file": "services.html",
+      "urlPath": "/services",
+      "interactiveElements": {
+        "buttons": 3,
+        "inputs": 8,
+        "cards": 5,
+        "total": 16
+      },
+      "has3DLandmarks": false,
+      "landmarks": []
+    },
+    "settings.html": {
+      "file": "settings.html",
+      "urlPath": "/settings",
+      "interactiveElements": {
+        "buttons": 5,
+        "inputs": 3,
+        "cards": 0,
+        "total": 8
+      },
+      "has3DLandmarks": false,
+      "landmarks": []
+    },
+    "signup.html": {
+      "file": "signup.html",
+      "urlPath": "/signup",
+      "interactiveElements": {
+        "buttons": 1,
+        "inputs": 6,
+        "cards": 2,
+        "total": 9
+      },
+      "has3DLandmarks": false,
+      "landmarks": []
+    },
+    "terms.html": {
+      "file": "terms.html",
+      "urlPath": "/terms",
+      "interactiveElements": {
+        "buttons": 0,
+        "inputs": 0,
+        "cards": 10,
+        "total": 10
+      },
+      "has3DLandmarks": false,
+      "landmarks": []
+    },
+    "tracking.html": {
+      "file": "tracking.html",
+      "urlPath": "/tracking",
+      "interactiveElements": {
+        "buttons": 17,
+        "inputs": 1,
+        "cards": 7,
+        "total": 25
+      },
+      "has3DLandmarks": true,
+      "landmarks": [
+        {
+          "sequenceId": "3D-BUS-HIGHWAY",
+          "sequenceName": "Intercity Bus Carrier Telemetry",
+          "targetContainerId": "liveTrackingMap",
+          "targetContainerSelector": "#liveTrackingMap",
+          "aspectRatio": "16/9",
+          "mobileAspectRatio": "9/16",
+          "recommendedFrameCount": 75,
+          "framePath": "/assets/3d/3d-bus-highway/frame_%d.webp",
+          "scrubDelay": 0.1,
+          "higgsfieldPromptHint": "Cinematic low-angle tracking shot of a modern intercity electric coach gliding over highway asphalt at twilight, cobalt blue underglow (#0050cb), aerodynamic wind trails."
+        },
+        {
+          "sequenceId": "3D-RIDER-RADAR",
+          "sequenceName": "Delivery Partner Telematics & Radar Dock",
+          "targetContainerId": "partnerHandoffCard",
+          "targetContainerSelector": "#partnerHandoffCard",
+          "aspectRatio": "16/9",
+          "mobileAspectRatio": "4/3",
+          "recommendedFrameCount": 60,
+          "framePath": "/assets/3d/3d-rider-radar/frame_%d.webp",
+          "scrubDelay": 0.1,
+          "higgsfieldPromptHint": "Isometric view of urban electric scooter in cobalt and matte dark gray. 360-degree radar sonar pulse radiates across geometric street grid, docking seamlessly at a destination waypoint."
+        },
+        {
+          "sequenceId": "3D-HANDOFF-PIN",
+          "sequenceName": "Doorstep Custody 4-Digit PIN Lock",
+          "targetContainerId": "recipientDeliveryPin",
+          "targetContainerSelector": "#recipientDeliveryPin",
+          "aspectRatio": "1/1",
+          "mobileAspectRatio": "1/1",
+          "recommendedFrameCount": 45,
+          "framePath": "/assets/3d/3d-handoff-pin/frame_%d.webp",
+          "scrubDelay": 0.1,
+          "higgsfieldPromptHint": "Floating 3D digital vault lock dial spinning in place. Upon 4th digit entry, the cylinder releases with pneumatic vapor, dissolving into an emerald checkmark with floating light particles."
+        }
+      ]
+    },
+    "visual-sitemap.html": {
+      "file": "visual-sitemap.html",
+      "urlPath": "/visual-sitemap",
+      "interactiveElements": {
+        "buttons": 6,
+        "inputs": 0,
+        "cards": 10,
+        "total": 16
+      },
+      "has3DLandmarks": false,
+      "landmarks": []
+    }
+  }
+}
