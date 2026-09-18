@@ -361,7 +361,7 @@ async function runTests() {
     // 18. Server-Side Authorization Gate: Protected routes redirect to /login without auth
     console.log('18. Testing server-side route protection (unauthenticated → redirect to /login)...');
     const protectedPaths = ['/', '/deliver', '/tracking', '/services', '/history', '/profile',
-      '/saved-addresses', '/payment-methods', '/settings', '/help-support', '/notifications', '/admin'];
+      '/saved-addresses', '/payment-methods', '/settings', '/help-support', '/notifications'];
     for (const protectedPath of protectedPaths) {
       const resProt = await request('GET', protectedPath);
       assert.strictEqual(resProt.status, 302, `Expected 302 redirect for ${protectedPath} without auth`);

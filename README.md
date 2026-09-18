@@ -64,7 +64,7 @@ The platform is deployed and running across serverless cloud primitives:
 | :--- | :--- |
 | **Customer** | Books parcels, calculates dynamic quotes, tracks shipments in real-time, manages saved addresses & payments. |
 | **Operator** | Publishes scheduled vehicle routes, manages cargo weight/volume capacity slots, tracks fleet health. |
-| **Operations Manager (Admin)** | Fleet command center, resolves transit exceptions, monitors telemetry health, audits system logs. |
+| **Operations Manager (Admin)** | Resolves transit exceptions, monitors telemetry health, audits system logs. |
 | **Delivery Partner (Rider)** | Dedicated cockpit view (`/rider-dashboard.html`), priority dispatch offers, geofenced handoffs (<100m), cash-out ledger. |
 
 ---

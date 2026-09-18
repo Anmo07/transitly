@@ -9,26 +9,11 @@ const userController = require('../controllers/userController');
 const addressController = require('../controllers/addressController');
 const paymentController = require('../controllers/paymentController');
 const supportController = require('../controllers/supportController');
-const adminController = require('../controllers/adminController');
 const riderRoutes = require('./riderRoutes');
 const { pool } = require('../../config/postgres');
 
 const router = express.Router();
 
-// 0. Admin & Command Center Auth & Operations
-router.post('/admin/auth/password', (req, res) => adminController.loginWithPassword(req, res));
-router.get('/admin/auth/biometric/challenge', (req, res) => adminController.getBiometricChallenge(req, res));
-router.post('/admin/auth/biometric/verify', (req, res) => adminController.verifyBiometric(req, res));
-router.get('/admin/auth/session', (req, res) => adminController.checkSession(req, res));
-router.post('/admin/auth/recovery', (req, res) => adminController.sendEmergencyRecovery(req, res));
-router.post('/admin/auth/biometric/reset', (req, res, next) => adminController.requireAdminAuth(req, res, next), (req, res) => adminController.authorizeBiometricReset(req, res));
-
-router.get('/admin/stats', (req, res) => adminController.getStats(req, res));
-router.get('/admin/fleet', (req, res) => adminController.getFleet(req, res));
-router.get('/admin/health', (req, res) => adminController.getHealth(req, res));
-router.get('/admin/incidents', (req, res) => adminController.getIncidents(req, res));
-router.patch('/admin/tickets/:id/resolve', (req, res, next) => adminController.requireAdminAuth(req, res, next), (req, res) => adminController.resolveTicket(req, res));
-router.post('/admin/broadcast', (req, res, next) => adminController.requireAdminAuth(req, res, next), (req, res) => adminController.sendBroadcast(req, res));
 
 // 0.1 User Authentication & OTP Verification
 router.post('/auth/otp/send', (req, res) => userController.sendOtp(req, res));

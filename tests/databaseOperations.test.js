@@ -663,7 +663,7 @@ async function runOperationsTestSuite() {
       assert.strictEqual(updated.rows[0].status, 'DELIVERED');
     });
 
-    await testStep('6.5 Record Admin Command Center Security Audit Log', async () => {
+    await testStep('6.5 Record Security Audit Log', async () => {
       const res = await pool.query(`
         INSERT INTO audit_logs (
           actor_user_id, actor_role, action, resource_type, resource_id, ip_address, payload

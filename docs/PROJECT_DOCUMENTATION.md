@@ -390,7 +390,7 @@ Guarantees immutable accounting, compliance auditing, and multi-channel customer
 - **`messaging_consents`**: WhatsApp & SMS customer consent tracking with E.164 phone numbers and `OPTED_IN` / `OPTED_OUT` state transitions.
 - **`notifications`**: Outbound notification queue and dispatch history tracking channels (`WHATSAPP`, `SMS`, `EMAIL`, `PUSH`), template names, delivery statuses (`QUEUED`, `SENT`, `DELIVERED`, `FAILED`), and error logs.
 - **`support_tickets`**: Customer and operator support tickets with priority ranking (`LOW`, `MEDIUM`, `HIGH`, `URGENT`), shipment references, and resolution timestamps.
-- **`audit_logs`**: Administrative security audit trail recording actor user IDs, roles, administrative actions (`FORCE_CLOSE_SHIPMENT`, `UPDATE_CAPACITY_OVERRIDE`), IP addresses, user agents, and context payloads for the Admin Command Center.
+- **`audit_logs`**: Administrative security audit trail recording actor user IDs, roles, administrative actions (`FORCE_CLOSE_SHIPMENT`, `UPDATE_CAPACITY_OVERRIDE`), IP addresses, user agents, and context payloads for administrative operations.
 
 ---
 
@@ -681,12 +681,6 @@ Initiates OAuth 2.0 PKCE authentication for Google and Apple ID with popup and d
 
 ---
 
-### 11. Admin Authentication Suite
-
-- `POST /api/v1/admin/auth/password`: Master admin credential authentication.
-- `GET /api/v1/admin/auth/biometric/challenge`: Generates WebAuthn cryptographic challenge for Touch ID / Face ID.
-- `POST /api/v1/admin/auth/biometric/verify`: Verifies hardware biometric signature from the Secure Enclave.
-- `POST /api/v1/admin/auth/recovery`: Dispatches emergency admin recovery credentials via Google Gmail SMTP.
 
 ---
 
@@ -983,10 +977,9 @@ In addition to local Docker/Compose environments, Transitly is fully deployed ac
 5.  Telemetry Ingestion Engine      : PASS (Redis Fast Path, PostGIS bulk SQL, Streams)
 6.  Master Database Schema          : PASS (12 SQL tables, PostGIS geometries, GIST indexes)
 7.  Intercity Express Corridors     : PASS (Corridors, Meta Webhook verification challenge)
-8.  Admin Command Center Security   : PASS (Master password, WebAuthn Touch ID, Gmail recovery)
-9.  Legal, Policy & SEO Routes      : PASS (Privacy, Terms, FAQ, Sitemap, Cookie Consent, Meta)
-10. User Login & Two-Step Auth      : PASS (Hardened OTP, Route Gates, SSO, Anti-Injection)
-11. Database Operations Master      : PASS (28-point end-to-end PostgreSQL + PostGIS operations)
+8.  Legal, Policy & SEO Routes      : PASS (Privacy, Terms, FAQ, Sitemap, Cookie Consent, Meta)
+9.  User Login & Two-Step Auth      : PASS (Hardened OTP, Route Gates, SSO, Anti-Injection)
+10. Database Operations Master      : PASS (28-point end-to-end PostgreSQL + PostGIS operations)
 ```
 
 All 11 test suites pass unconditionally with 0 errors.
@@ -1004,7 +997,6 @@ flowchart TD
     UI_Tracking["/tracking (Live GPS Radar)"]
     UI_History["/history (Shipment Ledger)"]
     UI_Profile["/profile (User & Portal Hub)"]
-    UI_Admin["/admin (Command Center)"]
   end
 
   subgraph Gateway ["Express 4.21 API Gateway & Socket.io"]
@@ -1193,20 +1185,7 @@ graph LR
 | 2 | **Toggle Language** | `#btnToggleLang` (EN/HI) | `i18n.setLanguage('hi')` | Client-side i18n Engine | Switches UI strings instantly using `public/js/i18n.js`. |
 | 3 | **Submit Support Ticket** | `#formSupportTicket` | `POST /api/v1/support/tickets` | `SupportController.createTicket` | **PostgreSQL:** `INSERT INTO support_tickets` + **WebSocket:** `io.emit('new_support_ticket')` to Admin Console. |
 
-#### Page 5: Admin Command Center (`/admin`)
 
-| # | User Click / Action | DOM Element ID / Trigger | API Route Invoked | Backend Service | Database / Redis Operations |
-|---|---|---|---|---|---|
-| 1 | **Password Auth** | `#authPasswordForm` submit | `POST /api/v1/admin/auth/password` | `AdminController.verifyPassword` | Timing-safe SHA-256 validation $\rightarrow$ Issues 8-hour Admin JWT. **PostgreSQL:** `INSERT INTO audit_logs`. |
-| 2 | **Touch ID Login** | `#btn-auth-fingerprint` | `GET /api/v1/admin/auth/biometric/challenge` & `POST /.../verify` | FIDO2 / WebAuthn Service | Verifies hardware cryptographic signature from Secure Enclave. |
-| 3 | **Forgot Password?** | `#btn-emergency-recovery` | `POST /api/v1/admin/auth/recovery` | `EmailService.sendEmergencyAdminRecovery` | Transmits emergency password to **`anmolrajotiya@gmail.com`** via Google Gmail SMTP (`smtp.gmail.com:465`). **PostgreSQL:** `INSERT INTO audit_logs`. |
-| 4 | **Fetch Admin Stats** | Auto-fetch after unlock | `GET /api/v1/admin/stats` | `AdminController.getStats` | **PostgreSQL:** Aggregates active parcels, fleet status, and revenue totals. |
-| 5 | **Fetch Unresolved Incidents**| Auto-fetch after unlock | `GET /api/v1/admin/incidents` | `AdminController.getIncidents` | **PostgreSQL:** `SELECT * FROM support_tickets WHERE status != 'RESOLVED' ORDER BY created_at DESC`. |
-| 6 | **1-Click Resolve Ticket** | `#btn-resolve-ticket` | `PATCH /api/v1/admin/tickets/:id/resolve` | `AdminController.resolveTicket` | **PostgreSQL:** `UPDATE support_tickets SET status='RESOLVED' WHERE id=$1` + **WebSocket:** `io.emit('ticket_resolved')`. |
-| 7 | **Touch ID Settings** | `#btn-touchid-settings` | Opens password security modal | Internal Biometrics Guard | Forces master password confirmation before granting biometric re-enrollment. |
-| 8 | **Authorize Biometric Reset**| `#form-confirm-biometric-reset` | `POST /api/v1/admin/auth/biometric/reset` | `AdminController.authorizeBiometricReset` | Verifies master password $\rightarrow$ Calls `navigator.credentials.create` to register new hardware key. |
-| 9 | **Broadcast Fleet Alert** | `#btn-send-broadcast` | `POST /api/v1/admin/broadcast` | `AdminController.broadcast` | **WebSocket:** `io.emit('fleet_alert')` to all connected clients. **PostgreSQL:** `INSERT INTO audit_logs`. |
-| 10 | **Lock Command Center** | `#btn-lock-console` / Tab switch | `clearAuthSession()` | Client-side Session Guard | Clears in-memory JWT tokens and re-engages lockscreen gate. |
 
 ---
 

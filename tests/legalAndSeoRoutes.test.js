@@ -100,7 +100,7 @@ async function runTests() {
     assert.strictEqual(resRobots.status, 200, 'Expected 200 for /robots.txt');
     assert.ok(resRobots.headers['content-type'].includes('text/plain'), 'Expected text/plain content-type');
     assert.ok(resRobots.body.includes('Sitemap: https://transitly.in/sitemap.svg'), 'Expected Sitemap reference to sitemap.svg');
-    assert.ok(resRobots.body.includes('Disallow: /admin'), 'Expected disallow admin');
+    assert.ok(resRobots.body.includes('Disallow: /api/'), 'Expected disallow api');
     console.log('✔ Robots.txt directives verified.');
 
     // 6. Custom 404 Handler
@@ -108,7 +108,9 @@ async function runTests() {
     const res404 = await request('/random-non-existent-route-999');
     assert.strictEqual(res404.status, 404, 'Expected HTTP status 404 for missing route');
     assert.ok(res404.body.includes('HTTP 404 • Destination Unknown') || res404.body.includes('Route Not Found'), 'Expected 404 page content');
-    assert.ok(res404.body.includes('Book a Parcel (Home)'), 'Expected recovery CTA');
+    const resAdmin404 = await request('/admin');
+    assert.strictEqual(resAdmin404.status, 404, 'Expected HTTP status 404 for removed /admin route');
+    assert.ok(resAdmin404.body.includes('HTTP 404 • Destination Unknown'), 'Expected 404 page for /admin');
 
     const resApi404 = await request('/api/random-missing-endpoint');
     assert.strictEqual(resApi404.status, 404, 'Expected HTTP status 404 for API route');

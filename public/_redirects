@@ -14,7 +14,6 @@
 /settings             /settings.html             200
 /help-support         /help-support.html         200
 /notifications        /notifications.html        200
-/admin                /admin.html                200
 /login                /login.html                200
 /signup               /signup.html               200
 /privacy              /privacy-policy.html       200

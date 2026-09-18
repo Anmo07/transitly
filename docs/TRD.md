@@ -405,7 +405,7 @@ Every pull request to `main` must pass:
 
 Transitly establishes `/login` as the foremost entry point. Direct surfing to internal routes without authorization is blocked at two independent tiers:
 
-1. **Tier 1 (Server-Side Middleware):** `requirePageAuth` intercepts protected GET routes (`/`, `/deliver`, `/tracking`, `/services`, `/history`, `/profile`, `/saved-addresses`, `/payment-methods`, `/settings`, `/help-support`, `/notifications`, `/admin`). Unauthenticated requests receive an immediate `302 Found` redirect to `/login?redirect=<target_uri>`.
+1. **Tier 1 (Server-Side Middleware):** `requirePageAuth` intercepts protected GET routes (`/`, `/deliver`, `/tracking`, `/services`, `/history`, `/profile`, `/saved-addresses`, `/payment-methods`, `/settings`, `/help-support`, `/notifications`). Unauthenticated requests receive an immediate `302 Found` redirect to `/login?redirect=<target_uri>`.
 2. **Tier 2 (Client-Side Gate):** `public/js/common.js` verifies `localStorage.getItem('transitly_auth_token')` on DOM initialization. Missing tokens trigger an immediate `window.location.replace('/login')`.
 3. **Cookie-Token Synchronization:** Authentication issues a signed 30-day JWT token, synchronized across `localStorage` and a secure `transitly_session` cookie for seamless server-side validation.
 4. **Static HTML Bypass Prevention:** Direct access to `.html` files is intercepted and normalized to clean routes, enforcing middleware gates.

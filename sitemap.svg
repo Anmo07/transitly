@@ -425,25 +425,10 @@
     <!-- Domain Header Card -->
     <rect width="250" height="48" rx="10" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
     <text x="16" y="25" class="domain-header">⚙️ PLATFORM &amp; APIS</text>
-    <text x="16" y="39" class="domain-sub">4 Routes • Operations &amp; Sitemaps</text>
+    <text x="16" y="39" class="domain-sub">3 Routes • Operations &amp; Sitemaps</text>
 
-    <!-- Node 1: Admin Console -->
+    <!-- Node 1: API Documentation -->
     <g transform="translate(0, 60)" class="card" filter="url(#cardShadow)">
-      <a href="/admin" xlink:href="/admin" target="_top">
-        <rect width="250" height="82" rx="12" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" class="card-bg" />
-        <rect x="14" y="14" width="28" height="28" rx="8" fill="#EFF6FF" stroke="#DBEAFE" stroke-width="1" />
-        <text x="28" y="32" text-anchor="middle" font-size="13">🛡️</text>
-        <text x="50" y="27" class="card-title">Fleet Admin Operations</text>
-        <text x="50" y="42" class="card-url">/admin</text>
-        <rect x="50" y="53" width="68" height="17" rx="4" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="0.8" />
-        <text x="84" y="65" text-anchor="middle" class="badge-text" fill="#334155">OPERATOR</text>
-        <rect x="124" y="53" width="85" height="17" rx="4" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="0.8" />
-        <text x="166" y="65" text-anchor="middle" class="badge-text" fill="#64748B">ROLE ACCESS</text>
-      </a>
-    </g>
-
-    <!-- Node 2: API Documentation -->
-    <g transform="translate(0, 150)" class="card" filter="url(#cardShadow)">
       <a href="/api/docs" xlink:href="/api/docs" target="_top">
         <rect width="250" height="82" rx="12" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" class="card-bg" />
         <rect x="14" y="14" width="28" height="28" rx="8" fill="#EFF6FF" stroke="#DBEAFE" stroke-width="1" />
@@ -457,8 +442,8 @@
       </a>
     </g>
 
-    <!-- Node 3: Visual Sitemap Hub -->
-    <g transform="translate(0, 240)" class="card" filter="url(#cardShadow)">
+    <!-- Node 2: Visual Sitemap Hub -->
+    <g transform="translate(0, 150)" class="card" filter="url(#cardShadow)">
       <a href="/visual-sitemap" xlink:href="/visual-sitemap" target="_top">
         <rect width="250" height="82" rx="12" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" class="card-bg" />
         <rect x="14" y="14" width="28" height="28" rx="8" fill="#EFF6FF" stroke="#DBEAFE" stroke-width="1" />
@@ -472,8 +457,8 @@
       </a>
     </g>
 
-    <!-- Node 4: Health Check -->
-    <g transform="translate(0, 330)" class="card" filter="url(#cardShadow)">
+    <!-- Node 3: Health Check -->
+    <g transform="translate(0, 240)" class="card" filter="url(#cardShadow)">
       <a href="/health" xlink:href="/health" target="_top">
         <rect width="250" height="82" rx="12" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" class="card-bg" />
         <rect x="14" y="14" width="28" height="28" rx="8" fill="#EFF6FF" stroke="#DBEAFE" stroke-width="1" />

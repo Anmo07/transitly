@@ -189,7 +189,6 @@ app.get('/payment-methods', requirePageAuth, requireRole('CUSTOMER', '/rider-das
 app.get('/settings', requirePageAuth, requireRole('CUSTOMER', '/rider-dashboard'), (req, res) => res.sendFile(path.join(publicDir, 'settings.html')));
 app.get('/help-support', requirePageAuth, requireRole('CUSTOMER', '/rider-dashboard'), (req, res) => res.sendFile(path.join(publicDir, 'help-support.html')));
 app.get('/notifications', requirePageAuth, requireRole('CUSTOMER', '/rider-dashboard'), (req, res) => res.sendFile(path.join(publicDir, 'notifications.html')));
-app.get('/admin', requirePageAuth, (req, res) => res.sendFile(path.join(publicDir, 'admin.html')));
 
 // 2. Delivery Partner Cockpit Domain (Customers strictly prohibited)
 app.get('/rider-dashboard', requirePageAuth, requireRole('DELIVERY_PARTNER', '/'), (req, res) => res.sendFile(path.join(publicDir, 'rider-dashboard.html')));

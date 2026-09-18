@@ -44,7 +44,7 @@ class SupportController {
 
       const createdTicket = insertRes.rows[0];
 
-      // Emit real-time WebSocket event to connected Admin Command Centers
+      // Emit real-time WebSocket event for new support tickets
       try {
         const { getIo } = require('../../websockets/socket');
         const io = getIo();
