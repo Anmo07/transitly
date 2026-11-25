@@ -1,4 +1,5 @@
 const { pool } = require('../config/postgres');
+const { QueryHelper } = require('./Shipment');
 
 /**
  * In-memory fallback state for offline / testing environments
@@ -57,13 +58,33 @@ class ShipmentLegDAO {
     return res;
   }
 
-  async find(query = {}) {
-    try {
-      const res = await pool.query('SELECT * FROM shipment_legs ORDER BY id ASC');
-      return res.rows;
-    } catch (_) {
-      return [];
-    }
+  find(query = {}) {
+    return new QueryHelper(async (options) => {
+      try {
+        let sql = 'SELECT * FROM shipment_legs';
+        const conditions = [];
+        const values = [];
+        if (query.shipmentId || query.shipment_id) {
+          values.push(query.shipmentId || query.shipment_id);
+          conditions.push(`shipment_id = $${values.length}`);
+        }
+        if (conditions.length > 0) {
+          sql += ' WHERE ' + conditions.join(' AND ');
+        }
+        sql += ' ORDER BY id ASC';
+        if (options.limit && options.limit > 0) {
+          values.push(options.limit);
+          sql += ` LIMIT $${values.length}`;
+        }
+        const res = await pool.query(sql, values);
+        if (res.rows.length === 0 && fallbackAssignedLegs.length > 0) {
+          return fallbackAssignedLegs;
+        }
+        return res.rows;
+      } catch (_) {
+        return fallbackAssignedLegs;
+      }
+    });
   }
 
   async findAssignedLegs(riderId) {

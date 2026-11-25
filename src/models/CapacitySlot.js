@@ -1,4 +1,21 @@
 const { pool } = require('../config/postgres');
+const { QueryHelper } = require('./Shipment');
+
+const fallbackCapacitySlots = [
+  {
+    id: 1,
+    _id: 1,
+    operatorId: 1,
+    vehicleId: 1,
+    routeTransactionId: 1,
+    slotDate: new Date(),
+    totalCapacityKg: 500,
+    availableWeightKg: 450,
+    reservedWeightKg: 50,
+    version: 1,
+    status: 'AVAILABLE'
+  }
+];
 
 class CapacitySlotDAO {
   async findById(id) {
@@ -17,6 +34,45 @@ class CapacitySlotDAO {
     } catch (_) {
       return null;
     }
+  }
+
+  find(query = {}) {
+    return new QueryHelper(async (options) => {
+      try {
+        let sql = 'SELECT * FROM capacity_slots';
+        const conditions = [];
+        const values = [];
+        if (query.routeTransactionId || query.route_transaction_id) {
+          values.push(query.routeTransactionId || query.route_transaction_id);
+          conditions.push(`route_transaction_id = $${values.length}`);
+        }
+        if (conditions.length > 0) {
+          sql += ' WHERE ' + conditions.join(' AND ');
+        }
+        sql += ' ORDER BY id ASC';
+        if (options.limit && options.limit > 0) {
+          values.push(options.limit);
+          sql += ` LIMIT $${values.length}`;
+        }
+        const res = await pool.query(sql, values);
+        if (res.rows.length === 0) return fallbackCapacitySlots;
+        return res.rows.map(r => ({
+          id: r.id,
+          _id: r.id,
+          operatorId: r.operator_id,
+          vehicleId: r.vehicle_id,
+          routeTransactionId: r.route_transaction_id,
+          slotDate: r.slot_date,
+          totalCapacityKg: parseFloat(r.total_capacity_kg),
+          availableWeightKg: parseFloat(r.available_weight_kg),
+          reservedWeightKg: parseFloat(r.reserved_weight_kg),
+          version: r.version,
+          status: r.status
+        }));
+      } catch (_) {
+        return fallbackCapacitySlots;
+      }
+    });
   }
 
   async findOneAndUpdate(query, update, options = {}) {

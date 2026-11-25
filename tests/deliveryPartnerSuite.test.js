@@ -250,6 +250,28 @@ async function runSuite() {
 
     console.log('✔ Strict bidirectional domain isolation (Zero cross-leakage between Customer and Partner) verified.');
 
+    // 9. Testing Shipments & Capacity Slots (QueryHelper chaining and auth protection)
+    console.log('9. Testing GET /api/v1/shipments and GET /api/v1/capacity/slots...');
+    const resShipmentsUnauth = await request('GET', '/api/v1/shipments', null, { noAuth: true });
+    assert.strictEqual(resShipmentsUnauth.status, 401, 'Unauthenticated /api/v1/shipments should return 401');
+
+    const resShipmentsAuth = await request('GET', '/api/v1/shipments?limit=10', null, {
+      'Authorization': `Bearer ${customerToken}`
+    });
+    assert.strictEqual(resShipmentsAuth.status, 200, 'Authenticated /api/v1/shipments should return 200');
+    assert.ok(Array.isArray(resShipmentsAuth.json.data), 'Shipments data should be an array');
+
+    const resSingleShipment = await request('GET', '/api/v1/shipments/TRK-DEL-JAI-9876');
+    assert.strictEqual(resSingleShipment.status, 200, 'Single shipment lookup should return 200');
+    assert.strictEqual(resSingleShipment.json.data.trackingId, 'TRK-DEL-JAI-9876');
+    assert.ok(Array.isArray(resSingleShipment.json.data.legs), 'Shipment legs should be an array');
+
+    const resCapacitySlots = await request('GET', '/api/v1/capacity/slots');
+    assert.strictEqual(resCapacitySlots.status, 200, '/api/v1/capacity/slots should return 200');
+    assert.ok(Array.isArray(resCapacitySlots.json.data), 'Capacity slots data should be an array');
+
+    console.log('✔ Shipments and Capacity Slots QueryHelper & API authentication verified.');
+
     console.log('\nAll Delivery Partner Infrastructure & Microservices tests passed successfully!\n');
     server.close();
     process.exit(0);

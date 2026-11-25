@@ -7,6 +7,7 @@
   const path = window.location.pathname.toLowerCase().replace(/\.html$/, '').replace(/\/$/, '') || '/';
   
   const PUBLIC_ROUTES = [
+    '/', '',
     '/login', '/signin', '/auth', '/verify',
     '/signup', '/register', '/create-account',
     '/privacy', '/privacy-policy',
@@ -16,7 +17,17 @@
     '/404'
   ];
 
-  if (PUBLIC_ROUTES.some(p => path === p || path.startsWith(p + '/'))) {
+  // Pre-warm backend API to mitigate Render free-tier cold starts
+  try {
+    const lastPing = sessionStorage.getItem('transitly_api_ping');
+    const now = Date.now();
+    if (!lastPing || (now - parseInt(lastPing, 10)) > 300000) {
+      sessionStorage.setItem('transitly_api_ping', String(now));
+      fetch('https://transitly-api.onrender.com/health', { method: 'GET', mode: 'no-cors', cache: 'no-store' }).catch(() => {});
+    }
+  } catch (_) {}
+
+  if (PUBLIC_ROUTES.some(p => path === p || (p !== '/' && p !== '' && path.startsWith(p + '/')))) {
     return; // Public page, allow immediate access
   }
 

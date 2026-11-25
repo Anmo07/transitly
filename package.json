@@ -6,7 +6,7 @@
   "scripts": {
     "run": "PORT=3000 node run.js",
     "start:all": "PORT=3000 node run.js",
-    "build": "lsof -ti :3000 | xargs kill -9 2>/dev/null || true && PORT=3000 node run.js",
+    "build": "npm run build:css:min && npm run build:react",
     "start": "node run.js",
     "dev": "lsof -ti :4000 | xargs kill -9 2>/dev/null || true && PORT=4000 nodemon src/server.js",
     "build:css": "BROWSERSLIST_IGNORE_OLD_DATA=true tailwindcss -i ./src/css/input.css -o ./public/css/style.css --minify",
