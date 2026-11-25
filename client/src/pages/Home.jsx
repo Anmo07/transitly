@@ -9,9 +9,9 @@ import { WebGLScrubber } from '../components/organisms/WebGLScrubber';
 
 export const Home = () => {
   const navigate = useNavigate();
-  const [pickupCity, setPickupCity] = useState('Delhi ISBT Kashmere Gate');
-  const [dropCity, setDropCity] = useState('Chandigarh Sector 17');
-  const [packageWeight, setPackageWeight] = useState('3 kg (Medium Parcel)');
+  const [pickupCity, setPickupCity] = useState('');
+  const [dropCity, setDropCity] = useState('');
+  const [packageWeight, setPackageWeight] = useState('');
 
   const corridors = [
     { from: 'Delhi', to: 'Chandigarh', time: '4h 15m', price: '₹149', buses: 'Every 20m', surge: null },
@@ -60,6 +60,7 @@ export const Home = () => {
             label="Pickup Bus Terminal"
             id="input-pickup"
             value={pickupCity}
+            placeholder="e.g. Delhi ISBT Kashmere Gate"
             onChange={(e) => setPickupCity(e.target.value)}
             icon="trip_origin"
           />
@@ -67,6 +68,7 @@ export const Home = () => {
             label="Dropoff Bus Terminal"
             id="input-drop"
             value={dropCity}
+            placeholder="e.g. Chandigarh Sector 17"
             onChange={(e) => setDropCity(e.target.value)}
             icon="location_on"
           />

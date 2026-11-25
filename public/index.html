@@ -202,7 +202,7 @@
             </div>
             <div class="flex flex-col flex-1 min-w-0">
               <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider leading-none mb-1">From (Origin Hub)</span>
-              <input id="inputSearchFrom" type="text" value="Mohali, Punjab" placeholder="Enter pickup city, terminal, or address..." class="w-full bg-transparent outline-none font-bold text-slate-900 placeholder:text-slate-400 border-none p-0 focus:ring-0 text-sm truncate">
+              <input id="inputSearchFrom" type="text" value="" placeholder="Enter pickup city, terminal, or address..." class="w-full bg-transparent outline-none font-bold text-slate-900 placeholder:text-slate-400 border-none p-0 focus:ring-0 text-sm truncate">
             </div>
             <button type="button" id="btnClearFrom" class="hidden text-slate-400 hover:text-slate-700 p-1.5 rounded-full text-xs">
               <span class="material-symbols-outlined text-[16px]">close</span>
@@ -237,7 +237,7 @@
             </div>
             <div class="flex flex-col flex-1 min-w-0">
               <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider leading-none mb-1">To (Destination Terminal)</span>
-              <input id="inputSearchTo" type="text" value="ISBT Sector 17, Chandigarh" placeholder="Where to send? (e.g. Kashmiri Gate, Delhi)" class="w-full bg-transparent outline-none font-bold text-slate-900 placeholder:text-slate-400 border-none p-0 focus:ring-0 text-sm truncate">
+              <input id="inputSearchTo" type="text" value="" placeholder="Where to send? (e.g. Kashmiri Gate, Delhi)" class="w-full bg-transparent outline-none font-bold text-slate-900 placeholder:text-slate-400 border-none p-0 focus:ring-0 text-sm truncate">
             </div>
             <button type="button" id="btnClearTo" class="hidden text-slate-400 hover:text-slate-700 p-1.5 rounded-full text-xs">
               <span class="material-symbols-outlined text-[16px]">close</span>
@@ -616,11 +616,11 @@
         <div class="grid grid-cols-2 gap-2.5">
           <div>
             <label class="font-semibold block mb-1 text-slate-600">Sender Name</label>
-            <input type="text" id="bookingSenderName" value="Aarav Sharma" class="w-full rounded-xl border border-slate-200 p-2.5 text-xs bg-white font-semibold" required>
+            <input type="text" id="bookingSenderName" placeholder="Enter sender's full name" class="w-full rounded-xl border border-slate-200 p-2.5 text-xs bg-white font-semibold" required>
           </div>
           <div>
             <label class="font-semibold block mb-1 text-slate-600">Sender Phone</label>
-            <input type="text" id="bookingSenderPhone" value="+91 98765 43210" class="w-full rounded-xl border border-slate-200 p-2.5 text-xs bg-white font-semibold" required>
+            <input type="tel" id="bookingSenderPhone" placeholder="e.g. +91 98765 43210" class="w-full rounded-xl border border-slate-200 p-2.5 text-xs bg-white font-semibold" required>
           </div>
         </div>
       </div>
@@ -630,16 +630,16 @@
         <span class="font-extrabold text-primary block">3. Delivery Details (Recipient)</span>
         <div>
           <label class="font-semibold block mb-1 text-slate-600">Delivery Address / Destination</label>
-          <input type="text" id="bookingReceiverAddress" value="Sector 17 Bus Terminal Area, Chandigarh" class="w-full rounded-xl border border-slate-200 p-2.5 text-xs bg-white font-semibold" required>
+          <input type="text" id="bookingReceiverAddress" placeholder="Enter complete delivery address" class="w-full rounded-xl border border-slate-200 p-2.5 text-xs bg-white font-semibold" required>
         </div>
         <div class="grid grid-cols-2 gap-2.5">
           <div>
             <label class="font-semibold block mb-1 text-slate-600">Recipient Name</label>
-            <input type="text" id="bookingReceiverName" value="Rohan Verma" class="w-full rounded-xl border border-slate-200 p-2.5 text-xs bg-white font-semibold" required>
+            <input type="text" id="bookingReceiverName" placeholder="Enter recipient's full name" class="w-full rounded-xl border border-slate-200 p-2.5 text-xs bg-white font-semibold" required>
           </div>
           <div>
             <label class="font-semibold block mb-1 text-slate-600">Recipient Phone</label>
-            <input type="text" id="bookingReceiverPhone" value="+91 98765 43211" class="w-full rounded-xl border border-slate-200 p-2.5 text-xs bg-white font-semibold" required>
+            <input type="tel" id="bookingReceiverPhone" placeholder="e.g. +91 98765 43211" class="w-full rounded-xl border border-slate-200 p-2.5 text-xs bg-white font-semibold" required>
           </div>
         </div>
       </div>
@@ -648,7 +648,7 @@
       <div class="grid grid-cols-2 gap-2.5">
         <div>
           <label class="font-bold text-slate-900 block mb-1">Weight (kg)</label>
-          <input type="number" id="bookingWeight" value="5.0" step="0.5" min="0.5" max="50" class="w-full rounded-2xl border border-slate-200 p-3 text-xs bg-slate-50 font-bold" required>
+          <input type="number" id="bookingWeight" placeholder="5.0" step="0.5" min="0.5" max="50" class="w-full rounded-2xl border border-slate-200 p-3 text-xs bg-slate-50 font-bold" required>
         </div>
         <div>
           <label class="font-bold text-slate-900 block mb-1">Delivery Speed</label>

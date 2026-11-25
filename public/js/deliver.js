@@ -915,14 +915,14 @@ document.addEventListener('DOMContentLoaded', () => {
         trackingId,
         operatorId: 10,
         sender: {
-          name: document.getElementById('bookingSenderName')?.value || 'Aarav Sharma',
-          phone: document.getElementById('bookingSenderPhone')?.value || '+91 98765 43210',
-          address: fromLocation.name
+          name: document.getElementById('bookingSenderName')?.value || '',
+          phone: document.getElementById('bookingSenderPhone')?.value || '',
+          address: fromLocation?.name || ''
         },
         recipient: {
-          name: document.getElementById('bookingReceiverName')?.value || 'Rohan Verma',
-          phone: document.getElementById('bookingReceiverPhone')?.value || '+91 98765 43211',
-          address: document.getElementById('bookingReceiverAddress')?.value || toLocation.name
+          name: document.getElementById('bookingReceiverName')?.value || '',
+          phone: document.getElementById('bookingReceiverPhone')?.value || '',
+          address: document.getElementById('bookingReceiverAddress')?.value || toLocation?.name || ''
         },
         parcel: {
           weightKg: parseFloat(bookingWeight?.value || '5.0'),
