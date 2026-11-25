@@ -6,6 +6,8 @@ const { pool } = require('../config/postgres');
 const mockRiderState = {
   id: 1,
   userId: 11,
+  name: 'Rajesh Kumar',
+  phone: '+919988776655',
   isOnline: true,
   autoAccept: true,
   rating: 4.94,
@@ -19,6 +21,21 @@ const mockRiderState = {
   thermalBagReady: true,
   latitude: 28.6315,
   longitude: 77.2167,
+  vehicle: {
+    type: 'NIU NQi-Sport',
+    idCode: 'DX-412',
+    batteryLevel: 82,
+    batteryRangeKm: 46.0,
+    helmetVerified: true,
+    thermalBagReady: true
+  },
+  shift: {
+    id: 1,
+    shiftTimeFormatted: '4h 12m',
+    loginTimeFormatted: '08:30 AM',
+    todayTotal: 84.50,
+    ordersCompleted: 8
+  },
   activeShift: {
     id: 1,
     shiftTimeFormatted: '4h 12m',
@@ -32,8 +49,49 @@ const mockRiderState = {
     surgeMultiplier: 1.15,
     requestsInQueue: 18
   },
-  walletBalance: 148.50
+  walletBalance: 148.50,
+  nextTask: {
+    id: 1,
+    trackingCode: 'TRK-88219',
+    pickupAddress: 'Sector 17, Chandigarh',
+    deliveryAddress: 'Cyber City, Gurgaon',
+    payout: 42.50,
+    distanceKm: 4.2,
+    estMinutes: 18,
+    status: 'ASSIGNED'
+  },
+  recentDeliveries: [
+    { title: 'Oakwood Pharmacy', details: '0.6 kg Cold Chain • 24 mins ago', tip: 2.00, amount: 11.20, status: 'Completed' },
+    { title: 'Riverside Office Park', details: '3.2 kg Documents • 1h 05m ago', amount: 9.50, status: 'Completed' }
+  ]
 };
+
+function buildFallbackDashboardResponse() {
+  return {
+    id: mockRiderState.id,
+    userId: mockRiderState.userId,
+    name: mockRiderState.name || 'Rajesh Kumar',
+    phone: mockRiderState.phone || '+919988776655',
+    isOnline: mockRiderState.isOnline,
+    autoAccept: mockRiderState.autoAccept,
+    walletBalance: mockRiderState.walletBalance,
+    rating: mockRiderState.rating,
+    reviewCount: mockRiderState.reviewCount,
+    acceptanceRate: mockRiderState.acceptanceRate,
+    vehicle: {
+      type: mockRiderState.vehicle?.type || mockRiderState.vehicleType,
+      idCode: mockRiderState.vehicle?.idCode || mockRiderState.vehicleIdCode,
+      batteryLevel: mockRiderState.vehicle?.batteryLevel ?? mockRiderState.batteryLevel,
+      batteryRangeKm: mockRiderState.vehicle?.batteryRangeKm ?? mockRiderState.batteryRangeKm,
+      helmetVerified: true,
+      thermalBagReady: true
+    },
+    shift: mockRiderState.shift || mockRiderState.activeShift,
+    demandHotspot: mockRiderState.demandHotspot,
+    nextTask: mockRiderState.nextTask,
+    recentDeliveries: mockRiderState.recentDeliveries
+  };
+}
 
 class RiderModel {
   /**
@@ -50,7 +108,7 @@ class RiderModel {
       `, [riderId]);
 
       if (riderRes.rows.length === 0) {
-        return mockRiderState;
+        return buildFallbackDashboardResponse();
       }
 
       const rider = riderRes.rows[0];
@@ -173,7 +231,7 @@ class RiderModel {
       };
     } catch (err) {
       console.warn('[RiderModel.getDashboard fallback]:', err.message);
-      return mockRiderState;
+      return buildFallbackDashboardResponse();
     }
   }
 

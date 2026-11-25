@@ -11,11 +11,12 @@ const paymentController = require('../controllers/paymentController');
 const supportController = require('../controllers/supportController');
 const riderRoutes = require('./riderRoutes');
 const { pool } = require('../../config/postgres');
+const { requireAuth, requireRole, optionalAuth } = require('../middleware/authMiddleware');
 
 const router = express.Router();                         
 
 
-// 0.1 User Authentication & OTP Verification
+// 0.1 User Authentication & OTP Verification (Public)
 router.post('/auth/otp/send', (req, res) => userController.sendOtp(req, res));
 router.post('/auth/otp/verify', (req, res) => userController.verifyOtp(req, res));
 router.post('/auth/signup', (req, res) => userController.registerUser(req, res));
@@ -26,59 +27,59 @@ router.get('/auth/apple', (req, res) => userController.appleAuth(req, res));
 router.get('/auth/apple/callback', (req, res) => userController.appleCallback(req, res));
 router.post('/auth/apple/callback', (req, res) => userController.appleCallback(req, res));
 
-// 0.1 User Profile & Settings
-router.get('/profile', (req, res) => userController.getProfile(req, res));
-router.put('/profile', (req, res) => userController.updateProfile(req, res));
-router.get('/settings', (req, res) => userController.getSettings(req, res));
-router.put('/settings', (req, res) => userController.updateSettings(req, res));
+// 0.1 User Profile & Settings (Authenticated)
+router.get('/profile', requireAuth, (req, res) => userController.getProfile(req, res));
+router.put('/profile', requireAuth, (req, res) => userController.updateProfile(req, res));
+router.get('/settings', requireAuth, (req, res) => userController.getSettings(req, res));
+router.put('/settings', requireAuth, (req, res) => userController.updateSettings(req, res));
 
-// 0.1 User Addresses
-router.get('/addresses', (req, res) => addressController.listAddresses(req, res));
-router.post('/addresses', (req, res) => addressController.createAddress(req, res));
-router.put('/addresses/:id', (req, res) => addressController.updateAddress(req, res));
-router.delete('/addresses/:id', (req, res) => addressController.deleteAddress(req, res));
+// 0.1 User Addresses (Authenticated)
+router.get('/addresses', requireAuth, (req, res) => addressController.listAddresses(req, res));
+router.post('/addresses', requireAuth, (req, res) => addressController.createAddress(req, res));
+router.put('/addresses/:id', requireAuth, (req, res) => addressController.updateAddress(req, res));
+router.delete('/addresses/:id', requireAuth, (req, res) => addressController.deleteAddress(req, res));
 
-// 0.2 User Payment Methods
-router.get('/payment-methods', (req, res) => paymentController.listPaymentMethods(req, res));
-router.post('/payment-methods', (req, res) => paymentController.createPaymentMethod(req, res));
-router.patch('/payment-methods/:id/default', (req, res) => paymentController.setDefault(req, res));
-router.delete('/payment-methods/:id', (req, res) => paymentController.deletePaymentMethod(req, res));
+// 0.2 User Payment Methods (Authenticated)
+router.get('/payment-methods', requireAuth, (req, res) => paymentController.listPaymentMethods(req, res));
+router.post('/payment-methods', requireAuth, (req, res) => paymentController.createPaymentMethod(req, res));
+router.patch('/payment-methods/:id/default', requireAuth, (req, res) => paymentController.setDefault(req, res));
+router.delete('/payment-methods/:id', requireAuth, (req, res) => paymentController.deletePaymentMethod(req, res));
 
-// 0.3 Support Tickets
-router.get('/support/tickets', (req, res) => supportController.listTickets(req, res));
-router.post('/support/tickets', (req, res) => supportController.createTicket(req, res));
+// 0.3 Support Tickets (Authenticated)
+router.get('/support/tickets', requireAuth, (req, res) => supportController.listTickets(req, res));
+router.post('/support/tickets', requireAuth, (req, res) => supportController.createTicket(req, res));
 
 
-// 1. Bookings & Sagas
-router.post('/bookings', (req, res) => bookingController.createBooking(req, res));
-router.get('/shipments', (req, res) => bookingController.listShipments(req, res));
-router.get('/shipments/:trackingId', (req, res) => bookingController.getShipment(req, res));
-router.post('/shipments/:id/transition', (req, res) => bookingController.transitionStatus(req, res));
-router.post('/shipments/:id/close', (req, res) => bookingController.closeShipment(req, res));
+// 1. Bookings & Sagas (Authenticated)
+router.post('/bookings', requireAuth, (req, res) => bookingController.createBooking(req, res));
+router.get('/shipments', requireAuth, (req, res) => bookingController.listShipments(req, res));
+router.get('/shipments/:trackingId', optionalAuth, (req, res) => bookingController.getShipment(req, res));
+router.post('/shipments/:id/transition', requireAuth, (req, res) => bookingController.transitionStatus(req, res));
+router.post('/shipments/:id/close', requireAuth, (req, res) => bookingController.closeShipment(req, res));
 
 // 2. Capacity
 router.get('/capacity/slots', (req, res) => capacityController.listSlots(req, res));
-router.post('/capacity/reserve', (req, res) => capacityController.reserveCapacity(req, res));
+router.post('/capacity/reserve', requireAuth, (req, res) => capacityController.reserveCapacity(req, res));
 
 // 3. Last-Mile Feasibility & Multi-Modal
 router.post('/lastmile/feasibility', (req, res) => lastMileController.checkFeasibility(req, res));
-router.post('/lastmile/quotes', (req, res) => lastMileController.getQuotes(req, res));
+router.post('/lastmile/quotes', requireAuth, (req, res) => lastMileController.getQuotes(req, res));
 
-// 4. Custody & Delivery Proof
-router.post('/custody/handoff', (req, res) => custodyController.logHandoff(req, res));
-router.post('/custody/verify-otp', (req, res) => custodyController.verifyDeliveryOtp(req, res));
+// 4. Custody & Delivery Proof (Authenticated)
+router.post('/custody/handoff', requireAuth, (req, res) => custodyController.logHandoff(req, res));
+router.post('/custody/verify-otp', requireAuth, (req, res) => custodyController.verifyDeliveryOtp(req, res));
 
-// 4.1 Internal Rider App Workflows
+// 4.1 Internal Rider App Workflows (Delivery Partner Authenticated)
 const deliveryPartnerController = require('../controllers/deliveryPartnerController');
-router.use('/riders', riderRoutes);
+router.use('/riders', requireAuth, requireRole('DELIVERY_PARTNER', 'ADMIN'), riderRoutes);
 
-// 4.2 Dispatch Matching Engine & Queue
-router.get('/dispatch/queue', (req, res) => deliveryPartnerController.getDispatchQueue(req, res));
-router.post('/dispatch/orders/:id/respond', (req, res) => deliveryPartnerController.respondToDispatchOffer(req, res));
+// 4.2 Dispatch Matching Engine & Queue (Delivery Partner Authenticated)
+router.get('/dispatch/queue', requireAuth, requireRole('DELIVERY_PARTNER', 'ADMIN'), (req, res) => deliveryPartnerController.getDispatchQueue(req, res));
+router.post('/dispatch/orders/:id/respond', requireAuth, requireRole('DELIVERY_PARTNER', 'ADMIN'), (req, res) => deliveryPartnerController.respondToDispatchOffer(req, res));
 
-// 4.3 Rider Delivery Task Execution & PIN Verification
-router.get('/orders/active', (req, res) => deliveryPartnerController.getActiveOrder(req, res));
-router.post('/orders/:id/verify-otp', (req, res) => deliveryPartnerController.verifyOrderOtp(req, res));
+// 4.3 Rider Delivery Task Execution & PIN Verification (Delivery Partner Authenticated)
+router.get('/orders/active', requireAuth, requireRole('DELIVERY_PARTNER', 'ADMIN'), (req, res) => deliveryPartnerController.getActiveOrder(req, res));
+router.post('/orders/:id/verify-otp', requireAuth, requireRole('DELIVERY_PARTNER', 'ADMIN'), (req, res) => deliveryPartnerController.verifyOrderOtp(req, res));
 
 // 5. Telemetry & Tracking
 router.post('/tracking/telemetry', (req, res) => telemetryController.postTelemetryPing(req, res));

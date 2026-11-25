@@ -17,15 +17,24 @@ async function runSuite() {
   const port = server.address().port;
   const baseUrl = `http://127.0.0.1:${port}`;
 
+  const customerToken = jwt.sign({ userId: 101, email: 'customer@test.com', role: 'CUSTOMER' }, AUTH_SECRET);
+  const partnerToken = jwt.sign({ userId: 11, email: 'rider@test.com', role: 'DELIVERY_PARTNER' }, AUTH_SECRET);
+
   const request = (method, urlPath, payload = null, headers = {}) => {
     return new Promise((resolve, reject) => {
       const url = new URL(urlPath, baseUrl);
+      const reqHeaders = {
+        'Content-Type': 'application/json',
+        ...headers
+      };
+      if (urlPath.startsWith('/api/v1/') && !reqHeaders.Authorization && !reqHeaders.authorization && !reqHeaders.Cookie && !reqHeaders.noAuth) {
+        reqHeaders.Authorization = `Bearer ${partnerToken}`;
+      }
+      delete reqHeaders.noAuth;
+
       const req = http.request(url, {
         method,
-        headers: {
-          'Content-Type': 'application/json',
-          ...headers
-        }
+        headers: reqHeaders
       }, (res) => {
         let body = '';
         res.on('data', (chunk) => body += chunk);
@@ -44,6 +53,17 @@ async function runSuite() {
   };
 
   try {
+    // 0. Test API Route Authentication & Role Isolation Enforcement
+    console.log('0. Testing API Route Authentication & Role Gatekeeper (/api/v1/riders/dashboard)...');
+    const resNoAuth = await request('GET', '/api/v1/riders/dashboard', null, { noAuth: true });
+    assert.strictEqual(resNoAuth.status, 401, 'Unauthenticated API call must return 401');
+
+    const resCustForbidden = await request('GET', '/api/v1/riders/dashboard', null, {
+      'Authorization': `Bearer ${customerToken}`
+    });
+    assert.strictEqual(resCustForbidden.status, 403, 'Customer role must be forbidden from rider API (403)');
+    console.log('✔ API route authentication and role boundary (401/403) verified.');
+
     // 1. Test Duty Mode & Auto-Accept Toggle (PATCH /api/v1/riders/duty)
     console.log('1. Testing PATCH /api/v1/riders/duty (Duty Status & Auto-Accept)...');
     const resDutyOff = await request('PATCH', '/api/v1/riders/duty', { isOnline: false, autoAccept: false });
@@ -168,8 +188,6 @@ async function runSuite() {
 
     // 8. Test Strict Role Isolation & Domain Boundary Protection
     console.log('8. Testing Strict Domain Boundary & Role-Based Isolation Enforcement...');
-    const customerToken = jwt.sign({ userId: 101, email: 'customer@test.com', role: 'CUSTOMER' }, AUTH_SECRET);
-    const partnerToken = jwt.sign({ userId: 202, email: 'rider@test.com', role: 'DELIVERY_PARTNER' }, AUTH_SECRET);
 
     // 8a. Unauthenticated visitor redirect to login
     const resUnauth = await request('GET', '/rider-dashboard');

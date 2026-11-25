@@ -3,8 +3,7 @@ const { pool } = require('../../config/postgres');
 class PaymentController {
   async listPaymentMethods(req, res) {
     try {
-      const userRes = await pool.query('SELECT id FROM users ORDER BY id ASC LIMIT 1');
-      const userId = userRes.rows[0]?.id || 1;
+      const userId = req.user?.userId || req.user?.id || 1;
 
       const result = await pool.query(`
         SELECT id, user_id as "userId", type, card_name as "cardName", card_last_four as "cardLastFour",
@@ -35,8 +34,7 @@ class PaymentController {
   async createPaymentMethod(req, res) {
     try {
       const { type, cardName, cardNumber, cardExpiry, upiVpa, isDefault } = req.body;
-      const userRes = await pool.query('SELECT id FROM users ORDER BY id ASC LIMIT 1');
-      const userId = userRes.rows[0]?.id || 1;
+      const userId = req.user?.userId || req.user?.id || 1;
 
       if (isDefault) {
         await pool.query('UPDATE payment_methods SET is_default = FALSE WHERE user_id = $1', [userId]);
@@ -58,8 +56,7 @@ class PaymentController {
   async setDefault(req, res) {
     try {
       const { id } = req.params;
-      const userRes = await pool.query('SELECT id FROM users ORDER BY id ASC LIMIT 1');
-      const userId = userRes.rows[0]?.id || 1;
+      const userId = req.user?.userId || req.user?.id || 1;
 
       await pool.query('UPDATE payment_methods SET is_default = FALSE WHERE user_id = $1', [userId]);
 
@@ -81,8 +78,7 @@ class PaymentController {
   async deletePaymentMethod(req, res) {
     try {
       const { id } = req.params;
-      const userRes = await pool.query('SELECT id FROM users ORDER BY id ASC LIMIT 1');
-      const userId = userRes.rows[0]?.id || 1;
+      const userId = req.user?.userId || req.user?.id || 1;
 
       const deleteRes = await pool.query(`
         DELETE FROM payment_methods WHERE id = $1 AND user_id = $2 RETURNING id

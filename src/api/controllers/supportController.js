@@ -3,8 +3,7 @@ const { pool } = require('../../config/postgres');
 class SupportController {
   async listTickets(req, res) {
     try {
-      const userRes = await pool.query('SELECT id FROM users ORDER BY id ASC LIMIT 1');
-      const userId = userRes.rows[0]?.id || 1;
+      const userId = req.user?.userId || req.user?.id || 1;
 
       const result = await pool.query(`
         SELECT id, user_id as "userId", category, tracking_id as "trackingId", description, status, created_at as "createdAt"
@@ -31,8 +30,7 @@ class SupportController {
   async createTicket(req, res) {
     try {
       const { category, trackingId, description, subject, message } = req.body;
-      const userRes = await pool.query('SELECT id FROM users ORDER BY id ASC LIMIT 1');
-      const userId = userRes.rows[0]?.id || 1;
+      const userId = req.user?.userId || req.user?.id || 1;
 
       const desc = description || (subject ? `${subject}: ${message}` : message) || 'Support inquiry';
 

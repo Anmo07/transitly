@@ -324,7 +324,16 @@ class UserController {
    */
   async getProfile(req, res) {
     try {
-      const userRes = await pool.query('SELECT * FROM users ORDER BY id ASC LIMIT 1');
+      const targetUserId = req.user?.userId || req.user?.id;
+      const targetEmail = req.user?.email;
+      let userRes;
+      if (targetUserId) {
+        userRes = await pool.query('SELECT * FROM users WHERE id = $1', [targetUserId]);
+      } else if (targetEmail) {
+        userRes = await pool.query('SELECT * FROM users WHERE email = $1', [targetEmail]);
+      } else {
+        userRes = await pool.query('SELECT * FROM users ORDER BY id ASC LIMIT 1');
+      }
       if (userRes.rows.length > 0) {
         const u = userRes.rows[0];
         
@@ -337,7 +346,8 @@ class UserController {
               COUNT(*) FILTER (WHERE status = 'DELIVERED') as total_delivered,
               COUNT(*) FILTER (WHERE status IN ('OPEN', 'CONFIRMED', 'IN_TRANSIT')) as total_active
             FROM shipments
-          `);
+            WHERE sender_name = $1 OR recipient_name = $1
+          `, [u.name]);
           if (statsRes.rows[0]) {
             totalTrips = parseInt(statsRes.rows[0].total_delivered || '124', 10);
             activeTrips = parseInt(statsRes.rows[0].total_active || '3', 10);
@@ -365,10 +375,15 @@ class UserController {
     }
 
     // In-memory fallback
+    const matchedUser = registeredInMemoryUsers.find(u => 
+      (req.user?.userId && (String(u.id) === String(req.user.userId) || u.user_uuid === req.user.userId)) ||
+      (req.user?.email && u.email?.toLowerCase() === req.user.email.toLowerCase())
+    ) || inMemoryUser;
+
     return res.status(200).json({
       status: 'success',
       data: {
-        user: inMemoryUser,
+        user: matchedUser,
         stats: { totalTrips: 124, activeTrips: 3 }
       }
     });

@@ -19,7 +19,13 @@ class WhatsAppService {
    * Meta Webhook Verification (hub.verify_token & hub.challenge)
    */
   verifyWebhookChallenge(mode, token, challenge) {
-    const verifyToken = process.env.WHATSAPP_WEBHOOK_VERIFY_TOKEN || 'transitly_webhook_secret_token';
+    if (process.env.NODE_ENV === 'production' && (!process.env.WHATSAPP_WEBHOOK_VERIFY_TOKEN || process.env.WHATSAPP_WEBHOOK_VERIFY_TOKEN === 'replace_with_random_webhook_verify_token')) {
+      throw new Error('FATAL SECURITY ERROR: WHATSAPP_WEBHOOK_VERIFY_TOKEN must be configured in production environments.');
+    }
+    const verifyToken = process.env.WHATSAPP_WEBHOOK_VERIFY_TOKEN || (process.env.NODE_ENV === 'production' ? null : 'transitly_webhook_secret_token');
+    if (!verifyToken) {
+      return { success: false, reason: 'VERIFY_TOKEN_NOT_CONFIGURED' };
+    }
     if (mode === 'subscribe' && token === verifyToken) {
       return { success: true, challenge };
     }

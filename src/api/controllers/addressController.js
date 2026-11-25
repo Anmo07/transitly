@@ -3,8 +3,7 @@ const { pool } = require('../../config/postgres');
 class AddressController {
   async listAddresses(req, res) {
     try {
-      const userRes = await pool.query('SELECT id FROM users ORDER BY id ASC LIMIT 1');
-      const userId = userRes.rows[0]?.id || 1;
+      const userId = req.user?.userId || req.user?.id || 1;
 
       const result = await pool.query(`
         SELECT id, user_id as "userId", label, address_line as "addressLine", tag, is_default as "isDefault", 
@@ -36,8 +35,7 @@ class AddressController {
   async createAddress(req, res) {
     try {
       const { label, addressLine, tag, isDefault, latitude, longitude } = req.body;
-      const userRes = await pool.query('SELECT id FROM users ORDER BY id ASC LIMIT 1');
-      const userId = userRes.rows[0]?.id || 1;
+      const userId = req.user?.userId || req.user?.id || 1;
 
       if (isDefault) {
         await pool.query('UPDATE saved_addresses SET is_default = FALSE WHERE user_id = $1', [userId]);
@@ -64,8 +62,7 @@ class AddressController {
     try {
       const { id } = req.params;
       const { label, addressLine, tag, isDefault } = req.body;
-      const userRes = await pool.query('SELECT id FROM users ORDER BY id ASC LIMIT 1');
-      const userId = userRes.rows[0]?.id || 1;
+      const userId = req.user?.userId || req.user?.id || 1;
 
       if (isDefault) {
         await pool.query('UPDATE saved_addresses SET is_default = FALSE WHERE user_id = $1', [userId]);
@@ -95,8 +92,7 @@ class AddressController {
   async deleteAddress(req, res) {
     try {
       const { id } = req.params;
-      const userRes = await pool.query('SELECT id FROM users ORDER BY id ASC LIMIT 1');
-      const userId = userRes.rows[0]?.id || 1;
+      const userId = req.user?.userId || req.user?.id || 1;
 
       const deleteRes = await pool.query(`
         DELETE FROM saved_addresses WHERE id = $1 AND user_id = $2 RETURNING id

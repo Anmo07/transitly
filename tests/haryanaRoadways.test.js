@@ -65,7 +65,8 @@ async function runHaryanaRoadwaysTests() {
 
     // 2. Test Meta Webhook Verification Challenge
     console.log('\n2. Testing Meta Webhook Verification Challenge (hub.challenge)...');
-    const validVerify = whatsappService.verifyWebhookChallenge('subscribe', 'transitly_webhook_secret_token', 'CHALLENGE_CODE_12345');
+    const expectedVerifyToken = process.env.WHATSAPP_WEBHOOK_VERIFY_TOKEN || 'transitly_webhook_secret_token';
+    const validVerify = whatsappService.verifyWebhookChallenge('subscribe', expectedVerifyToken, 'CHALLENGE_CODE_12345');
     assert.strictEqual(validVerify.success, true);
     assert.strictEqual(validVerify.challenge, 'CHALLENGE_CODE_12345');
 

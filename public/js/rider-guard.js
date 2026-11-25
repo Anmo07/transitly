@@ -80,13 +80,18 @@
     return;
   }
 
-  let role = getStoredRole();
+  // Verify authentication token exists
+  const token = localStorage.getItem('transitly_auth_token') ||
+    (document.cookie.match(/(?:^|;\s*)transitly_session=([^\s;]+)/)?.[1]);
 
-  // If visiting a partner page directly without an explicit role, assign DELIVERY_PARTNER role
-  if (!role && PARTNER_ROUTES.includes(currentPath)) {
-    role = 'DELIVERY_PARTNER';
-    setStoredRole(role);
+  if (!token) {
+    if (document.documentElement) document.documentElement.style.display = 'none';
+    const redirectTarget = encodeURIComponent(window.location.pathname + window.location.search);
+    window.location.replace('/login?redirect=' + redirectTarget);
+    return;
   }
+
+  let role = getStoredRole() || 'CUSTOMER';
 
   // 1. DELIVERY PARTNER ISOLATION RULE:
   // If the user is a Delivery Partner, they must NEVER access the customer section.

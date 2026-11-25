@@ -21,13 +21,35 @@ app.use(compression({
 }));
 
 // Middleware & Security Headers
+const allowedOrigins = process.env.ALLOWED_ORIGINS 
+  ? process.env.ALLOWED_ORIGINS.split(',').map(s => s.trim())
+  : ['http://localhost:3000', 'http://localhost:5173', 'http://127.0.0.1:3000', 'https://transitly.netlify.app', 'https://transitly.in'];
+
 app.use(
   helmet({
-    contentSecurityPolicy: false,
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://fonts.googleapis.com", "https://unpkg.com", "https://cdn.jsdelivr.net", "https://cdnjs.cloudflare.com"],
+        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://unpkg.com"],
+        fontSrc: ["'self'", "https://fonts.gstatic.com"],
+        imgSrc: ["'self'", "data:", "blob:", "https://*.tile.openstreetmap.org", "https://unpkg.com"],
+        connectSrc: ["'self'", "https://transitly-api.onrender.com", "ws:", "wss:"],
+        frameAncestors: ["'self'"]
+      }
+    },
     crossOriginEmbedderPolicy: false
   })
 );
-app.use(cors());
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin) || origin.endsWith('.netlify.app')) {
+      return callback(null, true);
+    }
+    return callback(null, true);
+  },
+  credentials: true
+}));
 app.use(express.json({ limit: '25mb' }));
 app.use(express.urlencoded({ limit: '25mb', extended: true }));
 app.use(morgan('dev'));
@@ -101,31 +123,9 @@ app.get('/robots.txt', (req, res) => {
 // =========================================================================
 // Authorization Middleware — Server-Side Route Protection
 // =========================================================================
-const jwt = require('jsonwebtoken');
-const AUTH_SECRET = process.env.AUTH_SECRET || 'transitly-jwt-secret-key-2026';
+const { extractToken, AUTH_SECRET } = require('./api/middleware/authMiddleware');
 
-/**
- * Parse the session token from cookies or Authorization header.
- * Returns decoded JWT payload if valid, null otherwise.
- */
-const extractSessionToken = (req) => {
-  // 1. Check cookie: transitly_session=<jwt>
-  const cookieHeader = req.headers.cookie || '';
-  const cookieMatch = cookieHeader.match(/(?:^|;\s*)transitly_session=([^\s;]+)/);
-  if (cookieMatch && cookieMatch[1]) {
-    try {
-      return jwt.verify(cookieMatch[1], AUTH_SECRET);
-    } catch (e) { /* expired or invalid */ }
-  }
-  // 2. Check Authorization: Bearer <jwt>
-  const authHeader = req.headers.authorization || '';
-  if (authHeader.startsWith('Bearer ')) {
-    try {
-      return jwt.verify(authHeader.slice(7), AUTH_SECRET);
-    } catch (e) { /* expired or invalid */ }
-  }
-  return null;
-};
+const extractSessionToken = extractToken;
 
 /**
  * Middleware: Require authentication for protected page routes.
