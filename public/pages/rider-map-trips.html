@@ -10,43 +10,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
   <link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet"/>
   <link rel="stylesheet" href="/css/3d-core-layouts.css">
-  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Production Compiled Tailwind CSS -->
+  <link rel="stylesheet" href="/css/style.css">
   <!-- Strict Domain Separation Guard -->
   <script src="/js/rider-guard.js"></script>
-  <script id="tailwind-config">
-    tailwind.config = {
-      darkMode: "class",
-      theme: {
-        extend: {
-          colors: {
-            "primary-container": "#0066ff",
-            "on-primary-container": "#f8f7ff",
-            "primary": "#0050cb",
-            "on-primary": "#ffffff",
-            "primary-fixed": "#dae1ff",
-            "on-primary-fixed": "#001849",
-            "background": "#faf8ff",
-            "on-background": "#191b24",
-            "surface": "#faf8ff",
-            "on-surface": "#191b24",
-            "on-surface-variant": "#424656",
-            "surface-container-lowest": "#ffffff",
-            "surface-container-low": "#f2f3ff",
-            "surface-container": "#ecedfa",
-            "surface-container-high": "#e6e7f4",
-            "tertiary": "#a33200",
-            "tertiary-container": "#cc4204",
-            "on-tertiary": "#ffffff",
-            "error": "#ba1a1a"
-          },
-          fontFamily: {
-            sans: ["Plus Jakarta Sans", "sans-serif"],
-            body: ["Plus Jakarta Sans", "sans-serif"]
-          }
-        }
-      }
-    };
-  </script>
+  
   <style>
     @layer base {
       html, body { width: 100vw; margin: 0; padding: 0; }

@@ -43,6 +43,7 @@ module.exports = {
         "secondary-container": "#e0e3e5",
         "on-background": "#191b24",
         "primary": "#0050cb",
+        "primary-dark": "#003ba0",
         "secondary-fixed": "#e0e3e5",
         "surface-dim": "#d8d9e6",
         "surface-container-low": "#f2f3ff",
@@ -55,10 +56,13 @@ module.exports = {
         "on-secondary-container": "#626567",
         "primary-fixed": "#dae1ff",
         "tertiary": "#a33200",
-        "on-secondary-fixed-variant": "#444749"
+        "on-secondary-fixed-variant": "#444749",
+        "emerald-brand": "#0d8a50",
+        "outline-subtle": "#e2e8f0"
       },
       fontFamily: {
         "sans": [
+          "Plus Jakarta Sans",
           "-apple-system",
           "BlinkMacSystemFont",
           "\"SF Pro Display\"",
@@ -80,11 +84,50 @@ module.exports = {
           "\"Liberation Mono\"",
           "\"Courier New\"",
           "monospace"
-        ]
+        ],
+        "display": ["\"Plus Jakarta Sans\"", "sans-serif"],
+        "headline-lg": ["\"Plus Jakarta Sans\"", "sans-serif"],
+        "headline-md": ["\"Plus Jakarta Sans\"", "sans-serif"],
+        "headline-lg-mobile": ["\"Plus Jakarta Sans\"", "sans-serif"],
+        "body-lg": ["\"Plus Jakarta Sans\"", "sans-serif"],
+        "body-md": ["\"Plus Jakarta Sans\"", "sans-serif"],
+        "body": ["\"Plus Jakarta Sans\"", "sans-serif"],
+        "label-md": ["\"Plus Jakarta Sans\"", "sans-serif"],
+        "label-sm": ["\"Plus Jakarta Sans\"", "sans-serif"]
+      },
+      fontSize: {
+        'body-lg': ['18px', { lineHeight: '28px', fontWeight: '400' }],
+        'headline-lg': ['32px', { lineHeight: '40px', letterSpacing: '-0.02em', fontWeight: '700' }],
+        'headline-md': ['20px', { lineHeight: '28px', fontWeight: '600' }],
+        'display': ['40px', { lineHeight: '48px', letterSpacing: '-0.02em', fontWeight: '700' }],
+        'label-md': ['14px', { lineHeight: '20px', letterSpacing: '0.01em', fontWeight: '600' }],
+        'label-sm': ['12px', { lineHeight: '16px', fontWeight: '500' }],
+        'headline-lg-mobile': ['24px', { lineHeight: '32px', fontWeight: '700' }],
+        'body-md': ['16px', { lineHeight: '24px', fontWeight: '400' }],
+      },
+      spacing: {
+        'stack-sm': '4px',
+        'base': '8px',
+        'stack-md': '12px',
+        'gutter': '16px',
+        'container-margin': '20px',
+        'stack-lg': '24px',
+        'section-gap': '40px'
+      },
+      borderRadius: {
+        'DEFAULT': '0.25rem',
+        'lg': '0.5rem',
+        'xl': '0.75rem',
+        'full': '9999px'
       },
       boxShadow: {
         'level-1': '0px 4px 20px rgba(0, 0, 0, 0.05)',
         'level-2': '0px 8px 30px rgba(0, 102, 255, 0.08)',
+        'card-sm': '0 2px 8px -2px rgba(0, 0, 0, 0.05), 0 1px 4px -1px rgba(0, 0, 0, 0.03)',
+        'card-md': '0 8px 24px -4px rgba(15, 23, 42, 0.08), 0 2px 8px -2px rgba(15, 23, 42, 0.04)',
+        'card-lg': '0 16px 40px -8px rgba(15, 23, 42, 0.12), 0 4px 12px -2px rgba(15, 23, 42, 0.06)',
+        'glow-primary': '0 8px 24px -4px rgba(0, 80, 203, 0.35)',
+        'glow-emerald': '0 8px 24px -4px rgba(13, 138, 80, 0.35)'
       }
     }
   },
