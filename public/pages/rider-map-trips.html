@@ -200,10 +200,10 @@
           </div>
 
           <div class="grid grid-cols-4 gap-3">
-            <input class="h-12 text-center text-xl font-bold rounded-xl bg-surface-container-low text-on-surface border border-transparent focus:border-primary focus:outline-none font-mono" id="otp-1" inputmode="numeric" maxlength="1" placeholder="•" type="text" value="4"/>
-            <input class="h-12 text-center text-xl font-bold rounded-xl bg-surface-container-low text-on-surface border border-transparent focus:border-primary focus:outline-none font-mono" id="otp-2" inputmode="numeric" maxlength="1" placeholder="•" type="text" value="8"/>
-            <input class="h-12 text-center text-xl font-bold rounded-xl bg-surface-container-low text-on-surface border border-transparent focus:border-primary focus:outline-none font-mono" id="otp-3" inputmode="numeric" maxlength="1" placeholder="•" type="text" value="2"/>
-            <input class="h-12 text-center text-xl font-bold rounded-xl bg-surface-container-low text-on-surface border border-transparent focus:border-primary focus:outline-none font-mono" id="otp-4" inputmode="numeric" maxlength="1" placeholder="•" type="text" value="0"/>
+            <input class="h-12 text-center text-xl font-bold rounded-xl bg-surface-container-low text-on-surface border border-transparent focus:border-primary focus:outline-none font-mono" id="otp-1" aria-label="Verification digit 1 of 4" autocomplete="one-time-code" inputmode="numeric" maxlength="4" placeholder="•" type="text" value=""/>
+            <input class="h-12 text-center text-xl font-bold rounded-xl bg-surface-container-low text-on-surface border border-transparent focus:border-primary focus:outline-none font-mono" id="otp-2" aria-label="Verification digit 2 of 4" autocomplete="one-time-code" inputmode="numeric" maxlength="4" placeholder="•" type="text" value=""/>
+            <input class="h-12 text-center text-xl font-bold rounded-xl bg-surface-container-low text-on-surface border border-transparent focus:border-primary focus:outline-none font-mono" id="otp-3" aria-label="Verification digit 3 of 4" autocomplete="one-time-code" inputmode="numeric" maxlength="4" placeholder="•" type="text" value=""/>
+            <input class="h-12 text-center text-xl font-bold rounded-xl bg-surface-container-low text-on-surface border border-transparent focus:border-primary focus:outline-none font-mono" id="otp-4" aria-label="Verification digit 4 of 4" autocomplete="one-time-code" inputmode="numeric" maxlength="4" placeholder="•" type="text" value=""/>
           </div>
           
           <div id="otp-status-msg" class="hidden p-2.5 rounded-xl text-xs font-semibold text-center mt-1"></div>
@@ -727,13 +727,39 @@
       otpInputs.forEach((input, index) => {
         if (!input) return;
         input.addEventListener('input', (e) => {
-          if (e.target.value.length === 1 && index < otpInputs.length - 1) {
+          const raw = e.target.value.replace(/\D/g, '');
+          if (raw.length > 1) {
+            for (let i = 0; i < otpInputs.length; i++) {
+              if (i < raw.length && otpInputs[i]) {
+                otpInputs[i].value = raw[i];
+              }
+            }
+            const next = Math.min(raw.length, otpInputs.length - 1);
+            otpInputs[next]?.focus();
+            return;
+          }
+          e.target.value = raw ? raw[raw.length - 1] : '';
+          if (e.target.value && index < otpInputs.length - 1) {
             otpInputs[index + 1]?.focus();
           }
         });
         input.addEventListener('keydown', (e) => {
           if (e.key === 'Backspace' && !e.target.value && index > 0) {
             otpInputs[index - 1]?.focus();
+            otpInputs[index - 1].value = '';
+          }
+        });
+        // Native paste handler without preventDefault
+        input.addEventListener('paste', (e) => {
+          const pasted = (e.clipboardData || window.clipboardData)?.getData('text')?.replace(/\D/g, '') || '';
+          if (pasted.length > 0) {
+            for (let i = 0; i < otpInputs.length; i++) {
+              if (i < pasted.length && otpInputs[i]) {
+                otpInputs[i].value = pasted[i];
+              }
+            }
+            const next = Math.min(pasted.length, otpInputs.length - 1);
+            setTimeout(() => otpInputs[next]?.focus(), 0);
           }
         });
       });
