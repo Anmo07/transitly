@@ -33,7 +33,7 @@ export const Profile = () => {
               <Badge variant="verified">KYC VERIFIED</Badge>
             </div>
             <p className="text-xs text-slate-500 mt-0.5">{user?.email || 'anmol@transitly.in'}</p>
-            <p className="text-xs text-slate-400 font-mono mt-0.5">+91 98765 43210</p>
+            <p className="text-xs text-slate-400 font-mono mt-0.5">{user?.phone || '—'}</p>
           </div>
         </div>
 

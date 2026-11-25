@@ -55,7 +55,7 @@ export const RiderDashboard = () => {
             <Icon name="location_on" size="xs" color="#10b981" className="mt-0.5" />
             <div>
               <p className="font-bold text-slate-900">Sector 35-B, House #142</p>
-              <p className="text-[11px] text-slate-500">Recipient: Rohan Verma (+91 98102-34567)</p>
+              <p className="text-[11px] text-slate-500">Recipient: Verified Consignee</p>
             </div>
           </div>
         </div>

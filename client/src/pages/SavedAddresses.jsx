@@ -13,7 +13,7 @@ export const SavedAddresses = () => {
       type: 'HOME',
       title: 'Home (Defence Colony)',
       address: 'B-42, Defence Colony, New Delhi, Delhi 110024',
-      contact: 'Anmol Verma • +91 98765 43210',
+      contact: 'Primary Contact • Registered Phone',
       isDefault: true
     },
     {

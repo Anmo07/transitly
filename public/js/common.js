@@ -728,10 +728,10 @@ window.generateTransitlyInvoice = (data = {}) => {
     minute: '2-digit'
   });
 
-  const origin = data.origin || 'ISBT Kashmiri Gate, Delhi';
-  const destination = data.destination || 'ISBT Sector 17, Chandigarh';
-  const sender = data.sender || 'Aarav Sharma • +91 98765 43210';
-  const receiver = data.receiver || 'Rohan Verma • +91 98123 45678';
+  const origin = data.origin || 'Origin Hub';
+  const destination = data.destination || 'Destination Hub';
+  const sender = data.sender || 'Sender (Verified)';
+  const receiver = data.receiver || 'Recipient (Verified)';
   const carrier = data.carrier || 'Fleet Bus #402 (Haryana Roadways Express)';
   const weight = data.weight || '5.0 kg';
   const fare = data.fare || '₹450.00';
@@ -1124,8 +1124,8 @@ window.TransitlyAuth = {
   isLoggedIn: () => !!localStorage.getItem('transitly_auth_token'),
   getUser: () => ({
     name: localStorage.getItem('transitly_user_name') || 'Valued Customer',
-    email: localStorage.getItem('transitly_user_email') || 'alex@example.com',
-    phone: localStorage.getItem('transitly_user_phone') || '+91 98765 43210'
+    email: localStorage.getItem('transitly_user_email') || '',
+    phone: localStorage.getItem('transitly_user_phone') || ''
   }),
   logout: () => {
     localStorage.removeItem('transitly_auth_token');

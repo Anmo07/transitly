@@ -53,7 +53,7 @@
           <span class="material-symbols-outlined text-2xl">cookie</span>
         </div>
         <div class="flex-1">
-          <h4 class="font-extrabold text-slate-900 text-sm">We Value Your Privacy</h4>
+          <h2 class="font-extrabold text-slate-900 text-sm">We Value Your Privacy</h2>
           <p class="text-xs text-slate-600 mt-1 leading-relaxed">
             Transitly uses essential cookies and localized storage to calculate bus routes, maintain live GPS telematics, and preserve your preferences. Read our <a href="/privacy-policy" class="text-primary font-bold hover:underline">Privacy Policy</a>.
           </p>
@@ -204,8 +204,11 @@
   document.addEventListener('DOMContentLoaded', () => {
     const consent = getStoredConsent();
     if (!consent || !consent.consented) {
-      // Delay slightly for smooth page load
-      setTimeout(createBannerElement, 800);
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(() => setTimeout(createBannerElement, 1000));
+      } else {
+        setTimeout(createBannerElement, 1500);
+      }
     }
   });
 })();

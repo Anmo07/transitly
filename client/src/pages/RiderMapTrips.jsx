@@ -53,11 +53,11 @@ export const RiderMapTrips = () => {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-blue-100 text-[#0050cb] font-bold flex items-center justify-center text-sm">
-              RV
+              RC
             </div>
             <div>
-              <h4 className="font-extrabold text-sm text-[#191b24]">Rohan Verma</h4>
-              <p className="text-[11px] text-slate-500">Sector 35-B, House #142</p>
+              <h4 className="font-extrabold text-sm text-[#191b24]">Recipient</h4>
+              <p className="text-[11px] text-slate-500">Destination Address</p>
             </div>
           </div>
 
