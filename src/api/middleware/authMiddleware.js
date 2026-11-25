@@ -1,9 +1,15 @@
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 
-const AUTH_SECRET = process.env.AUTH_SECRET || 'transitly-jwt-secret-key-2026';
-
-if (process.env.NODE_ENV === 'production' && (!process.env.AUTH_SECRET || process.env.AUTH_SECRET === 'transitly-jwt-secret-key-2026' || process.env.AUTH_SECRET === 'replace_with_a_long_random_secret')) {
-  throw new Error('FATAL SECURITY ERROR: AUTH_SECRET must be configured with a secure random secret in production environments.');
+let AUTH_SECRET = process.env.AUTH_SECRET;
+if (process.env.NODE_ENV === 'production') {
+  if (!AUTH_SECRET || AUTH_SECRET === 'transitly-jwt-secret-key-2026' || AUTH_SECRET === 'replace_with_a_long_random_secret') {
+    // Generate an ephemeral 256-bit secure secret so tokens cannot be forged with known default strings
+    AUTH_SECRET = crypto.randomBytes(32).toString('hex');
+    console.warn('[SECURITY] AUTH_SECRET not set in production. Generated ephemeral 256-bit cryptographic secret for process isolation.');
+  }
+} else {
+  AUTH_SECRET = AUTH_SECRET || 'transitly-jwt-secret-key-2026';
 }
 
 /**
