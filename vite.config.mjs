@@ -31,6 +31,6 @@ export default defineConfig({
   build: {
     outDir: '../public/dist',
     emptyOutDir: true,
-    sourcemap: true
+    sourcemap: false
   }
 });

@@ -29,6 +29,14 @@ async function runTests() {
   const publicDir = path.join(__dirname, '../public');
   const pagesDir = path.join(publicDir, 'pages');
   const distDir = path.join(publicDir, 'dist');
+  const assetsDir = path.join(distDir, 'assets');
+
+  // Ensure React build assets exist before testing
+  if (!fs.existsSync(distDir) || !fs.existsSync(assetsDir) || !fs.existsSync(path.join(distDir, 'index.html'))) {
+    console.log('[Notice] Production React assets not found, building React SPA...');
+    const { execSync } = require('child_process');
+    execSync('npm run build:react', { stdio: 'inherit' });
+  }
 
   try {
     // 1. Verify 23 HTML files in public/pages/
