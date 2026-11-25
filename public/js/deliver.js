@@ -312,7 +312,21 @@ document.addEventListener('DOMContentLoaded', () => {
   const initHomeMap = () => {
     const mapElement = document.getElementById('homeInteractiveMap');
     const staticFallback = document.getElementById('homeStaticFallback');
-    if (!mapElement || !window.L || homeMap) return;
+    if (!mapElement || homeMap) return;
+
+    if (!window.L) {
+      let attempts = 0;
+      const timer = setInterval(() => {
+        attempts++;
+        if (window.L) {
+          clearInterval(timer);
+          initHomeMap();
+        } else if (attempts > 50) {
+          clearInterval(timer);
+        }
+      }, 50);
+      return;
+    }
 
     if (staticFallback) staticFallback.style.display = 'none';
 
@@ -332,6 +346,20 @@ document.addEventListener('DOMContentLoaded', () => {
       maxZoom: 21,
       attribution: '© Google Maps'
     }).addTo(homeMap);
+
+    // Resilient fallback: If Google tiles are blocked or fail, load OpenStreetMap
+    googleRoadmapLayer.on('tileerror', function() {
+      if (!this._osmFallback) {
+        this._osmFallback = true;
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 19,
+          attribution: '© OpenStreetMap contributors'
+        }).addTo(homeMap);
+      }
+    });
+
+    // Invalidate size once DOM stabilizes
+    setTimeout(() => { if (homeMap) homeMap.invalidateSize(); }, 300);
 
     // Google Satellite Layer
     googleSatelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {

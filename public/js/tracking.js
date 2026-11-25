@@ -275,7 +275,21 @@ document.addEventListener('DOMContentLoaded', () => {
    * Initialize Leaflet Map
    */
   const initLeafletMap = (initialCoords = [28.6675, 77.2285]) => {
-    if (!mapElement || !window.L) return;
+    if (!mapElement) return;
+
+    if (!window.L) {
+      let attempts = 0;
+      const timer = setInterval(() => {
+        attempts++;
+        if (window.L) {
+          clearInterval(timer);
+          initLeafletMap(initialCoords);
+        } else if (attempts > 50) {
+          clearInterval(timer);
+        }
+      }, 50);
+      return;
+    }
 
     if (staticFallback) staticFallback.style.display = 'none';
 
@@ -286,10 +300,23 @@ document.addEventListener('DOMContentLoaded', () => {
       }).setView(initialCoords, 10);
 
       // Authentic Clean Google Maps Roadmap Tile Layer
-      L.tileLayer('https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+      const gLayer = L.tileLayer('https://mt{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
         maxZoom: 20,
-        subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+        subdomains: ['0', '1', '2', '3']
       }).addTo(map);
+
+      // Resilient fallback: If Google tiles fail, load OpenStreetMap
+      gLayer.on('tileerror', function() {
+        if (!this._osmFallback) {
+          this._osmFallback = true;
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap contributors'
+          }).addTo(map);
+        }
+      });
+
+      setTimeout(() => { if (map) map.invalidateSize(); }, 300);
 
       // Bind Map Zoom & Center Controls
       const btnZoomIn = document.getElementById('btnTrackZoomIn');

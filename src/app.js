@@ -30,11 +30,12 @@ app.use(
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://fonts.googleapis.com", "https://unpkg.com", "https://cdn.jsdelivr.net", "https://cdnjs.cloudflare.com"],
+        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://fonts.googleapis.com", "https://unpkg.com", "https://cdn.jsdelivr.net", "https://cdnjs.cloudflare.com", "https://maps.googleapis.com", "https://*.google.com"],
         styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://unpkg.com"],
         fontSrc: ["'self'", "https://fonts.gstatic.com"],
-        imgSrc: ["'self'", "data:", "blob:", "https://*.tile.openstreetmap.org", "https://unpkg.com", "https://lh3.googleusercontent.com", "https://upload.wikimedia.org", "https://*.amazonaws.com"],
-        connectSrc: ["'self'", "https://transitly-api.onrender.com", "ws:", "wss:"],
+        imgSrc: ["'self'", "data:", "blob:", "https://*.tile.openstreetmap.org", "https://unpkg.com", "https://lh3.googleusercontent.com", "https://upload.wikimedia.org", "https://*.amazonaws.com", "https://*.google.com", "https://*.googleapis.com", "https://*.gstatic.com", "https://server.arcgisonline.com"],
+        connectSrc: ["'self'", "https://transitly-api.onrender.com", "https://*.google.com", "https://*.googleapis.com", "https://api.bigdatacloud.net", "https://nominatim.openstreetmap.org", "ws:", "wss:"],
+        frameSrc: ["'self'", "https://www.google.com", "https://maps.google.com"],
         frameAncestors: ["'self'"]
       }
     },

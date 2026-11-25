@@ -409,6 +409,9 @@
     </div>
   </div>
 
+  <!-- Leaflet Map JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
   <!-- Dashboard Telemetry & Controller Script -->
   <script>
     (function() {
@@ -574,8 +577,24 @@
       loadDashboard();
 
       // Initialize Demand Hotspot Google Maps Preview
-      try {
-        if (typeof L !== 'undefined' && document.getElementById('hotspotMap')) {
+      const initHotspotMap = () => {
+        const mapEl = document.getElementById('hotspotMap');
+        if (!mapEl || mapEl._leaflet_id) return;
+        if (typeof L === 'undefined') {
+          let retries = 0;
+          const timer = setInterval(() => {
+            retries++;
+            if (typeof L !== 'undefined') {
+              clearInterval(timer);
+              initHotspotMap();
+            } else if (retries > 60) {
+              clearInterval(timer);
+            }
+          }, 50);
+          return;
+        }
+
+        try {
           const hMap = L.map('hotspotMap', {
             zoomControl: false,
             attributionControl: false,
@@ -585,10 +604,17 @@
             doubleClickZoom: false
           }).setView([30.7333, 76.7794], 13);
 
-          L.tileLayer('https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+          const gLayer = L.tileLayer('https://mt{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
             maxZoom: 20,
-            subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+            subdomains: ['0', '1', '2', '3']
           }).addTo(hMap);
+
+          gLayer.on('tileerror', function() {
+            if (!this._osmFallback) {
+              this._osmFallback = true;
+              L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(hMap);
+            }
+          });
 
           // Glowing Surge Radius Circle
           L.circle([30.7333, 76.7794], {
@@ -606,9 +632,16 @@
             fillOpacity: 1,
             weight: 2
           }).addTo(hMap);
+
+          setTimeout(() => { if (hMap) hMap.invalidateSize(); }, 300);
+        } catch (err) {
+          console.warn('Hotspot map init error:', err);
         }
-      } catch (_) {}
-  <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+      };
+
+      initHotspotMap();
+    })();
+  </script>
   <!-- 3D Pipeline & Micro-Interactions -->
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>

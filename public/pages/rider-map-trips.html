@@ -393,7 +393,7 @@
   </nav>
 
   <!-- Leaflet & Socket.io Scripts -->
-  <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="/socket.io/socket.io.js"></script>
 
   <script>
@@ -436,10 +436,20 @@
       }).setView([currentLat, currentLng], 15);
 
       // Authentic Google Maps Roadmap Tile Layer
-      L.tileLayer('https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+      const gLayer = L.tileLayer('https://mt{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
         maxZoom: 20,
-        subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+        subdomains: ['0', '1', '2', '3']
       }).addTo(map);
+
+      // Resilient fallback: If Google tiles fail, load OpenStreetMap
+      gLayer.on('tileerror', function() {
+        if (!this._osmFallback) {
+          this._osmFallback = true;
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
+        }
+      });
+
+      setTimeout(() => { if (map) map.invalidateSize(); }, 300);
 
       // Route Polyline (Glowing Blue Route)
       const routeLine = L.polyline(routeWaypoints, {
